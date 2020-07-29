@@ -1,0 +1,2057 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.4" />
+<title>panda.main API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>panda.main</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import sys
+
+
+if sys.version_info[0] &lt; 3:
+    print(&#34;Please run with Python 3!&#34;)
+    sys.exit(0)
+
+import socket
+import threading
+
+from os.path import realpath, exists, abspath, isfile, dirname, join as pjoin
+from os import dup, getenv, devnull, environ
+from random import randint
+from inspect import signature
+from tempfile import NamedTemporaryFile
+from time import time
+from math import ceil
+
+from .ffi_importer import ffi
+from .taint import TaintQuery
+from .panda_expect import Expect
+from .asyncthread import AsyncThread
+from .images import qcows
+from .plog import PLogReader
+from .utils import progress, make_iso, debug
+from .plugin_list import plugin_list
+
+# Mixins to extend Panda class functionality
+from .libpanda_mixins   import libpanda_mixins
+from .blocking_mixins   import blocking_mixins
+from .osi_mixins        import osi_mixins
+from .hooking_mixins    import hooking_mixins
+from .callback_mixins   import callback_mixins
+from .taint_mixins      import taint_mixins
+from .volatility_mixins import volatility_mixins
+from .pyperiph_mixins   import pyperipheral_mixins
+from .gdb_mixins        import gdb_mixins
+
+import pdb
+
+class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callback_mixins, taint_mixins, volatility_mixins, pyperipheral_mixins, gdb_mixins):
+    def __init__(self, arch=&#34;i386&#34;, mem=&#34;128M&#34;,
+            expect_prompt=None, # Regular expression describing the prompt exposed by the guest on a serial console. Used so we know when a running command has finished with its output
+            os_version=None,
+            qcow=None, # Qcow file to load
+            os=&#34;linux&#34;,
+            generic=None, # Helper: specify a generic qcow to use and set other arguments. Supported values: arm/ppc/x86_64/i386. Will download qcow automatically
+            raw_monitor = False, # When set, don&#39;t specify a -monitor. arg Allows for use of -nographic in args with ctrl-A+C for interactive qemu prompt.
+            extra_args=[]):
+        self.arch = arch
+        self.mem = mem
+        self.os = os_version
+        self.os_type = os
+        self.qcow = qcow
+        self.plugins = plugin_list(self)
+        self.expect_prompt = expect_prompt
+
+        if isinstance(extra_args, str): # Extra args can be a string or array
+            extra_args = extra_args.split()
+
+        # If specified use a generic (x86_64, i386, arm, ppc) qcow from moyix and ignore
+        if generic:                                 # other args. See details in qcows.py
+            print(&#34;using generic &#34; +str(generic))
+            q = qcows.get_qcow_info(generic)
+            self.arch     = q.arch
+            self.os       = q.os
+            self.mem      = q.default_mem # Might clobber a specified argument, but required if you want snapshots
+            self.qcow     = qcows.get_qcow(generic)
+            self.expect_prompt = q.prompt
+            if q.extra_args:
+                extra_args.extend(q.extra_args.split(&#34; &#34;))
+
+        if self.qcow: # Otherwise we shuld be able to do a replay with no qcow but this is probably broken
+            #if self.qcow == &#34;default&#34;: # Use arch / mem / os to find a qcow - XXX: merge with generic?
+            #    self.qcow = pjoin(getenv(&#34;HOME&#34;), &#34;.panda&#34;, &#34;%s-%s-%s.qcow&#34; % (self.os, self.arch, mem))
+            if not (exists(self.qcow)):
+                print(&#34;Missing qcow &#39;{}&#39; Please go create that qcow and give it to the PANDA maintainers&#34;.format(self.qcow))
+
+        self.build_dir  = self._find_build_dir()
+        environ[&#34;PANDA_DIR&#34;] = self.build_dir
+        self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch))
+        self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
+        #self.panda = pjoin(self.build_dir, &#34;{0}-softmmu/panda-system-{0}&#34;.format(self.arch)) # Path to binary
+
+        self.bits, self.endianness, self.register_size = self._determine_bits()
+        self._do_types_import()
+        self.libpanda = ffi.dlopen(self.libpanda_path)
+
+        # set OS name if we have one
+        if self.os:
+            self.set_os_name(self.os)
+
+        # Setup argv for panda
+        self.panda_args = [self.panda]
+        biospath = realpath(pjoin(self.build_dir, &#34;pc-bios&#34;)) # XXX: necessary for network drivers for arm, so &#39;pc-bios&#39; is a misleading name
+        self.panda_args.append(&#34;-L&#34;)
+        self.panda_args.append(biospath)
+
+        if self.qcow:
+            self.panda_args.append(self.qcow)
+
+        self.panda_args += extra_args
+
+        # Configure memory options
+        self.panda_args.extend([&#39;-m&#39;, self.mem])
+
+        # Configure serial - if we have an expect_prompt set. Otherwise how can we know what guest cmds are outputting?
+        if self.expect_prompt:
+            self.serial_file = NamedTemporaryFile(prefix=&#34;pypanda_s&#34;).name
+            self.serial_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            self.serial_console = Expect(expectation=self.expect_prompt, quiet=True, consume_first=False)
+            self.panda_args.extend([&#39;-serial&#39;, &#39;unix:{},server,nowait&#39;.format(self.serial_file)])
+        else:
+            self.serial_file = None
+            self.serial_socket = None
+            self.serial_console = None
+
+        # Configure monitor - Always enabled for now
+        self.monitor_file = NamedTemporaryFile(prefix=&#34;pypanda_m&#34;).name
+        self.monitor_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.raw_monitor = raw_monitor
+        if not self.raw_monitor:
+            self.monitor_console = Expect(expectation=rb&#34;(qemu)&#34;, quiet=True, consume_first=True)
+            self.panda_args.extend([&#39;-monitor&#39;, &#39;unix:{},server,nowait&#39;.format(self.monitor_file)])
+
+        self.running = threading.Event()
+        self.started = threading.Event()
+        self.athread = AsyncThread(self.started) # athread manages actions that need to occur outside qemu&#39;s CPU loop
+
+        # Callbacks
+        self.register_cb_decorators()
+        self.registered_callbacks = {} # name -&gt; {procname: &#34;bash&#34;, enabled: False, callback: None}
+
+        # Register asid_changed CB if and only if a callback requires procname
+        self._registered_asid_changed_internal_cb = False
+
+        self._initialized_panda = False
+        self.disabled_tb_chaining = False
+        self.taint_enabled = False
+        self.hook_list = []
+
+        # Asid stuff
+        self.current_asid_name = None
+        self.asid_mapping = {}
+
+        # Shutdown stuff
+        self.exception = None # When set to an exn, we&#39;ll raise and exit
+
+        # main_loop_wait functions and callbacks
+        self.main_loop_wait_fnargs = [] # [(fn, args), ...]
+        progress (&#34;Panda args: [&#34; + (&#34; &#34;.join(self.panda_args)) + &#34;]&#34;)
+    # /__init__
+
+    def _do_types_import(self):
+        # Import objects from panda_datatypes which are configured by the environment variables
+        # Store these objects in self.callback and self.callback_dictionary
+
+        # There is almost certainly a better way to do this.
+        environ[&#34;PANDA_BITS&#34;] = str(self.bits)
+        environ[&#34;PANDA_ARCH&#34;] = self.arch
+        from .autogen.panda_datatypes import pcb, C, callback_dictionary # XXX: What is C and do we need it?
+        self.callback_dictionary = callback_dictionary
+        self.callback = pcb
+
+    def _initialize_panda(self):
+        &#39;&#39;&#39;
+        After initializing the class, the user has a chance to do something
+        (TODO: what? register callbacks? It&#39;s something important...) before we finish initializing
+        &#39;&#39;&#39;
+        self.libpanda._panda_set_library_mode(True)
+
+        cenvp = ffi.new(&#34;char**&#34;, ffi.new(&#34;char[]&#34;, b&#34;&#34;))
+        len_cargs = ffi.cast(&#34;int&#34;, len(self.panda_args))
+        panda_args_ffi = [ffi.new(&#34;char[]&#34;, bytes(str(i),&#34;utf-8&#34;)) for i in self.panda_args]
+        self.libpanda.panda_init(len_cargs, panda_args_ffi, cenvp)
+
+        # Now we&#39;ve run qemu init so we can connect to the sockets for the monitor and serial
+        if self.serial_console and not self.serial_console.is_connected():
+            self.serial_socket.connect(self.serial_file)
+            self.serial_console.connect(self.serial_socket)
+        if not self.raw_monitor and not self.monitor_console.is_connected():
+            self.monitor_socket.connect(self.monitor_file)
+            self.monitor_console.connect(self.monitor_socket)
+
+        # Register __main_loop_wait_callback
+        self.register_callback(self.callback.main_loop_wait,
+                self.callback.main_loop_wait(self.__main_loop_wait_cb), &#39;__main_loop_wait&#39;)
+
+        self._initialized_panda = True
+
+    def _determine_bits(self):
+        &#39;&#39;&#39;
+        Given self.arch, determine bits, endianness and register_size
+        &#39;&#39;&#39;
+        bits = None
+        endianness = None # String &#39;little&#39; or &#39;big&#39;
+        if self.arch == &#34;i386&#34;:
+            bits = 32
+            endianness = &#34;little&#34;
+        elif self.arch == &#34;x86_64&#34;:
+            bits = 64
+            endianness = &#34;little&#34;
+        elif self.arch == &#34;arm&#34;:
+            endianness = &#34;little&#34; # XXX add support for arm BE?
+            bits = 32
+        elif self.arch == &#34;aarch64&#34;:
+            bit = 64
+            endianness = &#34;little&#34; # XXX add support for arm BE?
+        elif self.arch == &#34;ppc&#34;:
+            bits = 32
+            endianness = &#34;big&#34;
+        elif self.arch == &#34;mips&#34;:
+            bits = 32
+            endianness = &#34;big&#34;
+        elif self.arch == &#34;mipsel&#34;:
+            bits = 32
+            endianness = &#34;little&#34;
+
+        assert (bits is not None), &#34;For arch %s: I need logic to figure out num bits&#34; % self.arch
+        assert (endianness is not None), &#34;For arch %s: I need logic to figure out endianness&#34; % self.arch
+        register_size = int(bits/8)
+
+        return bits, endianness, register_size
+
+    def __main_loop_wait_cb(self):
+        &#39;&#39;&#39;
+        __main_loop_wait_cb is called at the start of the main cpu loop in qemu.
+        This is a fairly safe place to call into qemu internals but watch out for deadlocks caused
+        by your request blocking on the guest&#39;s execution. Here any functions in main_loop_wait_fnargs will be called
+        &#39;&#39;&#39;
+        try:
+            # Then run any and all requested commands
+            if len(self.main_loop_wait_fnargs) == 0: return
+            #progress(&#34;Entering main_loop_wait_cb&#34;)
+            for fnargs in self.main_loop_wait_fnargs:
+                (fn, args) = fnargs
+                ret = fn(*args)
+            self.main_loop_wait_fnargs = []
+        except KeyboardInterrupt:
+            self.end_analysis()
+
+    def _find_build_dir(self):
+        &#39;&#39;&#39;
+        Find build directory containing ARCH-softmmu/libpanda-ARCH.so and ARCH-softmmu/panda/plugins/
+        1) check relative to file (in the case of installed packages)
+        2) Check in../ ../../../build/
+        3) raise RuntimeError
+        &#39;&#39;&#39;
+        archs = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;ppc&#39;]
+        python_package = pjoin(*[dirname(__file__), &#34;data&#34;])
+        local_build = realpath(pjoin(dirname(__file__), &#34;../../../../build&#34;))
+        path_end = &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch)
+
+        pot_paths = [python_package, local_build]
+        for potential_path in pot_paths:
+            if isfile(pjoin(potential_path, path_end)):
+                print(&#34;Loading libpanda from {}&#34;.format(potential_path))
+                return potential_path
+
+        searched_paths = &#34;\n&#34;.join([&#34;\t&#34;+p for p in  pot_paths])
+        raise RuntimeError((&#34;Couldn&#39;t find libpanda-{}.so.\n&#34;
+                            &#34;Did you built PANDA for this architecture?\n&#34;
+                            &#34;Searched paths:\n{}&#34;
+                           ).format(self.arch, searched_paths))
+
+
+    def queue_main_loop_wait_fn(self, fn, args=[]):
+        &#39;&#39;&#39;
+        Queue a function to run at the next main loop
+        fn is a function we want to run, args are arguments to apss to it
+        &#39;&#39;&#39;
+        self.main_loop_wait_fnargs.append((fn, args))
+
+    def exit_cpu_loop(self):
+        self.libpanda.panda_exit_loop = True
+
+    def revert_async(self, snapshot_name): # In the next main loop, revert
+        &#39;&#39;&#39;
+        Request a snapshot revert, eventually. This is fairly dangerous
+        because you don&#39;t know when it finishes. You should be using revert_sync
+        from a blocking function instead
+        &#39;&#39;&#39;
+        print(&#34;WARNING: panda.revert_async may be deprecated in the near future&#34;)
+        if debug:
+            progress (&#34;Loading snapshot &#34; + snapshot_name)
+
+        # Stop guest, queue up revert, then continue
+        timer_start = time()
+        self.vm_stop()
+        charptr = ffi.new(&#34;char[]&#34;, bytes(snapshot_name, &#34;utf-8&#34;))
+        self.queue_main_loop_wait_fn(self.libpanda.panda_revert, [charptr])
+        self.queue_main_loop_wait_fn(self.libpanda.panda_cont)
+        if debug:
+            self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Loaded snapshot&#34;])
+
+    def reset(self): # In the next main loop, reset to boot
+        if debug:
+            progress (&#34;Resetting machine to start state&#34;)
+
+        # Stop guest, queue up revert, then continue
+        self.vm_stop()
+        self.queue_main_loop_wait_fn(self.libpanda.panda_reset)
+        self.queue_main_loop_wait_fn(self.libpanda.panda_cont)
+
+    def cont(self): # Continue execution (run after vm_stop)
+        self.libpanda.panda_cont()
+        self.running.set()
+
+    def vm_stop(self, code=4): # Stop execution, default code means RUN_STATE_PAUSED
+        self.libpanda.panda_stop(code)
+
+    def snap(self, snapshot_name):
+        if debug:
+            progress (&#34;Creating snapshot &#34; + snapshot_name)
+
+        # Stop guest execution, queue up a snapshot, then continue
+        timer_start = time()
+        self.vm_stop()
+        charptr = ffi.new(&#34;char[]&#34;, bytes(snapshot_name, &#34;utf-8&#34;))
+        self.queue_main_loop_wait_fn(self.libpanda.panda_snap, [charptr])
+        self.queue_main_loop_wait_fn(self.libpanda.panda_cont)
+        if debug:
+            self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Saved snapshot&#34;])
+
+    def delvm(self, snapshot_name):
+        if debug:
+            progress (&#34;Deleting snapshot &#34; + snapshot_name)
+
+        # Stop guest, queue up delete, then continue
+        self.vm_stop()
+        charptr = ffi.new(&#34;char[]&#34;, bytes(snapshot_name, &#34;utf-8&#34;))
+        self.queue_main_loop_wait_fn(self.libpanda.panda_delvm, [charptr])
+
+    def finish_timer(self, start, msg):
+        &#39;&#39;&#39;
+        Print how long some (main_loop_wait) task took
+        &#39;&#39;&#39;
+        t = time() - start
+        print(&#34;{} in {1:.08f} seconds&#34;.format(msg, t))
+
+
+    def enable_tb_chaining(self):
+        if debug:
+            progress(&#34;Enabling TB chaining&#34;)
+        self.disabled_tb_chaining = False
+        self.libpanda.panda_enable_tb_chaining()
+
+    def disable_tb_chaining(self):
+        if not self.disabled_tb_chaining:
+            if debug:
+                progress(&#34;Disabling TB chaining&#34;)
+            self.disabled_tb_chaining = True
+            self.libpanda.panda_disable_tb_chaining()
+
+    def run(self):
+        &#39;&#39;&#39;
+        Start execution of guest. Blocks until guest finishes.
+        Initializes panda object, clears main_loop_wait fns, sets up internal callbacks
+        &#39;&#39;&#39;
+
+        if len(self.main_loop_wait_fnargs):
+            if debug:
+                print(&#34;Clearing prior main_loop_wait fns:&#34;, self.main_loop_wait_fnargs)
+            self.main_loop_wait_fnargs = [] # [(fn, args), ...]
+
+        if debug:
+            progress (&#34;Running&#34;)
+
+        if not self._initialized_panda:
+            self._initialize_panda()
+
+        if not self.started.is_set():
+            self.started.set()
+
+        # Ensure our internal CBs are always enabled
+        self.enable_internal_callbacks()
+
+        self.running.set()
+        self.libpanda.panda_run() # Give control to panda
+        self.running.clear() # Back from panda&#39;s execution (due to shutdown or monitor quit)
+        self.libpanda.panda_unload_plugins() # Unload c plugins - should be safe now since exec has stopped
+
+    def end_analysis(self):
+        &#39;&#39;&#39;
+        Call from any thread to unload all plugins and stop all queued functions.
+        If called from async thread or a callback, it will also unblock panda.run()
+
+        Note here we use the async class&#39;s internal thread to process these
+        without needing to wait for tasks in the main async thread
+        &#39;&#39;&#39;
+        self.unload_plugins()
+        if self.running.is_set():
+            # If we were running, stop the execution and check if we crashed
+            self.queue_async(self.stop_run, internal=True)
+            self.queue_async(self.check_crashed, internal=True)
+
+    def run_replay(self, replaypfx):
+        &#39;&#39;&#39;
+        Load a replay and run it
+        &#39;&#39;&#39;
+        if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
+            raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
+
+        if debug:
+            progress (&#34;Replaying %s&#34; % replaypfx)
+
+        charptr = ffi.new(&#34;char[]&#34;,bytes(replaypfx,&#34;utf-8&#34;))
+        self.libpanda.panda_replay_begin(charptr)
+        self.run()
+
+    def require(self, name):
+        &#39;&#39;&#39;
+        Load a C plugin with no arguments. Deprecated. Use load_plugin
+        &#39;&#39;&#39;
+        self.load_plugin(name, args={})
+
+    def load_plugin(self, name, args={}):
+        &#39;&#39;&#39;
+        Load a C plugin, optionally with arguments
+        &#39;&#39;&#39;
+        if debug:
+            progress (&#34;Loading plugin %s&#34; % name),
+
+        argstrs_ffi = []
+        if isinstance(args, dict):
+            for k,v in args.items():
+                this_arg_s = &#34;{}={}&#34;.format(k,v)
+                this_arg = ffi.new(&#34;char[]&#34;, bytes(this_arg_s, &#34;utf-8&#34;))
+                argstrs_ffi.append(this_arg)
+
+            n = len(args.keys())
+        elif isinstance(args, list):
+            for arg in args:
+                this_arg = ffi.new(&#34;char[]&#34;, bytes(arg, &#34;utf-8&#34;))
+                argstrs_ffi.append(this_arg)
+            n = len(args)
+
+        else:
+            raise ValueError(&#34;Arguments to load plugin must be a list or dict of key/value pairs&#34;)
+
+        # First set qemu_path so plugins can load (may be unnecessary after the first time)
+        assert(self.panda), &#34;Unknown location of PANDA&#34;
+        panda_name_ffi = ffi.new(&#34;char[]&#34;, bytes(self.panda,&#34;utf-8&#34;))
+        self.libpanda.panda_set_qemu_path(panda_name_ffi)
+
+        if len(argstrs_ffi):
+            plugin_args = argstrs_ffi
+        else:
+            plugin_args = ffi.NULL
+
+        charptr = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
+        self.libpanda.panda_require_from_library(charptr, plugin_args, len(argstrs_ffi))
+        self.load_plugin_library(name)
+
+    def procname_changed(self, name):
+        for cb_name, cb in self.registered_callbacks.items():
+            if not cb[&#34;procname&#34;]:
+                continue
+            if name == cb[&#34;procname&#34;] and not cb[&#39;enabled&#39;]:
+                self.enable_callback(cb_name)
+            if name != cb[&#34;procname&#34;] and cb[&#39;enabled&#39;]:
+                self.disable_callback(cb_name)
+
+            self.update_hooks_new_procname(name)
+
+    def unload_plugin(self, name):
+        if debug:
+            progress (&#34;Unloading plugin %s&#34; % name),
+        name_ffi = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
+        self.libpanda.panda_unload_plugin_by_name(name_ffi)
+
+    def unload_plugins(self):
+        &#39;&#39;&#39;
+        Disable all python plugins and request to unload all c plugins
+        at the next main_loop_wait.
+
+        XXX: If called during shutdown/exit, c plugins won&#39;t be unloaded
+        because the next main_loop_wait will never happen. Instead, call
+        panda.panda_finish directly (which is done at the end of panda.run())
+        &#39;&#39;&#39;
+        if debug:
+            progress (&#34;Disabling all python plugins, unloading all C plugins&#34;)
+
+        # First unload python plugins, should be safe to do anytime
+        for name in self.registered_callbacks.keys():
+            self.disable_callback(name)
+
+        # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
+        self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)
+
+    def rr_get_guest_instr_count(self):
+        return self.libpanda.rr_get_guest_instr_count_external()
+
+    def memsavep(self, file_out):
+        newfd = dup(f_out.fileno())
+        self.libpanda.panda_memsavep(newfd)
+        self.libpanda.fclose(newfd)
+
+    def current_sp(self, cpustate): # under construction
+        if self.arch == &#34;i386&#34;:
+            # XXX see far more complex logic in panda/include/panda/common.h
+            from panda.x86.helper import R_ESP
+            return cpustate.env_ptr.regs[R_ESP]
+        elif self.arch == &#34;arm&#34;:
+            from panda.arm.helper import R_SP
+            return cpustate.env_ptr.regs[R_SP]
+        else:
+            raise NotImplemented(&#34;current_sp doesn&#39;t yet support arch {}&#34;.format(self.arch))
+
+    def physical_memory_read(self, addr, length, fmt=&#39;bytearray&#39;):
+        return self._memory_read(None, addr, length, physical=True, fmt=fmt)
+
+    def virtual_memory_read(self, env, addr, length, fmt=&#39;bytearray&#39;):
+        return self._memory_read(env, addr, length, physical=False, fmt=fmt)
+
+    def _memory_read(self, env, addr, length, physical=False, fmt=&#39;bytearray&#39;):
+        &#39;&#39;&#39;
+        Read but with an autogen&#39;d buffer. Returns a tuple (data, error code)
+        Supports physical or virtual addresses
+        Error code is 0 on success, negative on failure
+        &#39;&#39;&#39;
+        if not hasattr(self, &#34;_memcb&#34;): # XXX: Why do we enable memcbs for memory writes?
+            self.enable_memcb()
+        buf = ffi.new(&#34;char[]&#34;, length)
+
+        buf_a = ffi.cast(&#34;char*&#34;, buf)
+        length_a = ffi.cast(&#34;int&#34;, length)
+        if physical:
+            err = self.libpanda.panda_physical_memory_read_external(addr, buf_a, length_a)
+        else:
+            err = self.libpanda.panda_virtual_memory_read_external(env, addr, buf_a, length_a)
+
+        if err &lt; 0:
+            raise ValueError(f&#34;Memory access failed with err={err}&#34;) # TODO: make a PANDA Exn class
+
+        r = ffi.unpack(buf, length)
+        if fmt == &#39;bytearray&#39;:
+            return r
+        elif fmt==&#39;int&#39;:
+            return int.from_bytes(r, byteorder=self.endianness)  # XXX size better be small enough to pack into an int!
+        elif fmt==&#39;str&#39;:
+            return ffi.string(buf, length)
+        else:
+            raise ValueError(&#34;fmt={} unsupported&#34;.format(fmt))
+
+    def physical_memory_write(self, addr, buf):
+        return self._memory_write(None, addr, buf, physical=True)
+
+    def virtual_memory_write(self, env, addr, buf):
+        return self._memory_write(env, addr, buf, physical=False)
+
+    def _memory_write(self, env, addr, buf, physical=False):
+        &#39;&#39;&#39;
+        Write a bytearray into memory at the specified physical/virtual address
+        &#39;&#39;&#39;
+        length = len(buf)
+        c_buf = ffi.new(&#34;char[]&#34;,buf)
+        buf_a = ffi.cast(&#34;char*&#34;, c_buf)
+        length_a = ffi.cast(&#34;int&#34;, length)
+
+        if not hasattr(self, &#34;_memcb&#34;): # XXX: Why do we enable memcbs for memory writes?
+            self.enable_memcb()
+
+        if physical:
+            return self.libpanda.panda_physical_memory_write_external(addr, buf_a, length_a)
+        else:
+            return self.libpanda.panda_virtual_memory_write_external(env, addr, buf_a, length_a)
+
+    def callstack_callers(self, lim, cpu): # XXX move into new directory, &#39;callstack&#39; ?
+        if not &#34;plugin_callstack_instr&#34; in self.plugins:
+            progress(&#34;enabling callstack_instr plugin&#34;)
+            self.require(&#34;callstack_instr&#34;)
+
+        callers = ffi.new(&#34;uint32_t[%d]&#34; % lim)
+        n = self.plugins[&#39;callstack_instr&#39;].get_callers(callers, lim, cpu)
+        c = []
+        for pc in callers:
+            c.append(pc)
+        return c
+
+    def load_plugin_library(self, name):
+        if hasattr(self,&#34;__did_load_libpanda&#34;):
+            libpanda_path_chr = ffi.new(&#34;char[]&#34;,bytes(self.libpanda_path, &#34;UTF-8&#34;))
+            self.__did_load_libpanda = self.libpanda.panda_load_libpanda(libpanda_path_chr)
+        if not name in self.plugins.keys():
+            assert(isfile(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)])))
+            library = ffi.dlopen(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)]))
+            self.plugins[name] = library
+
+    def queue_async(self, f, internal=False):
+        self.athread.queue(f, internal=internal)
+
+    def map_memory(self, name, size, address):
+        name_c = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
+        size = ceil(size/1024)*1024 # Must be page-aligned
+        return self.libpanda.map_memory(name_c, size, address)
+
+    def read_str(self, cpu, ptr):
+        &#39;&#39;&#39;
+        Helper to read a null-terminated string from guest memory given a pointer and CPU state
+        May return an exception if the call to panda.virtual_memory_read fails (e.g., if you pass a
+        pointer to an unmapped page)
+        &#39;&#39;&#39;
+        r = b&#34;&#34;
+        while True:
+            next_char = self.virtual_memory_read(cpu, ptr, 1) # If this raises an exn, don&#39;t mask it
+            if next_char == b&#34;\x00&#34;:
+                break
+            r += next_char
+            ptr += 1
+        return r.decode(&#34;utf8&#34;, &#34;ignore&#34;)
+
+    def to_unsigned_guest(self, x):
+        &#39;&#39;&#39;
+        Convert a singed python int to an unsigned int32/unsigned int64
+        depending on guest bit-size
+        &#39;&#39;&#39;
+        import ctypes
+        if self.bits == 32:
+            return ctypes.c_uint32(x).value
+        elif self.bits == 64:
+            return ctypes.c_uint64(x).value
+        else:
+            raise ValueError(&#34;Unsupported number of bits&#34;)
+
+    def from_unsigned_guest(self, x):
+        &#39;&#39;&#39;
+        Convert an unsigned int32/unsigned int64 from the guest
+        (depending on guest bit-size) to a (signed) python int
+        &#39;&#39;&#39;
+        if x &gt;= 2**(self.bits-1): # If highest bit is set, it&#39;s negative
+            return (x - 2**self.bits)
+        else: # Else it&#39;s positive
+            return x
+
+# vim: expandtab:tabstop=4:</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="panda.main.Panda"><code class="flex name class">
+<span>class <span class="ident">Panda</span></span>
+<span>(</span><span>arch='i386', mem='128M', expect_prompt=None, os_version=None, qcow=None, os='linux', generic=None, raw_monitor=False, extra_args=[])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Constructs a file and file handler that volatility can't ignore to back by PANDA physical memory</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callback_mixins, taint_mixins, volatility_mixins, pyperipheral_mixins, gdb_mixins):
+    def __init__(self, arch=&#34;i386&#34;, mem=&#34;128M&#34;,
+            expect_prompt=None, # Regular expression describing the prompt exposed by the guest on a serial console. Used so we know when a running command has finished with its output
+            os_version=None,
+            qcow=None, # Qcow file to load
+            os=&#34;linux&#34;,
+            generic=None, # Helper: specify a generic qcow to use and set other arguments. Supported values: arm/ppc/x86_64/i386. Will download qcow automatically
+            raw_monitor = False, # When set, don&#39;t specify a -monitor. arg Allows for use of -nographic in args with ctrl-A+C for interactive qemu prompt.
+            extra_args=[]):
+        self.arch = arch
+        self.mem = mem
+        self.os = os_version
+        self.os_type = os
+        self.qcow = qcow
+        self.plugins = plugin_list(self)
+        self.expect_prompt = expect_prompt
+
+        if isinstance(extra_args, str): # Extra args can be a string or array
+            extra_args = extra_args.split()
+
+        # If specified use a generic (x86_64, i386, arm, ppc) qcow from moyix and ignore
+        if generic:                                 # other args. See details in qcows.py
+            print(&#34;using generic &#34; +str(generic))
+            q = qcows.get_qcow_info(generic)
+            self.arch     = q.arch
+            self.os       = q.os
+            self.mem      = q.default_mem # Might clobber a specified argument, but required if you want snapshots
+            self.qcow     = qcows.get_qcow(generic)
+            self.expect_prompt = q.prompt
+            if q.extra_args:
+                extra_args.extend(q.extra_args.split(&#34; &#34;))
+
+        if self.qcow: # Otherwise we shuld be able to do a replay with no qcow but this is probably broken
+            #if self.qcow == &#34;default&#34;: # Use arch / mem / os to find a qcow - XXX: merge with generic?
+            #    self.qcow = pjoin(getenv(&#34;HOME&#34;), &#34;.panda&#34;, &#34;%s-%s-%s.qcow&#34; % (self.os, self.arch, mem))
+            if not (exists(self.qcow)):
+                print(&#34;Missing qcow &#39;{}&#39; Please go create that qcow and give it to the PANDA maintainers&#34;.format(self.qcow))
+
+        self.build_dir  = self._find_build_dir()
+        environ[&#34;PANDA_DIR&#34;] = self.build_dir
+        self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch))
+        self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
+        #self.panda = pjoin(self.build_dir, &#34;{0}-softmmu/panda-system-{0}&#34;.format(self.arch)) # Path to binary
+
+        self.bits, self.endianness, self.register_size = self._determine_bits()
+        self._do_types_import()
+        self.libpanda = ffi.dlopen(self.libpanda_path)
+
+        # set OS name if we have one
+        if self.os:
+            self.set_os_name(self.os)
+
+        # Setup argv for panda
+        self.panda_args = [self.panda]
+        biospath = realpath(pjoin(self.build_dir, &#34;pc-bios&#34;)) # XXX: necessary for network drivers for arm, so &#39;pc-bios&#39; is a misleading name
+        self.panda_args.append(&#34;-L&#34;)
+        self.panda_args.append(biospath)
+
+        if self.qcow:
+            self.panda_args.append(self.qcow)
+
+        self.panda_args += extra_args
+
+        # Configure memory options
+        self.panda_args.extend([&#39;-m&#39;, self.mem])
+
+        # Configure serial - if we have an expect_prompt set. Otherwise how can we know what guest cmds are outputting?
+        if self.expect_prompt:
+            self.serial_file = NamedTemporaryFile(prefix=&#34;pypanda_s&#34;).name
+            self.serial_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            self.serial_console = Expect(expectation=self.expect_prompt, quiet=True, consume_first=False)
+            self.panda_args.extend([&#39;-serial&#39;, &#39;unix:{},server,nowait&#39;.format(self.serial_file)])
+        else:
+            self.serial_file = None
+            self.serial_socket = None
+            self.serial_console = None
+
+        # Configure monitor - Always enabled for now
+        self.monitor_file = NamedTemporaryFile(prefix=&#34;pypanda_m&#34;).name
+        self.monitor_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.raw_monitor = raw_monitor
+        if not self.raw_monitor:
+            self.monitor_console = Expect(expectation=rb&#34;(qemu)&#34;, quiet=True, consume_first=True)
+            self.panda_args.extend([&#39;-monitor&#39;, &#39;unix:{},server,nowait&#39;.format(self.monitor_file)])
+
+        self.running = threading.Event()
+        self.started = threading.Event()
+        self.athread = AsyncThread(self.started) # athread manages actions that need to occur outside qemu&#39;s CPU loop
+
+        # Callbacks
+        self.register_cb_decorators()
+        self.registered_callbacks = {} # name -&gt; {procname: &#34;bash&#34;, enabled: False, callback: None}
+
+        # Register asid_changed CB if and only if a callback requires procname
+        self._registered_asid_changed_internal_cb = False
+
+        self._initialized_panda = False
+        self.disabled_tb_chaining = False
+        self.taint_enabled = False
+        self.hook_list = []
+
+        # Asid stuff
+        self.current_asid_name = None
+        self.asid_mapping = {}
+
+        # Shutdown stuff
+        self.exception = None # When set to an exn, we&#39;ll raise and exit
+
+        # main_loop_wait functions and callbacks
+        self.main_loop_wait_fnargs = [] # [(fn, args), ...]
+        progress (&#34;Panda args: [&#34; + (&#34; &#34;.join(self.panda_args)) + &#34;]&#34;)
+    # /__init__
+
+    def _do_types_import(self):
+        # Import objects from panda_datatypes which are configured by the environment variables
+        # Store these objects in self.callback and self.callback_dictionary
+
+        # There is almost certainly a better way to do this.
+        environ[&#34;PANDA_BITS&#34;] = str(self.bits)
+        environ[&#34;PANDA_ARCH&#34;] = self.arch
+        from .autogen.panda_datatypes import pcb, C, callback_dictionary # XXX: What is C and do we need it?
+        self.callback_dictionary = callback_dictionary
+        self.callback = pcb
+
+    def _initialize_panda(self):
+        &#39;&#39;&#39;
+        After initializing the class, the user has a chance to do something
+        (TODO: what? register callbacks? It&#39;s something important...) before we finish initializing
+        &#39;&#39;&#39;
+        self.libpanda._panda_set_library_mode(True)
+
+        cenvp = ffi.new(&#34;char**&#34;, ffi.new(&#34;char[]&#34;, b&#34;&#34;))
+        len_cargs = ffi.cast(&#34;int&#34;, len(self.panda_args))
+        panda_args_ffi = [ffi.new(&#34;char[]&#34;, bytes(str(i),&#34;utf-8&#34;)) for i in self.panda_args]
+        self.libpanda.panda_init(len_cargs, panda_args_ffi, cenvp)
+
+        # Now we&#39;ve run qemu init so we can connect to the sockets for the monitor and serial
+        if self.serial_console and not self.serial_console.is_connected():
+            self.serial_socket.connect(self.serial_file)
+            self.serial_console.connect(self.serial_socket)
+        if not self.raw_monitor and not self.monitor_console.is_connected():
+            self.monitor_socket.connect(self.monitor_file)
+            self.monitor_console.connect(self.monitor_socket)
+
+        # Register __main_loop_wait_callback
+        self.register_callback(self.callback.main_loop_wait,
+                self.callback.main_loop_wait(self.__main_loop_wait_cb), &#39;__main_loop_wait&#39;)
+
+        self._initialized_panda = True
+
+    def _determine_bits(self):
+        &#39;&#39;&#39;
+        Given self.arch, determine bits, endianness and register_size
+        &#39;&#39;&#39;
+        bits = None
+        endianness = None # String &#39;little&#39; or &#39;big&#39;
+        if self.arch == &#34;i386&#34;:
+            bits = 32
+            endianness = &#34;little&#34;
+        elif self.arch == &#34;x86_64&#34;:
+            bits = 64
+            endianness = &#34;little&#34;
+        elif self.arch == &#34;arm&#34;:
+            endianness = &#34;little&#34; # XXX add support for arm BE?
+            bits = 32
+        elif self.arch == &#34;aarch64&#34;:
+            bit = 64
+            endianness = &#34;little&#34; # XXX add support for arm BE?
+        elif self.arch == &#34;ppc&#34;:
+            bits = 32
+            endianness = &#34;big&#34;
+        elif self.arch == &#34;mips&#34;:
+            bits = 32
+            endianness = &#34;big&#34;
+        elif self.arch == &#34;mipsel&#34;:
+            bits = 32
+            endianness = &#34;little&#34;
+
+        assert (bits is not None), &#34;For arch %s: I need logic to figure out num bits&#34; % self.arch
+        assert (endianness is not None), &#34;For arch %s: I need logic to figure out endianness&#34; % self.arch
+        register_size = int(bits/8)
+
+        return bits, endianness, register_size
+
+    def __main_loop_wait_cb(self):
+        &#39;&#39;&#39;
+        __main_loop_wait_cb is called at the start of the main cpu loop in qemu.
+        This is a fairly safe place to call into qemu internals but watch out for deadlocks caused
+        by your request blocking on the guest&#39;s execution. Here any functions in main_loop_wait_fnargs will be called
+        &#39;&#39;&#39;
+        try:
+            # Then run any and all requested commands
+            if len(self.main_loop_wait_fnargs) == 0: return
+            #progress(&#34;Entering main_loop_wait_cb&#34;)
+            for fnargs in self.main_loop_wait_fnargs:
+                (fn, args) = fnargs
+                ret = fn(*args)
+            self.main_loop_wait_fnargs = []
+        except KeyboardInterrupt:
+            self.end_analysis()
+
+    def _find_build_dir(self):
+        &#39;&#39;&#39;
+        Find build directory containing ARCH-softmmu/libpanda-ARCH.so and ARCH-softmmu/panda/plugins/
+        1) check relative to file (in the case of installed packages)
+        2) Check in../ ../../../build/
+        3) raise RuntimeError
+        &#39;&#39;&#39;
+        archs = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;ppc&#39;]
+        python_package = pjoin(*[dirname(__file__), &#34;data&#34;])
+        local_build = realpath(pjoin(dirname(__file__), &#34;../../../../build&#34;))
+        path_end = &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch)
+
+        pot_paths = [python_package, local_build]
+        for potential_path in pot_paths:
+            if isfile(pjoin(potential_path, path_end)):
+                print(&#34;Loading libpanda from {}&#34;.format(potential_path))
+                return potential_path
+
+        searched_paths = &#34;\n&#34;.join([&#34;\t&#34;+p for p in  pot_paths])
+        raise RuntimeError((&#34;Couldn&#39;t find libpanda-{}.so.\n&#34;
+                            &#34;Did you built PANDA for this architecture?\n&#34;
+                            &#34;Searched paths:\n{}&#34;
+                           ).format(self.arch, searched_paths))
+
+
+    def queue_main_loop_wait_fn(self, fn, args=[]):
+        &#39;&#39;&#39;
+        Queue a function to run at the next main loop
+        fn is a function we want to run, args are arguments to apss to it
+        &#39;&#39;&#39;
+        self.main_loop_wait_fnargs.append((fn, args))
+
+    def exit_cpu_loop(self):
+        self.libpanda.panda_exit_loop = True
+
+    def revert_async(self, snapshot_name): # In the next main loop, revert
+        &#39;&#39;&#39;
+        Request a snapshot revert, eventually. This is fairly dangerous
+        because you don&#39;t know when it finishes. You should be using revert_sync
+        from a blocking function instead
+        &#39;&#39;&#39;
+        print(&#34;WARNING: panda.revert_async may be deprecated in the near future&#34;)
+        if debug:
+            progress (&#34;Loading snapshot &#34; + snapshot_name)
+
+        # Stop guest, queue up revert, then continue
+        timer_start = time()
+        self.vm_stop()
+        charptr = ffi.new(&#34;char[]&#34;, bytes(snapshot_name, &#34;utf-8&#34;))
+        self.queue_main_loop_wait_fn(self.libpanda.panda_revert, [charptr])
+        self.queue_main_loop_wait_fn(self.libpanda.panda_cont)
+        if debug:
+            self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Loaded snapshot&#34;])
+
+    def reset(self): # In the next main loop, reset to boot
+        if debug:
+            progress (&#34;Resetting machine to start state&#34;)
+
+        # Stop guest, queue up revert, then continue
+        self.vm_stop()
+        self.queue_main_loop_wait_fn(self.libpanda.panda_reset)
+        self.queue_main_loop_wait_fn(self.libpanda.panda_cont)
+
+    def cont(self): # Continue execution (run after vm_stop)
+        self.libpanda.panda_cont()
+        self.running.set()
+
+    def vm_stop(self, code=4): # Stop execution, default code means RUN_STATE_PAUSED
+        self.libpanda.panda_stop(code)
+
+    def snap(self, snapshot_name):
+        if debug:
+            progress (&#34;Creating snapshot &#34; + snapshot_name)
+
+        # Stop guest execution, queue up a snapshot, then continue
+        timer_start = time()
+        self.vm_stop()
+        charptr = ffi.new(&#34;char[]&#34;, bytes(snapshot_name, &#34;utf-8&#34;))
+        self.queue_main_loop_wait_fn(self.libpanda.panda_snap, [charptr])
+        self.queue_main_loop_wait_fn(self.libpanda.panda_cont)
+        if debug:
+            self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Saved snapshot&#34;])
+
+    def delvm(self, snapshot_name):
+        if debug:
+            progress (&#34;Deleting snapshot &#34; + snapshot_name)
+
+        # Stop guest, queue up delete, then continue
+        self.vm_stop()
+        charptr = ffi.new(&#34;char[]&#34;, bytes(snapshot_name, &#34;utf-8&#34;))
+        self.queue_main_loop_wait_fn(self.libpanda.panda_delvm, [charptr])
+
+    def finish_timer(self, start, msg):
+        &#39;&#39;&#39;
+        Print how long some (main_loop_wait) task took
+        &#39;&#39;&#39;
+        t = time() - start
+        print(&#34;{} in {1:.08f} seconds&#34;.format(msg, t))
+
+
+    def enable_tb_chaining(self):
+        if debug:
+            progress(&#34;Enabling TB chaining&#34;)
+        self.disabled_tb_chaining = False
+        self.libpanda.panda_enable_tb_chaining()
+
+    def disable_tb_chaining(self):
+        if not self.disabled_tb_chaining:
+            if debug:
+                progress(&#34;Disabling TB chaining&#34;)
+            self.disabled_tb_chaining = True
+            self.libpanda.panda_disable_tb_chaining()
+
+    def run(self):
+        &#39;&#39;&#39;
+        Start execution of guest. Blocks until guest finishes.
+        Initializes panda object, clears main_loop_wait fns, sets up internal callbacks
+        &#39;&#39;&#39;
+
+        if len(self.main_loop_wait_fnargs):
+            if debug:
+                print(&#34;Clearing prior main_loop_wait fns:&#34;, self.main_loop_wait_fnargs)
+            self.main_loop_wait_fnargs = [] # [(fn, args), ...]
+
+        if debug:
+            progress (&#34;Running&#34;)
+
+        if not self._initialized_panda:
+            self._initialize_panda()
+
+        if not self.started.is_set():
+            self.started.set()
+
+        # Ensure our internal CBs are always enabled
+        self.enable_internal_callbacks()
+
+        self.running.set()
+        self.libpanda.panda_run() # Give control to panda
+        self.running.clear() # Back from panda&#39;s execution (due to shutdown or monitor quit)
+        self.libpanda.panda_unload_plugins() # Unload c plugins - should be safe now since exec has stopped
+
+    def end_analysis(self):
+        &#39;&#39;&#39;
+        Call from any thread to unload all plugins and stop all queued functions.
+        If called from async thread or a callback, it will also unblock panda.run()
+
+        Note here we use the async class&#39;s internal thread to process these
+        without needing to wait for tasks in the main async thread
+        &#39;&#39;&#39;
+        self.unload_plugins()
+        if self.running.is_set():
+            # If we were running, stop the execution and check if we crashed
+            self.queue_async(self.stop_run, internal=True)
+            self.queue_async(self.check_crashed, internal=True)
+
+    def run_replay(self, replaypfx):
+        &#39;&#39;&#39;
+        Load a replay and run it
+        &#39;&#39;&#39;
+        if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
+            raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
+
+        if debug:
+            progress (&#34;Replaying %s&#34; % replaypfx)
+
+        charptr = ffi.new(&#34;char[]&#34;,bytes(replaypfx,&#34;utf-8&#34;))
+        self.libpanda.panda_replay_begin(charptr)
+        self.run()
+
+    def require(self, name):
+        &#39;&#39;&#39;
+        Load a C plugin with no arguments. Deprecated. Use load_plugin
+        &#39;&#39;&#39;
+        self.load_plugin(name, args={})
+
+    def load_plugin(self, name, args={}):
+        &#39;&#39;&#39;
+        Load a C plugin, optionally with arguments
+        &#39;&#39;&#39;
+        if debug:
+            progress (&#34;Loading plugin %s&#34; % name),
+
+        argstrs_ffi = []
+        if isinstance(args, dict):
+            for k,v in args.items():
+                this_arg_s = &#34;{}={}&#34;.format(k,v)
+                this_arg = ffi.new(&#34;char[]&#34;, bytes(this_arg_s, &#34;utf-8&#34;))
+                argstrs_ffi.append(this_arg)
+
+            n = len(args.keys())
+        elif isinstance(args, list):
+            for arg in args:
+                this_arg = ffi.new(&#34;char[]&#34;, bytes(arg, &#34;utf-8&#34;))
+                argstrs_ffi.append(this_arg)
+            n = len(args)
+
+        else:
+            raise ValueError(&#34;Arguments to load plugin must be a list or dict of key/value pairs&#34;)
+
+        # First set qemu_path so plugins can load (may be unnecessary after the first time)
+        assert(self.panda), &#34;Unknown location of PANDA&#34;
+        panda_name_ffi = ffi.new(&#34;char[]&#34;, bytes(self.panda,&#34;utf-8&#34;))
+        self.libpanda.panda_set_qemu_path(panda_name_ffi)
+
+        if len(argstrs_ffi):
+            plugin_args = argstrs_ffi
+        else:
+            plugin_args = ffi.NULL
+
+        charptr = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
+        self.libpanda.panda_require_from_library(charptr, plugin_args, len(argstrs_ffi))
+        self.load_plugin_library(name)
+
+    def procname_changed(self, name):
+        for cb_name, cb in self.registered_callbacks.items():
+            if not cb[&#34;procname&#34;]:
+                continue
+            if name == cb[&#34;procname&#34;] and not cb[&#39;enabled&#39;]:
+                self.enable_callback(cb_name)
+            if name != cb[&#34;procname&#34;] and cb[&#39;enabled&#39;]:
+                self.disable_callback(cb_name)
+
+            self.update_hooks_new_procname(name)
+
+    def unload_plugin(self, name):
+        if debug:
+            progress (&#34;Unloading plugin %s&#34; % name),
+        name_ffi = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
+        self.libpanda.panda_unload_plugin_by_name(name_ffi)
+
+    def unload_plugins(self):
+        &#39;&#39;&#39;
+        Disable all python plugins and request to unload all c plugins
+        at the next main_loop_wait.
+
+        XXX: If called during shutdown/exit, c plugins won&#39;t be unloaded
+        because the next main_loop_wait will never happen. Instead, call
+        panda.panda_finish directly (which is done at the end of panda.run())
+        &#39;&#39;&#39;
+        if debug:
+            progress (&#34;Disabling all python plugins, unloading all C plugins&#34;)
+
+        # First unload python plugins, should be safe to do anytime
+        for name in self.registered_callbacks.keys():
+            self.disable_callback(name)
+
+        # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
+        self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)
+
+    def rr_get_guest_instr_count(self):
+        return self.libpanda.rr_get_guest_instr_count_external()
+
+    def memsavep(self, file_out):
+        newfd = dup(f_out.fileno())
+        self.libpanda.panda_memsavep(newfd)
+        self.libpanda.fclose(newfd)
+
+    def current_sp(self, cpustate): # under construction
+        if self.arch == &#34;i386&#34;:
+            # XXX see far more complex logic in panda/include/panda/common.h
+            from panda.x86.helper import R_ESP
+            return cpustate.env_ptr.regs[R_ESP]
+        elif self.arch == &#34;arm&#34;:
+            from panda.arm.helper import R_SP
+            return cpustate.env_ptr.regs[R_SP]
+        else:
+            raise NotImplemented(&#34;current_sp doesn&#39;t yet support arch {}&#34;.format(self.arch))
+
+    def physical_memory_read(self, addr, length, fmt=&#39;bytearray&#39;):
+        return self._memory_read(None, addr, length, physical=True, fmt=fmt)
+
+    def virtual_memory_read(self, env, addr, length, fmt=&#39;bytearray&#39;):
+        return self._memory_read(env, addr, length, physical=False, fmt=fmt)
+
+    def _memory_read(self, env, addr, length, physical=False, fmt=&#39;bytearray&#39;):
+        &#39;&#39;&#39;
+        Read but with an autogen&#39;d buffer. Returns a tuple (data, error code)
+        Supports physical or virtual addresses
+        Error code is 0 on success, negative on failure
+        &#39;&#39;&#39;
+        if not hasattr(self, &#34;_memcb&#34;): # XXX: Why do we enable memcbs for memory writes?
+            self.enable_memcb()
+        buf = ffi.new(&#34;char[]&#34;, length)
+
+        buf_a = ffi.cast(&#34;char*&#34;, buf)
+        length_a = ffi.cast(&#34;int&#34;, length)
+        if physical:
+            err = self.libpanda.panda_physical_memory_read_external(addr, buf_a, length_a)
+        else:
+            err = self.libpanda.panda_virtual_memory_read_external(env, addr, buf_a, length_a)
+
+        if err &lt; 0:
+            raise ValueError(f&#34;Memory access failed with err={err}&#34;) # TODO: make a PANDA Exn class
+
+        r = ffi.unpack(buf, length)
+        if fmt == &#39;bytearray&#39;:
+            return r
+        elif fmt==&#39;int&#39;:
+            return int.from_bytes(r, byteorder=self.endianness)  # XXX size better be small enough to pack into an int!
+        elif fmt==&#39;str&#39;:
+            return ffi.string(buf, length)
+        else:
+            raise ValueError(&#34;fmt={} unsupported&#34;.format(fmt))
+
+    def physical_memory_write(self, addr, buf):
+        return self._memory_write(None, addr, buf, physical=True)
+
+    def virtual_memory_write(self, env, addr, buf):
+        return self._memory_write(env, addr, buf, physical=False)
+
+    def _memory_write(self, env, addr, buf, physical=False):
+        &#39;&#39;&#39;
+        Write a bytearray into memory at the specified physical/virtual address
+        &#39;&#39;&#39;
+        length = len(buf)
+        c_buf = ffi.new(&#34;char[]&#34;,buf)
+        buf_a = ffi.cast(&#34;char*&#34;, c_buf)
+        length_a = ffi.cast(&#34;int&#34;, length)
+
+        if not hasattr(self, &#34;_memcb&#34;): # XXX: Why do we enable memcbs for memory writes?
+            self.enable_memcb()
+
+        if physical:
+            return self.libpanda.panda_physical_memory_write_external(addr, buf_a, length_a)
+        else:
+            return self.libpanda.panda_virtual_memory_write_external(env, addr, buf_a, length_a)
+
+    def callstack_callers(self, lim, cpu): # XXX move into new directory, &#39;callstack&#39; ?
+        if not &#34;plugin_callstack_instr&#34; in self.plugins:
+            progress(&#34;enabling callstack_instr plugin&#34;)
+            self.require(&#34;callstack_instr&#34;)
+
+        callers = ffi.new(&#34;uint32_t[%d]&#34; % lim)
+        n = self.plugins[&#39;callstack_instr&#39;].get_callers(callers, lim, cpu)
+        c = []
+        for pc in callers:
+            c.append(pc)
+        return c
+
+    def load_plugin_library(self, name):
+        if hasattr(self,&#34;__did_load_libpanda&#34;):
+            libpanda_path_chr = ffi.new(&#34;char[]&#34;,bytes(self.libpanda_path, &#34;UTF-8&#34;))
+            self.__did_load_libpanda = self.libpanda.panda_load_libpanda(libpanda_path_chr)
+        if not name in self.plugins.keys():
+            assert(isfile(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)])))
+            library = ffi.dlopen(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)]))
+            self.plugins[name] = library
+
+    def queue_async(self, f, internal=False):
+        self.athread.queue(f, internal=internal)
+
+    def map_memory(self, name, size, address):
+        name_c = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
+        size = ceil(size/1024)*1024 # Must be page-aligned
+        return self.libpanda.map_memory(name_c, size, address)
+
+    def read_str(self, cpu, ptr):
+        &#39;&#39;&#39;
+        Helper to read a null-terminated string from guest memory given a pointer and CPU state
+        May return an exception if the call to panda.virtual_memory_read fails (e.g., if you pass a
+        pointer to an unmapped page)
+        &#39;&#39;&#39;
+        r = b&#34;&#34;
+        while True:
+            next_char = self.virtual_memory_read(cpu, ptr, 1) # If this raises an exn, don&#39;t mask it
+            if next_char == b&#34;\x00&#34;:
+                break
+            r += next_char
+            ptr += 1
+        return r.decode(&#34;utf8&#34;, &#34;ignore&#34;)
+
+    def to_unsigned_guest(self, x):
+        &#39;&#39;&#39;
+        Convert a singed python int to an unsigned int32/unsigned int64
+        depending on guest bit-size
+        &#39;&#39;&#39;
+        import ctypes
+        if self.bits == 32:
+            return ctypes.c_uint32(x).value
+        elif self.bits == 64:
+            return ctypes.c_uint64(x).value
+        else:
+            raise ValueError(&#34;Unsupported number of bits&#34;)
+
+    def from_unsigned_guest(self, x):
+        &#39;&#39;&#39;
+        Convert an unsigned int32/unsigned int64 from the guest
+        (depending on guest bit-size) to a (signed) python int
+        &#39;&#39;&#39;
+        if x &gt;= 2**(self.bits-1): # If highest bit is set, it&#39;s negative
+            return (x - 2**self.bits)
+        else: # Else it&#39;s positive
+            return x</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="panda.libpanda_mixins.libpanda_mixins" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins">libpanda_mixins</a></li>
+<li><a title="panda.blocking_mixins.blocking_mixins" href="blocking_mixins.html#panda.blocking_mixins.blocking_mixins">blocking_mixins</a></li>
+<li><a title="panda.osi_mixins.osi_mixins" href="osi_mixins.html#panda.osi_mixins.osi_mixins">osi_mixins</a></li>
+<li><a title="panda.hooking_mixins.hooking_mixins" href="hooking_mixins.html#panda.hooking_mixins.hooking_mixins">hooking_mixins</a></li>
+<li><a title="panda.callback_mixins.callback_mixins" href="callback_mixins.html#panda.callback_mixins.callback_mixins">callback_mixins</a></li>
+<li><a title="panda.taint_mixins.taint_mixins" href="taint_mixins.html#panda.taint_mixins.taint_mixins">taint_mixins</a></li>
+<li><a title="panda.volatility_mixins.volatility_mixins" href="volatility_mixins.html#panda.volatility_mixins.volatility_mixins">volatility_mixins</a></li>
+<li><a title="panda.pyperiph_mixins.pyperipheral_mixins" href="pyperiph_mixins.html#panda.pyperiph_mixins.pyperipheral_mixins">pyperipheral_mixins</a></li>
+<li><a title="panda.gdb_mixins.gdb_mixins" href="gdb_mixins.html#panda.gdb_mixins.gdb_mixins">gdb_mixins</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="panda.main.Panda.callstack_callers"><code class="name flex">
+<span>def <span class="ident">callstack_callers</span></span>(<span>self, lim, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def callstack_callers(self, lim, cpu): # XXX move into new directory, &#39;callstack&#39; ?
+    if not &#34;plugin_callstack_instr&#34; in self.plugins:
+        progress(&#34;enabling callstack_instr plugin&#34;)
+        self.require(&#34;callstack_instr&#34;)
+
+    callers = ffi.new(&#34;uint32_t[%d]&#34; % lim)
+    n = self.plugins[&#39;callstack_instr&#39;].get_callers(callers, lim, cpu)
+    c = []
+    for pc in callers:
+        c.append(pc)
+    return c</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.cont"><code class="name flex">
+<span>def <span class="ident">cont</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cont(self): # Continue execution (run after vm_stop)
+    self.libpanda.panda_cont()
+    self.running.set()</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.current_sp"><code class="name flex">
+<span>def <span class="ident">current_sp</span></span>(<span>self, cpustate)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def current_sp(self, cpustate): # under construction
+    if self.arch == &#34;i386&#34;:
+        # XXX see far more complex logic in panda/include/panda/common.h
+        from panda.x86.helper import R_ESP
+        return cpustate.env_ptr.regs[R_ESP]
+    elif self.arch == &#34;arm&#34;:
+        from panda.arm.helper import R_SP
+        return cpustate.env_ptr.regs[R_SP]
+    else:
+        raise NotImplemented(&#34;current_sp doesn&#39;t yet support arch {}&#34;.format(self.arch))</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.delvm"><code class="name flex">
+<span>def <span class="ident">delvm</span></span>(<span>self, snapshot_name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delvm(self, snapshot_name):
+    if debug:
+        progress (&#34;Deleting snapshot &#34; + snapshot_name)
+
+    # Stop guest, queue up delete, then continue
+    self.vm_stop()
+    charptr = ffi.new(&#34;char[]&#34;, bytes(snapshot_name, &#34;utf-8&#34;))
+    self.queue_main_loop_wait_fn(self.libpanda.panda_delvm, [charptr])</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.disable_tb_chaining"><code class="name flex">
+<span>def <span class="ident">disable_tb_chaining</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disable_tb_chaining(self):
+    if not self.disabled_tb_chaining:
+        if debug:
+            progress(&#34;Disabling TB chaining&#34;)
+        self.disabled_tb_chaining = True
+        self.libpanda.panda_disable_tb_chaining()</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.enable_tb_chaining"><code class="name flex">
+<span>def <span class="ident">enable_tb_chaining</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enable_tb_chaining(self):
+    if debug:
+        progress(&#34;Enabling TB chaining&#34;)
+    self.disabled_tb_chaining = False
+    self.libpanda.panda_enable_tb_chaining()</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.end_analysis"><code class="name flex">
+<span>def <span class="ident">end_analysis</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Call from any thread to unload all plugins and stop all queued functions.
+If called from async thread or a callback, it will also unblock panda.run()</p>
+<p>Note here we use the async class's internal thread to process these
+without needing to wait for tasks in the main async thread</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def end_analysis(self):
+    &#39;&#39;&#39;
+    Call from any thread to unload all plugins and stop all queued functions.
+    If called from async thread or a callback, it will also unblock panda.run()
+
+    Note here we use the async class&#39;s internal thread to process these
+    without needing to wait for tasks in the main async thread
+    &#39;&#39;&#39;
+    self.unload_plugins()
+    if self.running.is_set():
+        # If we were running, stop the execution and check if we crashed
+        self.queue_async(self.stop_run, internal=True)
+        self.queue_async(self.check_crashed, internal=True)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.exit_cpu_loop"><code class="name flex">
+<span>def <span class="ident">exit_cpu_loop</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def exit_cpu_loop(self):
+    self.libpanda.panda_exit_loop = True</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.finish_timer"><code class="name flex">
+<span>def <span class="ident">finish_timer</span></span>(<span>self, start, msg)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print how long some (main_loop_wait) task took</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def finish_timer(self, start, msg):
+    &#39;&#39;&#39;
+    Print how long some (main_loop_wait) task took
+    &#39;&#39;&#39;
+    t = time() - start
+    print(&#34;{} in {1:.08f} seconds&#34;.format(msg, t))</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.from_unsigned_guest"><code class="name flex">
+<span>def <span class="ident">from_unsigned_guest</span></span>(<span>self, x)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert an unsigned int32/unsigned int64 from the guest
+(depending on guest bit-size) to a (signed) python int</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_unsigned_guest(self, x):
+    &#39;&#39;&#39;
+    Convert an unsigned int32/unsigned int64 from the guest
+    (depending on guest bit-size) to a (signed) python int
+    &#39;&#39;&#39;
+    if x &gt;= 2**(self.bits-1): # If highest bit is set, it&#39;s negative
+        return (x - 2**self.bits)
+    else: # Else it&#39;s positive
+        return x</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.load_plugin"><code class="name flex">
+<span>def <span class="ident">load_plugin</span></span>(<span>self, name, args={})</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a C plugin, optionally with arguments</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_plugin(self, name, args={}):
+    &#39;&#39;&#39;
+    Load a C plugin, optionally with arguments
+    &#39;&#39;&#39;
+    if debug:
+        progress (&#34;Loading plugin %s&#34; % name),
+
+    argstrs_ffi = []
+    if isinstance(args, dict):
+        for k,v in args.items():
+            this_arg_s = &#34;{}={}&#34;.format(k,v)
+            this_arg = ffi.new(&#34;char[]&#34;, bytes(this_arg_s, &#34;utf-8&#34;))
+            argstrs_ffi.append(this_arg)
+
+        n = len(args.keys())
+    elif isinstance(args, list):
+        for arg in args:
+            this_arg = ffi.new(&#34;char[]&#34;, bytes(arg, &#34;utf-8&#34;))
+            argstrs_ffi.append(this_arg)
+        n = len(args)
+
+    else:
+        raise ValueError(&#34;Arguments to load plugin must be a list or dict of key/value pairs&#34;)
+
+    # First set qemu_path so plugins can load (may be unnecessary after the first time)
+    assert(self.panda), &#34;Unknown location of PANDA&#34;
+    panda_name_ffi = ffi.new(&#34;char[]&#34;, bytes(self.panda,&#34;utf-8&#34;))
+    self.libpanda.panda_set_qemu_path(panda_name_ffi)
+
+    if len(argstrs_ffi):
+        plugin_args = argstrs_ffi
+    else:
+        plugin_args = ffi.NULL
+
+    charptr = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
+    self.libpanda.panda_require_from_library(charptr, plugin_args, len(argstrs_ffi))
+    self.load_plugin_library(name)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.load_plugin_library"><code class="name flex">
+<span>def <span class="ident">load_plugin_library</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_plugin_library(self, name):
+    if hasattr(self,&#34;__did_load_libpanda&#34;):
+        libpanda_path_chr = ffi.new(&#34;char[]&#34;,bytes(self.libpanda_path, &#34;UTF-8&#34;))
+        self.__did_load_libpanda = self.libpanda.panda_load_libpanda(libpanda_path_chr)
+    if not name in self.plugins.keys():
+        assert(isfile(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)])))
+        library = ffi.dlopen(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)]))
+        self.plugins[name] = library</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.map_memory"><code class="name flex">
+<span>def <span class="ident">map_memory</span></span>(<span>self, name, size, address)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def map_memory(self, name, size, address):
+    name_c = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
+    size = ceil(size/1024)*1024 # Must be page-aligned
+    return self.libpanda.map_memory(name_c, size, address)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.memsavep"><code class="name flex">
+<span>def <span class="ident">memsavep</span></span>(<span>self, file_out)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def memsavep(self, file_out):
+    newfd = dup(f_out.fileno())
+    self.libpanda.panda_memsavep(newfd)
+    self.libpanda.fclose(newfd)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.physical_memory_read"><code class="name flex">
+<span>def <span class="ident">physical_memory_read</span></span>(<span>self, addr, length, fmt='bytearray')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def physical_memory_read(self, addr, length, fmt=&#39;bytearray&#39;):
+    return self._memory_read(None, addr, length, physical=True, fmt=fmt)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.physical_memory_write"><code class="name flex">
+<span>def <span class="ident">physical_memory_write</span></span>(<span>self, addr, buf)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def physical_memory_write(self, addr, buf):
+    return self._memory_write(None, addr, buf, physical=True)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.procname_changed"><code class="name flex">
+<span>def <span class="ident">procname_changed</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def procname_changed(self, name):
+    for cb_name, cb in self.registered_callbacks.items():
+        if not cb[&#34;procname&#34;]:
+            continue
+        if name == cb[&#34;procname&#34;] and not cb[&#39;enabled&#39;]:
+            self.enable_callback(cb_name)
+        if name != cb[&#34;procname&#34;] and cb[&#39;enabled&#39;]:
+            self.disable_callback(cb_name)
+
+        self.update_hooks_new_procname(name)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.queue_async"><code class="name flex">
+<span>def <span class="ident">queue_async</span></span>(<span>self, f, internal=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def queue_async(self, f, internal=False):
+    self.athread.queue(f, internal=internal)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.queue_main_loop_wait_fn"><code class="name flex">
+<span>def <span class="ident">queue_main_loop_wait_fn</span></span>(<span>self, fn, args=[])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Queue a function to run at the next main loop
+fn is a function we want to run, args are arguments to apss to it</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def queue_main_loop_wait_fn(self, fn, args=[]):
+    &#39;&#39;&#39;
+    Queue a function to run at the next main loop
+    fn is a function we want to run, args are arguments to apss to it
+    &#39;&#39;&#39;
+    self.main_loop_wait_fnargs.append((fn, args))</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.read_str"><code class="name flex">
+<span>def <span class="ident">read_str</span></span>(<span>self, cpu, ptr)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Helper to read a null-terminated string from guest memory given a pointer and CPU state
+May return an exception if the call to panda.virtual_memory_read fails (e.g., if you pass a
+pointer to an unmapped page)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_str(self, cpu, ptr):
+    &#39;&#39;&#39;
+    Helper to read a null-terminated string from guest memory given a pointer and CPU state
+    May return an exception if the call to panda.virtual_memory_read fails (e.g., if you pass a
+    pointer to an unmapped page)
+    &#39;&#39;&#39;
+    r = b&#34;&#34;
+    while True:
+        next_char = self.virtual_memory_read(cpu, ptr, 1) # If this raises an exn, don&#39;t mask it
+        if next_char == b&#34;\x00&#34;:
+            break
+        r += next_char
+        ptr += 1
+    return r.decode(&#34;utf8&#34;, &#34;ignore&#34;)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.require"><code class="name flex">
+<span>def <span class="ident">require</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a C plugin with no arguments. Deprecated. Use load_plugin</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def require(self, name):
+    &#39;&#39;&#39;
+    Load a C plugin with no arguments. Deprecated. Use load_plugin
+    &#39;&#39;&#39;
+    self.load_plugin(name, args={})</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.reset"><code class="name flex">
+<span>def <span class="ident">reset</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reset(self): # In the next main loop, reset to boot
+    if debug:
+        progress (&#34;Resetting machine to start state&#34;)
+
+    # Stop guest, queue up revert, then continue
+    self.vm_stop()
+    self.queue_main_loop_wait_fn(self.libpanda.panda_reset)
+    self.queue_main_loop_wait_fn(self.libpanda.panda_cont)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.revert_async"><code class="name flex">
+<span>def <span class="ident">revert_async</span></span>(<span>self, snapshot_name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request a snapshot revert, eventually. This is fairly dangerous
+because you don't know when it finishes. You should be using revert_sync
+from a blocking function instead</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def revert_async(self, snapshot_name): # In the next main loop, revert
+    &#39;&#39;&#39;
+    Request a snapshot revert, eventually. This is fairly dangerous
+    because you don&#39;t know when it finishes. You should be using revert_sync
+    from a blocking function instead
+    &#39;&#39;&#39;
+    print(&#34;WARNING: panda.revert_async may be deprecated in the near future&#34;)
+    if debug:
+        progress (&#34;Loading snapshot &#34; + snapshot_name)
+
+    # Stop guest, queue up revert, then continue
+    timer_start = time()
+    self.vm_stop()
+    charptr = ffi.new(&#34;char[]&#34;, bytes(snapshot_name, &#34;utf-8&#34;))
+    self.queue_main_loop_wait_fn(self.libpanda.panda_revert, [charptr])
+    self.queue_main_loop_wait_fn(self.libpanda.panda_cont)
+    if debug:
+        self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Loaded snapshot&#34;])</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.rr_get_guest_instr_count"><code class="name flex">
+<span>def <span class="ident">rr_get_guest_instr_count</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rr_get_guest_instr_count(self):
+    return self.libpanda.rr_get_guest_instr_count_external()</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Start execution of guest. Blocks until guest finishes.
+Initializes panda object, clears main_loop_wait fns, sets up internal callbacks</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(self):
+    &#39;&#39;&#39;
+    Start execution of guest. Blocks until guest finishes.
+    Initializes panda object, clears main_loop_wait fns, sets up internal callbacks
+    &#39;&#39;&#39;
+
+    if len(self.main_loop_wait_fnargs):
+        if debug:
+            print(&#34;Clearing prior main_loop_wait fns:&#34;, self.main_loop_wait_fnargs)
+        self.main_loop_wait_fnargs = [] # [(fn, args), ...]
+
+    if debug:
+        progress (&#34;Running&#34;)
+
+    if not self._initialized_panda:
+        self._initialize_panda()
+
+    if not self.started.is_set():
+        self.started.set()
+
+    # Ensure our internal CBs are always enabled
+    self.enable_internal_callbacks()
+
+    self.running.set()
+    self.libpanda.panda_run() # Give control to panda
+    self.running.clear() # Back from panda&#39;s execution (due to shutdown or monitor quit)
+    self.libpanda.panda_unload_plugins() # Unload c plugins - should be safe now since exec has stopped</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.run_replay"><code class="name flex">
+<span>def <span class="ident">run_replay</span></span>(<span>self, replaypfx)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a replay and run it</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_replay(self, replaypfx):
+    &#39;&#39;&#39;
+    Load a replay and run it
+    &#39;&#39;&#39;
+    if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
+        raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
+
+    if debug:
+        progress (&#34;Replaying %s&#34; % replaypfx)
+
+    charptr = ffi.new(&#34;char[]&#34;,bytes(replaypfx,&#34;utf-8&#34;))
+    self.libpanda.panda_replay_begin(charptr)
+    self.run()</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.snap"><code class="name flex">
+<span>def <span class="ident">snap</span></span>(<span>self, snapshot_name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def snap(self, snapshot_name):
+    if debug:
+        progress (&#34;Creating snapshot &#34; + snapshot_name)
+
+    # Stop guest execution, queue up a snapshot, then continue
+    timer_start = time()
+    self.vm_stop()
+    charptr = ffi.new(&#34;char[]&#34;, bytes(snapshot_name, &#34;utf-8&#34;))
+    self.queue_main_loop_wait_fn(self.libpanda.panda_snap, [charptr])
+    self.queue_main_loop_wait_fn(self.libpanda.panda_cont)
+    if debug:
+        self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Saved snapshot&#34;])</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.to_unsigned_guest"><code class="name flex">
+<span>def <span class="ident">to_unsigned_guest</span></span>(<span>self, x)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert a singed python int to an unsigned int32/unsigned int64
+depending on guest bit-size</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_unsigned_guest(self, x):
+    &#39;&#39;&#39;
+    Convert a singed python int to an unsigned int32/unsigned int64
+    depending on guest bit-size
+    &#39;&#39;&#39;
+    import ctypes
+    if self.bits == 32:
+        return ctypes.c_uint32(x).value
+    elif self.bits == 64:
+        return ctypes.c_uint64(x).value
+    else:
+        raise ValueError(&#34;Unsupported number of bits&#34;)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.unload_plugin"><code class="name flex">
+<span>def <span class="ident">unload_plugin</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unload_plugin(self, name):
+    if debug:
+        progress (&#34;Unloading plugin %s&#34; % name),
+    name_ffi = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
+    self.libpanda.panda_unload_plugin_by_name(name_ffi)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.unload_plugins"><code class="name flex">
+<span>def <span class="ident">unload_plugins</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Disable all python plugins and request to unload all c plugins
+at the next main_loop_wait.</p>
+<p>XXX: If called during shutdown/exit, c plugins won't be unloaded
+because the next main_loop_wait will never happen. Instead, call
+panda.panda_finish directly (which is done at the end of panda.run())</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unload_plugins(self):
+    &#39;&#39;&#39;
+    Disable all python plugins and request to unload all c plugins
+    at the next main_loop_wait.
+
+    XXX: If called during shutdown/exit, c plugins won&#39;t be unloaded
+    because the next main_loop_wait will never happen. Instead, call
+    panda.panda_finish directly (which is done at the end of panda.run())
+    &#39;&#39;&#39;
+    if debug:
+        progress (&#34;Disabling all python plugins, unloading all C plugins&#34;)
+
+    # First unload python plugins, should be safe to do anytime
+    for name in self.registered_callbacks.keys():
+        self.disable_callback(name)
+
+    # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
+    self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.virtual_memory_read"><code class="name flex">
+<span>def <span class="ident">virtual_memory_read</span></span>(<span>self, env, addr, length, fmt='bytearray')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def virtual_memory_read(self, env, addr, length, fmt=&#39;bytearray&#39;):
+    return self._memory_read(env, addr, length, physical=False, fmt=fmt)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.virtual_memory_write"><code class="name flex">
+<span>def <span class="ident">virtual_memory_write</span></span>(<span>self, env, addr, buf)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def virtual_memory_write(self, env, addr, buf):
+    return self._memory_write(env, addr, buf, physical=False)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.vm_stop"><code class="name flex">
+<span>def <span class="ident">vm_stop</span></span>(<span>self, code=4)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def vm_stop(self, code=4): # Stop execution, default code means RUN_STATE_PAUSED
+    self.libpanda.panda_stop(code)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="panda.hooking_mixins.hooking_mixins" href="hooking_mixins.html#panda.hooking_mixins.hooking_mixins">hooking_mixins</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.hooking_mixins.hooking_mixins.hook" href="hooking_mixins.html#panda.hooking_mixins.hooking_mixins.hook">hook</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="panda.callback_mixins.callback_mixins" href="callback_mixins.html#panda.callback_mixins.callback_mixins">callback_mixins</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.callback_mixins.callback_mixins.disable_callback" href="callback_mixins.html#panda.callback_mixins.callback_mixins.disable_callback">disable_callback</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.disable_ppp" href="callback_mixins.html#panda.callback_mixins.callback_mixins.disable_ppp">disable_ppp</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.enable_all_callbacks" href="callback_mixins.html#panda.callback_mixins.callback_mixins.enable_all_callbacks">enable_all_callbacks</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.enable_callback" href="callback_mixins.html#panda.callback_mixins.callback_mixins.enable_callback">enable_callback</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.enable_internal_callbacks" href="callback_mixins.html#panda.callback_mixins.callback_mixins.enable_internal_callbacks">enable_internal_callbacks</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.ppp" href="callback_mixins.html#panda.callback_mixins.callback_mixins.ppp">ppp</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.register_cb_decorators" href="callback_mixins.html#panda.callback_mixins.callback_mixins.register_cb_decorators">register_cb_decorators</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="panda.pyperiph_mixins.pyperipheral_mixins" href="pyperiph_mixins.html#panda.pyperiph_mixins.pyperipheral_mixins">pyperipheral_mixins</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.pyperiph_mixins.pyperipheral_mixins.register_pyperipheral" href="pyperiph_mixins.html#panda.pyperiph_mixins.pyperipheral_mixins.register_pyperipheral">register_pyperipheral</a></code></li>
+<li><code><a title="panda.pyperiph_mixins.pyperipheral_mixins.unregister_pyperipheral" href="pyperiph_mixins.html#panda.pyperiph_mixins.pyperipheral_mixins.unregister_pyperipheral">unregister_pyperipheral</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="panda.gdb_mixins.gdb_mixins" href="gdb_mixins.html#panda.gdb_mixins.gdb_mixins">gdb_mixins</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.gdb_mixins.gdb_mixins.clear_breakpoint" href="gdb_mixins.html#panda.gdb_mixins.gdb_mixins.clear_breakpoint">clear_breakpoint</a></code></li>
+<li><code><a title="panda.gdb_mixins.gdb_mixins.set_breakpoint" href="gdb_mixins.html#panda.gdb_mixins.gdb_mixins.set_breakpoint">set_breakpoint</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="panda" href="index.html">panda</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="panda.main.Panda" href="#panda.main.Panda">Panda</a></code></h4>
+<ul class="">
+<li><code><a title="panda.main.Panda.callstack_callers" href="#panda.main.Panda.callstack_callers">callstack_callers</a></code></li>
+<li><code><a title="panda.main.Panda.cont" href="#panda.main.Panda.cont">cont</a></code></li>
+<li><code><a title="panda.main.Panda.current_sp" href="#panda.main.Panda.current_sp">current_sp</a></code></li>
+<li><code><a title="panda.main.Panda.delvm" href="#panda.main.Panda.delvm">delvm</a></code></li>
+<li><code><a title="panda.main.Panda.disable_tb_chaining" href="#panda.main.Panda.disable_tb_chaining">disable_tb_chaining</a></code></li>
+<li><code><a title="panda.main.Panda.enable_tb_chaining" href="#panda.main.Panda.enable_tb_chaining">enable_tb_chaining</a></code></li>
+<li><code><a title="panda.main.Panda.end_analysis" href="#panda.main.Panda.end_analysis">end_analysis</a></code></li>
+<li><code><a title="panda.main.Panda.exit_cpu_loop" href="#panda.main.Panda.exit_cpu_loop">exit_cpu_loop</a></code></li>
+<li><code><a title="panda.main.Panda.finish_timer" href="#panda.main.Panda.finish_timer">finish_timer</a></code></li>
+<li><code><a title="panda.main.Panda.from_unsigned_guest" href="#panda.main.Panda.from_unsigned_guest">from_unsigned_guest</a></code></li>
+<li><code><a title="panda.main.Panda.load_plugin" href="#panda.main.Panda.load_plugin">load_plugin</a></code></li>
+<li><code><a title="panda.main.Panda.load_plugin_library" href="#panda.main.Panda.load_plugin_library">load_plugin_library</a></code></li>
+<li><code><a title="panda.main.Panda.map_memory" href="#panda.main.Panda.map_memory">map_memory</a></code></li>
+<li><code><a title="panda.main.Panda.memsavep" href="#panda.main.Panda.memsavep">memsavep</a></code></li>
+<li><code><a title="panda.main.Panda.physical_memory_read" href="#panda.main.Panda.physical_memory_read">physical_memory_read</a></code></li>
+<li><code><a title="panda.main.Panda.physical_memory_write" href="#panda.main.Panda.physical_memory_write">physical_memory_write</a></code></li>
+<li><code><a title="panda.main.Panda.procname_changed" href="#panda.main.Panda.procname_changed">procname_changed</a></code></li>
+<li><code><a title="panda.main.Panda.queue_async" href="#panda.main.Panda.queue_async">queue_async</a></code></li>
+<li><code><a title="panda.main.Panda.queue_main_loop_wait_fn" href="#panda.main.Panda.queue_main_loop_wait_fn">queue_main_loop_wait_fn</a></code></li>
+<li><code><a title="panda.main.Panda.read_str" href="#panda.main.Panda.read_str">read_str</a></code></li>
+<li><code><a title="panda.main.Panda.require" href="#panda.main.Panda.require">require</a></code></li>
+<li><code><a title="panda.main.Panda.reset" href="#panda.main.Panda.reset">reset</a></code></li>
+<li><code><a title="panda.main.Panda.revert_async" href="#panda.main.Panda.revert_async">revert_async</a></code></li>
+<li><code><a title="panda.main.Panda.rr_get_guest_instr_count" href="#panda.main.Panda.rr_get_guest_instr_count">rr_get_guest_instr_count</a></code></li>
+<li><code><a title="panda.main.Panda.run" href="#panda.main.Panda.run">run</a></code></li>
+<li><code><a title="panda.main.Panda.run_replay" href="#panda.main.Panda.run_replay">run_replay</a></code></li>
+<li><code><a title="panda.main.Panda.snap" href="#panda.main.Panda.snap">snap</a></code></li>
+<li><code><a title="panda.main.Panda.to_unsigned_guest" href="#panda.main.Panda.to_unsigned_guest">to_unsigned_guest</a></code></li>
+<li><code><a title="panda.main.Panda.unload_plugin" href="#panda.main.Panda.unload_plugin">unload_plugin</a></code></li>
+<li><code><a title="panda.main.Panda.unload_plugins" href="#panda.main.Panda.unload_plugins">unload_plugins</a></code></li>
+<li><code><a title="panda.main.Panda.virtual_memory_read" href="#panda.main.Panda.virtual_memory_read">virtual_memory_read</a></code></li>
+<li><code><a title="panda.main.Panda.virtual_memory_write" href="#panda.main.Panda.virtual_memory_write">virtual_memory_write</a></code></li>
+<li><code><a title="panda.main.Panda.vm_stop" href="#panda.main.Panda.vm_stop">vm_stop</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.4</a>.</p>
+</footer>
+</body>
+</html>

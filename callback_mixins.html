@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.4" />
+<title>panda.callback_mixins API documentation</title>
+<meta name="description" content="Mixin for handling callbacks and generation of decorators that allow users to register their own callbacks
+such as panda.cb_before_block_exec()" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>panda.callback_mixins</code></h1>
+</header>
+<section id="section-intro">
+<p>Mixin for handling callbacks and generation of decorators that allow users to register their own callbacks
+such as panda.cb_before_block_exec()</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#39;&#39;&#39;
+Mixin for handling callbacks and generation of decorators that allow users to register their own callbacks
+such as panda.cb_before_block_exec()
+&#39;&#39;&#39;
+from .utils import progress, make_iso, debug
+from .ffi_importer import ffi
+
+class callback_mixins():
+    def register_cb_decorators(self):
+        &#39;&#39;&#39;
+        Setup callbacks and generate self.cb_XYZ functions for cb decorators
+        XXX Don&#39;t add any other methods with names starting with &#39;cb_&#39;
+        Callbacks can be called as @panda.cb_XYZ in which case they&#39;ll take default arguments and be named the same as the decorated function
+        Or they can be called as @panda.cb_XYZ(name=&#39;A&#39;, procname=&#39;B&#39;, enabled=True). Defaults: name is function name, procname=None, enabled=True unless procname set
+        &#39;&#39;&#39;
+        for cb_name, pandatype in zip(self.callback._fields, self.callback):
+            def closure(closed_cb_name, closed_pandatype): # Closure on cb_name and pandatype
+                def f(*args, **kwargs):
+                    if len(args): # Called as @panda.cb_XYZ without ()s- no arguments to decorator but we get the function name instead
+                        # Call our decorator with only a name argument ON the function itself
+                        fun = args[0]
+                        return self._generated_callback(closed_pandatype, **{&#34;name&#34;: fun.__name__})(fun)
+                    else:
+                        # Otherwise, we were called as @panda.cb_XYZ() with potential args - Just return the decorator and it&#39;s applied to the function
+                        return self._generated_callback(closed_pandatype, *args, **kwargs)
+                return f
+
+            setattr(self, &#39;cb_&#39;+cb_name, closure(cb_name, pandatype))
+
+    def _generated_callback(self, pandatype, name=None, procname=None, enabled=True):
+        &#39;&#39;&#39;
+        Actual implementation of self.cb_XYZ. pandatype is pcb.XYZ
+        name must uniquely describe a callback
+        if procname is specified, callback will only be enabled when that asid is running (requires OSI support)
+        &#39;&#39;&#39;
+
+        if procname:
+            enabled = False # Process won&#39;t be running at time 0 (probably)
+            self._register_internal_asid_changed_cb()
+
+        def decorator(fun):
+            local_name = name  # We need a new varaible otherwise we have scoping issues with _generated_callback&#39;s name
+            if name is None:
+                local_name = fun.__name__
+            def _run_and_catch(*args, **kwargs): # Run function but if it raises an exception, stop panda and raise it
+                try:
+                    r = fun(*args, **kwargs)
+                    #print(pandatype, type(r)) # XXX Can we use pandatype to determine requried return and assert if incorrect
+                    #assert(isinstance(r, int)), &#34;Invalid return type?&#34;
+                    return r
+                except Exception as e:
+                    self.end_analysis()
+                    print(&#34;\n&#34; + &#34;--&#34;*30 + f&#34;\n\nException in callback `{fun.__name__}`: {e}\n&#34;)
+                    import traceback
+                    traceback.print_exc()
+                    self.exception = e # XXX: We can&#39;t raise here or exn won&#39;t fully be printed. Instead, we print it in check_crashed()
+                    return # XXX: Some callbacks don&#39;t expect returns, but most do. If we don&#39;t return we might trigger a separate exn and lose ours (occasionally)
+                    # If we return the wrong type, we lose the original exn (TODO)
+
+            cast_rc = pandatype(_run_and_catch)
+            self.register_callback(pandatype, cast_rc, local_name, enabled=enabled, procname=procname)
+            def wrapper(*args, **kw):
+                return _run_and_catch(*args, **kw)
+            return wrapper
+        return decorator
+
+    def _register_internal_asid_changed_cb(self):
+        &#39;&#39;&#39;
+        Call this function if you need procname filtering for callbacks. It enables
+        an internal callback on asid_changed (and sometimes an after_block_exec cb)
+        which will deteremine when the process name changes and enable/disable other callbacks
+        that filter on process name.
+        &#39;&#39;&#39;
+        if self._registered_asid_changed_internal_cb: # Already registered these callbacks
+            return
+
+        @self.callback.after_block_exec
+        def __get_pending_procname_change(cpu, tb, exit_code):
+            if exit_code: # Didn&#39;t actually execute block
+                return None
+            if not self.in_kernel(cpu): # Once we&#39;re out of kernel code, grab procname
+                process = self.plugins[&#39;osi&#39;].get_current_process(cpu)
+                if process != ffi.NULL:
+                    name = ffi.string(process.name).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+                else:
+                    return None # Couldn&#39;t figure out the process
+                asid = self.libpanda.panda_current_asid(cpu)
+                self.asid_mapping[asid] = name
+                self.procname_changed(name)
+                self.disable_callback(&#39;__get_pending_procname_change&#39;) # Disabled to begin
+
+
+        # Local function def
+        @self.callback.asid_changed
+        def __asid_changed(cpustate, old_asid, new_asid):
+            &#39;&#39;&#39;
+            When the ASID changes, check if we know its procname (in self.asid_mapping),
+            if so, call panda.procname_changed(name). Otherwise, we enable __get_pending_procname_change CB, which
+            waits until the procname changes. Then we grab the new procname, update self.asid_mapping and call
+            panda.procname_changed(name)
+            &#39;&#39;&#39;
+            if old_asid == new_asid:
+                return 0
+
+            if new_asid not in self.asid_mapping: # We don&#39;t know this ASID-&gt;procname - turn on __get_pending_procname_change
+                if not self.is_callback_enabled(&#39;__get_pending_procname_change&#39;):
+                    self.enable_callback(&#39;__get_pending_procname_change&#39;)
+            else: # We do know this ASID-&gt;procname, just call procname_changed
+                self.procname_changed(self.asid_mapping[new_asid])
+
+            return 0
+
+        self.register_callback(self.callback.asid_changed, __asid_changed, &#34;__asid_changed&#34;) # Always call on ASID change
+
+        # This internal callback is only enabled on-demand (later) when we need to figure out ASID-&gt;procname mappings
+        self.register_callback(self.callback.after_block_exec, __get_pending_procname_change, &#34;__get_pending_procname_change&#34;, enabled=False)
+
+        self._registered_asid_changed_internal_cb = True
+
+    def register_callback(self, callback, function, name, enabled=True, procname=None):
+        # CB   = self.callback.main_loop_wait
+        # func = main_loop_wait_cb
+        # name = main_loop_wait
+
+        if name in self.registered_callbacks:
+            raise ValueError(&#34;Duplicate callback name {}&#34;.format(name))
+
+        cb = self.callback_dictionary[callback]
+
+        # Generate a unique handle for each callback type using the number of previously registered CBs of that type added to a constant
+        handle = ffi.cast(&#39;void *&#39;, 0x8888 + 100*len([x for x in self.registered_callbacks.values() if x[&#39;callback&#39;] == cb]))
+
+        # XXX: We should have another layer of indirection here so we can catch
+        #      exceptions raised during execution of the CB and abort analysis
+        pcb = ffi.new(&#34;panda_cb *&#34;, {cb.name:function})
+
+        if debug:
+            progress(&#34;Registered function &#39;{}&#39; to run on callback {}&#34;.format(name, cb.name))
+
+        self.libpanda.panda_register_callback_helper(handle, cb.number, pcb)
+        self.registered_callbacks[name] = {&#34;procname&#34;: procname, &#34;enabled&#34;: True, &#34;callback&#34;: cb,
+                           &#34;handle&#34;: handle, &#34;pcb&#34;: pcb, &#34;function&#34;: function} # XXX: if function is not saved here it gets GC&#39;d and everything breaks! Watch out!
+
+        if not enabled: # Note the registered_callbacks dict starts with enabled true and then we update it to false as necessary here
+            self.disable_callback(name)
+
+        if &#34;block&#34; in cb.name:
+            if not self.disabled_tb_chaining:
+                print(&#34;Warning: disabling TB chaining to support {} callback&#34;.format(cb.name))
+                self.disable_tb_chaining()
+
+
+    def is_callback_enabled(self, name):
+        if name not in self.registered_callbacks.keys():
+            raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+        return self.registered_callbacks[name][&#39;enabled&#39;]
+
+    def enable_internal_callbacks(self):
+        &#39;&#39;&#39;
+        Enable all our internal callbacks that start with __ such as __main_loop_wait
+        and __asid_changed. Important in case user has done a panda.end_analysis()
+        and then (re)called run
+        &#39;&#39;&#39;
+        for name in self.registered_callbacks.keys():
+            if name.startswith(&#34;__&#34;) and not self.registered_callbacks[name][&#39;enabled&#39;]:
+                self.enable_callback(name)
+
+    def enable_all_callbacks(self):
+        &#39;&#39;&#39;
+        Enable all python callbacks that have been disabled
+        &#39;&#39;&#39;
+        for name in self.registered_callbacks.keys():
+            self.enable_callback(name)
+
+    def enable_callback(self, name):
+        &#39;&#39;&#39;
+        Enable a panda plugin using its handle and cb.number as a unique ID
+        &#39;&#39;&#39;
+        if name not in self.registered_callbacks.keys():
+            raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+
+        self.registered_callbacks[name][&#39;enabled&#39;] = True
+        handle = self.registered_callbacks[name][&#39;handle&#39;]
+        cb = self.registered_callbacks[name][&#39;callback&#39;]
+        pcb = self.registered_callbacks[name][&#39;pcb&#39;]
+        #progress(&#34;Enabling callback &#39;{}&#39; on &#39;{}&#39; handle = {}&#34;.format(name, cb.name, handle))
+        self.libpanda.panda_enable_callback_helper(handle, cb.number, pcb)
+
+    def disable_callback(self, name, forever=False):
+        &#39;&#39;&#39;
+        Disable a panda plugin using its handle and cb.number as a unique ID
+        If forever is specified, we&#39;ll never reenable the call- useful when
+        you want to really turn off something with a procname filter.
+        &#39;&#39;&#39;
+        if name not in self.registered_callbacks.keys():
+            raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+        self.registered_callbacks[name][&#39;enabled&#39;] = False
+        handle = self.registered_callbacks[name][&#39;handle&#39;]
+        cb = self.registered_callbacks[name][&#39;callback&#39;]
+        pcb = self.registered_callbacks[name][&#39;pcb&#39;]
+        #progress(&#34;Disabling callback &#39;{}&#39; on &#39;{}&#39; handle={}&#34;.format(name, cb.name, handle))
+        self.libpanda.panda_disable_callback_helper(handle, cb.number, pcb)
+
+        if forever:
+            del self.registered_callbacks[name]
+
+    ###########################
+    ### PPP-style callbacks ###
+    ###########################
+
+    def ppp(self, plugin_name, attr, name=None):
+        &#39;&#39;&#39;
+        Decorator for plugin-to-plugin interface. Note this isn&#39;t in decorators.py
+        becuase it uses the panda object.
+
+        Example usage to register my_run with syscalls2 as a &#39;on_sys_open_return&#39;
+        @ppp(&#34;syscalls2&#34;, &#34;on_sys_open_return&#34;)
+        def my_fun(cpu, pc, filename, flags, mode):
+            ...
+        &#39;&#39;&#39;
+
+        if plugin_name not in self.plugins: # Could automatically load it?
+            print(f&#34;PPP automatically loaded plugin {plugin_name}&#34;)
+
+        if not hasattr(self, &#34;ppp_registered_cbs&#34;):
+            self.ppp_registered_cbs = {}
+            # We use this to traak fn_names-&gt;fn_pointers so we can later disable by name
+
+            # XXX: if  we don&#39;t save the cffi generated callbacks somewhere in Python,
+            # they may get garbage collected even though the c-code could still has a
+            # reference to them  which will lead to a crash. If we stop using this to track
+            # function names, we need to keep it or something similar to ensure the reference
+            # count remains &gt;0 in python
+
+        def decorator(func):
+            local_name = name  # We need a new varaible otherwise we have scoping issues, maybe
+            if local_name is None:
+                local_name = func.__name__
+            f = ffi.callback(attr+&#34;_t&#34;)(func)  # Wrap the python fn in a c-callback.
+            assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
+
+            # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
+            self.ppp_registered_cbs[local_name] = (f, plugin_name, attr)
+
+            self.plugins[plugin_name].__getattr__(&#34;ppp_add_cb_&#34;+attr)(f) # All PPP cbs start with this string
+            return f
+        return decorator
+
+    def disable_ppp(self, name):
+        &#39;&#39;&#39;
+        Disable a ppp-style callback by name.
+        Unlike regular panda callbacks which can be enabled/disabled/deleted, PPP callbacks are only enabled/deleted (which we call disabled)
+
+        Example usage to register my_run with syscalls2 as a &#39;on_sys_open_return&#39; and then disable:
+        @ppp(&#34;syscalls2&#34;, &#34;on_sys_open_return&#34;)
+        def my_fun(cpu, pc, filename, flags, mode):
+            ...
+
+        panda.disable_ppp(&#34;my_fun&#34;)
+
+        -- OR --
+
+        @ppp(&#34;syscalls2&#34;, &#34;on_sys_open_return&#34;, name=&#34;custom&#34;)
+        def my_fun(cpu, pc, filename, flags, mode):
+            ...
+
+        panda.disable_ppp(&#34;custom&#34;)
+        &#39;&#39;&#39;
+
+        (f, plugin_name, attr) = self.ppp_registered_cbs[name]
+        self.plugins[plugin_name].__getattr__(&#34;ppp_remove_cb_&#34;+attr)(f) # All PPP cbs start with this string
+        del self.ppp_registered_cbs[name] # It&#39;s now safe to be garbage collected</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="panda.callback_mixins.callback_mixins"><code class="flex name class">
+<span>class <span class="ident">callback_mixins</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class callback_mixins():
+    def register_cb_decorators(self):
+        &#39;&#39;&#39;
+        Setup callbacks and generate self.cb_XYZ functions for cb decorators
+        XXX Don&#39;t add any other methods with names starting with &#39;cb_&#39;
+        Callbacks can be called as @panda.cb_XYZ in which case they&#39;ll take default arguments and be named the same as the decorated function
+        Or they can be called as @panda.cb_XYZ(name=&#39;A&#39;, procname=&#39;B&#39;, enabled=True). Defaults: name is function name, procname=None, enabled=True unless procname set
+        &#39;&#39;&#39;
+        for cb_name, pandatype in zip(self.callback._fields, self.callback):
+            def closure(closed_cb_name, closed_pandatype): # Closure on cb_name and pandatype
+                def f(*args, **kwargs):
+                    if len(args): # Called as @panda.cb_XYZ without ()s- no arguments to decorator but we get the function name instead
+                        # Call our decorator with only a name argument ON the function itself
+                        fun = args[0]
+                        return self._generated_callback(closed_pandatype, **{&#34;name&#34;: fun.__name__})(fun)
+                    else:
+                        # Otherwise, we were called as @panda.cb_XYZ() with potential args - Just return the decorator and it&#39;s applied to the function
+                        return self._generated_callback(closed_pandatype, *args, **kwargs)
+                return f
+
+            setattr(self, &#39;cb_&#39;+cb_name, closure(cb_name, pandatype))
+
+    def _generated_callback(self, pandatype, name=None, procname=None, enabled=True):
+        &#39;&#39;&#39;
+        Actual implementation of self.cb_XYZ. pandatype is pcb.XYZ
+        name must uniquely describe a callback
+        if procname is specified, callback will only be enabled when that asid is running (requires OSI support)
+        &#39;&#39;&#39;
+
+        if procname:
+            enabled = False # Process won&#39;t be running at time 0 (probably)
+            self._register_internal_asid_changed_cb()
+
+        def decorator(fun):
+            local_name = name  # We need a new varaible otherwise we have scoping issues with _generated_callback&#39;s name
+            if name is None:
+                local_name = fun.__name__
+            def _run_and_catch(*args, **kwargs): # Run function but if it raises an exception, stop panda and raise it
+                try:
+                    r = fun(*args, **kwargs)
+                    #print(pandatype, type(r)) # XXX Can we use pandatype to determine requried return and assert if incorrect
+                    #assert(isinstance(r, int)), &#34;Invalid return type?&#34;
+                    return r
+                except Exception as e:
+                    self.end_analysis()
+                    print(&#34;\n&#34; + &#34;--&#34;*30 + f&#34;\n\nException in callback `{fun.__name__}`: {e}\n&#34;)
+                    import traceback
+                    traceback.print_exc()
+                    self.exception = e # XXX: We can&#39;t raise here or exn won&#39;t fully be printed. Instead, we print it in check_crashed()
+                    return # XXX: Some callbacks don&#39;t expect returns, but most do. If we don&#39;t return we might trigger a separate exn and lose ours (occasionally)
+                    # If we return the wrong type, we lose the original exn (TODO)
+
+            cast_rc = pandatype(_run_and_catch)
+            self.register_callback(pandatype, cast_rc, local_name, enabled=enabled, procname=procname)
+            def wrapper(*args, **kw):
+                return _run_and_catch(*args, **kw)
+            return wrapper
+        return decorator
+
+    def _register_internal_asid_changed_cb(self):
+        &#39;&#39;&#39;
+        Call this function if you need procname filtering for callbacks. It enables
+        an internal callback on asid_changed (and sometimes an after_block_exec cb)
+        which will deteremine when the process name changes and enable/disable other callbacks
+        that filter on process name.
+        &#39;&#39;&#39;
+        if self._registered_asid_changed_internal_cb: # Already registered these callbacks
+            return
+
+        @self.callback.after_block_exec
+        def __get_pending_procname_change(cpu, tb, exit_code):
+            if exit_code: # Didn&#39;t actually execute block
+                return None
+            if not self.in_kernel(cpu): # Once we&#39;re out of kernel code, grab procname
+                process = self.plugins[&#39;osi&#39;].get_current_process(cpu)
+                if process != ffi.NULL:
+                    name = ffi.string(process.name).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+                else:
+                    return None # Couldn&#39;t figure out the process
+                asid = self.libpanda.panda_current_asid(cpu)
+                self.asid_mapping[asid] = name
+                self.procname_changed(name)
+                self.disable_callback(&#39;__get_pending_procname_change&#39;) # Disabled to begin
+
+
+        # Local function def
+        @self.callback.asid_changed
+        def __asid_changed(cpustate, old_asid, new_asid):
+            &#39;&#39;&#39;
+            When the ASID changes, check if we know its procname (in self.asid_mapping),
+            if so, call panda.procname_changed(name). Otherwise, we enable __get_pending_procname_change CB, which
+            waits until the procname changes. Then we grab the new procname, update self.asid_mapping and call
+            panda.procname_changed(name)
+            &#39;&#39;&#39;
+            if old_asid == new_asid:
+                return 0
+
+            if new_asid not in self.asid_mapping: # We don&#39;t know this ASID-&gt;procname - turn on __get_pending_procname_change
+                if not self.is_callback_enabled(&#39;__get_pending_procname_change&#39;):
+                    self.enable_callback(&#39;__get_pending_procname_change&#39;)
+            else: # We do know this ASID-&gt;procname, just call procname_changed
+                self.procname_changed(self.asid_mapping[new_asid])
+
+            return 0
+
+        self.register_callback(self.callback.asid_changed, __asid_changed, &#34;__asid_changed&#34;) # Always call on ASID change
+
+        # This internal callback is only enabled on-demand (later) when we need to figure out ASID-&gt;procname mappings
+        self.register_callback(self.callback.after_block_exec, __get_pending_procname_change, &#34;__get_pending_procname_change&#34;, enabled=False)
+
+        self._registered_asid_changed_internal_cb = True
+
+    def register_callback(self, callback, function, name, enabled=True, procname=None):
+        # CB   = self.callback.main_loop_wait
+        # func = main_loop_wait_cb
+        # name = main_loop_wait
+
+        if name in self.registered_callbacks:
+            raise ValueError(&#34;Duplicate callback name {}&#34;.format(name))
+
+        cb = self.callback_dictionary[callback]
+
+        # Generate a unique handle for each callback type using the number of previously registered CBs of that type added to a constant
+        handle = ffi.cast(&#39;void *&#39;, 0x8888 + 100*len([x for x in self.registered_callbacks.values() if x[&#39;callback&#39;] == cb]))
+
+        # XXX: We should have another layer of indirection here so we can catch
+        #      exceptions raised during execution of the CB and abort analysis
+        pcb = ffi.new(&#34;panda_cb *&#34;, {cb.name:function})
+
+        if debug:
+            progress(&#34;Registered function &#39;{}&#39; to run on callback {}&#34;.format(name, cb.name))
+
+        self.libpanda.panda_register_callback_helper(handle, cb.number, pcb)
+        self.registered_callbacks[name] = {&#34;procname&#34;: procname, &#34;enabled&#34;: True, &#34;callback&#34;: cb,
+                           &#34;handle&#34;: handle, &#34;pcb&#34;: pcb, &#34;function&#34;: function} # XXX: if function is not saved here it gets GC&#39;d and everything breaks! Watch out!
+
+        if not enabled: # Note the registered_callbacks dict starts with enabled true and then we update it to false as necessary here
+            self.disable_callback(name)
+
+        if &#34;block&#34; in cb.name:
+            if not self.disabled_tb_chaining:
+                print(&#34;Warning: disabling TB chaining to support {} callback&#34;.format(cb.name))
+                self.disable_tb_chaining()
+
+
+    def is_callback_enabled(self, name):
+        if name not in self.registered_callbacks.keys():
+            raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+        return self.registered_callbacks[name][&#39;enabled&#39;]
+
+    def enable_internal_callbacks(self):
+        &#39;&#39;&#39;
+        Enable all our internal callbacks that start with __ such as __main_loop_wait
+        and __asid_changed. Important in case user has done a panda.end_analysis()
+        and then (re)called run
+        &#39;&#39;&#39;
+        for name in self.registered_callbacks.keys():
+            if name.startswith(&#34;__&#34;) and not self.registered_callbacks[name][&#39;enabled&#39;]:
+                self.enable_callback(name)
+
+    def enable_all_callbacks(self):
+        &#39;&#39;&#39;
+        Enable all python callbacks that have been disabled
+        &#39;&#39;&#39;
+        for name in self.registered_callbacks.keys():
+            self.enable_callback(name)
+
+    def enable_callback(self, name):
+        &#39;&#39;&#39;
+        Enable a panda plugin using its handle and cb.number as a unique ID
+        &#39;&#39;&#39;
+        if name not in self.registered_callbacks.keys():
+            raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+
+        self.registered_callbacks[name][&#39;enabled&#39;] = True
+        handle = self.registered_callbacks[name][&#39;handle&#39;]
+        cb = self.registered_callbacks[name][&#39;callback&#39;]
+        pcb = self.registered_callbacks[name][&#39;pcb&#39;]
+        #progress(&#34;Enabling callback &#39;{}&#39; on &#39;{}&#39; handle = {}&#34;.format(name, cb.name, handle))
+        self.libpanda.panda_enable_callback_helper(handle, cb.number, pcb)
+
+    def disable_callback(self, name, forever=False):
+        &#39;&#39;&#39;
+        Disable a panda plugin using its handle and cb.number as a unique ID
+        If forever is specified, we&#39;ll never reenable the call- useful when
+        you want to really turn off something with a procname filter.
+        &#39;&#39;&#39;
+        if name not in self.registered_callbacks.keys():
+            raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+        self.registered_callbacks[name][&#39;enabled&#39;] = False
+        handle = self.registered_callbacks[name][&#39;handle&#39;]
+        cb = self.registered_callbacks[name][&#39;callback&#39;]
+        pcb = self.registered_callbacks[name][&#39;pcb&#39;]
+        #progress(&#34;Disabling callback &#39;{}&#39; on &#39;{}&#39; handle={}&#34;.format(name, cb.name, handle))
+        self.libpanda.panda_disable_callback_helper(handle, cb.number, pcb)
+
+        if forever:
+            del self.registered_callbacks[name]
+
+    ###########################
+    ### PPP-style callbacks ###
+    ###########################
+
+    def ppp(self, plugin_name, attr, name=None):
+        &#39;&#39;&#39;
+        Decorator for plugin-to-plugin interface. Note this isn&#39;t in decorators.py
+        becuase it uses the panda object.
+
+        Example usage to register my_run with syscalls2 as a &#39;on_sys_open_return&#39;
+        @ppp(&#34;syscalls2&#34;, &#34;on_sys_open_return&#34;)
+        def my_fun(cpu, pc, filename, flags, mode):
+            ...
+        &#39;&#39;&#39;
+
+        if plugin_name not in self.plugins: # Could automatically load it?
+            print(f&#34;PPP automatically loaded plugin {plugin_name}&#34;)
+
+        if not hasattr(self, &#34;ppp_registered_cbs&#34;):
+            self.ppp_registered_cbs = {}
+            # We use this to traak fn_names-&gt;fn_pointers so we can later disable by name
+
+            # XXX: if  we don&#39;t save the cffi generated callbacks somewhere in Python,
+            # they may get garbage collected even though the c-code could still has a
+            # reference to them  which will lead to a crash. If we stop using this to track
+            # function names, we need to keep it or something similar to ensure the reference
+            # count remains &gt;0 in python
+
+        def decorator(func):
+            local_name = name  # We need a new varaible otherwise we have scoping issues, maybe
+            if local_name is None:
+                local_name = func.__name__
+            f = ffi.callback(attr+&#34;_t&#34;)(func)  # Wrap the python fn in a c-callback.
+            assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
+
+            # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
+            self.ppp_registered_cbs[local_name] = (f, plugin_name, attr)
+
+            self.plugins[plugin_name].__getattr__(&#34;ppp_add_cb_&#34;+attr)(f) # All PPP cbs start with this string
+            return f
+        return decorator
+
+    def disable_ppp(self, name):
+        &#39;&#39;&#39;
+        Disable a ppp-style callback by name.
+        Unlike regular panda callbacks which can be enabled/disabled/deleted, PPP callbacks are only enabled/deleted (which we call disabled)
+
+        Example usage to register my_run with syscalls2 as a &#39;on_sys_open_return&#39; and then disable:
+        @ppp(&#34;syscalls2&#34;, &#34;on_sys_open_return&#34;)
+        def my_fun(cpu, pc, filename, flags, mode):
+            ...
+
+        panda.disable_ppp(&#34;my_fun&#34;)
+
+        -- OR --
+
+        @ppp(&#34;syscalls2&#34;, &#34;on_sys_open_return&#34;, name=&#34;custom&#34;)
+        def my_fun(cpu, pc, filename, flags, mode):
+            ...
+
+        panda.disable_ppp(&#34;custom&#34;)
+        &#39;&#39;&#39;
+
+        (f, plugin_name, attr) = self.ppp_registered_cbs[name]
+        self.plugins[plugin_name].__getattr__(&#34;ppp_remove_cb_&#34;+attr)(f) # All PPP cbs start with this string
+        del self.ppp_registered_cbs[name] # It&#39;s now safe to be garbage collected</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="panda.main.Panda" href="main.html#panda.main.Panda">Panda</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="panda.callback_mixins.callback_mixins.disable_callback"><code class="name flex">
+<span>def <span class="ident">disable_callback</span></span>(<span>self, name, forever=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Disable a panda plugin using its handle and cb.number as a unique ID
+If forever is specified, we'll never reenable the call- useful when
+you want to really turn off something with a procname filter.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disable_callback(self, name, forever=False):
+    &#39;&#39;&#39;
+    Disable a panda plugin using its handle and cb.number as a unique ID
+    If forever is specified, we&#39;ll never reenable the call- useful when
+    you want to really turn off something with a procname filter.
+    &#39;&#39;&#39;
+    if name not in self.registered_callbacks.keys():
+        raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+    self.registered_callbacks[name][&#39;enabled&#39;] = False
+    handle = self.registered_callbacks[name][&#39;handle&#39;]
+    cb = self.registered_callbacks[name][&#39;callback&#39;]
+    pcb = self.registered_callbacks[name][&#39;pcb&#39;]
+    #progress(&#34;Disabling callback &#39;{}&#39; on &#39;{}&#39; handle={}&#34;.format(name, cb.name, handle))
+    self.libpanda.panda_disable_callback_helper(handle, cb.number, pcb)
+
+    if forever:
+        del self.registered_callbacks[name]</code></pre>
+</details>
+</dd>
+<dt id="panda.callback_mixins.callback_mixins.disable_ppp"><code class="name flex">
+<span>def <span class="ident">disable_ppp</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Disable a ppp-style callback by name.
+Unlike regular panda callbacks which can be enabled/disabled/deleted, PPP callbacks are only enabled/deleted (which we call disabled)</p>
+<p>Example usage to register my_run with syscalls2 as a 'on_sys_open_return' and then disable:
+@ppp("syscalls2", "on_sys_open_return")
+def my_fun(cpu, pc, filename, flags, mode):
+&hellip;</p>
+<p>panda.disable_ppp("my_fun")</p>
+<p>&ndash; OR &ndash;</p>
+<p>@ppp("syscalls2", "on_sys_open_return", name="custom")
+def my_fun(cpu, pc, filename, flags, mode):
+&hellip;</p>
+<p>panda.disable_ppp("custom")</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disable_ppp(self, name):
+    &#39;&#39;&#39;
+    Disable a ppp-style callback by name.
+    Unlike regular panda callbacks which can be enabled/disabled/deleted, PPP callbacks are only enabled/deleted (which we call disabled)
+
+    Example usage to register my_run with syscalls2 as a &#39;on_sys_open_return&#39; and then disable:
+    @ppp(&#34;syscalls2&#34;, &#34;on_sys_open_return&#34;)
+    def my_fun(cpu, pc, filename, flags, mode):
+        ...
+
+    panda.disable_ppp(&#34;my_fun&#34;)
+
+    -- OR --
+
+    @ppp(&#34;syscalls2&#34;, &#34;on_sys_open_return&#34;, name=&#34;custom&#34;)
+    def my_fun(cpu, pc, filename, flags, mode):
+        ...
+
+    panda.disable_ppp(&#34;custom&#34;)
+    &#39;&#39;&#39;
+
+    (f, plugin_name, attr) = self.ppp_registered_cbs[name]
+    self.plugins[plugin_name].__getattr__(&#34;ppp_remove_cb_&#34;+attr)(f) # All PPP cbs start with this string
+    del self.ppp_registered_cbs[name] # It&#39;s now safe to be garbage collected</code></pre>
+</details>
+</dd>
+<dt id="panda.callback_mixins.callback_mixins.enable_all_callbacks"><code class="name flex">
+<span>def <span class="ident">enable_all_callbacks</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Enable all python callbacks that have been disabled</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enable_all_callbacks(self):
+    &#39;&#39;&#39;
+    Enable all python callbacks that have been disabled
+    &#39;&#39;&#39;
+    for name in self.registered_callbacks.keys():
+        self.enable_callback(name)</code></pre>
+</details>
+</dd>
+<dt id="panda.callback_mixins.callback_mixins.enable_callback"><code class="name flex">
+<span>def <span class="ident">enable_callback</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Enable a panda plugin using its handle and cb.number as a unique ID</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enable_callback(self, name):
+    &#39;&#39;&#39;
+    Enable a panda plugin using its handle and cb.number as a unique ID
+    &#39;&#39;&#39;
+    if name not in self.registered_callbacks.keys():
+        raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+
+    self.registered_callbacks[name][&#39;enabled&#39;] = True
+    handle = self.registered_callbacks[name][&#39;handle&#39;]
+    cb = self.registered_callbacks[name][&#39;callback&#39;]
+    pcb = self.registered_callbacks[name][&#39;pcb&#39;]
+    #progress(&#34;Enabling callback &#39;{}&#39; on &#39;{}&#39; handle = {}&#34;.format(name, cb.name, handle))
+    self.libpanda.panda_enable_callback_helper(handle, cb.number, pcb)</code></pre>
+</details>
+</dd>
+<dt id="panda.callback_mixins.callback_mixins.enable_internal_callbacks"><code class="name flex">
+<span>def <span class="ident">enable_internal_callbacks</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Enable all our internal callbacks that start with __ such as __main_loop_wait
+and __asid_changed. Important in case user has done a panda.end_analysis()
+and then (re)called run</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enable_internal_callbacks(self):
+    &#39;&#39;&#39;
+    Enable all our internal callbacks that start with __ such as __main_loop_wait
+    and __asid_changed. Important in case user has done a panda.end_analysis()
+    and then (re)called run
+    &#39;&#39;&#39;
+    for name in self.registered_callbacks.keys():
+        if name.startswith(&#34;__&#34;) and not self.registered_callbacks[name][&#39;enabled&#39;]:
+            self.enable_callback(name)</code></pre>
+</details>
+</dd>
+<dt id="panda.callback_mixins.callback_mixins.is_callback_enabled"><code class="name flex">
+<span>def <span class="ident">is_callback_enabled</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_callback_enabled(self, name):
+    if name not in self.registered_callbacks.keys():
+        raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+    return self.registered_callbacks[name][&#39;enabled&#39;]</code></pre>
+</details>
+</dd>
+<dt id="panda.callback_mixins.callback_mixins.ppp"><code class="name flex">
+<span>def <span class="ident">ppp</span></span>(<span>self, plugin_name, attr, name=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Decorator for plugin-to-plugin interface. Note this isn't in decorators.py
+becuase it uses the panda object.</p>
+<p>Example usage to register my_run with syscalls2 as a 'on_sys_open_return'
+@ppp("syscalls2", "on_sys_open_return")
+def my_fun(cpu, pc, filename, flags, mode):
+&hellip;</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ppp(self, plugin_name, attr, name=None):
+    &#39;&#39;&#39;
+    Decorator for plugin-to-plugin interface. Note this isn&#39;t in decorators.py
+    becuase it uses the panda object.
+
+    Example usage to register my_run with syscalls2 as a &#39;on_sys_open_return&#39;
+    @ppp(&#34;syscalls2&#34;, &#34;on_sys_open_return&#34;)
+    def my_fun(cpu, pc, filename, flags, mode):
+        ...
+    &#39;&#39;&#39;
+
+    if plugin_name not in self.plugins: # Could automatically load it?
+        print(f&#34;PPP automatically loaded plugin {plugin_name}&#34;)
+
+    if not hasattr(self, &#34;ppp_registered_cbs&#34;):
+        self.ppp_registered_cbs = {}
+        # We use this to traak fn_names-&gt;fn_pointers so we can later disable by name
+
+        # XXX: if  we don&#39;t save the cffi generated callbacks somewhere in Python,
+        # they may get garbage collected even though the c-code could still has a
+        # reference to them  which will lead to a crash. If we stop using this to track
+        # function names, we need to keep it or something similar to ensure the reference
+        # count remains &gt;0 in python
+
+    def decorator(func):
+        local_name = name  # We need a new varaible otherwise we have scoping issues, maybe
+        if local_name is None:
+            local_name = func.__name__
+        f = ffi.callback(attr+&#34;_t&#34;)(func)  # Wrap the python fn in a c-callback.
+        assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
+
+        # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
+        self.ppp_registered_cbs[local_name] = (f, plugin_name, attr)
+
+        self.plugins[plugin_name].__getattr__(&#34;ppp_add_cb_&#34;+attr)(f) # All PPP cbs start with this string
+        return f
+    return decorator</code></pre>
+</details>
+</dd>
+<dt id="panda.callback_mixins.callback_mixins.register_callback"><code class="name flex">
+<span>def <span class="ident">register_callback</span></span>(<span>self, callback, function, name, enabled=True, procname=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register_callback(self, callback, function, name, enabled=True, procname=None):
+    # CB   = self.callback.main_loop_wait
+    # func = main_loop_wait_cb
+    # name = main_loop_wait
+
+    if name in self.registered_callbacks:
+        raise ValueError(&#34;Duplicate callback name {}&#34;.format(name))
+
+    cb = self.callback_dictionary[callback]
+
+    # Generate a unique handle for each callback type using the number of previously registered CBs of that type added to a constant
+    handle = ffi.cast(&#39;void *&#39;, 0x8888 + 100*len([x for x in self.registered_callbacks.values() if x[&#39;callback&#39;] == cb]))
+
+    # XXX: We should have another layer of indirection here so we can catch
+    #      exceptions raised during execution of the CB and abort analysis
+    pcb = ffi.new(&#34;panda_cb *&#34;, {cb.name:function})
+
+    if debug:
+        progress(&#34;Registered function &#39;{}&#39; to run on callback {}&#34;.format(name, cb.name))
+
+    self.libpanda.panda_register_callback_helper(handle, cb.number, pcb)
+    self.registered_callbacks[name] = {&#34;procname&#34;: procname, &#34;enabled&#34;: True, &#34;callback&#34;: cb,
+                       &#34;handle&#34;: handle, &#34;pcb&#34;: pcb, &#34;function&#34;: function} # XXX: if function is not saved here it gets GC&#39;d and everything breaks! Watch out!
+
+    if not enabled: # Note the registered_callbacks dict starts with enabled true and then we update it to false as necessary here
+        self.disable_callback(name)
+
+    if &#34;block&#34; in cb.name:
+        if not self.disabled_tb_chaining:
+            print(&#34;Warning: disabling TB chaining to support {} callback&#34;.format(cb.name))
+            self.disable_tb_chaining()</code></pre>
+</details>
+</dd>
+<dt id="panda.callback_mixins.callback_mixins.register_cb_decorators"><code class="name flex">
+<span>def <span class="ident">register_cb_decorators</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Setup callbacks and generate self.cb_XYZ functions for cb decorators
+XXX Don't add any other methods with names starting with 'cb_'
+Callbacks can be called as @panda.cb_XYZ in which case they'll take default arguments and be named the same as the decorated function
+Or they can be called as @panda.cb_XYZ(name='A', procname='B', enabled=True). Defaults: name is function name, procname=None, enabled=True unless procname set</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register_cb_decorators(self):
+    &#39;&#39;&#39;
+    Setup callbacks and generate self.cb_XYZ functions for cb decorators
+    XXX Don&#39;t add any other methods with names starting with &#39;cb_&#39;
+    Callbacks can be called as @panda.cb_XYZ in which case they&#39;ll take default arguments and be named the same as the decorated function
+    Or they can be called as @panda.cb_XYZ(name=&#39;A&#39;, procname=&#39;B&#39;, enabled=True). Defaults: name is function name, procname=None, enabled=True unless procname set
+    &#39;&#39;&#39;
+    for cb_name, pandatype in zip(self.callback._fields, self.callback):
+        def closure(closed_cb_name, closed_pandatype): # Closure on cb_name and pandatype
+            def f(*args, **kwargs):
+                if len(args): # Called as @panda.cb_XYZ without ()s- no arguments to decorator but we get the function name instead
+                    # Call our decorator with only a name argument ON the function itself
+                    fun = args[0]
+                    return self._generated_callback(closed_pandatype, **{&#34;name&#34;: fun.__name__})(fun)
+                else:
+                    # Otherwise, we were called as @panda.cb_XYZ() with potential args - Just return the decorator and it&#39;s applied to the function
+                    return self._generated_callback(closed_pandatype, *args, **kwargs)
+            return f
+
+        setattr(self, &#39;cb_&#39;+cb_name, closure(cb_name, pandatype))</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="panda" href="index.html">panda</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="panda.callback_mixins.callback_mixins" href="#panda.callback_mixins.callback_mixins">callback_mixins</a></code></h4>
+<ul class="">
+<li><code><a title="panda.callback_mixins.callback_mixins.disable_callback" href="#panda.callback_mixins.callback_mixins.disable_callback">disable_callback</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.disable_ppp" href="#panda.callback_mixins.callback_mixins.disable_ppp">disable_ppp</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.enable_all_callbacks" href="#panda.callback_mixins.callback_mixins.enable_all_callbacks">enable_all_callbacks</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.enable_callback" href="#panda.callback_mixins.callback_mixins.enable_callback">enable_callback</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.enable_internal_callbacks" href="#panda.callback_mixins.callback_mixins.enable_internal_callbacks">enable_internal_callbacks</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.is_callback_enabled" href="#panda.callback_mixins.callback_mixins.is_callback_enabled">is_callback_enabled</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.ppp" href="#panda.callback_mixins.callback_mixins.ppp">ppp</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.register_callback" href="#panda.callback_mixins.callback_mixins.register_callback">register_callback</a></code></li>
+<li><code><a title="panda.callback_mixins.callback_mixins.register_cb_decorators" href="#panda.callback_mixins.callback_mixins.register_cb_decorators">register_cb_decorators</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.4</a>.</p>
+</footer>
+</body>
+</html>

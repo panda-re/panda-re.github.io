@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.4" />
+<title>panda.libpanda_mixins API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>panda.libpanda_mixins</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># Methods that directly pass data to/from libpanda with no extra logic beyond
+# argument reformatting
+
+from .ffi_importer import ffi
+
+class libpanda_mixins():
+    def set_pandalog(self, name):
+        charptr = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
+        self.libpanda.panda_start_pandalog(charptr)
+
+    def set_os_name(self, os_name):
+        os_name_new = ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
+        self.libpanda.panda_set_os_name(os_name_new)
+
+    def enable_memcb(self):
+        self._memcb = True
+        self.libpanda.panda_enable_memcb()
+
+    def virt_to_phys(self, env, addr):
+        return self.libpanda.panda_virt_to_phys_external(env, addr)
+
+    def enable_plugin(self, handle):
+        self.libpanda.panda_enable_plugin(handle)
+
+    def disable_plugin(self, handle):
+        self.libpanda.panda_disable_plugin(handle)
+
+    def disable_memcb(self):
+        self._memcb = False
+        self.libpanda.panda_disable_memcb()
+
+    def enable_llvm(self):
+        self.libpanda.panda_enable_llvm()
+
+    def disable_llvm(self):
+        self.libpanda.panda_disable_llvm()
+
+    def enable_llvm_helpers(self):
+        self.libpanda.panda_enable_llvm_helpers()
+
+    def disable_llvm_helpers(self):
+        self.libpanda.panda_disable_llvm_helpers()
+
+    def flush_tb(self):
+        return self.libpanda.panda_flush_tb()
+
+    def enable_precise_pc(self):
+        self.libpanda.panda_enable_precise_pc()
+
+    def disable_precise_pc(self):
+        self.libpanda.panda_disable_precise_pc()
+
+    def in_kernel(self, cpustate):
+        return self.libpanda.panda_in_kernel_external(cpustate)
+
+    def g_malloc0(self, size):
+        return self.libpanda.g_malloc0(size)
+
+    def drive_get(self, blocktype, bus, unit):
+        return self.libpanda.drive_get(blocktype,bus,unit)
+
+    def sysbus_create_varargs(self, name, addr):
+        return self.libpanda.sysbus_create_varargs(name,addr,ffi.NULL)
+
+    def cpu_class_by_name(self, name, cpu_model):
+        return self.libpanda.cpu_class_by_name(name, cpu_model)
+
+    def object_class_by_name(self, name):
+        return self.libpanda.object_class_by_name(name)
+
+    def object_property_set_bool(self, obj, value, name):
+        return self.libpanda.object_property_set_bool(obj,value,name,self.libpanda.error_abort)
+
+    def object_class_get_name(self, objclass):
+        return self.libpanda.object_class_get_name(objclass)
+
+    def object_new(self, name):
+        return self.libpanda.object_new(name)
+
+    def object_property_get_bool(self, obj, name):
+        return self.libpanda.object_property_get_bool(obj,name,self.libpanda.error_abort)
+
+    def object_property_set_int(self,obj, value, name):
+        return self.libpanda.object_property_set_int(obj, value, name, self.libpanda.error_abort)
+
+    def object_property_get_int(self, obj, name):
+        return self.libpanda.object_property_get_int(obj, name, self.libpanda.error_abort)
+
+    def object_property_set_link(self, obj, val, name):
+        return self.libpanda.object_property_set_link(obj,val,name,self.libpanda.error_abort)
+
+    def object_property_get_link(self, obj, name):
+        return self.libpanda.object_property_get_link(obj,name,self.libpanda.error_abort)
+
+    def object_property_find(self, obj, name):
+        return self.libpanda.object_property_find(obj,name,ffi.NULL)
+
+    def memory_region_allocate_system_memory(self, mr, obj, name, ram_size):
+        return self.libpanda.memory_region_allocate_system_memory(mr, obj, name, ram_size)
+
+    def memory_region_add_subregion(self, mr, offset, sr):
+        return self.libpanda.memory_region_add_subregion(mr,offset,sr)
+
+    def memory_region_init_ram_from_file(self, mr, owner, name, size, share, path):
+        return self.libpanda.memory_region_init_ram_from_file(mr, owner, name, size, share, path, self.libpanda.error_fatal)
+
+    def create_internal_gic(self, vbi, irqs, gic_vers):
+        return self.libpanda.create_internal_gic(vbi, irqs, gic_vers)
+
+    def create_one_flash(self, name, flashbase, flashsize, filename, mr):
+        return self.libpanda.create_one_flash(name, flashbase, flashsize, filename, mr)
+
+    def create_external_gic(self, vbi, irqs, gic_vers, secure):
+        return self.libpanda.create_external_gic(vbi, irqs, gic_vers, secure)
+
+    def create_virtio_devices(self, vbi, pic):
+        return self.libpanda.create_virtio_devices(vbi, pic)
+
+    def arm_load_kernel(self, cpu, bootinfo):
+        return self.libpanda.arm_load_kernel(cpu, bootinfo)
+
+    def error_report(self, s):
+        return self.libpanda.error_report(s)
+
+    def get_system_memory(self):
+        return self.libpanda.get_system_memory()
+
+    def lookup_gic(self,n):
+        return self.libpanda.lookup_gic(n)
+
+    def current_sp(self, cpustate):
+        return self.libpanda.panda_current_sp_external(cpustate)
+
+    def current_pc(self, cpustate):
+        return self.libpanda.panda_current_pc(cpustate)
+
+    def current_asid(self, cpustate):
+        return self.libpanda.panda_current_asid(cpustate)
+
+    def disas2(self, code, size):
+        self.libpanda.panda_disas(code, size)
+
+    def cleanup(self):
+        self.libpanda.panda_cleanup()
+
+    def was_aborted(self):
+        return self.libpanda.panda_was_aborted()
+
+    def current_asid(self, cpustate):
+        return self.libpanda.panda_current_asid(cpustate)
+
+    def get_cpu(self):
+        # XXX: You rarely want this
+        return self.libpanda.get_cpu()
+
+    def garray_len(self, garray):
+        return self.libpanda.garray_len(garray)
+
+    def panda_finish(self):
+        return self.libpanda.panda_finish()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="panda.libpanda_mixins.libpanda_mixins"><code class="flex name class">
+<span>class <span class="ident">libpanda_mixins</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class libpanda_mixins():
+    def set_pandalog(self, name):
+        charptr = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
+        self.libpanda.panda_start_pandalog(charptr)
+
+    def set_os_name(self, os_name):
+        os_name_new = ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
+        self.libpanda.panda_set_os_name(os_name_new)
+
+    def enable_memcb(self):
+        self._memcb = True
+        self.libpanda.panda_enable_memcb()
+
+    def virt_to_phys(self, env, addr):
+        return self.libpanda.panda_virt_to_phys_external(env, addr)
+
+    def enable_plugin(self, handle):
+        self.libpanda.panda_enable_plugin(handle)
+
+    def disable_plugin(self, handle):
+        self.libpanda.panda_disable_plugin(handle)
+
+    def disable_memcb(self):
+        self._memcb = False
+        self.libpanda.panda_disable_memcb()
+
+    def enable_llvm(self):
+        self.libpanda.panda_enable_llvm()
+
+    def disable_llvm(self):
+        self.libpanda.panda_disable_llvm()
+
+    def enable_llvm_helpers(self):
+        self.libpanda.panda_enable_llvm_helpers()
+
+    def disable_llvm_helpers(self):
+        self.libpanda.panda_disable_llvm_helpers()
+
+    def flush_tb(self):
+        return self.libpanda.panda_flush_tb()
+
+    def enable_precise_pc(self):
+        self.libpanda.panda_enable_precise_pc()
+
+    def disable_precise_pc(self):
+        self.libpanda.panda_disable_precise_pc()
+
+    def in_kernel(self, cpustate):
+        return self.libpanda.panda_in_kernel_external(cpustate)
+
+    def g_malloc0(self, size):
+        return self.libpanda.g_malloc0(size)
+
+    def drive_get(self, blocktype, bus, unit):
+        return self.libpanda.drive_get(blocktype,bus,unit)
+
+    def sysbus_create_varargs(self, name, addr):
+        return self.libpanda.sysbus_create_varargs(name,addr,ffi.NULL)
+
+    def cpu_class_by_name(self, name, cpu_model):
+        return self.libpanda.cpu_class_by_name(name, cpu_model)
+
+    def object_class_by_name(self, name):
+        return self.libpanda.object_class_by_name(name)
+
+    def object_property_set_bool(self, obj, value, name):
+        return self.libpanda.object_property_set_bool(obj,value,name,self.libpanda.error_abort)
+
+    def object_class_get_name(self, objclass):
+        return self.libpanda.object_class_get_name(objclass)
+
+    def object_new(self, name):
+        return self.libpanda.object_new(name)
+
+    def object_property_get_bool(self, obj, name):
+        return self.libpanda.object_property_get_bool(obj,name,self.libpanda.error_abort)
+
+    def object_property_set_int(self,obj, value, name):
+        return self.libpanda.object_property_set_int(obj, value, name, self.libpanda.error_abort)
+
+    def object_property_get_int(self, obj, name):
+        return self.libpanda.object_property_get_int(obj, name, self.libpanda.error_abort)
+
+    def object_property_set_link(self, obj, val, name):
+        return self.libpanda.object_property_set_link(obj,val,name,self.libpanda.error_abort)
+
+    def object_property_get_link(self, obj, name):
+        return self.libpanda.object_property_get_link(obj,name,self.libpanda.error_abort)
+
+    def object_property_find(self, obj, name):
+        return self.libpanda.object_property_find(obj,name,ffi.NULL)
+
+    def memory_region_allocate_system_memory(self, mr, obj, name, ram_size):
+        return self.libpanda.memory_region_allocate_system_memory(mr, obj, name, ram_size)
+
+    def memory_region_add_subregion(self, mr, offset, sr):
+        return self.libpanda.memory_region_add_subregion(mr,offset,sr)
+
+    def memory_region_init_ram_from_file(self, mr, owner, name, size, share, path):
+        return self.libpanda.memory_region_init_ram_from_file(mr, owner, name, size, share, path, self.libpanda.error_fatal)
+
+    def create_internal_gic(self, vbi, irqs, gic_vers):
+        return self.libpanda.create_internal_gic(vbi, irqs, gic_vers)
+
+    def create_one_flash(self, name, flashbase, flashsize, filename, mr):
+        return self.libpanda.create_one_flash(name, flashbase, flashsize, filename, mr)
+
+    def create_external_gic(self, vbi, irqs, gic_vers, secure):
+        return self.libpanda.create_external_gic(vbi, irqs, gic_vers, secure)
+
+    def create_virtio_devices(self, vbi, pic):
+        return self.libpanda.create_virtio_devices(vbi, pic)
+
+    def arm_load_kernel(self, cpu, bootinfo):
+        return self.libpanda.arm_load_kernel(cpu, bootinfo)
+
+    def error_report(self, s):
+        return self.libpanda.error_report(s)
+
+    def get_system_memory(self):
+        return self.libpanda.get_system_memory()
+
+    def lookup_gic(self,n):
+        return self.libpanda.lookup_gic(n)
+
+    def current_sp(self, cpustate):
+        return self.libpanda.panda_current_sp_external(cpustate)
+
+    def current_pc(self, cpustate):
+        return self.libpanda.panda_current_pc(cpustate)
+
+    def current_asid(self, cpustate):
+        return self.libpanda.panda_current_asid(cpustate)
+
+    def disas2(self, code, size):
+        self.libpanda.panda_disas(code, size)
+
+    def cleanup(self):
+        self.libpanda.panda_cleanup()
+
+    def was_aborted(self):
+        return self.libpanda.panda_was_aborted()
+
+    def current_asid(self, cpustate):
+        return self.libpanda.panda_current_asid(cpustate)
+
+    def get_cpu(self):
+        # XXX: You rarely want this
+        return self.libpanda.get_cpu()
+
+    def garray_len(self, garray):
+        return self.libpanda.garray_len(garray)
+
+    def panda_finish(self):
+        return self.libpanda.panda_finish()</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="panda.main.Panda" href="main.html#panda.main.Panda">Panda</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="panda.libpanda_mixins.libpanda_mixins.arm_load_kernel"><code class="name flex">
+<span>def <span class="ident">arm_load_kernel</span></span>(<span>self, cpu, bootinfo)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def arm_load_kernel(self, cpu, bootinfo):
+    return self.libpanda.arm_load_kernel(cpu, bootinfo)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.cleanup"><code class="name flex">
+<span>def <span class="ident">cleanup</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cleanup(self):
+    self.libpanda.panda_cleanup()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.cpu_class_by_name"><code class="name flex">
+<span>def <span class="ident">cpu_class_by_name</span></span>(<span>self, name, cpu_model)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cpu_class_by_name(self, name, cpu_model):
+    return self.libpanda.cpu_class_by_name(name, cpu_model)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.create_external_gic"><code class="name flex">
+<span>def <span class="ident">create_external_gic</span></span>(<span>self, vbi, irqs, gic_vers, secure)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_external_gic(self, vbi, irqs, gic_vers, secure):
+    return self.libpanda.create_external_gic(vbi, irqs, gic_vers, secure)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.create_internal_gic"><code class="name flex">
+<span>def <span class="ident">create_internal_gic</span></span>(<span>self, vbi, irqs, gic_vers)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_internal_gic(self, vbi, irqs, gic_vers):
+    return self.libpanda.create_internal_gic(vbi, irqs, gic_vers)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.create_one_flash"><code class="name flex">
+<span>def <span class="ident">create_one_flash</span></span>(<span>self, name, flashbase, flashsize, filename, mr)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_one_flash(self, name, flashbase, flashsize, filename, mr):
+    return self.libpanda.create_one_flash(name, flashbase, flashsize, filename, mr)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.create_virtio_devices"><code class="name flex">
+<span>def <span class="ident">create_virtio_devices</span></span>(<span>self, vbi, pic)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_virtio_devices(self, vbi, pic):
+    return self.libpanda.create_virtio_devices(vbi, pic)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.current_asid"><code class="name flex">
+<span>def <span class="ident">current_asid</span></span>(<span>self, cpustate)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def current_asid(self, cpustate):
+    return self.libpanda.panda_current_asid(cpustate)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.current_pc"><code class="name flex">
+<span>def <span class="ident">current_pc</span></span>(<span>self, cpustate)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def current_pc(self, cpustate):
+    return self.libpanda.panda_current_pc(cpustate)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.current_sp"><code class="name flex">
+<span>def <span class="ident">current_sp</span></span>(<span>self, cpustate)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def current_sp(self, cpustate):
+    return self.libpanda.panda_current_sp_external(cpustate)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.disable_llvm"><code class="name flex">
+<span>def <span class="ident">disable_llvm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disable_llvm(self):
+    self.libpanda.panda_disable_llvm()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.disable_llvm_helpers"><code class="name flex">
+<span>def <span class="ident">disable_llvm_helpers</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disable_llvm_helpers(self):
+    self.libpanda.panda_disable_llvm_helpers()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.disable_memcb"><code class="name flex">
+<span>def <span class="ident">disable_memcb</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disable_memcb(self):
+    self._memcb = False
+    self.libpanda.panda_disable_memcb()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.disable_plugin"><code class="name flex">
+<span>def <span class="ident">disable_plugin</span></span>(<span>self, handle)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disable_plugin(self, handle):
+    self.libpanda.panda_disable_plugin(handle)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.disable_precise_pc"><code class="name flex">
+<span>def <span class="ident">disable_precise_pc</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disable_precise_pc(self):
+    self.libpanda.panda_disable_precise_pc()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.disas2"><code class="name flex">
+<span>def <span class="ident">disas2</span></span>(<span>self, code, size)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disas2(self, code, size):
+    self.libpanda.panda_disas(code, size)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.drive_get"><code class="name flex">
+<span>def <span class="ident">drive_get</span></span>(<span>self, blocktype, bus, unit)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def drive_get(self, blocktype, bus, unit):
+    return self.libpanda.drive_get(blocktype,bus,unit)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.enable_llvm"><code class="name flex">
+<span>def <span class="ident">enable_llvm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enable_llvm(self):
+    self.libpanda.panda_enable_llvm()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.enable_llvm_helpers"><code class="name flex">
+<span>def <span class="ident">enable_llvm_helpers</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enable_llvm_helpers(self):
+    self.libpanda.panda_enable_llvm_helpers()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.enable_memcb"><code class="name flex">
+<span>def <span class="ident">enable_memcb</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enable_memcb(self):
+    self._memcb = True
+    self.libpanda.panda_enable_memcb()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.enable_plugin"><code class="name flex">
+<span>def <span class="ident">enable_plugin</span></span>(<span>self, handle)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enable_plugin(self, handle):
+    self.libpanda.panda_enable_plugin(handle)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.enable_precise_pc"><code class="name flex">
+<span>def <span class="ident">enable_precise_pc</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enable_precise_pc(self):
+    self.libpanda.panda_enable_precise_pc()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.error_report"><code class="name flex">
+<span>def <span class="ident">error_report</span></span>(<span>self, s)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def error_report(self, s):
+    return self.libpanda.error_report(s)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.flush_tb"><code class="name flex">
+<span>def <span class="ident">flush_tb</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def flush_tb(self):
+    return self.libpanda.panda_flush_tb()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.g_malloc0"><code class="name flex">
+<span>def <span class="ident">g_malloc0</span></span>(<span>self, size)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def g_malloc0(self, size):
+    return self.libpanda.g_malloc0(size)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.garray_len"><code class="name flex">
+<span>def <span class="ident">garray_len</span></span>(<span>self, garray)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def garray_len(self, garray):
+    return self.libpanda.garray_len(garray)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.get_cpu"><code class="name flex">
+<span>def <span class="ident">get_cpu</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_cpu(self):
+    # XXX: You rarely want this
+    return self.libpanda.get_cpu()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.get_system_memory"><code class="name flex">
+<span>def <span class="ident">get_system_memory</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_system_memory(self):
+    return self.libpanda.get_system_memory()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.in_kernel"><code class="name flex">
+<span>def <span class="ident">in_kernel</span></span>(<span>self, cpustate)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def in_kernel(self, cpustate):
+    return self.libpanda.panda_in_kernel_external(cpustate)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.lookup_gic"><code class="name flex">
+<span>def <span class="ident">lookup_gic</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def lookup_gic(self,n):
+    return self.libpanda.lookup_gic(n)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.memory_region_add_subregion"><code class="name flex">
+<span>def <span class="ident">memory_region_add_subregion</span></span>(<span>self, mr, offset, sr)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def memory_region_add_subregion(self, mr, offset, sr):
+    return self.libpanda.memory_region_add_subregion(mr,offset,sr)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.memory_region_allocate_system_memory"><code class="name flex">
+<span>def <span class="ident">memory_region_allocate_system_memory</span></span>(<span>self, mr, obj, name, ram_size)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def memory_region_allocate_system_memory(self, mr, obj, name, ram_size):
+    return self.libpanda.memory_region_allocate_system_memory(mr, obj, name, ram_size)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.memory_region_init_ram_from_file"><code class="name flex">
+<span>def <span class="ident">memory_region_init_ram_from_file</span></span>(<span>self, mr, owner, name, size, share, path)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def memory_region_init_ram_from_file(self, mr, owner, name, size, share, path):
+    return self.libpanda.memory_region_init_ram_from_file(mr, owner, name, size, share, path, self.libpanda.error_fatal)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.object_class_by_name"><code class="name flex">
+<span>def <span class="ident">object_class_by_name</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def object_class_by_name(self, name):
+    return self.libpanda.object_class_by_name(name)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.object_class_get_name"><code class="name flex">
+<span>def <span class="ident">object_class_get_name</span></span>(<span>self, objclass)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def object_class_get_name(self, objclass):
+    return self.libpanda.object_class_get_name(objclass)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.object_new"><code class="name flex">
+<span>def <span class="ident">object_new</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def object_new(self, name):
+    return self.libpanda.object_new(name)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_find"><code class="name flex">
+<span>def <span class="ident">object_property_find</span></span>(<span>self, obj, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def object_property_find(self, obj, name):
+    return self.libpanda.object_property_find(obj,name,ffi.NULL)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_get_bool"><code class="name flex">
+<span>def <span class="ident">object_property_get_bool</span></span>(<span>self, obj, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def object_property_get_bool(self, obj, name):
+    return self.libpanda.object_property_get_bool(obj,name,self.libpanda.error_abort)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_get_int"><code class="name flex">
+<span>def <span class="ident">object_property_get_int</span></span>(<span>self, obj, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def object_property_get_int(self, obj, name):
+    return self.libpanda.object_property_get_int(obj, name, self.libpanda.error_abort)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_get_link"><code class="name flex">
+<span>def <span class="ident">object_property_get_link</span></span>(<span>self, obj, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def object_property_get_link(self, obj, name):
+    return self.libpanda.object_property_get_link(obj,name,self.libpanda.error_abort)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_set_bool"><code class="name flex">
+<span>def <span class="ident">object_property_set_bool</span></span>(<span>self, obj, value, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def object_property_set_bool(self, obj, value, name):
+    return self.libpanda.object_property_set_bool(obj,value,name,self.libpanda.error_abort)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_set_int"><code class="name flex">
+<span>def <span class="ident">object_property_set_int</span></span>(<span>self, obj, value, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def object_property_set_int(self,obj, value, name):
+    return self.libpanda.object_property_set_int(obj, value, name, self.libpanda.error_abort)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_set_link"><code class="name flex">
+<span>def <span class="ident">object_property_set_link</span></span>(<span>self, obj, val, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def object_property_set_link(self, obj, val, name):
+    return self.libpanda.object_property_set_link(obj,val,name,self.libpanda.error_abort)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.panda_finish"><code class="name flex">
+<span>def <span class="ident">panda_finish</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def panda_finish(self):
+    return self.libpanda.panda_finish()</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.set_os_name"><code class="name flex">
+<span>def <span class="ident">set_os_name</span></span>(<span>self, os_name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_os_name(self, os_name):
+    os_name_new = ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
+    self.libpanda.panda_set_os_name(os_name_new)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.set_pandalog"><code class="name flex">
+<span>def <span class="ident">set_pandalog</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_pandalog(self, name):
+    charptr = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
+    self.libpanda.panda_start_pandalog(charptr)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.sysbus_create_varargs"><code class="name flex">
+<span>def <span class="ident">sysbus_create_varargs</span></span>(<span>self, name, addr)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sysbus_create_varargs(self, name, addr):
+    return self.libpanda.sysbus_create_varargs(name,addr,ffi.NULL)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.virt_to_phys"><code class="name flex">
+<span>def <span class="ident">virt_to_phys</span></span>(<span>self, env, addr)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def virt_to_phys(self, env, addr):
+    return self.libpanda.panda_virt_to_phys_external(env, addr)</code></pre>
+</details>
+</dd>
+<dt id="panda.libpanda_mixins.libpanda_mixins.was_aborted"><code class="name flex">
+<span>def <span class="ident">was_aborted</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def was_aborted(self):
+    return self.libpanda.panda_was_aborted()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="panda" href="index.html">panda</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="panda.libpanda_mixins.libpanda_mixins" href="#panda.libpanda_mixins.libpanda_mixins">libpanda_mixins</a></code></h4>
+<ul class="">
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.arm_load_kernel" href="#panda.libpanda_mixins.libpanda_mixins.arm_load_kernel">arm_load_kernel</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.cleanup" href="#panda.libpanda_mixins.libpanda_mixins.cleanup">cleanup</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.cpu_class_by_name" href="#panda.libpanda_mixins.libpanda_mixins.cpu_class_by_name">cpu_class_by_name</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.create_external_gic" href="#panda.libpanda_mixins.libpanda_mixins.create_external_gic">create_external_gic</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.create_internal_gic" href="#panda.libpanda_mixins.libpanda_mixins.create_internal_gic">create_internal_gic</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.create_one_flash" href="#panda.libpanda_mixins.libpanda_mixins.create_one_flash">create_one_flash</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.create_virtio_devices" href="#panda.libpanda_mixins.libpanda_mixins.create_virtio_devices">create_virtio_devices</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.current_asid" href="#panda.libpanda_mixins.libpanda_mixins.current_asid">current_asid</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.current_pc" href="#panda.libpanda_mixins.libpanda_mixins.current_pc">current_pc</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.current_sp" href="#panda.libpanda_mixins.libpanda_mixins.current_sp">current_sp</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_llvm" href="#panda.libpanda_mixins.libpanda_mixins.disable_llvm">disable_llvm</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_llvm_helpers" href="#panda.libpanda_mixins.libpanda_mixins.disable_llvm_helpers">disable_llvm_helpers</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_memcb" href="#panda.libpanda_mixins.libpanda_mixins.disable_memcb">disable_memcb</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_plugin" href="#panda.libpanda_mixins.libpanda_mixins.disable_plugin">disable_plugin</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_precise_pc" href="#panda.libpanda_mixins.libpanda_mixins.disable_precise_pc">disable_precise_pc</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disas2" href="#panda.libpanda_mixins.libpanda_mixins.disas2">disas2</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.drive_get" href="#panda.libpanda_mixins.libpanda_mixins.drive_get">drive_get</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_llvm" href="#panda.libpanda_mixins.libpanda_mixins.enable_llvm">enable_llvm</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_llvm_helpers" href="#panda.libpanda_mixins.libpanda_mixins.enable_llvm_helpers">enable_llvm_helpers</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_memcb" href="#panda.libpanda_mixins.libpanda_mixins.enable_memcb">enable_memcb</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_plugin" href="#panda.libpanda_mixins.libpanda_mixins.enable_plugin">enable_plugin</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_precise_pc" href="#panda.libpanda_mixins.libpanda_mixins.enable_precise_pc">enable_precise_pc</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.error_report" href="#panda.libpanda_mixins.libpanda_mixins.error_report">error_report</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.flush_tb" href="#panda.libpanda_mixins.libpanda_mixins.flush_tb">flush_tb</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.g_malloc0" href="#panda.libpanda_mixins.libpanda_mixins.g_malloc0">g_malloc0</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.garray_len" href="#panda.libpanda_mixins.libpanda_mixins.garray_len">garray_len</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.get_cpu" href="#panda.libpanda_mixins.libpanda_mixins.get_cpu">get_cpu</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.get_system_memory" href="#panda.libpanda_mixins.libpanda_mixins.get_system_memory">get_system_memory</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.in_kernel" href="#panda.libpanda_mixins.libpanda_mixins.in_kernel">in_kernel</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.lookup_gic" href="#panda.libpanda_mixins.libpanda_mixins.lookup_gic">lookup_gic</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.memory_region_add_subregion" href="#panda.libpanda_mixins.libpanda_mixins.memory_region_add_subregion">memory_region_add_subregion</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.memory_region_allocate_system_memory" href="#panda.libpanda_mixins.libpanda_mixins.memory_region_allocate_system_memory">memory_region_allocate_system_memory</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.memory_region_init_ram_from_file" href="#panda.libpanda_mixins.libpanda_mixins.memory_region_init_ram_from_file">memory_region_init_ram_from_file</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_class_by_name" href="#panda.libpanda_mixins.libpanda_mixins.object_class_by_name">object_class_by_name</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_class_get_name" href="#panda.libpanda_mixins.libpanda_mixins.object_class_get_name">object_class_get_name</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_new" href="#panda.libpanda_mixins.libpanda_mixins.object_new">object_new</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_find" href="#panda.libpanda_mixins.libpanda_mixins.object_property_find">object_property_find</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_get_bool" href="#panda.libpanda_mixins.libpanda_mixins.object_property_get_bool">object_property_get_bool</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_get_int" href="#panda.libpanda_mixins.libpanda_mixins.object_property_get_int">object_property_get_int</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_get_link" href="#panda.libpanda_mixins.libpanda_mixins.object_property_get_link">object_property_get_link</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_set_bool" href="#panda.libpanda_mixins.libpanda_mixins.object_property_set_bool">object_property_set_bool</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_set_int" href="#panda.libpanda_mixins.libpanda_mixins.object_property_set_int">object_property_set_int</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_set_link" href="#panda.libpanda_mixins.libpanda_mixins.object_property_set_link">object_property_set_link</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.panda_finish" href="#panda.libpanda_mixins.libpanda_mixins.panda_finish">panda_finish</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.set_os_name" href="#panda.libpanda_mixins.libpanda_mixins.set_os_name">set_os_name</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.set_pandalog" href="#panda.libpanda_mixins.libpanda_mixins.set_pandalog">set_pandalog</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.sysbus_create_varargs" href="#panda.libpanda_mixins.libpanda_mixins.sysbus_create_varargs">sysbus_create_varargs</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.virt_to_phys" href="#panda.libpanda_mixins.libpanda_mixins.virt_to_phys">virt_to_phys</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.was_aborted" href="#panda.libpanda_mixins.libpanda_mixins.was_aborted">was_aborted</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.4</a>.</p>
+</footer>
+</body>
+</html>
