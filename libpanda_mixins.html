@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>panda.libpanda_mixins API documentation</title>
-<meta name="description" content="Methods that directly pass data to/from libpanda with no extra logic beyond argument reformatting." />
+<meta name="description" content="Methods that directly pass data to/from PANDA with no extra logic beyond argument reformatting." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,171 +22,219 @@
 <h1 class="title">Module <code>panda.libpanda_mixins</code></h1>
 </header>
 <section id="section-intro">
-<p>Methods that directly pass data to/from libpanda with no extra logic beyond argument reformatting.</p>
+<p>Methods that directly pass data to/from PANDA with no extra logic beyond argument reformatting.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#39;&#39;&#39;
-Methods that directly pass data to/from libpanda with no extra logic beyond argument reformatting.
+Methods that directly pass data to/from PANDA with no extra logic beyond argument reformatting.
 &#39;&#39;&#39;
 
 from .ffi_importer import ffi
 
 class libpanda_mixins():
     def set_pandalog(self, name):
+        &#39;&#39;&#39;
+        Start up pandalog with specified file
+
+            Parameters:
+                name: file to output data to
+            
+            Returns:
+                None
+        &#39;&#39;&#39;
         charptr = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
         self.libpanda.panda_start_pandalog(charptr)
 
-    def set_os_name(self, os_name):
-        os_name_new = ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
-        self.libpanda.panda_set_os_name(os_name_new)
-
     def enable_memcb(self):
+        &#39;&#39;&#39;
+        Enable memory callbacks. Must be called for memory callbacks to work.
+        pypanda enables this automatically with some callbacks.
+        &#39;&#39;&#39;
         self._memcb = True
         self.libpanda.panda_enable_memcb()
-
-    def virt_to_phys(self, env, addr):
-        return self.libpanda.panda_virt_to_phys_external(env, addr)
-
-    def enable_plugin(self, handle):
-        self.libpanda.panda_enable_plugin(handle)
-
-    def disable_plugin(self, handle):
-        self.libpanda.panda_disable_plugin(handle)
-
+    
     def disable_memcb(self):
+        &#39;&#39;&#39;
+        Disable memory callbacks. Must be enabled for memory callbacks to work.
+        pypanda enables this automatically with some callbacks.
+        &#39;&#39;&#39;
         self._memcb = False
         self.libpanda.panda_disable_memcb()
 
+    def virt_to_phys(self, env, addr):
+        &#39;&#39;&#39;
+        Convert virtual address to physical address.
+
+            Parameters:
+                env: CPUState struct
+                addr (int): virtual address to convert
+            
+            Return:
+                physical address as python int
+        &#39;&#39;&#39;
+        return self.libpanda.panda_virt_to_phys_external(env, addr)
+
+    def enable_plugin(self, handle):
+        &#39;&#39;&#39;
+        Enable plugin.
+
+            Parameters:
+                handle: pointer to handle returned by plugin
+            
+            Return:
+                None
+        &#39;&#39;&#39;
+        self.libpanda.panda_enable_plugin(handle)
+
+    def disable_plugin(self, handle):
+        &#39;&#39;&#39;
+        Disable plugin.
+
+            Parameters:
+                handle: pointer to handle returned by plugin
+            
+            Return:
+                None
+        &#39;&#39;&#39;
+        self.libpanda.panda_disable_plugin(handle)
+
     def enable_llvm(self):
+        &#39;&#39;&#39;
+        Enables the use of the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+        &#39;&#39;&#39;
         self.libpanda.panda_enable_llvm()
 
     def disable_llvm(self):
+        &#39;&#39;&#39;
+        Disables the use of the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+        &#39;&#39;&#39;
         self.libpanda.panda_disable_llvm()
 
     def enable_llvm_helpers(self):
+        &#39;&#39;&#39;
+        Enables the use of Helpers for the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+        &#39;&#39;&#39;
         self.libpanda.panda_enable_llvm_helpers()
 
     def disable_llvm_helpers(self):
+        &#39;&#39;&#39;
+        Disables the use of Helpers for the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+        &#39;&#39;&#39;
         self.libpanda.panda_disable_llvm_helpers()
 
     def flush_tb(self):
+        &#39;&#39;&#39;
+        This function requests that the translation block cache be flushed as soon as possible. If running with translation block chaining turned off (e.g. when in LLVM mode or replay mode), this will happen when the current translation block is done executing.
+        Flushing the translation block cache is additionally necessary if the plugin makes changes to the way code is translated. For example, by using panda_enable_precise_pc.
+        &#39;&#39;&#39;
         return self.libpanda.panda_flush_tb()
 
     def enable_precise_pc(self):
+        &#39;&#39;&#39;
+        By default, QEMU does not update the program counter after every instruction.
+        This function enables precise tracking of the program counter. After enabling precise PC tracking, the program counter will be available in env-&gt;panda_guest_pc and can be assumed to accurately reflect the guest state.
+        &#39;&#39;&#39;
         self.libpanda.panda_enable_precise_pc()
 
     def disable_precise_pc(self):
+        &#39;&#39;&#39;
+        By default, QEMU does not update the program counter after every instruction.
+        This function disables precise tracking of the program counter.
+        &#39;&#39;&#39;
         self.libpanda.panda_disable_precise_pc()
 
     def in_kernel(self, cpustate):
+        &#39;&#39;&#39;
+        Returns true if the processor is in the privilege level corresponding to executing kernel code for any of the PANDA supported architectures.
+        &#39;&#39;&#39;
         return self.libpanda.panda_in_kernel_external(cpustate)
 
     def g_malloc0(self, size):
+        &#39;&#39;&#39;
+        Helper function to call glib malloc
+
+            Parameters:
+                size: size to call with malloc
+            
+            Returns:
+                buffer of that size from malloc
+        &#39;&#39;&#39;
         return self.libpanda.g_malloc0(size)
 
-    def drive_get(self, blocktype, bus, unit):
-        return self.libpanda.drive_get(blocktype,bus,unit)
-
-    def sysbus_create_varargs(self, name, addr):
-        return self.libpanda.sysbus_create_varargs(name,addr,ffi.NULL)
-
-    def cpu_class_by_name(self, name, cpu_model):
-        return self.libpanda.cpu_class_by_name(name, cpu_model)
-
-    def object_class_by_name(self, name):
-        return self.libpanda.object_class_by_name(name)
-
-    def object_property_set_bool(self, obj, value, name):
-        return self.libpanda.object_property_set_bool(obj,value,name,self.libpanda.error_abort)
-
-    def object_class_get_name(self, objclass):
-        return self.libpanda.object_class_get_name(objclass)
-
-    def object_new(self, name):
-        return self.libpanda.object_new(name)
-
-    def object_property_get_bool(self, obj, name):
-        return self.libpanda.object_property_get_bool(obj,name,self.libpanda.error_abort)
-
-    def object_property_set_int(self,obj, value, name):
-        return self.libpanda.object_property_set_int(obj, value, name, self.libpanda.error_abort)
-
-    def object_property_get_int(self, obj, name):
-        return self.libpanda.object_property_get_int(obj, name, self.libpanda.error_abort)
-
-    def object_property_set_link(self, obj, val, name):
-        return self.libpanda.object_property_set_link(obj,val,name,self.libpanda.error_abort)
-
-    def object_property_get_link(self, obj, name):
-        return self.libpanda.object_property_get_link(obj,name,self.libpanda.error_abort)
-
-    def object_property_find(self, obj, name):
-        return self.libpanda.object_property_find(obj,name,ffi.NULL)
-
-    def memory_region_allocate_system_memory(self, mr, obj, name, ram_size):
-        return self.libpanda.memory_region_allocate_system_memory(mr, obj, name, ram_size)
-
-    def memory_region_add_subregion(self, mr, offset, sr):
-        return self.libpanda.memory_region_add_subregion(mr,offset,sr)
-
-    def memory_region_init_ram_from_file(self, mr, owner, name, size, share, path):
-        return self.libpanda.memory_region_init_ram_from_file(mr, owner, name, size, share, path, self.libpanda.error_fatal)
-
-    def create_internal_gic(self, vbi, irqs, gic_vers):
-        return self.libpanda.create_internal_gic(vbi, irqs, gic_vers)
-
-    def create_one_flash(self, name, flashbase, flashsize, filename, mr):
-        return self.libpanda.create_one_flash(name, flashbase, flashsize, filename, mr)
-
-    def create_external_gic(self, vbi, irqs, gic_vers, secure):
-        return self.libpanda.create_external_gic(vbi, irqs, gic_vers, secure)
-
-    def create_virtio_devices(self, vbi, pic):
-        return self.libpanda.create_virtio_devices(vbi, pic)
-
-    def arm_load_kernel(self, cpu, bootinfo):
-        return self.libpanda.arm_load_kernel(cpu, bootinfo)
-
-    def error_report(self, s):
-        return self.libpanda.error_report(s)
-
-    def get_system_memory(self):
-        return self.libpanda.get_system_memory()
-
-    def lookup_gic(self,n):
-        return self.libpanda.lookup_gic(n)
-
     def current_sp(self, cpustate):
+        &#39;&#39;&#39;
+        Get current stack pointer
+
+            Parameters:
+                cpustate: CPUState struct
+
+            Return:
+                integer value of stack pointer
+        &#39;&#39;&#39;
         return self.libpanda.panda_current_sp_external(cpustate)
 
     def current_pc(self, cpustate):
+        &#39;&#39;&#39;
+        Get current program counter
+
+            Parameters:
+                cpustate: CPUState struct
+
+            Return:
+                integer value of current program counter
+        &#39;&#39;&#39;
         return self.libpanda.panda_current_pc(cpustate)
 
     def current_asid(self, cpustate):
+        &#39;&#39;&#39;
+        Get current Application Specific ID
+            
+            Parameters:
+                cpustate: CPUState struct
+
+            Return:
+                integer value of current ASID
+        &#39;&#39;&#39;
         return self.libpanda.panda_current_asid(cpustate)
 
     def disas2(self, code, size):
+        &#39;&#39;&#39;
+        Call panda_disas to diasassemble an amount of code at a pointer.
+        FIXME: seem to not match up to PANDA definition
+        &#39;&#39;&#39;
         self.libpanda.panda_disas(code, size)
 
     def cleanup(self):
+        &#39;&#39;&#39;
+        Unload all plugins and close pandalog.
+        &#39;&#39;&#39;
         self.libpanda.panda_cleanup()
 
     def was_aborted(self):
+        &#39;&#39;&#39;
+        Returns true if panda was aborted.
+        &#39;&#39;&#39;
         return self.libpanda.panda_was_aborted()
 
-    def current_asid(self, cpustate):
-        return self.libpanda.panda_current_asid(cpustate)
-
     def get_cpu(self):
-        # XXX: You rarely want this
+        &#39;&#39;&#39;
+        This function returns first_cpu CPUState object from QEMU.
+        XXX: You rarely want this
+        &#39;&#39;&#39;
         return self.libpanda.get_cpu()
 
     def garray_len(self, garray):
+        &#39;&#39;&#39;
+        Convenience function to get array length of glibc array.
+        &#39;&#39;&#39;
         return self.libpanda.garray_len(garray)
 
     def panda_finish(self):
+        &#39;&#39;&#39;
+        Final stage call to underlying panda_finish with initialization.
+        &#39;&#39;&#39;
         return self.libpanda.panda_finish()
 
     def rr_get_guest_instr_count(self):
@@ -216,158 +264,206 @@ class libpanda_mixins():
 </summary>
 <pre><code class="python">class libpanda_mixins():
     def set_pandalog(self, name):
+        &#39;&#39;&#39;
+        Start up pandalog with specified file
+
+            Parameters:
+                name: file to output data to
+            
+            Returns:
+                None
+        &#39;&#39;&#39;
         charptr = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
         self.libpanda.panda_start_pandalog(charptr)
 
-    def set_os_name(self, os_name):
-        os_name_new = ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
-        self.libpanda.panda_set_os_name(os_name_new)
-
     def enable_memcb(self):
+        &#39;&#39;&#39;
+        Enable memory callbacks. Must be called for memory callbacks to work.
+        pypanda enables this automatically with some callbacks.
+        &#39;&#39;&#39;
         self._memcb = True
         self.libpanda.panda_enable_memcb()
-
-    def virt_to_phys(self, env, addr):
-        return self.libpanda.panda_virt_to_phys_external(env, addr)
-
-    def enable_plugin(self, handle):
-        self.libpanda.panda_enable_plugin(handle)
-
-    def disable_plugin(self, handle):
-        self.libpanda.panda_disable_plugin(handle)
-
+    
     def disable_memcb(self):
+        &#39;&#39;&#39;
+        Disable memory callbacks. Must be enabled for memory callbacks to work.
+        pypanda enables this automatically with some callbacks.
+        &#39;&#39;&#39;
         self._memcb = False
         self.libpanda.panda_disable_memcb()
 
+    def virt_to_phys(self, env, addr):
+        &#39;&#39;&#39;
+        Convert virtual address to physical address.
+
+            Parameters:
+                env: CPUState struct
+                addr (int): virtual address to convert
+            
+            Return:
+                physical address as python int
+        &#39;&#39;&#39;
+        return self.libpanda.panda_virt_to_phys_external(env, addr)
+
+    def enable_plugin(self, handle):
+        &#39;&#39;&#39;
+        Enable plugin.
+
+            Parameters:
+                handle: pointer to handle returned by plugin
+            
+            Return:
+                None
+        &#39;&#39;&#39;
+        self.libpanda.panda_enable_plugin(handle)
+
+    def disable_plugin(self, handle):
+        &#39;&#39;&#39;
+        Disable plugin.
+
+            Parameters:
+                handle: pointer to handle returned by plugin
+            
+            Return:
+                None
+        &#39;&#39;&#39;
+        self.libpanda.panda_disable_plugin(handle)
+
     def enable_llvm(self):
+        &#39;&#39;&#39;
+        Enables the use of the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+        &#39;&#39;&#39;
         self.libpanda.panda_enable_llvm()
 
     def disable_llvm(self):
+        &#39;&#39;&#39;
+        Disables the use of the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+        &#39;&#39;&#39;
         self.libpanda.panda_disable_llvm()
 
     def enable_llvm_helpers(self):
+        &#39;&#39;&#39;
+        Enables the use of Helpers for the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+        &#39;&#39;&#39;
         self.libpanda.panda_enable_llvm_helpers()
 
     def disable_llvm_helpers(self):
+        &#39;&#39;&#39;
+        Disables the use of Helpers for the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+        &#39;&#39;&#39;
         self.libpanda.panda_disable_llvm_helpers()
 
     def flush_tb(self):
+        &#39;&#39;&#39;
+        This function requests that the translation block cache be flushed as soon as possible. If running with translation block chaining turned off (e.g. when in LLVM mode or replay mode), this will happen when the current translation block is done executing.
+        Flushing the translation block cache is additionally necessary if the plugin makes changes to the way code is translated. For example, by using panda_enable_precise_pc.
+        &#39;&#39;&#39;
         return self.libpanda.panda_flush_tb()
 
     def enable_precise_pc(self):
+        &#39;&#39;&#39;
+        By default, QEMU does not update the program counter after every instruction.
+        This function enables precise tracking of the program counter. After enabling precise PC tracking, the program counter will be available in env-&gt;panda_guest_pc and can be assumed to accurately reflect the guest state.
+        &#39;&#39;&#39;
         self.libpanda.panda_enable_precise_pc()
 
     def disable_precise_pc(self):
+        &#39;&#39;&#39;
+        By default, QEMU does not update the program counter after every instruction.
+        This function disables precise tracking of the program counter.
+        &#39;&#39;&#39;
         self.libpanda.panda_disable_precise_pc()
 
     def in_kernel(self, cpustate):
+        &#39;&#39;&#39;
+        Returns true if the processor is in the privilege level corresponding to executing kernel code for any of the PANDA supported architectures.
+        &#39;&#39;&#39;
         return self.libpanda.panda_in_kernel_external(cpustate)
 
     def g_malloc0(self, size):
+        &#39;&#39;&#39;
+        Helper function to call glib malloc
+
+            Parameters:
+                size: size to call with malloc
+            
+            Returns:
+                buffer of that size from malloc
+        &#39;&#39;&#39;
         return self.libpanda.g_malloc0(size)
 
-    def drive_get(self, blocktype, bus, unit):
-        return self.libpanda.drive_get(blocktype,bus,unit)
-
-    def sysbus_create_varargs(self, name, addr):
-        return self.libpanda.sysbus_create_varargs(name,addr,ffi.NULL)
-
-    def cpu_class_by_name(self, name, cpu_model):
-        return self.libpanda.cpu_class_by_name(name, cpu_model)
-
-    def object_class_by_name(self, name):
-        return self.libpanda.object_class_by_name(name)
-
-    def object_property_set_bool(self, obj, value, name):
-        return self.libpanda.object_property_set_bool(obj,value,name,self.libpanda.error_abort)
-
-    def object_class_get_name(self, objclass):
-        return self.libpanda.object_class_get_name(objclass)
-
-    def object_new(self, name):
-        return self.libpanda.object_new(name)
-
-    def object_property_get_bool(self, obj, name):
-        return self.libpanda.object_property_get_bool(obj,name,self.libpanda.error_abort)
-
-    def object_property_set_int(self,obj, value, name):
-        return self.libpanda.object_property_set_int(obj, value, name, self.libpanda.error_abort)
-
-    def object_property_get_int(self, obj, name):
-        return self.libpanda.object_property_get_int(obj, name, self.libpanda.error_abort)
-
-    def object_property_set_link(self, obj, val, name):
-        return self.libpanda.object_property_set_link(obj,val,name,self.libpanda.error_abort)
-
-    def object_property_get_link(self, obj, name):
-        return self.libpanda.object_property_get_link(obj,name,self.libpanda.error_abort)
-
-    def object_property_find(self, obj, name):
-        return self.libpanda.object_property_find(obj,name,ffi.NULL)
-
-    def memory_region_allocate_system_memory(self, mr, obj, name, ram_size):
-        return self.libpanda.memory_region_allocate_system_memory(mr, obj, name, ram_size)
-
-    def memory_region_add_subregion(self, mr, offset, sr):
-        return self.libpanda.memory_region_add_subregion(mr,offset,sr)
-
-    def memory_region_init_ram_from_file(self, mr, owner, name, size, share, path):
-        return self.libpanda.memory_region_init_ram_from_file(mr, owner, name, size, share, path, self.libpanda.error_fatal)
-
-    def create_internal_gic(self, vbi, irqs, gic_vers):
-        return self.libpanda.create_internal_gic(vbi, irqs, gic_vers)
-
-    def create_one_flash(self, name, flashbase, flashsize, filename, mr):
-        return self.libpanda.create_one_flash(name, flashbase, flashsize, filename, mr)
-
-    def create_external_gic(self, vbi, irqs, gic_vers, secure):
-        return self.libpanda.create_external_gic(vbi, irqs, gic_vers, secure)
-
-    def create_virtio_devices(self, vbi, pic):
-        return self.libpanda.create_virtio_devices(vbi, pic)
-
-    def arm_load_kernel(self, cpu, bootinfo):
-        return self.libpanda.arm_load_kernel(cpu, bootinfo)
-
-    def error_report(self, s):
-        return self.libpanda.error_report(s)
-
-    def get_system_memory(self):
-        return self.libpanda.get_system_memory()
-
-    def lookup_gic(self,n):
-        return self.libpanda.lookup_gic(n)
-
     def current_sp(self, cpustate):
+        &#39;&#39;&#39;
+        Get current stack pointer
+
+            Parameters:
+                cpustate: CPUState struct
+
+            Return:
+                integer value of stack pointer
+        &#39;&#39;&#39;
         return self.libpanda.panda_current_sp_external(cpustate)
 
     def current_pc(self, cpustate):
+        &#39;&#39;&#39;
+        Get current program counter
+
+            Parameters:
+                cpustate: CPUState struct
+
+            Return:
+                integer value of current program counter
+        &#39;&#39;&#39;
         return self.libpanda.panda_current_pc(cpustate)
 
     def current_asid(self, cpustate):
+        &#39;&#39;&#39;
+        Get current Application Specific ID
+            
+            Parameters:
+                cpustate: CPUState struct
+
+            Return:
+                integer value of current ASID
+        &#39;&#39;&#39;
         return self.libpanda.panda_current_asid(cpustate)
 
     def disas2(self, code, size):
+        &#39;&#39;&#39;
+        Call panda_disas to diasassemble an amount of code at a pointer.
+        FIXME: seem to not match up to PANDA definition
+        &#39;&#39;&#39;
         self.libpanda.panda_disas(code, size)
 
     def cleanup(self):
+        &#39;&#39;&#39;
+        Unload all plugins and close pandalog.
+        &#39;&#39;&#39;
         self.libpanda.panda_cleanup()
 
     def was_aborted(self):
+        &#39;&#39;&#39;
+        Returns true if panda was aborted.
+        &#39;&#39;&#39;
         return self.libpanda.panda_was_aborted()
 
-    def current_asid(self, cpustate):
-        return self.libpanda.panda_current_asid(cpustate)
-
     def get_cpu(self):
-        # XXX: You rarely want this
+        &#39;&#39;&#39;
+        This function returns first_cpu CPUState object from QEMU.
+        XXX: You rarely want this
+        &#39;&#39;&#39;
         return self.libpanda.get_cpu()
 
     def garray_len(self, garray):
+        &#39;&#39;&#39;
+        Convenience function to get array length of glibc array.
+        &#39;&#39;&#39;
         return self.libpanda.garray_len(garray)
 
     def panda_finish(self):
+        &#39;&#39;&#39;
+        Final stage call to underlying panda_finish with initialization.
+        &#39;&#39;&#39;
         return self.libpanda.panda_finish()
 
     def rr_get_guest_instr_count(self):
@@ -382,107 +478,47 @@ class libpanda_mixins():
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.libpanda_mixins.libpanda_mixins.arm_load_kernel"><code class="name flex">
-<span>def <span class="ident">arm_load_kernel</span></span>(<span>self, cpu, bootinfo)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def arm_load_kernel(self, cpu, bootinfo):
-    return self.libpanda.arm_load_kernel(cpu, bootinfo)</code></pre>
-</details>
-</dd>
 <dt id="panda.libpanda_mixins.libpanda_mixins.cleanup"><code class="name flex">
 <span>def <span class="ident">cleanup</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Unload all plugins and close pandalog.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def cleanup(self):
+    &#39;&#39;&#39;
+    Unload all plugins and close pandalog.
+    &#39;&#39;&#39;
     self.libpanda.panda_cleanup()</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.cpu_class_by_name"><code class="name flex">
-<span>def <span class="ident">cpu_class_by_name</span></span>(<span>self, name, cpu_model)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def cpu_class_by_name(self, name, cpu_model):
-    return self.libpanda.cpu_class_by_name(name, cpu_model)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.create_external_gic"><code class="name flex">
-<span>def <span class="ident">create_external_gic</span></span>(<span>self, vbi, irqs, gic_vers, secure)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def create_external_gic(self, vbi, irqs, gic_vers, secure):
-    return self.libpanda.create_external_gic(vbi, irqs, gic_vers, secure)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.create_internal_gic"><code class="name flex">
-<span>def <span class="ident">create_internal_gic</span></span>(<span>self, vbi, irqs, gic_vers)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def create_internal_gic(self, vbi, irqs, gic_vers):
-    return self.libpanda.create_internal_gic(vbi, irqs, gic_vers)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.create_one_flash"><code class="name flex">
-<span>def <span class="ident">create_one_flash</span></span>(<span>self, name, flashbase, flashsize, filename, mr)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def create_one_flash(self, name, flashbase, flashsize, filename, mr):
-    return self.libpanda.create_one_flash(name, flashbase, flashsize, filename, mr)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.create_virtio_devices"><code class="name flex">
-<span>def <span class="ident">create_virtio_devices</span></span>(<span>self, vbi, pic)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def create_virtio_devices(self, vbi, pic):
-    return self.libpanda.create_virtio_devices(vbi, pic)</code></pre>
 </details>
 </dd>
 <dt id="panda.libpanda_mixins.libpanda_mixins.current_asid"><code class="name flex">
 <span>def <span class="ident">current_asid</span></span>(<span>self, cpustate)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Get current Application Specific ID</p>
+<pre><code>Parameters:
+    cpustate: CPUState struct
+
+Return:
+    integer value of current ASID
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def current_asid(self, cpustate):
+    &#39;&#39;&#39;
+    Get current Application Specific ID
+        
+        Parameters:
+            cpustate: CPUState struct
+
+        Return:
+            integer value of current ASID
+    &#39;&#39;&#39;
     return self.libpanda.panda_current_asid(cpustate)</code></pre>
 </details>
 </dd>
@@ -490,12 +526,27 @@ class libpanda_mixins():
 <span>def <span class="ident">current_pc</span></span>(<span>self, cpustate)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Get current program counter</p>
+<pre><code>Parameters:
+    cpustate: CPUState struct
+
+Return:
+    integer value of current program counter
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def current_pc(self, cpustate):
+    &#39;&#39;&#39;
+    Get current program counter
+
+        Parameters:
+            cpustate: CPUState struct
+
+        Return:
+            integer value of current program counter
+    &#39;&#39;&#39;
     return self.libpanda.panda_current_pc(cpustate)</code></pre>
 </details>
 </dd>
@@ -503,12 +554,27 @@ class libpanda_mixins():
 <span>def <span class="ident">current_sp</span></span>(<span>self, cpustate)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Get current stack pointer</p>
+<pre><code>Parameters:
+    cpustate: CPUState struct
+
+Return:
+    integer value of stack pointer
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def current_sp(self, cpustate):
+    &#39;&#39;&#39;
+    Get current stack pointer
+
+        Parameters:
+            cpustate: CPUState struct
+
+        Return:
+            integer value of stack pointer
+    &#39;&#39;&#39;
     return self.libpanda.panda_current_sp_external(cpustate)</code></pre>
 </details>
 </dd>
@@ -516,12 +582,15 @@ class libpanda_mixins():
 <span>def <span class="ident">disable_llvm</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Disables the use of the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def disable_llvm(self):
+    &#39;&#39;&#39;
+    Disables the use of the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+    &#39;&#39;&#39;
     self.libpanda.panda_disable_llvm()</code></pre>
 </details>
 </dd>
@@ -529,12 +598,15 @@ class libpanda_mixins():
 <span>def <span class="ident">disable_llvm_helpers</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Disables the use of Helpers for the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def disable_llvm_helpers(self):
+    &#39;&#39;&#39;
+    Disables the use of Helpers for the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+    &#39;&#39;&#39;
     self.libpanda.panda_disable_llvm_helpers()</code></pre>
 </details>
 </dd>
@@ -542,12 +614,17 @@ class libpanda_mixins():
 <span>def <span class="ident">disable_memcb</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Disable memory callbacks. Must be enabled for memory callbacks to work.
+pypanda enables this automatically with some callbacks.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def disable_memcb(self):
+    &#39;&#39;&#39;
+    Disable memory callbacks. Must be enabled for memory callbacks to work.
+    pypanda enables this automatically with some callbacks.
+    &#39;&#39;&#39;
     self._memcb = False
     self.libpanda.panda_disable_memcb()</code></pre>
 </details>
@@ -556,12 +633,27 @@ class libpanda_mixins():
 <span>def <span class="ident">disable_plugin</span></span>(<span>self, handle)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Disable plugin.</p>
+<pre><code>Parameters:
+    handle: pointer to handle returned by plugin
+
+Return:
+    None
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def disable_plugin(self, handle):
+    &#39;&#39;&#39;
+    Disable plugin.
+
+        Parameters:
+            handle: pointer to handle returned by plugin
+        
+        Return:
+            None
+    &#39;&#39;&#39;
     self.libpanda.panda_disable_plugin(handle)</code></pre>
 </details>
 </dd>
@@ -569,12 +661,17 @@ class libpanda_mixins():
 <span>def <span class="ident">disable_precise_pc</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>By default, QEMU does not update the program counter after every instruction.
+This function disables precise tracking of the program counter.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def disable_precise_pc(self):
+    &#39;&#39;&#39;
+    By default, QEMU does not update the program counter after every instruction.
+    This function disables precise tracking of the program counter.
+    &#39;&#39;&#39;
     self.libpanda.panda_disable_precise_pc()</code></pre>
 </details>
 </dd>
@@ -582,38 +679,33 @@ class libpanda_mixins():
 <span>def <span class="ident">disas2</span></span>(<span>self, code, size)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Call panda_disas to diasassemble an amount of code at a pointer.
+FIXME: seem to not match up to PANDA definition</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def disas2(self, code, size):
+    &#39;&#39;&#39;
+    Call panda_disas to diasassemble an amount of code at a pointer.
+    FIXME: seem to not match up to PANDA definition
+    &#39;&#39;&#39;
     self.libpanda.panda_disas(code, size)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.drive_get"><code class="name flex">
-<span>def <span class="ident">drive_get</span></span>(<span>self, blocktype, bus, unit)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def drive_get(self, blocktype, bus, unit):
-    return self.libpanda.drive_get(blocktype,bus,unit)</code></pre>
 </details>
 </dd>
 <dt id="panda.libpanda_mixins.libpanda_mixins.enable_llvm"><code class="name flex">
 <span>def <span class="ident">enable_llvm</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Enables the use of the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def enable_llvm(self):
+    &#39;&#39;&#39;
+    Enables the use of the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+    &#39;&#39;&#39;
     self.libpanda.panda_enable_llvm()</code></pre>
 </details>
 </dd>
@@ -621,12 +713,15 @@ class libpanda_mixins():
 <span>def <span class="ident">enable_llvm_helpers</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Enables the use of Helpers for the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def enable_llvm_helpers(self):
+    &#39;&#39;&#39;
+    Enables the use of Helpers for the LLVM JIT in replacement of the TCG (QEMU intermediate language and compiler) backend. 
+    &#39;&#39;&#39;
     self.libpanda.panda_enable_llvm_helpers()</code></pre>
 </details>
 </dd>
@@ -634,12 +729,17 @@ class libpanda_mixins():
 <span>def <span class="ident">enable_memcb</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Enable memory callbacks. Must be called for memory callbacks to work.
+pypanda enables this automatically with some callbacks.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def enable_memcb(self):
+    &#39;&#39;&#39;
+    Enable memory callbacks. Must be called for memory callbacks to work.
+    pypanda enables this automatically with some callbacks.
+    &#39;&#39;&#39;
     self._memcb = True
     self.libpanda.panda_enable_memcb()</code></pre>
 </details>
@@ -648,12 +748,27 @@ class libpanda_mixins():
 <span>def <span class="ident">enable_plugin</span></span>(<span>self, handle)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Enable plugin.</p>
+<pre><code>Parameters:
+    handle: pointer to handle returned by plugin
+
+Return:
+    None
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def enable_plugin(self, handle):
+    &#39;&#39;&#39;
+    Enable plugin.
+
+        Parameters:
+            handle: pointer to handle returned by plugin
+        
+        Return:
+            None
+    &#39;&#39;&#39;
     self.libpanda.panda_enable_plugin(handle)</code></pre>
 </details>
 </dd>
@@ -661,38 +776,35 @@ class libpanda_mixins():
 <span>def <span class="ident">enable_precise_pc</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>By default, QEMU does not update the program counter after every instruction.
+This function enables precise tracking of the program counter. After enabling precise PC tracking, the program counter will be available in env-&gt;panda_guest_pc and can be assumed to accurately reflect the guest state.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def enable_precise_pc(self):
+    &#39;&#39;&#39;
+    By default, QEMU does not update the program counter after every instruction.
+    This function enables precise tracking of the program counter. After enabling precise PC tracking, the program counter will be available in env-&gt;panda_guest_pc and can be assumed to accurately reflect the guest state.
+    &#39;&#39;&#39;
     self.libpanda.panda_enable_precise_pc()</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.error_report"><code class="name flex">
-<span>def <span class="ident">error_report</span></span>(<span>self, s)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def error_report(self, s):
-    return self.libpanda.error_report(s)</code></pre>
 </details>
 </dd>
 <dt id="panda.libpanda_mixins.libpanda_mixins.flush_tb"><code class="name flex">
 <span>def <span class="ident">flush_tb</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function requests that the translation block cache be flushed as soon as possible. If running with translation block chaining turned off (e.g. when in LLVM mode or replay mode), this will happen when the current translation block is done executing.
+Flushing the translation block cache is additionally necessary if the plugin makes changes to the way code is translated. For example, by using panda_enable_precise_pc.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def flush_tb(self):
+    &#39;&#39;&#39;
+    This function requests that the translation block cache be flushed as soon as possible. If running with translation block chaining turned off (e.g. when in LLVM mode or replay mode), this will happen when the current translation block is done executing.
+    Flushing the translation block cache is additionally necessary if the plugin makes changes to the way code is translated. For example, by using panda_enable_precise_pc.
+    &#39;&#39;&#39;
     return self.libpanda.panda_flush_tb()</code></pre>
 </details>
 </dd>
@@ -700,12 +812,27 @@ class libpanda_mixins():
 <span>def <span class="ident">g_malloc0</span></span>(<span>self, size)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Helper function to call glib malloc</p>
+<pre><code>Parameters:
+    size: size to call with malloc
+
+Returns:
+    buffer of that size from malloc
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def g_malloc0(self, size):
+    &#39;&#39;&#39;
+    Helper function to call glib malloc
+
+        Parameters:
+            size: size to call with malloc
+        
+        Returns:
+            buffer of that size from malloc
+    &#39;&#39;&#39;
     return self.libpanda.g_malloc0(size)</code></pre>
 </details>
 </dd>
@@ -713,12 +840,15 @@ class libpanda_mixins():
 <span>def <span class="ident">garray_len</span></span>(<span>self, garray)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Convenience function to get array length of glibc array.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def garray_len(self, garray):
+    &#39;&#39;&#39;
+    Convenience function to get array length of glibc array.
+    &#39;&#39;&#39;
     return self.libpanda.garray_len(garray)</code></pre>
 </details>
 </dd>
@@ -726,234 +856,49 @@ class libpanda_mixins():
 <span>def <span class="ident">get_cpu</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function returns first_cpu CPUState object from QEMU.
+XXX: You rarely want this</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_cpu(self):
-    # XXX: You rarely want this
+    &#39;&#39;&#39;
+    This function returns first_cpu CPUState object from QEMU.
+    XXX: You rarely want this
+    &#39;&#39;&#39;
     return self.libpanda.get_cpu()</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.get_system_memory"><code class="name flex">
-<span>def <span class="ident">get_system_memory</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_system_memory(self):
-    return self.libpanda.get_system_memory()</code></pre>
 </details>
 </dd>
 <dt id="panda.libpanda_mixins.libpanda_mixins.in_kernel"><code class="name flex">
 <span>def <span class="ident">in_kernel</span></span>(<span>self, cpustate)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns true if the processor is in the privilege level corresponding to executing kernel code for any of the PANDA supported architectures.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def in_kernel(self, cpustate):
+    &#39;&#39;&#39;
+    Returns true if the processor is in the privilege level corresponding to executing kernel code for any of the PANDA supported architectures.
+    &#39;&#39;&#39;
     return self.libpanda.panda_in_kernel_external(cpustate)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.lookup_gic"><code class="name flex">
-<span>def <span class="ident">lookup_gic</span></span>(<span>self, n)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def lookup_gic(self,n):
-    return self.libpanda.lookup_gic(n)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.memory_region_add_subregion"><code class="name flex">
-<span>def <span class="ident">memory_region_add_subregion</span></span>(<span>self, mr, offset, sr)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def memory_region_add_subregion(self, mr, offset, sr):
-    return self.libpanda.memory_region_add_subregion(mr,offset,sr)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.memory_region_allocate_system_memory"><code class="name flex">
-<span>def <span class="ident">memory_region_allocate_system_memory</span></span>(<span>self, mr, obj, name, ram_size)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def memory_region_allocate_system_memory(self, mr, obj, name, ram_size):
-    return self.libpanda.memory_region_allocate_system_memory(mr, obj, name, ram_size)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.memory_region_init_ram_from_file"><code class="name flex">
-<span>def <span class="ident">memory_region_init_ram_from_file</span></span>(<span>self, mr, owner, name, size, share, path)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def memory_region_init_ram_from_file(self, mr, owner, name, size, share, path):
-    return self.libpanda.memory_region_init_ram_from_file(mr, owner, name, size, share, path, self.libpanda.error_fatal)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.object_class_by_name"><code class="name flex">
-<span>def <span class="ident">object_class_by_name</span></span>(<span>self, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def object_class_by_name(self, name):
-    return self.libpanda.object_class_by_name(name)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.object_class_get_name"><code class="name flex">
-<span>def <span class="ident">object_class_get_name</span></span>(<span>self, objclass)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def object_class_get_name(self, objclass):
-    return self.libpanda.object_class_get_name(objclass)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.object_new"><code class="name flex">
-<span>def <span class="ident">object_new</span></span>(<span>self, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def object_new(self, name):
-    return self.libpanda.object_new(name)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_find"><code class="name flex">
-<span>def <span class="ident">object_property_find</span></span>(<span>self, obj, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def object_property_find(self, obj, name):
-    return self.libpanda.object_property_find(obj,name,ffi.NULL)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_get_bool"><code class="name flex">
-<span>def <span class="ident">object_property_get_bool</span></span>(<span>self, obj, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def object_property_get_bool(self, obj, name):
-    return self.libpanda.object_property_get_bool(obj,name,self.libpanda.error_abort)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_get_int"><code class="name flex">
-<span>def <span class="ident">object_property_get_int</span></span>(<span>self, obj, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def object_property_get_int(self, obj, name):
-    return self.libpanda.object_property_get_int(obj, name, self.libpanda.error_abort)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_get_link"><code class="name flex">
-<span>def <span class="ident">object_property_get_link</span></span>(<span>self, obj, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def object_property_get_link(self, obj, name):
-    return self.libpanda.object_property_get_link(obj,name,self.libpanda.error_abort)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_set_bool"><code class="name flex">
-<span>def <span class="ident">object_property_set_bool</span></span>(<span>self, obj, value, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def object_property_set_bool(self, obj, value, name):
-    return self.libpanda.object_property_set_bool(obj,value,name,self.libpanda.error_abort)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_set_int"><code class="name flex">
-<span>def <span class="ident">object_property_set_int</span></span>(<span>self, obj, value, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def object_property_set_int(self,obj, value, name):
-    return self.libpanda.object_property_set_int(obj, value, name, self.libpanda.error_abort)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.object_property_set_link"><code class="name flex">
-<span>def <span class="ident">object_property_set_link</span></span>(<span>self, obj, val, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def object_property_set_link(self, obj, val, name):
-    return self.libpanda.object_property_set_link(obj,val,name,self.libpanda.error_abort)</code></pre>
 </details>
 </dd>
 <dt id="panda.libpanda_mixins.libpanda_mixins.panda_finish"><code class="name flex">
 <span>def <span class="ident">panda_finish</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Final stage call to underlying panda_finish with initialization.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def panda_finish(self):
+    &#39;&#39;&#39;
+    Final stage call to underlying panda_finish with initialization.
+    &#39;&#39;&#39;
     return self.libpanda.panda_finish()</code></pre>
 </details>
 </dd>
@@ -973,57 +918,62 @@ class libpanda_mixins():
     return self.libpanda.rr_get_guest_instr_count_external()</code></pre>
 </details>
 </dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.set_os_name"><code class="name flex">
-<span>def <span class="ident">set_os_name</span></span>(<span>self, os_name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_os_name(self, os_name):
-    os_name_new = ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
-    self.libpanda.panda_set_os_name(os_name_new)</code></pre>
-</details>
-</dd>
 <dt id="panda.libpanda_mixins.libpanda_mixins.set_pandalog"><code class="name flex">
 <span>def <span class="ident">set_pandalog</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Start up pandalog with specified file</p>
+<pre><code>Parameters:
+    name: file to output data to
+
+Returns:
+    None
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_pandalog(self, name):
+    &#39;&#39;&#39;
+    Start up pandalog with specified file
+
+        Parameters:
+            name: file to output data to
+        
+        Returns:
+            None
+    &#39;&#39;&#39;
     charptr = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
     self.libpanda.panda_start_pandalog(charptr)</code></pre>
-</details>
-</dd>
-<dt id="panda.libpanda_mixins.libpanda_mixins.sysbus_create_varargs"><code class="name flex">
-<span>def <span class="ident">sysbus_create_varargs</span></span>(<span>self, name, addr)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def sysbus_create_varargs(self, name, addr):
-    return self.libpanda.sysbus_create_varargs(name,addr,ffi.NULL)</code></pre>
 </details>
 </dd>
 <dt id="panda.libpanda_mixins.libpanda_mixins.virt_to_phys"><code class="name flex">
 <span>def <span class="ident">virt_to_phys</span></span>(<span>self, env, addr)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Convert virtual address to physical address.</p>
+<pre><code>Parameters:
+    env: CPUState struct
+    addr (int): virtual address to convert
+
+Return:
+    physical address as python int
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def virt_to_phys(self, env, addr):
+    &#39;&#39;&#39;
+    Convert virtual address to physical address.
+
+        Parameters:
+            env: CPUState struct
+            addr (int): virtual address to convert
+        
+        Return:
+            physical address as python int
+    &#39;&#39;&#39;
     return self.libpanda.panda_virt_to_phys_external(env, addr)</code></pre>
 </details>
 </dd>
@@ -1031,12 +981,15 @@ class libpanda_mixins():
 <span>def <span class="ident">was_aborted</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns true if panda was aborted.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def was_aborted(self):
+    &#39;&#39;&#39;
+    Returns true if panda was aborted.
+    &#39;&#39;&#39;
     return self.libpanda.panda_was_aborted()</code></pre>
 </details>
 </dd>
@@ -1061,13 +1014,7 @@ class libpanda_mixins():
 <li>
 <h4><code><a title="panda.libpanda_mixins.libpanda_mixins" href="#panda.libpanda_mixins.libpanda_mixins">libpanda_mixins</a></code></h4>
 <ul class="">
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.arm_load_kernel" href="#panda.libpanda_mixins.libpanda_mixins.arm_load_kernel">arm_load_kernel</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.cleanup" href="#panda.libpanda_mixins.libpanda_mixins.cleanup">cleanup</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.cpu_class_by_name" href="#panda.libpanda_mixins.libpanda_mixins.cpu_class_by_name">cpu_class_by_name</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.create_external_gic" href="#panda.libpanda_mixins.libpanda_mixins.create_external_gic">create_external_gic</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.create_internal_gic" href="#panda.libpanda_mixins.libpanda_mixins.create_internal_gic">create_internal_gic</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.create_one_flash" href="#panda.libpanda_mixins.libpanda_mixins.create_one_flash">create_one_flash</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.create_virtio_devices" href="#panda.libpanda_mixins.libpanda_mixins.create_virtio_devices">create_virtio_devices</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.current_asid" href="#panda.libpanda_mixins.libpanda_mixins.current_asid">current_asid</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.current_pc" href="#panda.libpanda_mixins.libpanda_mixins.current_pc">current_pc</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.current_sp" href="#panda.libpanda_mixins.libpanda_mixins.current_sp">current_sp</a></code></li>
@@ -1077,38 +1024,19 @@ class libpanda_mixins():
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_plugin" href="#panda.libpanda_mixins.libpanda_mixins.disable_plugin">disable_plugin</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_precise_pc" href="#panda.libpanda_mixins.libpanda_mixins.disable_precise_pc">disable_precise_pc</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.disas2" href="#panda.libpanda_mixins.libpanda_mixins.disas2">disas2</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.drive_get" href="#panda.libpanda_mixins.libpanda_mixins.drive_get">drive_get</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_llvm" href="#panda.libpanda_mixins.libpanda_mixins.enable_llvm">enable_llvm</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_llvm_helpers" href="#panda.libpanda_mixins.libpanda_mixins.enable_llvm_helpers">enable_llvm_helpers</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_memcb" href="#panda.libpanda_mixins.libpanda_mixins.enable_memcb">enable_memcb</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_plugin" href="#panda.libpanda_mixins.libpanda_mixins.enable_plugin">enable_plugin</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_precise_pc" href="#panda.libpanda_mixins.libpanda_mixins.enable_precise_pc">enable_precise_pc</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.error_report" href="#panda.libpanda_mixins.libpanda_mixins.error_report">error_report</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.flush_tb" href="#panda.libpanda_mixins.libpanda_mixins.flush_tb">flush_tb</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.g_malloc0" href="#panda.libpanda_mixins.libpanda_mixins.g_malloc0">g_malloc0</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.garray_len" href="#panda.libpanda_mixins.libpanda_mixins.garray_len">garray_len</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.get_cpu" href="#panda.libpanda_mixins.libpanda_mixins.get_cpu">get_cpu</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.get_system_memory" href="#panda.libpanda_mixins.libpanda_mixins.get_system_memory">get_system_memory</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.in_kernel" href="#panda.libpanda_mixins.libpanda_mixins.in_kernel">in_kernel</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.lookup_gic" href="#panda.libpanda_mixins.libpanda_mixins.lookup_gic">lookup_gic</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.memory_region_add_subregion" href="#panda.libpanda_mixins.libpanda_mixins.memory_region_add_subregion">memory_region_add_subregion</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.memory_region_allocate_system_memory" href="#panda.libpanda_mixins.libpanda_mixins.memory_region_allocate_system_memory">memory_region_allocate_system_memory</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.memory_region_init_ram_from_file" href="#panda.libpanda_mixins.libpanda_mixins.memory_region_init_ram_from_file">memory_region_init_ram_from_file</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_class_by_name" href="#panda.libpanda_mixins.libpanda_mixins.object_class_by_name">object_class_by_name</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_class_get_name" href="#panda.libpanda_mixins.libpanda_mixins.object_class_get_name">object_class_get_name</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_new" href="#panda.libpanda_mixins.libpanda_mixins.object_new">object_new</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_find" href="#panda.libpanda_mixins.libpanda_mixins.object_property_find">object_property_find</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_get_bool" href="#panda.libpanda_mixins.libpanda_mixins.object_property_get_bool">object_property_get_bool</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_get_int" href="#panda.libpanda_mixins.libpanda_mixins.object_property_get_int">object_property_get_int</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_get_link" href="#panda.libpanda_mixins.libpanda_mixins.object_property_get_link">object_property_get_link</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_set_bool" href="#panda.libpanda_mixins.libpanda_mixins.object_property_set_bool">object_property_set_bool</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_set_int" href="#panda.libpanda_mixins.libpanda_mixins.object_property_set_int">object_property_set_int</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.object_property_set_link" href="#panda.libpanda_mixins.libpanda_mixins.object_property_set_link">object_property_set_link</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.panda_finish" href="#panda.libpanda_mixins.libpanda_mixins.panda_finish">panda_finish</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.rr_get_guest_instr_count" href="#panda.libpanda_mixins.libpanda_mixins.rr_get_guest_instr_count">rr_get_guest_instr_count</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.set_os_name" href="#panda.libpanda_mixins.libpanda_mixins.set_os_name">set_os_name</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.set_pandalog" href="#panda.libpanda_mixins.libpanda_mixins.set_pandalog">set_pandalog</a></code></li>
-<li><code><a title="panda.libpanda_mixins.libpanda_mixins.sysbus_create_varargs" href="#panda.libpanda_mixins.libpanda_mixins.sysbus_create_varargs">sysbus_create_varargs</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.virt_to_phys" href="#panda.libpanda_mixins.libpanda_mixins.virt_to_phys">virt_to_phys</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.was_aborted" href="#panda.libpanda_mixins.libpanda_mixins.was_aborted">was_aborted</a></code></li>
 </ul>

@@ -59,6 +59,7 @@ from .plugin_list import plugin_list
 
 # Mixins to extend Panda class functionality
 from .libpanda_mixins   import libpanda_mixins
+from .libqemu_mixins    import libqemu_mixins
 from .blocking_mixins   import blocking_mixins
 from .osi_mixins        import osi_mixins
 from .hooking_mixins    import hooking_mixins
@@ -70,11 +71,28 @@ from .gdb_mixins        import gdb_mixins
 
 import pdb
 
-class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callback_mixins, taint_mixins, volatility_mixins, pyperipheral_mixins, gdb_mixins):
+class Panda(libpanda_mixins, libqemu_mixins, blocking_mixins, osi_mixins, hooking_mixins, callback_mixins, taint_mixins, volatility_mixins, pyperipheral_mixins, gdb_mixins):
     &#34;&#34;&#34;
     This is the object used to interact with PANDA. Initializing it creates a virtual machine to interact with.
 
     It attempts to be less complicated by using mixins. All mixin methods are avaiable to the main PANDA object.
+
+        Attributes:
+            arch : architecture string (e.g. &#34;i386&#34;, &#34;x86_64&#34;, &#34;arm&#34;, &#34;mips&#34;, &#34;mipsel&#34;)
+            mem : size of memory for machine (e.g. &#34;128M&#34;, &#34;1G&#34;)
+            expect_prompt : Regular expression describing the prompt exposed by the guest 
+                on a serial console. Used so we know when a running command has finished 
+                with its output.
+            os_version : analagous to -os string.
+            qcow : qcow file to load as a path
+            os : type of OS (e.g. &#34;linux&#34;)
+            generic : specify a generic qcow to use and set other arguments. Supported 
+                values: arm/ppc/x86_64/i386. Will download qcow automatically
+            raw_monitor : When set, don&#39;t specify a -monitor. arg Allows for use of 
+                -nographic in args with ctrl-A+C for interactive qemu prompt.
+            extra_args : extra arguments to pass to PANDA as either a string or an 
+                array. (e.g. &#34;-nographic&#34; or [&#34;-nographic&#34;, &#34;-net&#34;, &#34;none&#34;])
+
     &#34;&#34;&#34;
     def __init__(self, arch=&#34;i386&#34;, mem=&#34;128M&#34;,
             expect_prompt=None, # Regular expression describing the prompt exposed by the guest on a serial console. Used so we know when a running command has finished with its output
@@ -790,6 +808,7 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         else: # Else it&#39;s positive
             return x
 
+
 # vim: expandtab:tabstop=4:</code></pre>
 </details>
 </section>
@@ -808,16 +827,49 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 </code></dt>
 <dd>
 <div class="desc"><p>This is the object used to interact with PANDA. Initializing it creates a virtual machine to interact with.</p>
-<p>It attempts to be less complicated by using mixins. All mixin methods are avaiable to the main PANDA object.</p></div>
+<p>It attempts to be less complicated by using mixins. All mixin methods are avaiable to the main PANDA object.</p>
+<pre><code>Attributes:
+    arch : architecture string (e.g. "i386", "x86_64", "arm", "mips", "mipsel")
+    mem : size of memory for machine (e.g. "128M", "1G")
+    expect_prompt : Regular expression describing the prompt exposed by the guest 
+        on a serial console. Used so we know when a running command has finished 
+        with its output.
+    os_version : analagous to -os string.
+    qcow : qcow file to load as a path
+    os : type of OS (e.g. "linux")
+    generic : specify a generic qcow to use and set other arguments. Supported 
+        values: arm/ppc/x86_64/i386. Will download qcow automatically
+    raw_monitor : When set, don't specify a -monitor. arg Allows for use of 
+        -nographic in args with ctrl-A+C for interactive qemu prompt.
+    extra_args : extra arguments to pass to PANDA as either a string or an 
+        array. (e.g. "-nographic" or ["-nographic", "-net", "none"])
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callback_mixins, taint_mixins, volatility_mixins, pyperipheral_mixins, gdb_mixins):
+<pre><code class="python">class Panda(libpanda_mixins, libqemu_mixins, blocking_mixins, osi_mixins, hooking_mixins, callback_mixins, taint_mixins, volatility_mixins, pyperipheral_mixins, gdb_mixins):
     &#34;&#34;&#34;
     This is the object used to interact with PANDA. Initializing it creates a virtual machine to interact with.
 
     It attempts to be less complicated by using mixins. All mixin methods are avaiable to the main PANDA object.
+
+        Attributes:
+            arch : architecture string (e.g. &#34;i386&#34;, &#34;x86_64&#34;, &#34;arm&#34;, &#34;mips&#34;, &#34;mipsel&#34;)
+            mem : size of memory for machine (e.g. &#34;128M&#34;, &#34;1G&#34;)
+            expect_prompt : Regular expression describing the prompt exposed by the guest 
+                on a serial console. Used so we know when a running command has finished 
+                with its output.
+            os_version : analagous to -os string.
+            qcow : qcow file to load as a path
+            os : type of OS (e.g. &#34;linux&#34;)
+            generic : specify a generic qcow to use and set other arguments. Supported 
+                values: arm/ppc/x86_64/i386. Will download qcow automatically
+            raw_monitor : When set, don&#39;t specify a -monitor. arg Allows for use of 
+                -nographic in args with ctrl-A+C for interactive qemu prompt.
+            extra_args : extra arguments to pass to PANDA as either a string or an 
+                array. (e.g. &#34;-nographic&#34; or [&#34;-nographic&#34;, &#34;-net&#34;, &#34;none&#34;])
+
     &#34;&#34;&#34;
     def __init__(self, arch=&#34;i386&#34;, mem=&#34;128M&#34;,
             expect_prompt=None, # Regular expression describing the prompt exposed by the guest on a serial console. Used so we know when a running command has finished with its output
@@ -1536,6 +1588,7 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="panda.libpanda_mixins.libpanda_mixins" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins">libpanda_mixins</a></li>
+<li><a title="panda.libqemu_mixins.libqemu_mixins" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins">libqemu_mixins</a></li>
 <li><a title="panda.blocking_mixins.blocking_mixins" href="blocking_mixins.html#panda.blocking_mixins.blocking_mixins">blocking_mixins</a></li>
 <li><a title="panda.osi_mixins.osi_mixins" href="osi_mixins.html#panda.osi_mixins.osi_mixins">osi_mixins</a></li>
 <li><a title="panda.hooking_mixins.hooking_mixins" href="hooking_mixins.html#panda.hooking_mixins.hooking_mixins">hooking_mixins</a></li>
@@ -2368,7 +2421,50 @@ Returns:
 <ul class="hlist">
 <li><code><b><a title="panda.libpanda_mixins.libpanda_mixins" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins">libpanda_mixins</a></b></code>:
 <ul class="hlist">
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.cleanup" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.cleanup">cleanup</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.current_asid" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.current_asid">current_asid</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.current_pc" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.current_pc">current_pc</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_llvm" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.disable_llvm">disable_llvm</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_llvm_helpers" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.disable_llvm_helpers">disable_llvm_helpers</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_memcb" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.disable_memcb">disable_memcb</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_plugin" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.disable_plugin">disable_plugin</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disable_precise_pc" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.disable_precise_pc">disable_precise_pc</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.disas2" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.disas2">disas2</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_llvm" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.enable_llvm">enable_llvm</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_llvm_helpers" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.enable_llvm_helpers">enable_llvm_helpers</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_memcb" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.enable_memcb">enable_memcb</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_plugin" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.enable_plugin">enable_plugin</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.enable_precise_pc" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.enable_precise_pc">enable_precise_pc</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.flush_tb" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.flush_tb">flush_tb</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.g_malloc0" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.g_malloc0">g_malloc0</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.garray_len" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.garray_len">garray_len</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.get_cpu" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.get_cpu">get_cpu</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.in_kernel" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.in_kernel">in_kernel</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.panda_finish" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.panda_finish">panda_finish</a></code></li>
 <li><code><a title="panda.libpanda_mixins.libpanda_mixins.rr_get_guest_instr_count" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.rr_get_guest_instr_count">rr_get_guest_instr_count</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.set_pandalog" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.set_pandalog">set_pandalog</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.virt_to_phys" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.virt_to_phys">virt_to_phys</a></code></li>
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.was_aborted" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.was_aborted">was_aborted</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="panda.libqemu_mixins.libqemu_mixins" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins">libqemu_mixins</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.cpu_class_by_name" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.cpu_class_by_name">cpu_class_by_name</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.drive_get" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.drive_get">drive_get</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.memory_region_add_subregion" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.memory_region_add_subregion">memory_region_add_subregion</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.memory_region_allocate_system_memory" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.memory_region_allocate_system_memory">memory_region_allocate_system_memory</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.memory_region_init_ram_from_file" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.memory_region_init_ram_from_file">memory_region_init_ram_from_file</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_class_by_name" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_class_by_name">object_class_by_name</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_class_get_name" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_class_get_name">object_class_get_name</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_new" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_new">object_new</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_property_find" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_property_find">object_property_find</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_property_get_bool" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_property_get_bool">object_property_get_bool</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_property_get_int" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_property_get_int">object_property_get_int</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_property_get_link" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_property_get_link">object_property_get_link</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_property_set_bool" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_property_set_bool">object_property_set_bool</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_property_set_int" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_property_set_int">object_property_set_int</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_property_set_link" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_property_set_link">object_property_set_link</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.sysbus_create_varargs" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.sysbus_create_varargs">sysbus_create_varargs</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="panda.osi_mixins.osi_mixins" href="osi_mixins.html#panda.osi_mixins.osi_mixins">osi_mixins</a></b></code>:
