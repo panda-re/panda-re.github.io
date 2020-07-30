@@ -64,6 +64,25 @@ class GArrayIterator():
         self.cleanup_func(self.garray)
 
 class osi_mixins():
+    def set_os_name(self, os_name):
+        &#34;&#34;&#34;
+        Set OS target. Equivalent to &#34;-os&#34; flag on the command line. Matches the form of:
+            &#34;windows[-_]32[-_]xpsp[23]&#34;,
+            &#34;windows[-_]32[-_]7&#34;,
+            &#34;windows[-_]32[-_]2000&#34;,
+            &#34;linux[-_]32[-_].+&#34;,
+            &#34;linux[-_]64[-_].+&#34;,
+
+        Parameters:
+            os_name: string matching the format for the os flag.
+        
+        Returns:
+            None
+        &#34;&#34;&#34;
+        os_name_new = ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
+        self.libpanda.panda_set_os_name(os_name_new)
+
+
     def get_mappings(self, cpu):
         &#39;&#39;&#39;
         Get all active memory mappings in the system.
@@ -185,6 +204,25 @@ get_one_module.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class osi_mixins():
+    def set_os_name(self, os_name):
+        &#34;&#34;&#34;
+        Set OS target. Equivalent to &#34;-os&#34; flag on the command line. Matches the form of:
+            &#34;windows[-_]32[-_]xpsp[23]&#34;,
+            &#34;windows[-_]32[-_]7&#34;,
+            &#34;windows[-_]32[-_]2000&#34;,
+            &#34;linux[-_]32[-_].+&#34;,
+            &#34;linux[-_]64[-_].+&#34;,
+
+        Parameters:
+            os_name: string matching the format for the os flag.
+        
+        Returns:
+            None
+        &#34;&#34;&#34;
+        os_name_new = ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
+        self.libpanda.panda_set_os_name(os_name_new)
+
+
     def get_mappings(self, cpu):
         &#39;&#39;&#39;
         Get all active memory mappings in the system.
@@ -363,6 +401,43 @@ Returns:
     return procs</code></pre>
 </details>
 </dd>
+<dt id="panda.osi_mixins.osi_mixins.set_os_name"><code class="name flex">
+<span>def <span class="ident">set_os_name</span></span>(<span>self, os_name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set OS target. Equivalent to "-os" flag on the command line. Matches the form of:
+"windows[-<em>]32[-</em>]xpsp[23]",
+"windows[-<em>]32[-</em>]7",
+"windows[-<em>]32[-</em>]2000",
+"linux[-<em>]32[-</em>].+",
+"linux[-<em>]64[-</em>].+",</p>
+<h2 id="parameters">Parameters</h2>
+<p>os_name: string matching the format for the os flag.</p>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_os_name(self, os_name):
+    &#34;&#34;&#34;
+    Set OS target. Equivalent to &#34;-os&#34; flag on the command line. Matches the form of:
+        &#34;windows[-_]32[-_]xpsp[23]&#34;,
+        &#34;windows[-_]32[-_]7&#34;,
+        &#34;windows[-_]32[-_]2000&#34;,
+        &#34;linux[-_]32[-_].+&#34;,
+        &#34;linux[-_]64[-_].+&#34;,
+
+    Parameters:
+        os_name: string matching the format for the os flag.
+    
+    Returns:
+        None
+    &#34;&#34;&#34;
+    os_name_new = ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
+    self.libpanda.panda_set_os_name(os_name_new)</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -390,6 +465,7 @@ Returns:
 <li><code><a title="panda.osi_mixins.osi_mixins.get_mappings" href="#panda.osi_mixins.osi_mixins.get_mappings">get_mappings</a></code></li>
 <li><code><a title="panda.osi_mixins.osi_mixins.get_processes" href="#panda.osi_mixins.osi_mixins.get_processes">get_processes</a></code></li>
 <li><code><a title="panda.osi_mixins.osi_mixins.get_processes_dict" href="#panda.osi_mixins.osi_mixins.get_processes_dict">get_processes_dict</a></code></li>
+<li><code><a title="panda.osi_mixins.osi_mixins.set_os_name" href="#panda.osi_mixins.osi_mixins.set_os_name">set_os_name</a></code></li>
 </ul>
 </li>
 </ul>
