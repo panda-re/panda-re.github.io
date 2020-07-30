@@ -282,6 +282,14 @@ class libqemu_mixins():
         &#39;&#39;&#39;
         return self.libpanda.memory_region_init_ram_from_file(mr, owner, name, size, share, path, self.libpanda.error_fatal)
 
+    def memsavep(self, file_out):
+        &#39;&#39;&#39;
+        Calls QEMU memsavep on your specified python file.
+        &#39;&#39;&#39;
+        newfd = dup(file_out.fileno())
+        self.libpanda.panda_memsavep(newfd)
+        self.libpanda.fclose(newfd)
+
     def create_internal_gic(self, vbi, irqs, gic_vers):
         return self.libpanda.create_internal_gic(vbi, irqs, gic_vers)
 
@@ -567,6 +575,14 @@ class libqemu_mixins():
                 None
         &#39;&#39;&#39;
         return self.libpanda.memory_region_init_ram_from_file(mr, owner, name, size, share, path, self.libpanda.error_fatal)
+
+    def memsavep(self, file_out):
+        &#39;&#39;&#39;
+        Calls QEMU memsavep on your specified python file.
+        &#39;&#39;&#39;
+        newfd = dup(file_out.fileno())
+        self.libpanda.panda_memsavep(newfd)
+        self.libpanda.fclose(newfd)
 
     def create_internal_gic(self, vbi, irqs, gic_vers):
         return self.libpanda.create_internal_gic(vbi, irqs, gic_vers)
@@ -890,6 +906,24 @@ Returns:
             None
     &#39;&#39;&#39;
     return self.libpanda.memory_region_init_ram_from_file(mr, owner, name, size, share, path, self.libpanda.error_fatal)</code></pre>
+</details>
+</dd>
+<dt id="panda.libqemu_mixins.libqemu_mixins.memsavep"><code class="name flex">
+<span>def <span class="ident">memsavep</span></span>(<span>self, file_out)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calls QEMU memsavep on your specified python file.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def memsavep(self, file_out):
+    &#39;&#39;&#39;
+    Calls QEMU memsavep on your specified python file.
+    &#39;&#39;&#39;
+    newfd = dup(file_out.fileno())
+    self.libpanda.panda_memsavep(newfd)
+    self.libpanda.fclose(newfd)</code></pre>
 </details>
 </dd>
 <dt id="panda.libqemu_mixins.libqemu_mixins.object_class_by_name"><code class="name flex">
@@ -1286,6 +1320,7 @@ Return:
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.memory_region_add_subregion" href="#panda.libqemu_mixins.libqemu_mixins.memory_region_add_subregion">memory_region_add_subregion</a></code></li>
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.memory_region_allocate_system_memory" href="#panda.libqemu_mixins.libqemu_mixins.memory_region_allocate_system_memory">memory_region_allocate_system_memory</a></code></li>
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.memory_region_init_ram_from_file" href="#panda.libqemu_mixins.libqemu_mixins.memory_region_init_ram_from_file">memory_region_init_ram_from_file</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.memsavep" href="#panda.libqemu_mixins.libqemu_mixins.memsavep">memsavep</a></code></li>
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_class_by_name" href="#panda.libqemu_mixins.libqemu_mixins.object_class_by_name">object_class_by_name</a></code></li>
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_class_get_name" href="#panda.libqemu_mixins.libqemu_mixins.object_class_get_name">object_class_get_name</a></code></li>
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_new" href="#panda.libqemu_mixins.libqemu_mixins.object_new">object_new</a></code></li>

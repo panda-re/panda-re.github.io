@@ -577,14 +577,6 @@ class Panda(libpanda_mixins, libqemu_mixins, blocking_mixins, osi_mixins, hookin
         # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
         self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)
 
-    def memsavep(self, file_out):
-        &#39;&#39;&#39;
-        Calls QEMU memsavep on your specified python file.
-        &#39;&#39;&#39;
-        newfd = dup(file_out.fileno())
-        self.libpanda.panda_memsavep(newfd)
-        self.libpanda.fclose(newfd)
-
     def current_sp(self, cpustate): # under construction
         &#39;&#39;&#39;
         Returns the current stack pointer for your target.
@@ -1354,14 +1346,6 @@ class Panda(libpanda_mixins, libqemu_mixins, blocking_mixins, osi_mixins, hookin
         # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
         self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)
 
-    def memsavep(self, file_out):
-        &#39;&#39;&#39;
-        Calls QEMU memsavep on your specified python file.
-        &#39;&#39;&#39;
-        newfd = dup(file_out.fileno())
-        self.libpanda.panda_memsavep(newfd)
-        self.libpanda.fclose(newfd)
-
     def current_sp(self, cpustate): # under construction
         &#39;&#39;&#39;
         Returns the current stack pointer for your target.
@@ -1911,24 +1895,6 @@ Returns:
     return self.libpanda.map_memory(name_c, size, address)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.memsavep"><code class="name flex">
-<span>def <span class="ident">memsavep</span></span>(<span>self, file_out)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Calls QEMU memsavep on your specified python file.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def memsavep(self, file_out):
-    &#39;&#39;&#39;
-    Calls QEMU memsavep on your specified python file.
-    &#39;&#39;&#39;
-    newfd = dup(file_out.fileno())
-    self.libpanda.panda_memsavep(newfd)
-    self.libpanda.fclose(newfd)</code></pre>
-</details>
-</dd>
 <dt id="panda.main.Panda.physical_memory_read"><code class="name flex">
 <span>def <span class="ident">physical_memory_read</span></span>(<span>self, addr, length, fmt='bytearray')</span>
 </code></dt>
@@ -2454,6 +2420,7 @@ Returns:
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.memory_region_add_subregion" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.memory_region_add_subregion">memory_region_add_subregion</a></code></li>
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.memory_region_allocate_system_memory" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.memory_region_allocate_system_memory">memory_region_allocate_system_memory</a></code></li>
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.memory_region_init_ram_from_file" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.memory_region_init_ram_from_file">memory_region_init_ram_from_file</a></code></li>
+<li><code><a title="panda.libqemu_mixins.libqemu_mixins.memsavep" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.memsavep">memsavep</a></code></li>
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_class_by_name" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_class_by_name">object_class_by_name</a></code></li>
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_class_get_name" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_class_get_name">object_class_get_name</a></code></li>
 <li><code><a title="panda.libqemu_mixins.libqemu_mixins.object_new" href="libqemu_mixins.html#panda.libqemu_mixins.libqemu_mixins.object_new">object_new</a></code></li>
@@ -2545,7 +2512,6 @@ Returns:
 <li><code><a title="panda.main.Panda.from_unsigned_guest" href="#panda.main.Panda.from_unsigned_guest">from_unsigned_guest</a></code></li>
 <li><code><a title="panda.main.Panda.load_plugin" href="#panda.main.Panda.load_plugin">load_plugin</a></code></li>
 <li><code><a title="panda.main.Panda.map_memory" href="#panda.main.Panda.map_memory">map_memory</a></code></li>
-<li><code><a title="panda.main.Panda.memsavep" href="#panda.main.Panda.memsavep">memsavep</a></code></li>
 <li><code><a title="panda.main.Panda.physical_memory_read" href="#panda.main.Panda.physical_memory_read">physical_memory_read</a></code></li>
 <li><code><a title="panda.main.Panda.physical_memory_write" href="#panda.main.Panda.physical_memory_write">physical_memory_write</a></code></li>
 <li><code><a title="panda.main.Panda.queue_async" href="#panda.main.Panda.queue_async">queue_async</a></code></li>
