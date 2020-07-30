@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>panda.images.qcows API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Helper library for managing qcows on your filesystem.
+Given an architecture, it can download a qcow from moyix to ~/.panda/ and then use that
+Given a …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,14 +24,20 @@
 <h1 class="title">Module <code>panda.images.qcows</code></h1>
 </header>
 <section id="section-intro">
+<p>Helper library for managing qcows on your filesystem.
+Given an architecture, it can download a qcow from moyix to ~/.panda/ and then use that
+Given a path to a qcow, it can use that
+A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Helper library for managing qcows on your filesystem.
-# Given an architecture, it can download a qcow from moyix to ~/.panda/ and then use that
-# Given a path to a qcow, it can use that
-# A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt
+<pre><code class="python">&#34;&#34;&#34;
+Helper library for managing qcows on your filesystem.
+Given an architecture, it can download a qcow from moyix to ~/.panda/ and then use that
+Given a path to a qcow, it can use that
+A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt
+&#34;&#34;&#34;
 
 import os
 import subprocess
@@ -44,16 +52,18 @@ logger.setLevel(logging.DEBUG)
 VM_DIR = os.path.join(os.path.expanduser(&#34;~&#34;), &#34;.panda&#34;)
 
 Image = namedtuple(&#39;Image&#39;, [&#39;arch&#39;, &#39;os&#39;, &#39;prompt&#39;, &#39;cdrom&#39;, &#39;snapshot&#39;, &#39;url&#39;, &#39;extra_files&#39;, &#39;qcow&#39;, &#39;default_mem&#39;, &#39;extra_args&#39;])
+Image.__doc__ = &#34;&#34;&#34;The Image class stores important information about an image.&#34;&#34;&#34;
+Image.arch.__doc__ =  &#34;&#34;&#34;Arch for the given architecture.&#34;&#34;&#34;
+Image.os.__doc__ = &#34;&#34;&#34;an os string we can pass to panda with -os&#34;&#34;&#34;
+Image.prompt.__doc__ = &#34;&#34;&#34;a regex to detect a bash prompt after loading the snapshot and sending commands&#34;&#34;&#34;
+Image.cdrom.__doc__ = &#34;&#34;&#34;name to use for cd-drive when inserting an ISO via monitor&#34;&#34;&#34;
+Image.qcow.__doc__ = &#34;&#34;&#34;optional name to save qcow as&#34;&#34;&#34;
+Image.url.__doc__ = &#34;&#34;&#34;url to download the qcow (e.g. http:// website.com/yourqcow.qcow2)&#34;&#34;&#34;
+Image.default_mem.__doc__ = &#34;&#34;&#34;memory to use for the root snapshot (e.g. 1G)&#34;&#34;&#34;
+Image.extra_files.__doc__ = &#34;&#34;&#34;other files (assumed to be in same directory on server) that we also need&#34;&#34;&#34;
+Image.extra_args.__doc__ = &#34;&#34;&#34;Extra arguments to pass to PANDA (e.g. &#39;-nographic&#39;) &#34;&#34;&#34;
+
 Image.__new__.__defaults__ = (None,) * len(Image._fields)
-# arch is a Arch for the given architecture
-# OS is an os string we can pass to panda with -os
-# Prompt is a regex to detect a bash prompt after loading the snapshot and sending commands
-# Qcow, optional name to save qcow as
-# cdrom: name to use for cd-drive when inserting an ISO via monitor
-# URL: where to download the qcow
-# default_mem: memory to use for the root snapshot
-# Extra files: other files (assumed to be in same directory on server) that we also need
-# Extra args: Extra arguments to pass to PANDA
 
 SUPPORTED_IMAGES = {
     # Debian: support for 4 arches on Wheezy
@@ -166,6 +176,15 @@ SUPPORTED_IMAGES[&#39;mips&#39;]   = SUPPORTED_IMAGES[&#39;mips_wheezy&#39;]
 SUPPORTED_IMAGES[&#39;mipsel&#39;] = SUPPORTED_IMAGES[&#39;mipsel_wheezy&#39;]
 
 def get_qcow_info(name=None):
+    &#39;&#39;&#39;
+    Return information about supported image as specified by name.
+
+        Parameters:
+            name: python string idenfifying a qcow supported
+        
+        Returns:
+            Image class for qcow
+    &#39;&#39;&#39;
     if name is None:
         logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
         name = &#34;i386&#34;
@@ -181,8 +200,16 @@ def get_qcow_info(name=None):
     # Move properties in .arch to being in the main object
     return r
 
-# Given a generic name of a qcow or a path to a qcow, return the path. Defaults to i386
 def get_qcow(name=None):
+    &#39;&#39;&#39;
+    Given a generic name of a qcow or a path to a qcow, return the path. Defaults to i386
+
+        Parameters:
+            name: generic name or path to qcow
+        
+        Returns:
+            path to qcow
+    &#39;&#39;&#39;
     if name is None:
         logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
         name = &#34;i386&#34;
@@ -222,8 +249,8 @@ def get_qcow(name=None):
         logger.debug(&#34;Downloaded %s to %s&#34;, qc, qcow_path)
     return qcow_path
 
-# Given an index into argv, call get_qcow with that arg if it exists, else with None
 def qcow_from_arg(idx=1):
+    &#39;&#39;&#39; Given an index into argv, call get_qcow with that arg if it exists, else with None&#39;&#39;&#39;
     if (len(argv) &gt; idx):
         return get_qcow(argv[idx])
     else:
@@ -241,12 +268,27 @@ def qcow_from_arg(idx=1):
 <span>def <span class="ident">get_qcow</span></span>(<span>name=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Given a generic name of a qcow or a path to a qcow, return the path. Defaults to i386</p>
+<pre><code>Parameters:
+    name: generic name or path to qcow
+
+Returns:
+    path to qcow
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_qcow(name=None):
+    &#39;&#39;&#39;
+    Given a generic name of a qcow or a path to a qcow, return the path. Defaults to i386
+
+        Parameters:
+            name: generic name or path to qcow
+        
+        Returns:
+            path to qcow
+    &#39;&#39;&#39;
     if name is None:
         logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
         name = &#34;i386&#34;
@@ -291,12 +333,27 @@ def qcow_from_arg(idx=1):
 <span>def <span class="ident">get_qcow_info</span></span>(<span>name=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Return information about supported image as specified by name.</p>
+<pre><code>Parameters:
+    name: python string idenfifying a qcow supported
+
+Returns:
+    Image class for qcow
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_qcow_info(name=None):
+    &#39;&#39;&#39;
+    Return information about supported image as specified by name.
+
+        Parameters:
+            name: python string idenfifying a qcow supported
+        
+        Returns:
+            Image class for qcow
+    &#39;&#39;&#39;
     if name is None:
         logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
         name = &#34;i386&#34;
@@ -317,12 +374,13 @@ def qcow_from_arg(idx=1):
 <span>def <span class="ident">qcow_from_arg</span></span>(<span>idx=1)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Given an index into argv, call get_qcow with that arg if it exists, else with None</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def qcow_from_arg(idx=1):
+    &#39;&#39;&#39; Given an index into argv, call get_qcow with that arg if it exists, else with None&#39;&#39;&#39;
     if (len(argv) &gt; idx):
         return get_qcow(argv[idx])
     else:
@@ -339,7 +397,7 @@ def qcow_from_arg(idx=1):
 <span>(</span><span>arch=None, os=None, prompt=None, cdrom=None, snapshot=None, url=None, extra_files=None, qcow=None, default_mem=None, extra_args=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Image(arch, os, prompt, cdrom, snapshot, url, extra_files, qcow, default_mem, extra_args)</p></div>
+<div class="desc"><p>The Image class stores important information about an image.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.tuple</li>
@@ -348,35 +406,35 @@ def qcow_from_arg(idx=1):
 <dl>
 <dt id="panda.images.qcows.Image.arch"><code class="name">var <span class="ident">arch</span></code></dt>
 <dd>
-<div class="desc"><p>Alias for field number 0</p></div>
+<div class="desc"><p>Arch for the given architecture.</p></div>
 </dd>
 <dt id="panda.images.qcows.Image.cdrom"><code class="name">var <span class="ident">cdrom</span></code></dt>
 <dd>
-<div class="desc"><p>Alias for field number 3</p></div>
+<div class="desc"><p>name to use for cd-drive when inserting an ISO via monitor</p></div>
 </dd>
 <dt id="panda.images.qcows.Image.default_mem"><code class="name">var <span class="ident">default_mem</span></code></dt>
 <dd>
-<div class="desc"><p>Alias for field number 8</p></div>
+<div class="desc"><p>memory to use for the root snapshot (e.g. 1G)</p></div>
 </dd>
 <dt id="panda.images.qcows.Image.extra_args"><code class="name">var <span class="ident">extra_args</span></code></dt>
 <dd>
-<div class="desc"><p>Alias for field number 9</p></div>
+<div class="desc"><p>Extra arguments to pass to PANDA (e.g. '-nographic')</p></div>
 </dd>
 <dt id="panda.images.qcows.Image.extra_files"><code class="name">var <span class="ident">extra_files</span></code></dt>
 <dd>
-<div class="desc"><p>Alias for field number 6</p></div>
+<div class="desc"><p>other files (assumed to be in same directory on server) that we also need</p></div>
 </dd>
 <dt id="panda.images.qcows.Image.os"><code class="name">var <span class="ident">os</span></code></dt>
 <dd>
-<div class="desc"><p>Alias for field number 1</p></div>
+<div class="desc"><p>an os string we can pass to panda with -os</p></div>
 </dd>
 <dt id="panda.images.qcows.Image.prompt"><code class="name">var <span class="ident">prompt</span></code></dt>
 <dd>
-<div class="desc"><p>Alias for field number 2</p></div>
+<div class="desc"><p>a regex to detect a bash prompt after loading the snapshot and sending commands</p></div>
 </dd>
 <dt id="panda.images.qcows.Image.qcow"><code class="name">var <span class="ident">qcow</span></code></dt>
 <dd>
-<div class="desc"><p>Alias for field number 7</p></div>
+<div class="desc"><p>optional name to save qcow as</p></div>
 </dd>
 <dt id="panda.images.qcows.Image.snapshot"><code class="name">var <span class="ident">snapshot</span></code></dt>
 <dd>
@@ -384,7 +442,7 @@ def qcow_from_arg(idx=1):
 </dd>
 <dt id="panda.images.qcows.Image.url"><code class="name">var <span class="ident">url</span></code></dt>
 <dd>
-<div class="desc"><p>Alias for field number 5</p></div>
+<div class="desc"><p>url to download the qcow (e.g. http:// website.com/yourqcow.qcow2)</p></div>
 </dd>
 </dl>
 </dd>

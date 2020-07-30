@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>panda.taint_mixins API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Convenience methods for interacting with the taint subsystem." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,16 +22,24 @@
 <h1 class="title">Module <code>panda.taint_mixins</code></h1>
 </header>
 <section id="section-intro">
+<p>Convenience methods for interacting with the taint subsystem.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from .utils import progress, debug
+<pre><code class="python">&#34;&#34;&#34;
+Convenience methods for interacting with the taint subsystem.
+&#34;&#34;&#34;
+
+from .utils import progress, debug
 from .ffi_importer import ffi
 from .taint import TaintQuery
 
 class taint_mixins():
     def taint_enable(self, cont=True):
+        &#34;&#34;&#34;
+        Inform python that taint is enabled.
+        &#34;&#34;&#34;
         if not self.taint_enabled:
             progress(&#34;taint not enabled -- enabling&#34;)
             self.vm_stop()
@@ -150,6 +158,9 @@ class taint_mixins():
 </summary>
 <pre><code class="python">class taint_mixins():
     def taint_enable(self, cont=True):
+        &#34;&#34;&#34;
+        Inform python that taint is enabled.
+        &#34;&#34;&#34;
         if not self.taint_enabled:
             progress(&#34;taint not enabled -- enabling&#34;)
             self.vm_stop()
@@ -305,12 +316,15 @@ class taint_mixins():
 <span>def <span class="ident">taint_enable</span></span>(<span>self, cont=True)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Inform python that taint is enabled.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">    def taint_enable(self, cont=True):
+        &#34;&#34;&#34;
+        Inform python that taint is enabled.
+        &#34;&#34;&#34;
         if not self.taint_enabled:
             progress(&#34;taint not enabled -- enabling&#34;)
             self.vm_stop()

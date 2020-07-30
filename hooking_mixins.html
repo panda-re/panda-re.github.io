@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>panda.hooking_mixins API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Provides the ability to interact with the hooks2 plugin and receive callbacks based on user-provided criteria." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,13 +22,21 @@
 <h1 class="title">Module <code>panda.hooking_mixins</code></h1>
 </header>
 <section id="section-intro">
+<p>Provides the ability to interact with the hooks2 plugin and receive callbacks based on user-provided criteria.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from .ffi_importer import ffi
+<pre><code class="python">&#34;&#34;&#34;
+Provides the ability to interact with the hooks2 plugin and receive callbacks based on user-provided criteria.
+&#34;&#34;&#34;
+
+from .ffi_importer import ffi
 from .utils import debug
 class Hook(object):
+    &#39;&#39;&#39;
+    Maintains the state of a hook as defined by a user.
+    &#39;&#39;&#39;
     def __init__(self,is_enabled=True,is_kernel=True,hook_cb=True,target_addr=0,target_library_offset=0,library_name=None,program_name=None):
         self.is_enabled = is_enabled
         self.is_kernel = is_kernel
@@ -40,6 +48,9 @@ class Hook(object):
 
 class hooking_mixins():
     def update_hook(self,hook_name,addr):
+        &#39;&#39;&#39;
+        Update hook to point to a different addres.
+        &#39;&#39;&#39;
         if hook_name in self.named_hooks:
             hook = self.named_hooks[hook_name]
             if addr != hook.target_addr:
@@ -47,6 +58,9 @@ class hooking_mixins():
                 self.enable_hook(hook)
 
     def enable_hook(self,hook_name):
+        &#39;&#39;&#39;
+        Set hook status to active.        
+        &#39;&#39;&#39;
         if hook_name in self.named_hooks:
             hook = self.named_hooks[hook_name]
             if not hook.is_enabled:
@@ -54,6 +68,9 @@ class hooking_mixins():
                 self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)
 
     def disable_hook(self,hook_name):
+        &#39;&#39;&#39;
+        Set hook status to inactive.
+        &#39;&#39;&#39;
         if hook_name in self.named_hooks:
             hook = self.named_hooks[hook_name]
             if hook.is_enabled:
@@ -63,6 +80,10 @@ class hooking_mixins():
             print(f&#34;{hook_name} not in list of hooks&#34;)
 
     def update_hooks_new_procname(self, name):
+        &#39;&#39;&#39;
+        Uses user-defined information to update the state of hooks based on things such as libraryname, procname and whether 
+        or not the hook points to kernel space.
+        &#39;&#39;&#39;
         for h in self.hook_list:
             if not h.is_kernel and ffi.NULL != current:
                 if h.program_name:
@@ -146,12 +167,15 @@ class hooking_mixins():
 <span>(</span><span>is_enabled=True, is_kernel=True, hook_cb=True, target_addr=0, target_library_offset=0, library_name=None, program_name=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Maintains the state of a hook as defined by a user.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Hook(object):
+    &#39;&#39;&#39;
+    Maintains the state of a hook as defined by a user.
+    &#39;&#39;&#39;
     def __init__(self,is_enabled=True,is_kernel=True,hook_cb=True,target_addr=0,target_library_offset=0,library_name=None,program_name=None):
         self.is_enabled = is_enabled
         self.is_kernel = is_kernel
@@ -173,6 +197,9 @@ class hooking_mixins():
 </summary>
 <pre><code class="python">class hooking_mixins():
     def update_hook(self,hook_name,addr):
+        &#39;&#39;&#39;
+        Update hook to point to a different addres.
+        &#39;&#39;&#39;
         if hook_name in self.named_hooks:
             hook = self.named_hooks[hook_name]
             if addr != hook.target_addr:
@@ -180,6 +207,9 @@ class hooking_mixins():
                 self.enable_hook(hook)
 
     def enable_hook(self,hook_name):
+        &#39;&#39;&#39;
+        Set hook status to active.        
+        &#39;&#39;&#39;
         if hook_name in self.named_hooks:
             hook = self.named_hooks[hook_name]
             if not hook.is_enabled:
@@ -187,6 +217,9 @@ class hooking_mixins():
                 self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)
 
     def disable_hook(self,hook_name):
+        &#39;&#39;&#39;
+        Set hook status to inactive.
+        &#39;&#39;&#39;
         if hook_name in self.named_hooks:
             hook = self.named_hooks[hook_name]
             if hook.is_enabled:
@@ -196,6 +229,10 @@ class hooking_mixins():
             print(f&#34;{hook_name} not in list of hooks&#34;)
 
     def update_hooks_new_procname(self, name):
+        &#39;&#39;&#39;
+        Uses user-defined information to update the state of hooks based on things such as libraryname, procname and whether 
+        or not the hook points to kernel space.
+        &#39;&#39;&#39;
         for h in self.hook_list:
             if not h.is_kernel and ffi.NULL != current:
                 if h.program_name:
@@ -274,12 +311,15 @@ class hooking_mixins():
 <span>def <span class="ident">disable_hook</span></span>(<span>self, hook_name)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Set hook status to inactive.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def disable_hook(self,hook_name):
+    &#39;&#39;&#39;
+    Set hook status to inactive.
+    &#39;&#39;&#39;
     if hook_name in self.named_hooks:
         hook = self.named_hooks[hook_name]
         if hook.is_enabled:
@@ -293,12 +333,15 @@ class hooking_mixins():
 <span>def <span class="ident">enable_hook</span></span>(<span>self, hook_name)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Set hook status to active.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def enable_hook(self,hook_name):
+    &#39;&#39;&#39;
+    Set hook status to active.        
+    &#39;&#39;&#39;
     if hook_name in self.named_hooks:
         hook = self.named_hooks[hook_name]
         if not hook.is_enabled:
@@ -364,12 +407,15 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 <span>def <span class="ident">update_hook</span></span>(<span>self, hook_name, addr)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Update hook to point to a different addres.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def update_hook(self,hook_name,addr):
+    &#39;&#39;&#39;
+    Update hook to point to a different addres.
+    &#39;&#39;&#39;
     if hook_name in self.named_hooks:
         hook = self.named_hooks[hook_name]
         if addr != hook.target_addr:
@@ -381,12 +427,17 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 <span>def <span class="ident">update_hooks_new_procname</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Uses user-defined information to update the state of hooks based on things such as libraryname, procname and whether
+or not the hook points to kernel space.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def update_hooks_new_procname(self, name):
+    &#39;&#39;&#39;
+    Uses user-defined information to update the state of hooks based on things such as libraryname, procname and whether 
+    or not the hook points to kernel space.
+    &#39;&#39;&#39;
     for h in self.hook_list:
         if not h.is_kernel and ffi.NULL != current:
             if h.program_name:

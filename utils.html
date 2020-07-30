@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>panda.utils API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Useful utilities for use in pypanda." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,17 @@
 <h1 class="title">Module <code>panda.utils</code></h1>
 </header>
 <section id="section-intro">
+<p>Useful utilities for use in pypanda.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import sys
+<pre><code class="python">&#34;&#34;&#34;
+Useful utilities for use in pypanda.
+&#34;&#34;&#34;
+
+
+import sys
 import subprocess
 import shlex
 from os import devnull
@@ -36,9 +42,11 @@ from colorama import Fore, Style
 debug = False
 
 def progress(msg):
+    &#34;&#34;&#34;Helpful printing utility&#34;&#34;&#34;
     print(Fore.GREEN + &#39;[pypanda.py] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
 
 def make_iso(directory, iso_path):
+    &#34;&#34;&#34;Generates iso from path&#34;&#34;&#34;
     with open(devnull, &#34;w&#34;) as DEVNULL:
         if sys.platform.startswith(&#39;linux&#39;):
             subprocess.check_call([
@@ -120,12 +128,13 @@ def telescope(panda, cpu, val):
 <span>def <span class="ident">make_iso</span></span>(<span>directory, iso_path)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Generates iso from path</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_iso(directory, iso_path):
+    &#34;&#34;&#34;Generates iso from path&#34;&#34;&#34;
     with open(devnull, &#34;w&#34;) as DEVNULL:
         if sys.platform.startswith(&#39;linux&#39;):
             subprocess.check_call([
@@ -143,12 +152,13 @@ def telescope(panda, cpu, val):
 <span>def <span class="ident">progress</span></span>(<span>msg)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Helpful printing utility</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def progress(msg):
+    &#34;&#34;&#34;Helpful printing utility&#34;&#34;&#34;
     print(Fore.GREEN + &#39;[pypanda.py] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)</code></pre>
 </details>
 </dd>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>panda.osi_mixins API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Convenience functions to interact with the Operating System Instrospection (OSI) class of plugins." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,11 +22,16 @@
 <h1 class="title">Module <code>panda.osi_mixins</code></h1>
 </header>
 <section id="section-intro">
+<p>Convenience functions to interact with the Operating System Instrospection (OSI) class of plugins.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from .utils import progress
+<pre><code class="python">&#34;&#34;&#34;
+Convenience functions to interact with the Operating System Instrospection (OSI) class of plugins.
+&#34;&#34;&#34;
+
+from .utils import progress
 from .ffi_importer import ffi
 
 class GArrayIterator():
@@ -60,17 +65,54 @@ class GArrayIterator():
 
 class osi_mixins():
     def get_mappings(self, cpu):
+        &#39;&#39;&#39;
+        Get all active memory mappings in the system.
+
+            Requires: OSI
+
+            Parameters:
+                cpu: CPUState struct
+
+            Returns:
+                Iterator of `OsiModule` structures
+        &#39;&#39;&#39;
         current = self.plugins[&#39;osi&#39;].get_current_process(cpu)
         maps = self.plugins[&#39;osi&#39;].get_mappings(cpu, current)
         map_len = self.garray_len(maps)
         return GArrayIterator(self.plugins[&#39;osi&#39;].get_one_module, maps, map_len, self.plugins[&#39;osi&#39;].cleanup_garray)
 
     def get_processes(self, cpu):
+        &#39;&#39;&#39;
+        Get all running processes in the system. Includes kernel modules on Linux.
+
+            Requires: OSI
+
+            Parameters:
+                cpu: CPUState struct
+
+            Returns:
+                Iterator of `OsiProc` structures
+        &#39;&#39;&#39;
         processes = self.plugins[&#39;osi&#39;].get_processes(cpu)
         processes_len = self.garray_len(processes)
         return GArrayIterator(self.plugins[&#39;osi&#39;].get_one_proc, processes, processes_len, self.plugins[&#39;osi&#39;].cleanup_garray)
 
     def get_processes_dict(self, cpu):
+        &#39;&#39;&#39;
+        Get all running processes for the system at this moment in time as a dictionary.
+
+        The dictionary maps proceses by their PID. Each mapping returns a dictionary containing the process name, its pid,
+        and its parent pid (ppid).
+
+            Requires: OSI
+
+            Parameters:
+                cpu: CPUState struct
+
+            Returns:
+                Dictionary as described above.
+        &#39;&#39;&#39;
+
         procs = {} #pid: {name: X, pid: Y, parent_pid: Z})
 
         for proc in self.get_processes(cpu):
@@ -144,17 +186,54 @@ get_one_module.</p></div>
 </summary>
 <pre><code class="python">class osi_mixins():
     def get_mappings(self, cpu):
+        &#39;&#39;&#39;
+        Get all active memory mappings in the system.
+
+            Requires: OSI
+
+            Parameters:
+                cpu: CPUState struct
+
+            Returns:
+                Iterator of `OsiModule` structures
+        &#39;&#39;&#39;
         current = self.plugins[&#39;osi&#39;].get_current_process(cpu)
         maps = self.plugins[&#39;osi&#39;].get_mappings(cpu, current)
         map_len = self.garray_len(maps)
         return GArrayIterator(self.plugins[&#39;osi&#39;].get_one_module, maps, map_len, self.plugins[&#39;osi&#39;].cleanup_garray)
 
     def get_processes(self, cpu):
+        &#39;&#39;&#39;
+        Get all running processes in the system. Includes kernel modules on Linux.
+
+            Requires: OSI
+
+            Parameters:
+                cpu: CPUState struct
+
+            Returns:
+                Iterator of `OsiProc` structures
+        &#39;&#39;&#39;
         processes = self.plugins[&#39;osi&#39;].get_processes(cpu)
         processes_len = self.garray_len(processes)
         return GArrayIterator(self.plugins[&#39;osi&#39;].get_one_proc, processes, processes_len, self.plugins[&#39;osi&#39;].cleanup_garray)
 
     def get_processes_dict(self, cpu):
+        &#39;&#39;&#39;
+        Get all running processes for the system at this moment in time as a dictionary.
+
+        The dictionary maps proceses by their PID. Each mapping returns a dictionary containing the process name, its pid,
+        and its parent pid (ppid).
+
+            Requires: OSI
+
+            Parameters:
+                cpu: CPUState struct
+
+            Returns:
+                Dictionary as described above.
+        &#39;&#39;&#39;
+
         procs = {} #pid: {name: X, pid: Y, parent_pid: Z})
 
         for proc in self.get_processes(cpu):
@@ -174,12 +253,31 @@ get_one_module.</p></div>
 <span>def <span class="ident">get_mappings</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Get all active memory mappings in the system.</p>
+<pre><code>Requires: OSI
+
+Parameters:
+    cpu: CPUState struct
+
+Returns:
+    Iterator of &lt;code&gt;OsiModule&lt;/code&gt; structures
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_mappings(self, cpu):
+    &#39;&#39;&#39;
+    Get all active memory mappings in the system.
+
+        Requires: OSI
+
+        Parameters:
+            cpu: CPUState struct
+
+        Returns:
+            Iterator of `OsiModule` structures
+    &#39;&#39;&#39;
     current = self.plugins[&#39;osi&#39;].get_current_process(cpu)
     maps = self.plugins[&#39;osi&#39;].get_mappings(cpu, current)
     map_len = self.garray_len(maps)
@@ -190,12 +288,31 @@ get_one_module.</p></div>
 <span>def <span class="ident">get_processes</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Get all running processes in the system. Includes kernel modules on Linux.</p>
+<pre><code>Requires: OSI
+
+Parameters:
+    cpu: CPUState struct
+
+Returns:
+    Iterator of &lt;code&gt;OsiProc&lt;/code&gt; structures
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_processes(self, cpu):
+    &#39;&#39;&#39;
+    Get all running processes in the system. Includes kernel modules on Linux.
+
+        Requires: OSI
+
+        Parameters:
+            cpu: CPUState struct
+
+        Returns:
+            Iterator of `OsiProc` structures
+    &#39;&#39;&#39;
     processes = self.plugins[&#39;osi&#39;].get_processes(cpu)
     processes_len = self.garray_len(processes)
     return GArrayIterator(self.plugins[&#39;osi&#39;].get_one_proc, processes, processes_len, self.plugins[&#39;osi&#39;].cleanup_garray)</code></pre>
@@ -205,12 +322,37 @@ get_one_module.</p></div>
 <span>def <span class="ident">get_processes_dict</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Get all running processes for the system at this moment in time as a dictionary.</p>
+<p>The dictionary maps proceses by their PID. Each mapping returns a dictionary containing the process name, its pid,
+and its parent pid (ppid).</p>
+<pre><code>Requires: OSI
+
+Parameters:
+    cpu: CPUState struct
+
+Returns:
+    Dictionary as described above.
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_processes_dict(self, cpu):
+    &#39;&#39;&#39;
+    Get all running processes for the system at this moment in time as a dictionary.
+
+    The dictionary maps proceses by their PID. Each mapping returns a dictionary containing the process name, its pid,
+    and its parent pid (ppid).
+
+        Requires: OSI
+
+        Parameters:
+            cpu: CPUState struct
+
+        Returns:
+            Dictionary as described above.
+    &#39;&#39;&#39;
+
     procs = {} #pid: {name: X, pid: Y, parent_pid: Z})
 
     for proc in self.get_processes(cpu):

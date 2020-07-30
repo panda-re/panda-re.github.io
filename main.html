@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>panda.main API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="The main module is a container for the Panda class." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,16 @@
 <h1 class="title">Module <code>panda.main</code></h1>
 </header>
 <section id="section-intro">
+<p>The main module is a container for the Panda class.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import sys
+<pre><code class="python">&#34;&#34;&#34;
+The main module is a container for the Panda class.
+&#34;&#34;&#34;
 
+import sys
 
 if sys.version_info[0] &lt; 3:
     print(&#34;Please run with Python 3!&#34;)
@@ -67,6 +71,11 @@ from .gdb_mixins        import gdb_mixins
 import pdb
 
 class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callback_mixins, taint_mixins, volatility_mixins, pyperipheral_mixins, gdb_mixins):
+    &#34;&#34;&#34;
+    This is the object used to interact with PANDA. Initializing it creates a virtual machine to interact with.
+
+    It attempts to be less complicated by using mixins. All mixin methods are avaiable to the main PANDA object.
+    &#34;&#34;&#34;
     def __init__(self, arch=&#34;i386&#34;, mem=&#34;128M&#34;,
             expect_prompt=None, # Regular expression describing the prompt exposed by the guest on a serial console. Used so we know when a running command has finished with its output
             os_version=None,
@@ -300,6 +309,9 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         self.main_loop_wait_fnargs.append((fn, args))
 
     def exit_cpu_loop(self):
+        &#39;&#39;&#39;
+        Stop cpu execution at nearest juncture.
+        &#39;&#39;&#39;
         self.libpanda.panda_exit_loop = True
 
     def revert_async(self, snapshot_name): # In the next main loop, revert
@@ -321,7 +333,8 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         if debug:
             self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Loaded snapshot&#34;])
 
-    def reset(self): # In the next main loop, reset to boot
+    def reset(self): 
+        &#34;&#34;&#34;In the next main loop, reset to boot&#34;&#34;&#34;
         if debug:
             progress (&#34;Resetting machine to start state&#34;)
 
@@ -330,14 +343,17 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         self.queue_main_loop_wait_fn(self.libpanda.panda_reset)
         self.queue_main_loop_wait_fn(self.libpanda.panda_cont)
 
-    def cont(self): # Continue execution (run after vm_stop)
+    def cont(self):
+        &#39;&#39;&#39; Continue execution (run after vm_stop) &#39;&#39;&#39;
         self.libpanda.panda_cont()
         self.running.set()
 
-    def vm_stop(self, code=4): # Stop execution, default code means RUN_STATE_PAUSED
+    def vm_stop(self, code=4):
+        &#39;&#39;&#39; Stop execution, default code means RUN_STATE_PAUSED &#39;&#39;&#39;
         self.libpanda.panda_stop(code)
 
     def snap(self, snapshot_name):
+        &#39;&#39;&#39; Create snapshot with specified name &#39;&#39;&#39;
         if debug:
             progress (&#34;Creating snapshot &#34; + snapshot_name)
 
@@ -351,6 +367,7 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Saved snapshot&#34;])
 
     def delvm(self, snapshot_name):
+        &#39;&#39;&#39; Delete snapshot with specified name &#39;&#39;&#39;
         if debug:
             progress (&#34;Deleting snapshot &#34; + snapshot_name)
 
@@ -360,20 +377,20 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         self.queue_main_loop_wait_fn(self.libpanda.panda_delvm, [charptr])
 
     def finish_timer(self, start, msg):
-        &#39;&#39;&#39;
-        Print how long some (main_loop_wait) task took
-        &#39;&#39;&#39;
+        &#39;&#39;&#39; Print how long some (main_loop_wait) task took &#39;&#39;&#39;
         t = time() - start
         print(&#34;{} in {1:.08f} seconds&#34;.format(msg, t))
 
 
     def enable_tb_chaining(self):
+        &#39;&#39;&#39; This function enables translation block chaining in QEMU &#39;&#39;&#39;
         if debug:
             progress(&#34;Enabling TB chaining&#34;)
         self.disabled_tb_chaining = False
         self.libpanda.panda_enable_tb_chaining()
 
     def disable_tb_chaining(self):
+        &#39;&#39;&#39; This function disables translation block chaining in QEMU &#39;&#39;&#39;
         if not self.disabled_tb_chaining:
             if debug:
                 progress(&#34;Disabling TB chaining&#34;)
@@ -382,8 +399,10 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 
     def run(self):
         &#39;&#39;&#39;
-        Start execution of guest. Blocks until guest finishes.
-        Initializes panda object, clears main_loop_wait fns, sets up internal callbacks
+        This function starts our running PANDA instance from Python. At termination this function returns and the script continues to run after it.
+        
+        This function starts execution of the guest. It blocks until guest finishes.
+        It also initializes panda object, clears main_loop_wait fns, and sets up internal callbacks.
         &#39;&#39;&#39;
 
         if len(self.main_loop_wait_fnargs):
@@ -410,6 +429,8 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 
     def end_analysis(self):
         &#39;&#39;&#39;
+        Stop running machine.
+
         Call from any thread to unload all plugins and stop all queued functions.
         If called from async thread or a callback, it will also unblock panda.run()
 
@@ -424,7 +445,13 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 
     def run_replay(self, replaypfx):
         &#39;&#39;&#39;
-        Load a replay and run it
+        Load a replay and run it. Starts PANDA execution and returns after end of VM execution.
+
+            Parameters:
+                replaypfx: python string path to replay file.
+        
+            Returns:
+                None
         &#39;&#39;&#39;
         if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
             raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
@@ -445,6 +472,13 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
     def load_plugin(self, name, args={}):
         &#39;&#39;&#39;
         Load a C plugin, optionally with arguments
+
+            Parameters:
+                name: python string name of plugin
+                args: Dictionary of arguments matching key to value. e.g. {&#34;key&#34;: &#34;value&#34;} sets option key to value.
+            
+            Returns:
+                None.
         &#39;&#39;&#39;
         if debug:
             progress (&#34;Loading plugin %s&#34; % name),
@@ -478,9 +512,9 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 
         charptr = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
         self.libpanda.panda_require_from_library(charptr, plugin_args, len(argstrs_ffi))
-        self.load_plugin_library(name)
+        self._load_plugin_library(name)
 
-    def procname_changed(self, name):
+    def _procname_changed(self, name):
         for cb_name, cb in self.registered_callbacks.items():
             if not cb[&#34;procname&#34;]:
                 continue
@@ -492,6 +526,15 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             self.update_hooks_new_procname(name)
 
     def unload_plugin(self, name):
+        &#39;&#39;&#39;
+        Unload plugin with given name.
+
+            Parameters:
+                name: python string name of plugin
+        
+            Returns:
+                None
+        &#39;&#39;&#39;
         if debug:
             progress (&#34;Unloading plugin %s&#34; % name),
         name_ffi = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
@@ -516,15 +559,27 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
         self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)
 
-    def rr_get_guest_instr_count(self):
-        return self.libpanda.rr_get_guest_instr_count_external()
-
     def memsavep(self, file_out):
-        newfd = dup(f_out.fileno())
+        &#39;&#39;&#39;
+        Calls QEMU memsavep on your specified python file.
+        &#39;&#39;&#39;
+        newfd = dup(file_out.fileno())
         self.libpanda.panda_memsavep(newfd)
         self.libpanda.fclose(newfd)
 
     def current_sp(self, cpustate): # under construction
+        &#39;&#39;&#39;
+        Returns the current stack pointer for your target.
+
+            Parameters:
+                cpustate: CPUState structure
+        
+            Returns:
+                Stack pointer as python integer.
+        
+            Raises:
+                NotImplemented error if architecture isn&#39;t supported.
+        &#39;&#39;&#39;
         if self.arch == &#34;i386&#34;:
             # XXX see far more complex logic in panda/include/panda/common.h
             from panda.x86.helper import R_ESP
@@ -536,9 +591,42 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             raise NotImplemented(&#34;current_sp doesn&#39;t yet support arch {}&#34;.format(self.arch))
 
     def physical_memory_read(self, addr, length, fmt=&#39;bytearray&#39;):
+        &#39;&#39;&#39;
+        Read guest physical memory.
+
+            Parameters:
+                addr: python int address
+                length: length of array you would like returned
+                fmt: format for returned array. Options: &#39;bytearray&#39;, &#39;int&#39;, and &#39;str&#39;
+
+            Returns:
+                Buffer based on fmt string
+        
+            Raises:
+                ValueError for two cases: 
+                    Memory Access with error value.
+                    Format string is incorrect.
+        &#39;&#39;&#39;
         return self._memory_read(None, addr, length, physical=True, fmt=fmt)
 
     def virtual_memory_read(self, env, addr, length, fmt=&#39;bytearray&#39;):
+        &#39;&#39;&#39;
+        Read guest virtual memory.
+
+            Parameters:
+                    env: CPUState structure
+                    addr: python int address
+                    length: length of array you would like returned
+                    fmt: format for returned array. Options: &#39;bytearray&#39;, &#39;int&#39;, and &#39;str&#39;
+            
+            Returns:
+                    Buffer based on fmt string
+            
+            Raises:
+                    ValueError for two cases: 
+                        Memory Access with error value.
+                        Format string is incorrect.
+        &#39;&#39;&#39;
         return self._memory_read(env, addr, length, physical=False, fmt=fmt)
 
     def _memory_read(self, env, addr, length, physical=False, fmt=&#39;bytearray&#39;):
@@ -572,9 +660,28 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             raise ValueError(&#34;fmt={} unsupported&#34;.format(fmt))
 
     def physical_memory_write(self, addr, buf):
+        &#39;&#39;&#39;
+        Write guest physical memory.
+
+            Parameters:
+                    addr: python int address
+                    buf:  byte string to write
+        &#39;&#39;&#39;
         return self._memory_write(None, addr, buf, physical=True)
 
     def virtual_memory_write(self, env, addr, buf):
+        &#39;&#39;&#39;
+        Write guest virtual memory.
+        
+            Parameters:
+                    env: CPUState structure
+                    address: python int address
+                    buf: byte string to write
+            
+            Returns:
+                    int: 0 on success. 1 on error.
+
+        &#39;&#39;&#39;
         return self._memory_write(env, addr, buf, physical=False)
 
     def _memory_write(self, env, addr, buf, physical=False):
@@ -595,6 +702,9 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             return self.libpanda.panda_virtual_memory_write_external(env, addr, buf_a, length_a)
 
     def callstack_callers(self, lim, cpu): # XXX move into new directory, &#39;callstack&#39; ?
+        &#39;&#39;&#39;
+        Utility function to handle conversion and return get_callers from callstack_instr.
+        &#39;&#39;&#39;
         if not &#34;plugin_callstack_instr&#34; in self.plugins:
             progress(&#34;enabling callstack_instr plugin&#34;)
             self.require(&#34;callstack_instr&#34;)
@@ -606,7 +716,7 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             c.append(pc)
         return c
 
-    def load_plugin_library(self, name):
+    def _load_plugin_library(self, name):
         if hasattr(self,&#34;__did_load_libpanda&#34;):
             libpanda_path_chr = ffi.new(&#34;char[]&#34;,bytes(self.libpanda_path, &#34;UTF-8&#34;))
             self.__did_load_libpanda = self.libpanda.panda_load_libpanda(libpanda_path_chr)
@@ -616,9 +726,28 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             self.plugins[name] = library
 
     def queue_async(self, f, internal=False):
+        &#39;&#39;&#39;
+        Queues work in the asynchronous work queue.
+
+            Parameters:
+                f: A python function with no arguments to be called at a later date
+            
+            Returns:
+                None
+        &#39;&#39;&#39;
         self.athread.queue(f, internal=internal)
 
     def map_memory(self, name, size, address):
+
+        &#39;&#39;&#39;
+        Make a new memory region.
+        
+            Parameters:
+                    name: This is an internal reference name for this region. Must be unique.
+                    size: number of bytes the region should be.
+                    address: start address of region
+        &#39;&#39;&#39;
+
         name_c = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
         size = ceil(size/1024)*1024 # Must be page-aligned
         return self.libpanda.map_memory(name_c, size, address)
@@ -678,12 +807,18 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 <span>(</span><span>arch='i386', mem='128M', expect_prompt=None, os_version=None, qcow=None, os='linux', generic=None, raw_monitor=False, extra_args=[])</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Constructs a file and file handler that volatility can't ignore to back by PANDA physical memory</p></div>
+<div class="desc"><p>This is the object used to interact with PANDA. Initializing it creates a virtual machine to interact with.</p>
+<p>It attempts to be less complicated by using mixins. All mixin methods are avaiable to the main PANDA object.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callback_mixins, taint_mixins, volatility_mixins, pyperipheral_mixins, gdb_mixins):
+    &#34;&#34;&#34;
+    This is the object used to interact with PANDA. Initializing it creates a virtual machine to interact with.
+
+    It attempts to be less complicated by using mixins. All mixin methods are avaiable to the main PANDA object.
+    &#34;&#34;&#34;
     def __init__(self, arch=&#34;i386&#34;, mem=&#34;128M&#34;,
             expect_prompt=None, # Regular expression describing the prompt exposed by the guest on a serial console. Used so we know when a running command has finished with its output
             os_version=None,
@@ -917,6 +1052,9 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         self.main_loop_wait_fnargs.append((fn, args))
 
     def exit_cpu_loop(self):
+        &#39;&#39;&#39;
+        Stop cpu execution at nearest juncture.
+        &#39;&#39;&#39;
         self.libpanda.panda_exit_loop = True
 
     def revert_async(self, snapshot_name): # In the next main loop, revert
@@ -938,7 +1076,8 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         if debug:
             self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Loaded snapshot&#34;])
 
-    def reset(self): # In the next main loop, reset to boot
+    def reset(self): 
+        &#34;&#34;&#34;In the next main loop, reset to boot&#34;&#34;&#34;
         if debug:
             progress (&#34;Resetting machine to start state&#34;)
 
@@ -947,14 +1086,17 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         self.queue_main_loop_wait_fn(self.libpanda.panda_reset)
         self.queue_main_loop_wait_fn(self.libpanda.panda_cont)
 
-    def cont(self): # Continue execution (run after vm_stop)
+    def cont(self):
+        &#39;&#39;&#39; Continue execution (run after vm_stop) &#39;&#39;&#39;
         self.libpanda.panda_cont()
         self.running.set()
 
-    def vm_stop(self, code=4): # Stop execution, default code means RUN_STATE_PAUSED
+    def vm_stop(self, code=4):
+        &#39;&#39;&#39; Stop execution, default code means RUN_STATE_PAUSED &#39;&#39;&#39;
         self.libpanda.panda_stop(code)
 
     def snap(self, snapshot_name):
+        &#39;&#39;&#39; Create snapshot with specified name &#39;&#39;&#39;
         if debug:
             progress (&#34;Creating snapshot &#34; + snapshot_name)
 
@@ -968,6 +1110,7 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Saved snapshot&#34;])
 
     def delvm(self, snapshot_name):
+        &#39;&#39;&#39; Delete snapshot with specified name &#39;&#39;&#39;
         if debug:
             progress (&#34;Deleting snapshot &#34; + snapshot_name)
 
@@ -977,20 +1120,20 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         self.queue_main_loop_wait_fn(self.libpanda.panda_delvm, [charptr])
 
     def finish_timer(self, start, msg):
-        &#39;&#39;&#39;
-        Print how long some (main_loop_wait) task took
-        &#39;&#39;&#39;
+        &#39;&#39;&#39; Print how long some (main_loop_wait) task took &#39;&#39;&#39;
         t = time() - start
         print(&#34;{} in {1:.08f} seconds&#34;.format(msg, t))
 
 
     def enable_tb_chaining(self):
+        &#39;&#39;&#39; This function enables translation block chaining in QEMU &#39;&#39;&#39;
         if debug:
             progress(&#34;Enabling TB chaining&#34;)
         self.disabled_tb_chaining = False
         self.libpanda.panda_enable_tb_chaining()
 
     def disable_tb_chaining(self):
+        &#39;&#39;&#39; This function disables translation block chaining in QEMU &#39;&#39;&#39;
         if not self.disabled_tb_chaining:
             if debug:
                 progress(&#34;Disabling TB chaining&#34;)
@@ -999,8 +1142,10 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 
     def run(self):
         &#39;&#39;&#39;
-        Start execution of guest. Blocks until guest finishes.
-        Initializes panda object, clears main_loop_wait fns, sets up internal callbacks
+        This function starts our running PANDA instance from Python. At termination this function returns and the script continues to run after it.
+        
+        This function starts execution of the guest. It blocks until guest finishes.
+        It also initializes panda object, clears main_loop_wait fns, and sets up internal callbacks.
         &#39;&#39;&#39;
 
         if len(self.main_loop_wait_fnargs):
@@ -1027,6 +1172,8 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 
     def end_analysis(self):
         &#39;&#39;&#39;
+        Stop running machine.
+
         Call from any thread to unload all plugins and stop all queued functions.
         If called from async thread or a callback, it will also unblock panda.run()
 
@@ -1041,7 +1188,13 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 
     def run_replay(self, replaypfx):
         &#39;&#39;&#39;
-        Load a replay and run it
+        Load a replay and run it. Starts PANDA execution and returns after end of VM execution.
+
+            Parameters:
+                replaypfx: python string path to replay file.
+        
+            Returns:
+                None
         &#39;&#39;&#39;
         if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
             raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
@@ -1062,6 +1215,13 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
     def load_plugin(self, name, args={}):
         &#39;&#39;&#39;
         Load a C plugin, optionally with arguments
+
+            Parameters:
+                name: python string name of plugin
+                args: Dictionary of arguments matching key to value. e.g. {&#34;key&#34;: &#34;value&#34;} sets option key to value.
+            
+            Returns:
+                None.
         &#39;&#39;&#39;
         if debug:
             progress (&#34;Loading plugin %s&#34; % name),
@@ -1095,9 +1255,9 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 
         charptr = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
         self.libpanda.panda_require_from_library(charptr, plugin_args, len(argstrs_ffi))
-        self.load_plugin_library(name)
+        self._load_plugin_library(name)
 
-    def procname_changed(self, name):
+    def _procname_changed(self, name):
         for cb_name, cb in self.registered_callbacks.items():
             if not cb[&#34;procname&#34;]:
                 continue
@@ -1109,6 +1269,15 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             self.update_hooks_new_procname(name)
 
     def unload_plugin(self, name):
+        &#39;&#39;&#39;
+        Unload plugin with given name.
+
+            Parameters:
+                name: python string name of plugin
+        
+            Returns:
+                None
+        &#39;&#39;&#39;
         if debug:
             progress (&#34;Unloading plugin %s&#34; % name),
         name_ffi = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
@@ -1133,15 +1302,27 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
         # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
         self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)
 
-    def rr_get_guest_instr_count(self):
-        return self.libpanda.rr_get_guest_instr_count_external()
-
     def memsavep(self, file_out):
-        newfd = dup(f_out.fileno())
+        &#39;&#39;&#39;
+        Calls QEMU memsavep on your specified python file.
+        &#39;&#39;&#39;
+        newfd = dup(file_out.fileno())
         self.libpanda.panda_memsavep(newfd)
         self.libpanda.fclose(newfd)
 
     def current_sp(self, cpustate): # under construction
+        &#39;&#39;&#39;
+        Returns the current stack pointer for your target.
+
+            Parameters:
+                cpustate: CPUState structure
+        
+            Returns:
+                Stack pointer as python integer.
+        
+            Raises:
+                NotImplemented error if architecture isn&#39;t supported.
+        &#39;&#39;&#39;
         if self.arch == &#34;i386&#34;:
             # XXX see far more complex logic in panda/include/panda/common.h
             from panda.x86.helper import R_ESP
@@ -1153,9 +1334,42 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             raise NotImplemented(&#34;current_sp doesn&#39;t yet support arch {}&#34;.format(self.arch))
 
     def physical_memory_read(self, addr, length, fmt=&#39;bytearray&#39;):
+        &#39;&#39;&#39;
+        Read guest physical memory.
+
+            Parameters:
+                addr: python int address
+                length: length of array you would like returned
+                fmt: format for returned array. Options: &#39;bytearray&#39;, &#39;int&#39;, and &#39;str&#39;
+
+            Returns:
+                Buffer based on fmt string
+        
+            Raises:
+                ValueError for two cases: 
+                    Memory Access with error value.
+                    Format string is incorrect.
+        &#39;&#39;&#39;
         return self._memory_read(None, addr, length, physical=True, fmt=fmt)
 
     def virtual_memory_read(self, env, addr, length, fmt=&#39;bytearray&#39;):
+        &#39;&#39;&#39;
+        Read guest virtual memory.
+
+            Parameters:
+                    env: CPUState structure
+                    addr: python int address
+                    length: length of array you would like returned
+                    fmt: format for returned array. Options: &#39;bytearray&#39;, &#39;int&#39;, and &#39;str&#39;
+            
+            Returns:
+                    Buffer based on fmt string
+            
+            Raises:
+                    ValueError for two cases: 
+                        Memory Access with error value.
+                        Format string is incorrect.
+        &#39;&#39;&#39;
         return self._memory_read(env, addr, length, physical=False, fmt=fmt)
 
     def _memory_read(self, env, addr, length, physical=False, fmt=&#39;bytearray&#39;):
@@ -1189,9 +1403,28 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             raise ValueError(&#34;fmt={} unsupported&#34;.format(fmt))
 
     def physical_memory_write(self, addr, buf):
+        &#39;&#39;&#39;
+        Write guest physical memory.
+
+            Parameters:
+                    addr: python int address
+                    buf:  byte string to write
+        &#39;&#39;&#39;
         return self._memory_write(None, addr, buf, physical=True)
 
     def virtual_memory_write(self, env, addr, buf):
+        &#39;&#39;&#39;
+        Write guest virtual memory.
+        
+            Parameters:
+                    env: CPUState structure
+                    address: python int address
+                    buf: byte string to write
+            
+            Returns:
+                    int: 0 on success. 1 on error.
+
+        &#39;&#39;&#39;
         return self._memory_write(env, addr, buf, physical=False)
 
     def _memory_write(self, env, addr, buf, physical=False):
@@ -1212,6 +1445,9 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             return self.libpanda.panda_virtual_memory_write_external(env, addr, buf_a, length_a)
 
     def callstack_callers(self, lim, cpu): # XXX move into new directory, &#39;callstack&#39; ?
+        &#39;&#39;&#39;
+        Utility function to handle conversion and return get_callers from callstack_instr.
+        &#39;&#39;&#39;
         if not &#34;plugin_callstack_instr&#34; in self.plugins:
             progress(&#34;enabling callstack_instr plugin&#34;)
             self.require(&#34;callstack_instr&#34;)
@@ -1223,7 +1459,7 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             c.append(pc)
         return c
 
-    def load_plugin_library(self, name):
+    def _load_plugin_library(self, name):
         if hasattr(self,&#34;__did_load_libpanda&#34;):
             libpanda_path_chr = ffi.new(&#34;char[]&#34;,bytes(self.libpanda_path, &#34;UTF-8&#34;))
             self.__did_load_libpanda = self.libpanda.panda_load_libpanda(libpanda_path_chr)
@@ -1233,9 +1469,28 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
             self.plugins[name] = library
 
     def queue_async(self, f, internal=False):
+        &#39;&#39;&#39;
+        Queues work in the asynchronous work queue.
+
+            Parameters:
+                f: A python function with no arguments to be called at a later date
+            
+            Returns:
+                None
+        &#39;&#39;&#39;
         self.athread.queue(f, internal=internal)
 
     def map_memory(self, name, size, address):
+
+        &#39;&#39;&#39;
+        Make a new memory region.
+        
+            Parameters:
+                    name: This is an internal reference name for this region. Must be unique.
+                    size: number of bytes the region should be.
+                    address: start address of region
+        &#39;&#39;&#39;
+
         name_c = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
         size = ceil(size/1024)*1024 # Must be page-aligned
         return self.libpanda.map_memory(name_c, size, address)
@@ -1296,12 +1551,15 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 <span>def <span class="ident">callstack_callers</span></span>(<span>self, lim, cpu)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Utility function to handle conversion and return get_callers from callstack_instr.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def callstack_callers(self, lim, cpu): # XXX move into new directory, &#39;callstack&#39; ?
+    &#39;&#39;&#39;
+    Utility function to handle conversion and return get_callers from callstack_instr.
+    &#39;&#39;&#39;
     if not &#34;plugin_callstack_instr&#34; in self.plugins:
         progress(&#34;enabling callstack_instr plugin&#34;)
         self.require(&#34;callstack_instr&#34;)
@@ -1318,12 +1576,13 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 <span>def <span class="ident">cont</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Continue execution (run after vm_stop)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def cont(self): # Continue execution (run after vm_stop)
+<pre><code class="python">def cont(self):
+    &#39;&#39;&#39; Continue execution (run after vm_stop) &#39;&#39;&#39;
     self.libpanda.panda_cont()
     self.running.set()</code></pre>
 </details>
@@ -1332,12 +1591,33 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 <span>def <span class="ident">current_sp</span></span>(<span>self, cpustate)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the current stack pointer for your target.</p>
+<pre><code>Parameters:
+    cpustate: CPUState structure
+
+Returns:
+    Stack pointer as python integer.
+
+Raises:
+    NotImplemented error if architecture isn't supported.
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def current_sp(self, cpustate): # under construction
+    &#39;&#39;&#39;
+    Returns the current stack pointer for your target.
+
+        Parameters:
+            cpustate: CPUState structure
+    
+        Returns:
+            Stack pointer as python integer.
+    
+        Raises:
+            NotImplemented error if architecture isn&#39;t supported.
+    &#39;&#39;&#39;
     if self.arch == &#34;i386&#34;:
         # XXX see far more complex logic in panda/include/panda/common.h
         from panda.x86.helper import R_ESP
@@ -1353,12 +1633,13 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 <span>def <span class="ident">delvm</span></span>(<span>self, snapshot_name)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Delete snapshot with specified name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def delvm(self, snapshot_name):
+    &#39;&#39;&#39; Delete snapshot with specified name &#39;&#39;&#39;
     if debug:
         progress (&#34;Deleting snapshot &#34; + snapshot_name)
 
@@ -1372,12 +1653,13 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 <span>def <span class="ident">disable_tb_chaining</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function disables translation block chaining in QEMU</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def disable_tb_chaining(self):
+    &#39;&#39;&#39; This function disables translation block chaining in QEMU &#39;&#39;&#39;
     if not self.disabled_tb_chaining:
         if debug:
             progress(&#34;Disabling TB chaining&#34;)
@@ -1389,12 +1671,13 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 <span>def <span class="ident">enable_tb_chaining</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This function enables translation block chaining in QEMU</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def enable_tb_chaining(self):
+    &#39;&#39;&#39; This function enables translation block chaining in QEMU &#39;&#39;&#39;
     if debug:
         progress(&#34;Enabling TB chaining&#34;)
     self.disabled_tb_chaining = False
@@ -1405,7 +1688,8 @@ class Panda(libpanda_mixins, blocking_mixins, osi_mixins, hooking_mixins, callba
 <span>def <span class="ident">end_analysis</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Call from any thread to unload all plugins and stop all queued functions.
+<div class="desc"><p>Stop running machine.</p>
+<p>Call from any thread to unload all plugins and stop all queued functions.
 If called from async thread or a callback, it will also unblock panda.run()</p>
 <p>Note here we use the async class's internal thread to process these
 without needing to wait for tasks in the main async thread</p></div>
@@ -1415,6 +1699,8 @@ without needing to wait for tasks in the main async thread</p></div>
 </summary>
 <pre><code class="python">def end_analysis(self):
     &#39;&#39;&#39;
+    Stop running machine.
+
     Call from any thread to unload all plugins and stop all queued functions.
     If called from async thread or a callback, it will also unblock panda.run()
 
@@ -1432,12 +1718,15 @@ without needing to wait for tasks in the main async thread</p></div>
 <span>def <span class="ident">exit_cpu_loop</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Stop cpu execution at nearest juncture.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def exit_cpu_loop(self):
+    &#39;&#39;&#39;
+    Stop cpu execution at nearest juncture.
+    &#39;&#39;&#39;
     self.libpanda.panda_exit_loop = True</code></pre>
 </details>
 </dd>
@@ -1451,9 +1740,7 @@ without needing to wait for tasks in the main async thread</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def finish_timer(self, start, msg):
-    &#39;&#39;&#39;
-    Print how long some (main_loop_wait) task took
-    &#39;&#39;&#39;
+    &#39;&#39;&#39; Print how long some (main_loop_wait) task took &#39;&#39;&#39;
     t = time() - start
     print(&#34;{} in {1:.08f} seconds&#34;.format(msg, t))</code></pre>
 </details>
@@ -1483,7 +1770,14 @@ without needing to wait for tasks in the main async thread</p></div>
 <span>def <span class="ident">load_plugin</span></span>(<span>self, name, args={})</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Load a C plugin, optionally with arguments</p></div>
+<div class="desc"><p>Load a C plugin, optionally with arguments</p>
+<pre><code>Parameters:
+    name: python string name of plugin
+    args: Dictionary of arguments matching key to value. e.g. {"key": "value"} sets option key to value.
+
+Returns:
+    None.
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1491,6 +1785,13 @@ without needing to wait for tasks in the main async thread</p></div>
 <pre><code class="python">def load_plugin(self, name, args={}):
     &#39;&#39;&#39;
     Load a C plugin, optionally with arguments
+
+        Parameters:
+            name: python string name of plugin
+            args: Dictionary of arguments matching key to value. e.g. {&#34;key&#34;: &#34;value&#34;} sets option key to value.
+        
+        Returns:
+            None.
     &#39;&#39;&#39;
     if debug:
         progress (&#34;Loading plugin %s&#34; % name),
@@ -1524,38 +1825,34 @@ without needing to wait for tasks in the main async thread</p></div>
 
     charptr = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
     self.libpanda.panda_require_from_library(charptr, plugin_args, len(argstrs_ffi))
-    self.load_plugin_library(name)</code></pre>
-</details>
-</dd>
-<dt id="panda.main.Panda.load_plugin_library"><code class="name flex">
-<span>def <span class="ident">load_plugin_library</span></span>(<span>self, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def load_plugin_library(self, name):
-    if hasattr(self,&#34;__did_load_libpanda&#34;):
-        libpanda_path_chr = ffi.new(&#34;char[]&#34;,bytes(self.libpanda_path, &#34;UTF-8&#34;))
-        self.__did_load_libpanda = self.libpanda.panda_load_libpanda(libpanda_path_chr)
-    if not name in self.plugins.keys():
-        assert(isfile(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)])))
-        library = ffi.dlopen(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)]))
-        self.plugins[name] = library</code></pre>
+    self._load_plugin_library(name)</code></pre>
 </details>
 </dd>
 <dt id="panda.main.Panda.map_memory"><code class="name flex">
 <span>def <span class="ident">map_memory</span></span>(<span>self, name, size, address)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Make a new memory region.</p>
+<pre><code>Parameters:
+        name: This is an internal reference name for this region. Must be unique.
+        size: number of bytes the region should be.
+        address: start address of region
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def map_memory(self, name, size, address):
+
+    &#39;&#39;&#39;
+    Make a new memory region.
+    
+        Parameters:
+                name: This is an internal reference name for this region. Must be unique.
+                size: number of bytes the region should be.
+                address: start address of region
+    &#39;&#39;&#39;
+
     name_c = ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
     size = ceil(size/1024)*1024 # Must be page-aligned
     return self.libpanda.map_memory(name_c, size, address)</code></pre>
@@ -1565,13 +1862,16 @@ without needing to wait for tasks in the main async thread</p></div>
 <span>def <span class="ident">memsavep</span></span>(<span>self, file_out)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Calls QEMU memsavep on your specified python file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def memsavep(self, file_out):
-    newfd = dup(f_out.fileno())
+    &#39;&#39;&#39;
+    Calls QEMU memsavep on your specified python file.
+    &#39;&#39;&#39;
+    newfd = dup(file_out.fileno())
     self.libpanda.panda_memsavep(newfd)
     self.libpanda.fclose(newfd)</code></pre>
 </details>
@@ -1580,12 +1880,41 @@ without needing to wait for tasks in the main async thread</p></div>
 <span>def <span class="ident">physical_memory_read</span></span>(<span>self, addr, length, fmt='bytearray')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Read guest physical memory.</p>
+<pre><code>Parameters:
+    addr: python int address
+    length: length of array you would like returned
+    fmt: format for returned array. Options: 'bytearray', 'int', and 'str'
+
+Returns:
+    Buffer based on fmt string
+
+Raises:
+    ValueError for two cases: 
+        Memory Access with error value.
+        Format string is incorrect.
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def physical_memory_read(self, addr, length, fmt=&#39;bytearray&#39;):
+    &#39;&#39;&#39;
+    Read guest physical memory.
+
+        Parameters:
+            addr: python int address
+            length: length of array you would like returned
+            fmt: format for returned array. Options: &#39;bytearray&#39;, &#39;int&#39;, and &#39;str&#39;
+
+        Returns:
+            Buffer based on fmt string
+    
+        Raises:
+            ValueError for two cases: 
+                Memory Access with error value.
+                Format string is incorrect.
+    &#39;&#39;&#39;
     return self._memory_read(None, addr, length, physical=True, fmt=fmt)</code></pre>
 </details>
 </dd>
@@ -1593,46 +1922,51 @@ without needing to wait for tasks in the main async thread</p></div>
 <span>def <span class="ident">physical_memory_write</span></span>(<span>self, addr, buf)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Write guest physical memory.</p>
+<pre><code>Parameters:
+        addr: python int address
+        buf:  byte string to write
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def physical_memory_write(self, addr, buf):
-    return self._memory_write(None, addr, buf, physical=True)</code></pre>
-</details>
-</dd>
-<dt id="panda.main.Panda.procname_changed"><code class="name flex">
-<span>def <span class="ident">procname_changed</span></span>(<span>self, name)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def procname_changed(self, name):
-    for cb_name, cb in self.registered_callbacks.items():
-        if not cb[&#34;procname&#34;]:
-            continue
-        if name == cb[&#34;procname&#34;] and not cb[&#39;enabled&#39;]:
-            self.enable_callback(cb_name)
-        if name != cb[&#34;procname&#34;] and cb[&#39;enabled&#39;]:
-            self.disable_callback(cb_name)
+    &#39;&#39;&#39;
+    Write guest physical memory.
 
-        self.update_hooks_new_procname(name)</code></pre>
+        Parameters:
+                addr: python int address
+                buf:  byte string to write
+    &#39;&#39;&#39;
+    return self._memory_write(None, addr, buf, physical=True)</code></pre>
 </details>
 </dd>
 <dt id="panda.main.Panda.queue_async"><code class="name flex">
 <span>def <span class="ident">queue_async</span></span>(<span>self, f, internal=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Queues work in the asynchronous work queue.</p>
+<pre><code>Parameters:
+    f: A python function with no arguments to be called at a later date
+
+Returns:
+    None
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def queue_async(self, f, internal=False):
+    &#39;&#39;&#39;
+    Queues work in the asynchronous work queue.
+
+        Parameters:
+            f: A python function with no arguments to be called at a later date
+        
+        Returns:
+            None
+    &#39;&#39;&#39;
     self.athread.queue(f, internal=internal)</code></pre>
 </details>
 </dd>
@@ -1701,12 +2035,13 @@ pointer to an unmapped page)</p></div>
 <span>def <span class="ident">reset</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>In the next main loop, reset to boot</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def reset(self): # In the next main loop, reset to boot
+<pre><code class="python">def reset(self): 
+    &#34;&#34;&#34;In the next main loop, reset to boot&#34;&#34;&#34;
     if debug:
         progress (&#34;Resetting machine to start state&#34;)
 
@@ -1747,33 +2082,23 @@ from a blocking function instead</p></div>
         self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Loaded snapshot&#34;])</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.rr_get_guest_instr_count"><code class="name flex">
-<span>def <span class="ident">rr_get_guest_instr_count</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def rr_get_guest_instr_count(self):
-    return self.libpanda.rr_get_guest_instr_count_external()</code></pre>
-</details>
-</dd>
 <dt id="panda.main.Panda.run"><code class="name flex">
 <span>def <span class="ident">run</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Start execution of guest. Blocks until guest finishes.
-Initializes panda object, clears main_loop_wait fns, sets up internal callbacks</p></div>
+<div class="desc"><p>This function starts our running PANDA instance from Python. At termination this function returns and the script continues to run after it.</p>
+<p>This function starts execution of the guest. It blocks until guest finishes.
+It also initializes panda object, clears main_loop_wait fns, and sets up internal callbacks.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def run(self):
     &#39;&#39;&#39;
-    Start execution of guest. Blocks until guest finishes.
-    Initializes panda object, clears main_loop_wait fns, sets up internal callbacks
+    This function starts our running PANDA instance from Python. At termination this function returns and the script continues to run after it.
+    
+    This function starts execution of the guest. It blocks until guest finishes.
+    It also initializes panda object, clears main_loop_wait fns, and sets up internal callbacks.
     &#39;&#39;&#39;
 
     if len(self.main_loop_wait_fnargs):
@@ -1803,14 +2128,26 @@ Initializes panda object, clears main_loop_wait fns, sets up internal callbacks<
 <span>def <span class="ident">run_replay</span></span>(<span>self, replaypfx)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Load a replay and run it</p></div>
+<div class="desc"><p>Load a replay and run it. Starts PANDA execution and returns after end of VM execution.</p>
+<pre><code>Parameters:
+    replaypfx: python string path to replay file.
+
+Returns:
+    None
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def run_replay(self, replaypfx):
     &#39;&#39;&#39;
-    Load a replay and run it
+    Load a replay and run it. Starts PANDA execution and returns after end of VM execution.
+
+        Parameters:
+            replaypfx: python string path to replay file.
+    
+        Returns:
+            None
     &#39;&#39;&#39;
     if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
         raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
@@ -1827,12 +2164,13 @@ Initializes panda object, clears main_loop_wait fns, sets up internal callbacks<
 <span>def <span class="ident">snap</span></span>(<span>self, snapshot_name)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Create snapshot with specified name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def snap(self, snapshot_name):
+    &#39;&#39;&#39; Create snapshot with specified name &#39;&#39;&#39;
     if debug:
         progress (&#34;Creating snapshot &#34; + snapshot_name)
 
@@ -1874,12 +2212,27 @@ depending on guest bit-size</p></div>
 <span>def <span class="ident">unload_plugin</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Unload plugin with given name.</p>
+<pre><code>Parameters:
+    name: python string name of plugin
+
+Returns:
+    None
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def unload_plugin(self, name):
+    &#39;&#39;&#39;
+    Unload plugin with given name.
+
+        Parameters:
+            name: python string name of plugin
+    
+        Returns:
+            None
+    &#39;&#39;&#39;
     if debug:
         progress (&#34;Unloading plugin %s&#34; % name),
     name_ffi = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
@@ -1923,12 +2276,43 @@ panda.panda_finish directly (which is done at the end of panda.run())</p></div>
 <span>def <span class="ident">virtual_memory_read</span></span>(<span>self, env, addr, length, fmt='bytearray')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Read guest virtual memory.</p>
+<pre><code>Parameters:
+        env: CPUState structure
+        addr: python int address
+        length: length of array you would like returned
+        fmt: format for returned array. Options: 'bytearray', 'int', and 'str'
+
+Returns:
+        Buffer based on fmt string
+
+Raises:
+        ValueError for two cases: 
+            Memory Access with error value.
+            Format string is incorrect.
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def virtual_memory_read(self, env, addr, length, fmt=&#39;bytearray&#39;):
+    &#39;&#39;&#39;
+    Read guest virtual memory.
+
+        Parameters:
+                env: CPUState structure
+                addr: python int address
+                length: length of array you would like returned
+                fmt: format for returned array. Options: &#39;bytearray&#39;, &#39;int&#39;, and &#39;str&#39;
+        
+        Returns:
+                Buffer based on fmt string
+        
+        Raises:
+                ValueError for two cases: 
+                    Memory Access with error value.
+                    Format string is incorrect.
+    &#39;&#39;&#39;
     return self._memory_read(env, addr, length, physical=False, fmt=fmt)</code></pre>
 </details>
 </dd>
@@ -1936,12 +2320,32 @@ panda.panda_finish directly (which is done at the end of panda.run())</p></div>
 <span>def <span class="ident">virtual_memory_write</span></span>(<span>self, env, addr, buf)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Write guest virtual memory.</p>
+<pre><code>Parameters:
+        env: CPUState structure
+        address: python int address
+        buf: byte string to write
+
+Returns:
+        int: 0 on success. 1 on error.
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def virtual_memory_write(self, env, addr, buf):
+    &#39;&#39;&#39;
+    Write guest virtual memory.
+    
+        Parameters:
+                env: CPUState structure
+                address: python int address
+                buf: byte string to write
+        
+        Returns:
+                int: 0 on success. 1 on error.
+
+    &#39;&#39;&#39;
     return self._memory_write(env, addr, buf, physical=False)</code></pre>
 </details>
 </dd>
@@ -1949,21 +2353,38 @@ panda.panda_finish directly (which is done at the end of panda.run())</p></div>
 <span>def <span class="ident">vm_stop</span></span>(<span>self, code=4)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Stop execution, default code means RUN_STATE_PAUSED</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def vm_stop(self, code=4): # Stop execution, default code means RUN_STATE_PAUSED
+<pre><code class="python">def vm_stop(self, code=4):
+    &#39;&#39;&#39; Stop execution, default code means RUN_STATE_PAUSED &#39;&#39;&#39;
     self.libpanda.panda_stop(code)</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
+<li><code><b><a title="panda.libpanda_mixins.libpanda_mixins" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins">libpanda_mixins</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.libpanda_mixins.libpanda_mixins.rr_get_guest_instr_count" href="libpanda_mixins.html#panda.libpanda_mixins.libpanda_mixins.rr_get_guest_instr_count">rr_get_guest_instr_count</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="panda.osi_mixins.osi_mixins" href="osi_mixins.html#panda.osi_mixins.osi_mixins">osi_mixins</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.osi_mixins.osi_mixins.get_mappings" href="osi_mixins.html#panda.osi_mixins.osi_mixins.get_mappings">get_mappings</a></code></li>
+<li><code><a title="panda.osi_mixins.osi_mixins.get_processes" href="osi_mixins.html#panda.osi_mixins.osi_mixins.get_processes">get_processes</a></code></li>
+<li><code><a title="panda.osi_mixins.osi_mixins.get_processes_dict" href="osi_mixins.html#panda.osi_mixins.osi_mixins.get_processes_dict">get_processes_dict</a></code></li>
+</ul>
+</li>
 <li><code><b><a title="panda.hooking_mixins.hooking_mixins" href="hooking_mixins.html#panda.hooking_mixins.hooking_mixins">hooking_mixins</a></b></code>:
 <ul class="hlist">
+<li><code><a title="panda.hooking_mixins.hooking_mixins.disable_hook" href="hooking_mixins.html#panda.hooking_mixins.hooking_mixins.disable_hook">disable_hook</a></code></li>
+<li><code><a title="panda.hooking_mixins.hooking_mixins.enable_hook" href="hooking_mixins.html#panda.hooking_mixins.hooking_mixins.enable_hook">enable_hook</a></code></li>
 <li><code><a title="panda.hooking_mixins.hooking_mixins.hook" href="hooking_mixins.html#panda.hooking_mixins.hooking_mixins.hook">hook</a></code></li>
+<li><code><a title="panda.hooking_mixins.hooking_mixins.update_hook" href="hooking_mixins.html#panda.hooking_mixins.hooking_mixins.update_hook">update_hook</a></code></li>
+<li><code><a title="panda.hooking_mixins.hooking_mixins.update_hooks_new_procname" href="hooking_mixins.html#panda.hooking_mixins.hooking_mixins.update_hooks_new_procname">update_hooks_new_procname</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="panda.callback_mixins.callback_mixins" href="callback_mixins.html#panda.callback_mixins.callback_mixins">callback_mixins</a></b></code>:
@@ -1975,6 +2396,11 @@ panda.panda_finish directly (which is done at the end of panda.run())</p></div>
 <li><code><a title="panda.callback_mixins.callback_mixins.enable_internal_callbacks" href="callback_mixins.html#panda.callback_mixins.callback_mixins.enable_internal_callbacks">enable_internal_callbacks</a></code></li>
 <li><code><a title="panda.callback_mixins.callback_mixins.ppp" href="callback_mixins.html#panda.callback_mixins.callback_mixins.ppp">ppp</a></code></li>
 <li><code><a title="panda.callback_mixins.callback_mixins.register_cb_decorators" href="callback_mixins.html#panda.callback_mixins.callback_mixins.register_cb_decorators">register_cb_decorators</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="panda.taint_mixins.taint_mixins" href="taint_mixins.html#panda.taint_mixins.taint_mixins">taint_mixins</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.taint_mixins.taint_mixins.taint_enable" href="taint_mixins.html#panda.taint_mixins.taint_mixins.taint_enable">taint_enable</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="panda.pyperiph_mixins.pyperipheral_mixins" href="pyperiph_mixins.html#panda.pyperiph_mixins.pyperipheral_mixins">pyperipheral_mixins</a></b></code>:
@@ -2021,19 +2447,16 @@ panda.panda_finish directly (which is done at the end of panda.run())</p></div>
 <li><code><a title="panda.main.Panda.finish_timer" href="#panda.main.Panda.finish_timer">finish_timer</a></code></li>
 <li><code><a title="panda.main.Panda.from_unsigned_guest" href="#panda.main.Panda.from_unsigned_guest">from_unsigned_guest</a></code></li>
 <li><code><a title="panda.main.Panda.load_plugin" href="#panda.main.Panda.load_plugin">load_plugin</a></code></li>
-<li><code><a title="panda.main.Panda.load_plugin_library" href="#panda.main.Panda.load_plugin_library">load_plugin_library</a></code></li>
 <li><code><a title="panda.main.Panda.map_memory" href="#panda.main.Panda.map_memory">map_memory</a></code></li>
 <li><code><a title="panda.main.Panda.memsavep" href="#panda.main.Panda.memsavep">memsavep</a></code></li>
 <li><code><a title="panda.main.Panda.physical_memory_read" href="#panda.main.Panda.physical_memory_read">physical_memory_read</a></code></li>
 <li><code><a title="panda.main.Panda.physical_memory_write" href="#panda.main.Panda.physical_memory_write">physical_memory_write</a></code></li>
-<li><code><a title="panda.main.Panda.procname_changed" href="#panda.main.Panda.procname_changed">procname_changed</a></code></li>
 <li><code><a title="panda.main.Panda.queue_async" href="#panda.main.Panda.queue_async">queue_async</a></code></li>
 <li><code><a title="panda.main.Panda.queue_main_loop_wait_fn" href="#panda.main.Panda.queue_main_loop_wait_fn">queue_main_loop_wait_fn</a></code></li>
 <li><code><a title="panda.main.Panda.read_str" href="#panda.main.Panda.read_str">read_str</a></code></li>
 <li><code><a title="panda.main.Panda.require" href="#panda.main.Panda.require">require</a></code></li>
 <li><code><a title="panda.main.Panda.reset" href="#panda.main.Panda.reset">reset</a></code></li>
 <li><code><a title="panda.main.Panda.revert_async" href="#panda.main.Panda.revert_async">revert_async</a></code></li>
-<li><code><a title="panda.main.Panda.rr_get_guest_instr_count" href="#panda.main.Panda.rr_get_guest_instr_count">rr_get_guest_instr_count</a></code></li>
 <li><code><a title="panda.main.Panda.run" href="#panda.main.Panda.run">run</a></code></li>
 <li><code><a title="panda.main.Panda.run_replay" href="#panda.main.Panda.run_replay">run_replay</a></code></li>
 <li><code><a title="panda.main.Panda.snap" href="#panda.main.Panda.snap">snap</a></code></li>

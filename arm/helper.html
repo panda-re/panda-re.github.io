@@ -60,6 +60,7 @@ registers = {
     &#34;LR&#34;: R_LR,
     &#34;IP&#34;: R_IP,
     }
+&#34;&#34;&#34;Register array for ARM&#34;&#34;&#34;
 
 def dump_regs(panda, cpu):
     &#39;&#39;&#39;
@@ -88,6 +89,7 @@ def dump_stack(panda, cpu):
         telescope(panda, cpu, val)
 
 def dump_state(panda, cpu):
+    &#34;&#34;&#34;Dumps registers and stack to stdout.&#34;&#34;&#34;
     print(&#34;Registers:&#34;)
     dump_regs(panda, cpu)
     print(&#34;Stack:&#34;)
@@ -97,6 +99,13 @@ def dump_state(panda, cpu):
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="panda.arm.helper.registers"><code class="name">var <span class="ident">registers</span></code></dt>
+<dd>
+<div class="desc"><p>Register array for ARM</p></div>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
@@ -151,12 +160,13 @@ def dump_state(panda, cpu):
 <span>def <span class="ident">dump_state</span></span>(<span>panda, cpu)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Dumps registers and stack to stdout.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def dump_state(panda, cpu):
+    &#34;&#34;&#34;Dumps registers and stack to stdout.&#34;&#34;&#34;
     print(&#34;Registers:&#34;)
     dump_regs(panda, cpu)
     print(&#34;Stack:&#34;)
@@ -177,6 +187,11 @@ def dump_state(panda, cpu):
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="panda.arm" href="index.html">panda.arm</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="panda.arm.helper.registers" href="#panda.arm.helper.registers">registers</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>

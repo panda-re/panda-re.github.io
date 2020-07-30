@@ -85,6 +85,7 @@ def dump_stack(panda, cpu):
         telescope(panda, cpu, val)
 
 def dump_state(panda, cpu):
+    &#34;&#34;&#34;Dumps registers and stack to stdout.&#34;&#34;&#34;
     dump_regs(panda, cpu)
     print(&#34;&#34;)
     dump_stack(panda, cpu)</code></pre>
@@ -149,12 +150,13 @@ def dump_state(panda, cpu):
 <span>def <span class="ident">dump_state</span></span>(<span>panda, cpu)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Dumps registers and stack to stdout.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def dump_state(panda, cpu):
+    &#34;&#34;&#34;Dumps registers and stack to stdout.&#34;&#34;&#34;
     dump_regs(panda, cpu)
     print(&#34;&#34;)
     dump_stack(panda, cpu)</code></pre>
