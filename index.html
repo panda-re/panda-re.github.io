@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.8.4" />
+<meta name="generator" content="pdoc 0.9.1" />
 <title>panda API documentation</title>
 <meta name="description" content="The panda python extension (pypanda) is a module built for interacting
 with the PANDA project. The project enables interaction and callbacks
 with a …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
 <style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
@@ -27,9 +27,159 @@ with a …" />
 <p>The panda python extension (pypanda) is a module built for interacting
 with the PANDA project. The project enables interaction and callbacks
 with a use-specified virtual machine. </p>
-<p>It's likely most of what you want is either in panda.main or its listed
-ancestors.</p>
+<p>The primary interface for pypanda is in <code><a title="panda.main" href="main.html">panda.main</a></code>.</p>
 <p>Check out our example plugins here: <a href="https://github.com/panda-re/panda/tree/master/panda/python/examples">https://github.com/panda-re/panda/tree/master/panda/python/examples</a></p>
+<h1 id="pypanda">PYPANDA</h1>
+<p>PYPANDA is a python interface to PANDA. With PYPANDA, you can quickly develop plugins
+to analyze behavior of a running system, record a system and analyze replays, or do
+nearly anything you can do using PANDA's C/C++ APIs.</p>
+<h2 id="installation">Installation</h2>
+<ol>
+<li>Follow instructions to build PANDA or run <code>scripts/panda/install_ubuntu.sh</code>.</li>
+<li><code>cd</code> into <code>panda/python/core</code> and run <code>python3 setup.py install</code> (possibly in a virtual environment). This will install the <code><a title="panda" href="#panda">panda</a></code> python package to your system.</li>
+</ol>
+<h2 id="example-program">Example program</h2>
+<p>This program counts the number of basic blocks executed while running <code>uname -a</code> inside a 32-bit guest.</p>
+<pre><code class="py">from panda import Panda, blocking
+panda = Panda(generic='i386') # Create an instance of panda
+
+# Counter of the number of basic blocks
+blocks = 0
+
+# Register a callback to run before_block_exec and increment blocks
+@panda.cb_before_block_exec
+def before_block_execute(cpustate, transblock):
+    global blocks
+    blocks += 1
+
+# This 'blocking' function runs in a seperate thread from the main CPU loop
+# which allows for it to wait for the guest to complete commands
+@blocking
+def run_cmd():
+    # First revert to the qcow's root snapshot (synchronously)
+    panda.revert_sync(&quot;root&quot;)
+    # Then type a command via the serial port and print its results
+    print(panda.run_serial_cmd(&quot;uname -a&quot;))
+    # When the command finishes, terminate the panda.run() call
+    panda.end_analysis()
+
+# Queue up the run_cmd function to drive the guest once it's running
+panda.queue_async(run_cmd)
+
+# Start the guest
+panda.run()
+print(&quot;Finished. Saw a total of {} basic blocks during execution&quot;.format(blocks))
+</code></pre>
+<h1 id="usage">Usage</h1>
+<h2 id="create-an-instance-of-panda">Create an instance of Panda</h2>
+<p>The <code>Panda</code> class takes many arguments, but the only crucial argument is a
+specificed qcow image. If you wish to get started quickly you may use the <code>panda.images</code> module
+to download a default image and run it.</p>
+<p>For example: <code>panda = Panda(generic='i386')</code></p>
+<h2 id="register-a-callback">Register a callback</h2>
+<pre><code class="py">@panda.cb_before_block_exec
+def my_before_block_fn(cpustate, translation_block):
+  pc = panda.current_pc(env)
+  print(&quot;About to run the block at 0x{:x}&quot;.format(pc))
+</code></pre>
+<p>The panda object creates decorators named <code>cb_[CALLBACK_NAME]</code> for each panda callback.
+The decorated functions must take the same number of arguments, and return the same type
+as expected by the original C callback, see <a href="https://github.com/panda-re/panda/tree/master/panda/docs/manual.md#appendix-a-callback-list">Callback List</a>
+for more information.
+The decorated functions are called at the appropriate times, similarly to how a panda plugin written
+in C behaves.</p>
+<h2 id="enable-and-disable-callbacks">Enable and disable callbacks</h2>
+<p>Python callbacks can be enabled and disabled using their names.
+By default, a callback is named after the function that is decorated. For example, the callback describe in</p>
+<pre><code class="py">@panda.cb_before_block_exec
+def my_before_block_fn(cpustate, translation_block):
+  ...
+</code></pre>
+<p>is named <code>my_before_block_fn</code> and can be disabled with <code>panda.disable_callback('my_before_block_fn')</code> and later
+enabled with <code>panda.enable_callback('my_before_block_fn')</code>.</p>
+<p>Callbacks can be given custom names and disabled at initialization by passing arguments to their decorators:</p>
+<pre><code class="py">@panda.cb_before_block_exec(name='my_callback', enabled=False)
+def my_before_block_fn(cpustate, translation_block):
+  ...
+panda.enable_callback('my_callback')
+</code></pre>
+<p>If a callback is decorated with a <code>procname</code> argument, it will only be enabled when that process is running.
+To permanently disable such a callback, you can use <code>panda.disable_callback('name', forever=True)</code>.</p>
+<h2 id="replaying-recordings">Replaying Recordings</h2>
+<pre><code class="py">panda = Panda(...)
+# Register functions to run on callbacks here
+panda.begin_replay(&quot;/file/path/here&quot;)
+panda.run() # Actually run the replay
+</code></pre>
+<h2 id="load-and-unload-a-c-plugin">Load and unload a C plugin</h2>
+<p>A C plugin can be loaded from pypanda easily: <code>panda.load_plugin("stringsearch")</code></p>
+<p>C plugins can be passed named arguments using a dictionary: <code>panda.load_plugin("stringsearch", {"name": "jpeg"})</code></p>
+<p>Or unnamed arguments using a list: <code>panda.load_plugin("my_plugin", ["arg1", "arg2"])</code></p>
+<h2 id="asynchronous-activity">Asynchronous Activity</h2>
+<p>When a callback is executing, the guest is suspended until the callback finishes. However, we often want to interact
+with guests during our analyses. In these situations, we run code asynchronously to send data into and wait for results
+from the guest.</p>
+<p>Pypanda provides two tools to help with this common usecase, the <em>@blocking</em> decorator, and the <em>queue_async()</em> function.</p>
+<p>Consider if you with to run the commands <code>uname -a</code>, then <code>whoami</code> in a guest. If your guest exposes a console over a serial port
+(as all the 'generic' qcows we use do), you could run these commands by simply typing them and waiting for a response. But if you were
+to do this in a callback, the guest would have no chance to respond to your commands and you'd end up in a deadlock where your callback
+code never terminates until the guest executes your command, and the guest will never execute commands until your callback terminates.</p>
+<p>Instead, in a callback (or at any time), you can queue up blocking functions to run asynchronously as follows:</p>
+<pre><code class="py"># (panda object initialization not shown)
+
+@blocking
+def first_cmd():
+    print(panda.run_serial_cmd(&quot;uname -a&quot;))
+
+@blocking
+def second_cmd():
+    print(panda.run_serial_cmd(&quot;whoami&quot;))
+    panda.end_analysis()
+
+@panda.cb_before_block_exec
+def before_block_execute(cpustate, transblock):
+    pc = panda.current_pc(cpustate)
+    if pc &gt; 0x41414141:
+        # Queue up the run_cmd function to drive the guest if the PC is a made up value
+        panda.queue_async(run_cmd)
+        panda.queue_async(second_cmd)
+        panda.disable_callback('before_block_execute') # Don't repeatedly queue up commands
+
+panda.run()
+</code></pre>
+<h2 id="recordings">Recordings</h2>
+<p>See <a href="https://github.com/panda-re/panda/tree/master/panda/python/examples/take_recording.py">take_recording.py</a></p>
+<p>A replay can be taken with the function <code>panda.record_cmd('cmd_to_run', recording_name='replay_name')</code> which will revert the guest to a <code>root</code> snapshot, type a command, begin a recording, press enter, wait for the command to finish, and then end the replay.
+Once a replay is created on disk, it can be analyzed by using <code>panda.run_replay('replay_name')</code>.</p>
+<p>Alternatively, you can begin/end the recording through the monitor with <code>panda.run_monitor_cmd('begin_record myname')</code>
+and <code>panda.run_monitor_cmd('end_record')</code> and drive the guest using <code>panda.run_serial_cmd</code> in the middle.</p>
+<h1 id="typical-use-patterns">Typical Use Patterns</h1>
+<h2 id="live-system">Live system</h2>
+<p>Example: <a href="https://github.com/panda-re/panda/tree/master/panda/python/examples/osi_procnames.py">osi_procnames.py</a>.</p>
+<ol>
+<li>Initialize a panda object based off a generic machine or a qcow you have.</li>
+<li>Register functions to run at various PANDA callbacks.</li>
+<li>Register an <code>@blocking</code> function to revert the guest to a snapshot, run commands with <code>panda.run_serial_cmd()</code>, and stop the execution with <code>panda.end_analysis()</code></li>
+<li>Queue the blocking function to run with <code>panda.queue_async()</code></li>
+<li>Start the execution with <code>panda.run()</code></li>
+</ol>
+<h2 id="recordreplay">Record/Replay</h2>
+<p>Example: <a href="https://github.com/panda-re/panda/tree/master/panda/python/examples/record_then_replay.py">record_then_replay.py</a>.</p>
+<ol>
+<li>Initialize a panda object based off a generic machine or a qcow you have.</li>
+<li>Register <code>@blocking</code> functions to drive guest execution while recording or with <code>panda.record_cmd</code> then call <code>panda.end_analysis()</code></li>
+<li>Register functions to run at various PANDA callbacks.</li>
+<li>Analyze the replay with <code>panda.run_replay(filename)</code></li>
+</ol>
+<h1 id="here-be-dragons">Here Be Dragons</h1>
+<ul>
+<li>You can't have multiple instances of panda running at the same time. You can, however, stop an analysis and begin a new one if you don't change the machine type.</li>
+<li>PYPANDA is slower than traditional panda. To improve performance try disabling callbacks whenever possible and only enabling them when they are needed.</li>
+</ul>
+<h1 id="extending-pypanda">Extending PYPANDA</h1>
+<p>PYPANDA currently support a handful of PANDA plugins such as <code>taint2</code> and <code>osi</code>. To extend PYPANDA to support an additional plugin, its header file
+must be cleaned up such that it can be parsed by CFFI. See <a href="https://github.com/panda-re/panda/tree/master/panda/python/utils/create_panda_datatypes.py">create_panda_datatypes.py</a>
+and the magic <code>BEGIN_PYPANDA_NEEDS_THIS</code> strings it searches for.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -39,26 +189,25 @@ The panda python extension (pypanda) is a module built for interacting
 with the PANDA project. The project enables interaction and callbacks
 with a use-specified virtual machine. 
 
-It&#39;s likely most of what you want is either in panda.main or its listed
-ancestors.
-
+The primary interface for pypanda is in `panda.main`.
 
 Check out our example plugins here: https://github.com/panda-re/panda/tree/master/panda/python/examples
+
+.. include:: ../../docs/USAGE.md
 &#34;&#34;&#34;
 
-from .main import Panda
-from .decorators import blocking
+from .main import Panda, blocking
 from .ffi_importer import ffi
-from .extras import *</code></pre>
+from .extras import *
+
+__pdoc__ = {}
+
+__pdoc__[&#39;volatility_cli_classes&#39;] = False</code></pre>
 </details>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="panda.arm" href="arm/index.html">panda.arm</a></code></dt>
-<dd>
-<div class="desc"><p>Helper functions and information sepecific to the ARM architecture …</p></div>
-</dd>
 <dt><code class="name"><a title="panda.asyncthread" href="asyncthread.html">panda.asyncthread</a></code></dt>
 <dd>
 <div class="desc"><p>Module to run a thread in parallel to QEMU's main cpu loop.
@@ -68,19 +217,6 @@ Enables queuing up python functions from main thread and vice versa</p></div>
 <dd>
 <div class="desc"><p>Automatically generated python code. Contains panda_datatypes, which is the glue of this project.</p></div>
 </dd>
-<dt><code class="name"><a title="panda.blocking_mixins" href="blocking_mixins.html">panda.blocking_mixins</a></code></dt>
-<dd>
-<div class="desc"><p>Utilities to provide blocking interactions with PANDA. This includes serial and monitor interactions as well as file copy to the guest.</p></div>
-</dd>
-<dt><code class="name"><a title="panda.callback_mixins" href="callback_mixins.html">panda.callback_mixins</a></code></dt>
-<dd>
-<div class="desc"><p>Mixin for handling callbacks and generation of decorators that allow users to register their own callbacks
-such as panda.cb_before_block_exec()</p></div>
-</dd>
-<dt><code class="name"><a title="panda.decorators" href="decorators.html">panda.decorators</a></code></dt>
-<dd>
-<div class="desc"><p>The decorator submodule provide the basis for syntactic sugar on callbacks.</p></div>
-</dd>
 <dt><code class="name"><a title="panda.extras" href="extras/index.html">panda.extras</a></code></dt>
 <dd>
 <div class="desc"><p>Extras are a bit like python-based plugins. You can import them, instantiate them as classes, and use their functionality.</p></div>
@@ -89,33 +225,13 @@ such as panda.cb_before_block_exec()</p></div>
 <dd>
 <div class="desc"><p>This module is a workaround to maintain state of and not recreate cffi objects between mixins. All it does is import cffi and give you a handle to ffi.</p></div>
 </dd>
-<dt><code class="name"><a title="panda.gdb_mixins" href="gdb_mixins.html">panda.gdb_mixins</a></code></dt>
+<dt><code class="name"><a title="panda.helper" href="helper/index.html">panda.helper</a></code></dt>
 <dd>
-<div class="desc"><p>Provides the ability to interact with a QEMU attached gdb session by setting and clearing breakpoints. Experimental.</p></div>
-</dd>
-<dt><code class="name"><a title="panda.hooking_mixins" href="hooking_mixins.html">panda.hooking_mixins</a></code></dt>
-<dd>
-<div class="desc"><p>Provides the ability to interact with the hooks2 plugin and receive callbacks based on user-provided criteria.</p></div>
-</dd>
-<dt><code class="name"><a title="panda.images" href="images/index.html">panda.images</a></code></dt>
-<dd>
-<div class="desc"><p>Provides utilities for default images.</p></div>
-</dd>
-<dt><code class="name"><a title="panda.libpanda_mixins" href="libpanda_mixins.html">panda.libpanda_mixins</a></code></dt>
-<dd>
-<div class="desc"><p>Methods that directly pass data to/from PANDA with no extra logic beyond argument reformatting.</p></div>
-</dd>
-<dt><code class="name"><a title="panda.libqemu_mixins" href="libqemu_mixins.html">panda.libqemu_mixins</a></code></dt>
-<dd>
-<div class="desc"><p>Methods that directly pass data to/from QEMU with no extra logic beyond argument reformatting …</p></div>
+<div class="desc"><p>Helper functions and information sepecific to various architecture …</p></div>
 </dd>
 <dt><code class="name"><a title="panda.main" href="main.html">panda.main</a></code></dt>
 <dd>
 <div class="desc"><p>The main module is a container for the Panda class.</p></div>
-</dd>
-<dt><code class="name"><a title="panda.osi_mixins" href="osi_mixins.html">panda.osi_mixins</a></code></dt>
-<dd>
-<div class="desc"><p>Convenience functions to interact with the Operating System Instrospection (OSI) class of plugins.</p></div>
 </dd>
 <dt><code class="name"><a title="panda.panda_expect" href="panda_expect.html">panda.panda_expect</a></code></dt>
 <dd>
@@ -125,37 +241,17 @@ such as panda.cb_before_block_exec()</p></div>
 <dd>
 <div class="desc"><p>Functionality to interact with the PANDA Log.</p></div>
 </dd>
-<dt><code class="name"><a title="panda.plugin_list" href="plugin_list.html">panda.plugin_list</a></code></dt>
+<dt><code class="name"><a title="panda.qcows" href="qcows.html">panda.qcows</a></code></dt>
 <dd>
-<div class="desc"><p>Wrapper class around list of active C plugins</p></div>
-</dd>
-<dt><code class="name"><a title="panda.pyperiph_mixins" href="pyperiph_mixins.html">panda.pyperiph_mixins</a></code></dt>
-<dd>
-<div class="desc"><p>Mixin to allow interaction with pyperipherals.</p></div>
+<div class="desc"></div>
 </dd>
 <dt><code class="name"><a title="panda.taint" href="taint/index.html">panda.taint</a></code></dt>
 <dd>
 <div class="desc"><p>Structures to support the taint subsystem.</p></div>
 </dd>
-<dt><code class="name"><a title="panda.taint_mixins" href="taint_mixins.html">panda.taint_mixins</a></code></dt>
-<dd>
-<div class="desc"><p>Convenience methods for interacting with the taint subsystem.</p></div>
-</dd>
 <dt><code class="name"><a title="panda.utils" href="utils.html">panda.utils</a></code></dt>
 <dd>
-<div class="desc"><p>Useful utilities for use in pypanda.</p></div>
-</dd>
-<dt><code class="name"><a title="panda.volatility_cli_classes" href="volatility_cli_classes.html">panda.volatility_cli_classes</a></code></dt>
-<dd>
-<div class="desc"><p>Second method of interacting with volatility via their CLI options. Less preferred. Highly experimental.</p></div>
-</dd>
-<dt><code class="name"><a title="panda.volatility_mixins" href="volatility_mixins.html">panda.volatility_mixins</a></code></dt>
-<dd>
-<div class="desc"><p>Utilities to integrate Volatility with PANDA. Highly experimental.</p></div>
-</dd>
-<dt><code class="name"><a title="panda.x86" href="x86/index.html">panda.x86</a></code></dt>
-<dd>
-<div class="desc"><p>Helper functions and information sepecific to x86 and x86_64 …</p></div>
+<div class="desc"></div>
 </dd>
 </dl>
 </section>
@@ -169,43 +265,52 @@ such as panda.cb_before_block_exec()</p></div>
 <nav id="sidebar">
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#pypanda">PYPANDA</a><ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#example-program">Example program</a></li>
+</ul>
+</li>
+<li><a href="#usage">Usage</a><ul>
+<li><a href="#create-an-instance-of-panda">Create an instance of Panda</a></li>
+<li><a href="#register-a-callback">Register a callback</a></li>
+<li><a href="#enable-and-disable-callbacks">Enable and disable callbacks</a></li>
+<li><a href="#replaying-recordings">Replaying Recordings</a></li>
+<li><a href="#load-and-unload-a-c-plugin">Load and unload a C plugin</a></li>
+<li><a href="#asynchronous-activity">Asynchronous Activity</a></li>
+<li><a href="#recordings">Recordings</a></li>
+</ul>
+</li>
+<li><a href="#typical-use-patterns">Typical Use Patterns</a><ul>
+<li><a href="#live-system">Live system</a></li>
+<li><a href="#recordreplay">Record/Replay</a></li>
+</ul>
+</li>
+<li><a href="#here-be-dragons">Here Be Dragons</a></li>
+<li><a href="#extending-pypanda">Extending PYPANDA</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="panda.arm" href="arm/index.html">panda.arm</a></code></li>
 <li><code><a title="panda.asyncthread" href="asyncthread.html">panda.asyncthread</a></code></li>
 <li><code><a title="panda.autogen" href="autogen/index.html">panda.autogen</a></code></li>
-<li><code><a title="panda.blocking_mixins" href="blocking_mixins.html">panda.blocking_mixins</a></code></li>
-<li><code><a title="panda.callback_mixins" href="callback_mixins.html">panda.callback_mixins</a></code></li>
-<li><code><a title="panda.decorators" href="decorators.html">panda.decorators</a></code></li>
 <li><code><a title="panda.extras" href="extras/index.html">panda.extras</a></code></li>
 <li><code><a title="panda.ffi_importer" href="ffi_importer.html">panda.ffi_importer</a></code></li>
-<li><code><a title="panda.gdb_mixins" href="gdb_mixins.html">panda.gdb_mixins</a></code></li>
-<li><code><a title="panda.hooking_mixins" href="hooking_mixins.html">panda.hooking_mixins</a></code></li>
-<li><code><a title="panda.images" href="images/index.html">panda.images</a></code></li>
-<li><code><a title="panda.libpanda_mixins" href="libpanda_mixins.html">panda.libpanda_mixins</a></code></li>
-<li><code><a title="panda.libqemu_mixins" href="libqemu_mixins.html">panda.libqemu_mixins</a></code></li>
+<li><code><a title="panda.helper" href="helper/index.html">panda.helper</a></code></li>
 <li><code><a title="panda.main" href="main.html">panda.main</a></code></li>
-<li><code><a title="panda.osi_mixins" href="osi_mixins.html">panda.osi_mixins</a></code></li>
 <li><code><a title="panda.panda_expect" href="panda_expect.html">panda.panda_expect</a></code></li>
 <li><code><a title="panda.plog" href="plog.html">panda.plog</a></code></li>
-<li><code><a title="panda.plugin_list" href="plugin_list.html">panda.plugin_list</a></code></li>
-<li><code><a title="panda.pyperiph_mixins" href="pyperiph_mixins.html">panda.pyperiph_mixins</a></code></li>
+<li><code><a title="panda.qcows" href="qcows.html">panda.qcows</a></code></li>
 <li><code><a title="panda.taint" href="taint/index.html">panda.taint</a></code></li>
-<li><code><a title="panda.taint_mixins" href="taint_mixins.html">panda.taint_mixins</a></code></li>
 <li><code><a title="panda.utils" href="utils.html">panda.utils</a></code></li>
-<li><code><a title="panda.volatility_cli_classes" href="volatility_cli_classes.html">panda.volatility_cli_classes</a></code></li>
-<li><code><a title="panda.volatility_mixins" href="volatility_mixins.html">panda.volatility_mixins</a></code></li>
-<li><code><a title="panda.x86" href="x86/index.html">panda.x86</a></code></li>
 </ul>
 </li>
 </ul>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.4</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
 </footer>
 </body>
 </html>

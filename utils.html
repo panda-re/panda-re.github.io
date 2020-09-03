@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.8.4" />
+<meta name="generator" content="pdoc 0.9.1" />
 <title>panda.utils API documentation</title>
-<meta name="description" content="Useful utilities for use in pypanda." />
+<meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
 <style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
@@ -22,45 +22,43 @@
 <h1 class="title">Module <code>panda.utils</code></h1>
 </header>
 <section id="section-intro">
-<p>Useful utilities for use in pypanda.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;
-Useful utilities for use in pypanda.
-&#34;&#34;&#34;
+<pre><code class="python"># Helper utilities functions and classes for use in pypanda.
 
-
-import sys
-import subprocess
-import shlex
-from os import devnull
 from colorama import Fore, Style
+from functools import wraps
+from os import devnull
+from subprocess import check_call, STDOUT
+from sys import platform
+from threading import current_thread, main_thread
 
-# This debug variable
+# Set to enable pypanda debugging
 debug = False
 
 def progress(msg):
-    &#34;&#34;&#34;Helpful printing utility&#34;&#34;&#34;
-    print(Fore.GREEN + &#39;[pypanda.py] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
+    &#34;&#34;&#34;
+    Print a message with a green &#34;[PYPANDA]&#34; prefix
+    &#34;&#34;&#34;
+    print(Fore.GREEN + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
 
 def make_iso(directory, iso_path):
-    &#34;&#34;&#34;Generates iso from path&#34;&#34;&#34;
+    &#39;&#39;&#39;
+    Generate an iso from a directory
+    &#39;&#39;&#39;
     with open(devnull, &#34;w&#34;) as DEVNULL:
-        if sys.platform.startswith(&#39;linux&#39;):
-            subprocess.check_call([
+        if platform.startswith(&#39;linux&#39;):
+            check_call([
                 &#39;genisoimage&#39;, &#39;-RJ&#39;, &#39;-max-iso9660-filenames&#39;, &#39;-o&#39;, iso_path, directory
-            ], stderr=subprocess.STDOUT if debug else DEVNULL)
-        elif sys.platform == &#39;darwin&#39;:
-            subprocess.check_call([
+            ], stderr=STDOUT if debug else DEVNULL)
+        elif platform == &#39;darwin&#39;:
+            check_call([
                 &#39;hdiutil&#39;, &#39;makehybrid&#39;, &#39;-hfs&#39;, &#39;-joliet&#39;, &#39;-iso&#39;, &#39;-o&#39;, iso_path, directory
-            ], stderr=subprocess.STDOUT if debug else DEVNULL)
+            ], stderr=STDOUT if debug else DEVNULL)
         else:
             raise NotImplementedError(&#34;Unsupported operating system!&#34;)
-
-def disasemble(panda, addr, size):
-    raise NotImplementedError()
 
 def telescope(panda, cpu, val):
     &#39;&#39;&#39;
@@ -101,7 +99,73 @@ def telescope(panda, cpu, val):
         data = str_data[:4] # Truncate to 4 bytes
         val = int.from_bytes(data, byteorder=&#39;little&#39;)
 
-    print(&#34;-&gt; ...&#34;)</code></pre>
+    print(&#34;-&gt; ...&#34;)
+
+def blocking(func):
+    &#34;&#34;&#34;
+    Decorator to ensure a function isn&#39;t run in the main thread
+    &#34;&#34;&#34;
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        assert (current_thread() is not main_thread()), &#34;Blocking function run in main thread&#34;
+        return func(*args, **kwargs)
+    wrapper.__blocking__ = True
+    wrapper.__name__ = func.__name__ + &#34; (with async thread)&#34;
+    return wrapper
+
+class Hook(object):
+    &#39;&#39;&#39;
+    Maintains the state of a hook as defined by a user.
+    &#39;&#39;&#39;
+    def __init__(self,is_enabled=True,is_kernel=True,hook_cb=True,target_addr=0,target_library_offset=0,library_name=None,program_name=None):
+        self.is_enabled = is_enabled
+        self.is_kernel = is_kernel
+        self.hook_cb = hook_cb
+        self.target_addr = target_addr
+        self.target_library_offset = target_library_offset
+        self.library_name = library_name
+        self.program_name = program_name
+
+class GArrayIterator():
+    &#39;&#39;&#39;
+    Iterator which will run a function on each iteration incrementing
+    the second argument. Useful for GArrays with an accessor function
+    that takes arguments of the GArray and list index. e.g., osi&#39;s
+    get_one_module.
+    &#39;&#39;&#39;
+    def __init__(self, func, garray, garray_len, cleanup_fn):
+        self.garray = garray
+        self.garray_len = garray_len
+        self.current_idx = 0
+        self.func = func
+        self.cleanup_func = cleanup_fn
+
+    def __iter__(self):
+        self.current_idx = 0
+        return self
+
+    def __next__(self):
+        if self.current_idx &gt;= self.garray_len:
+            raise StopIteration
+        # Would need to make this configurable before using MappingIter with other types
+        ret = self.func(self.garray, self.current_idx)
+        self.current_idx += 1
+        return ret
+
+    def __del__(self):
+        self.cleanup_func(self.garray)
+
+class plugin_list(dict):
+    &#39;&#39;&#39;
+    Wrapper class around list of active C plugins
+    &#39;&#39;&#39;
+    def __init__(self,panda):
+        self._panda = panda
+        super().__init__()
+    def __getitem__(self,plugin_name):
+        if plugin_name not in self:
+            self._panda.load_plugin(plugin_name)
+        return super().__getitem__(plugin_name)</code></pre>
 </details>
 </section>
 <section>
@@ -111,39 +175,50 @@ def telescope(panda, cpu, val):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="panda.utils.disasemble"><code class="name flex">
-<span>def <span class="ident">disasemble</span></span>(<span>panda, addr, size)</span>
+<dt id="panda.utils.blocking"><code class="name flex">
+<span>def <span class="ident">blocking</span></span>(<span>func)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Decorator to ensure a function isn't run in the main thread</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def disasemble(panda, addr, size):
-    raise NotImplementedError()</code></pre>
+<pre><code class="python">def blocking(func):
+    &#34;&#34;&#34;
+    Decorator to ensure a function isn&#39;t run in the main thread
+    &#34;&#34;&#34;
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        assert (current_thread() is not main_thread()), &#34;Blocking function run in main thread&#34;
+        return func(*args, **kwargs)
+    wrapper.__blocking__ = True
+    wrapper.__name__ = func.__name__ + &#34; (with async thread)&#34;
+    return wrapper</code></pre>
 </details>
 </dd>
 <dt id="panda.utils.make_iso"><code class="name flex">
 <span>def <span class="ident">make_iso</span></span>(<span>directory, iso_path)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Generates iso from path</p></div>
+<div class="desc"><p>Generate an iso from a directory</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_iso(directory, iso_path):
-    &#34;&#34;&#34;Generates iso from path&#34;&#34;&#34;
+    &#39;&#39;&#39;
+    Generate an iso from a directory
+    &#39;&#39;&#39;
     with open(devnull, &#34;w&#34;) as DEVNULL:
-        if sys.platform.startswith(&#39;linux&#39;):
-            subprocess.check_call([
+        if platform.startswith(&#39;linux&#39;):
+            check_call([
                 &#39;genisoimage&#39;, &#39;-RJ&#39;, &#39;-max-iso9660-filenames&#39;, &#39;-o&#39;, iso_path, directory
-            ], stderr=subprocess.STDOUT if debug else DEVNULL)
-        elif sys.platform == &#39;darwin&#39;:
-            subprocess.check_call([
+            ], stderr=STDOUT if debug else DEVNULL)
+        elif platform == &#39;darwin&#39;:
+            check_call([
                 &#39;hdiutil&#39;, &#39;makehybrid&#39;, &#39;-hfs&#39;, &#39;-joliet&#39;, &#39;-iso&#39;, &#39;-o&#39;, iso_path, directory
-            ], stderr=subprocess.STDOUT if debug else DEVNULL)
+            ], stderr=STDOUT if debug else DEVNULL)
         else:
             raise NotImplementedError(&#34;Unsupported operating system!&#34;)</code></pre>
 </details>
@@ -152,14 +227,16 @@ def telescope(panda, cpu, val):
 <span>def <span class="ident">progress</span></span>(<span>msg)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Helpful printing utility</p></div>
+<div class="desc"><p>Print a message with a green "[PYPANDA]" prefix</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def progress(msg):
-    &#34;&#34;&#34;Helpful printing utility&#34;&#34;&#34;
-    print(Fore.GREEN + &#39;[pypanda.py] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)</code></pre>
+    &#34;&#34;&#34;
+    Print a message with a green &#34;[PYPANDA]&#34; prefix
+    &#34;&#34;&#34;
+    print(Fore.GREEN + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)</code></pre>
 </details>
 </dd>
 <dt id="panda.utils.telescope"><code class="name flex">
@@ -223,6 +300,103 @@ to until
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="panda.utils.GArrayIterator"><code class="flex name class">
+<span>class <span class="ident">GArrayIterator</span></span>
+<span>(</span><span>func, garray, garray_len, cleanup_fn)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Iterator which will run a function on each iteration incrementing
+the second argument. Useful for GArrays with an accessor function
+that takes arguments of the GArray and list index. e.g., osi's
+get_one_module.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GArrayIterator():
+    &#39;&#39;&#39;
+    Iterator which will run a function on each iteration incrementing
+    the second argument. Useful for GArrays with an accessor function
+    that takes arguments of the GArray and list index. e.g., osi&#39;s
+    get_one_module.
+    &#39;&#39;&#39;
+    def __init__(self, func, garray, garray_len, cleanup_fn):
+        self.garray = garray
+        self.garray_len = garray_len
+        self.current_idx = 0
+        self.func = func
+        self.cleanup_func = cleanup_fn
+
+    def __iter__(self):
+        self.current_idx = 0
+        return self
+
+    def __next__(self):
+        if self.current_idx &gt;= self.garray_len:
+            raise StopIteration
+        # Would need to make this configurable before using MappingIter with other types
+        ret = self.func(self.garray, self.current_idx)
+        self.current_idx += 1
+        return ret
+
+    def __del__(self):
+        self.cleanup_func(self.garray)</code></pre>
+</details>
+</dd>
+<dt id="panda.utils.Hook"><code class="flex name class">
+<span>class <span class="ident">Hook</span></span>
+<span>(</span><span>is_enabled=True, is_kernel=True, hook_cb=True, target_addr=0, target_library_offset=0, library_name=None, program_name=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Maintains the state of a hook as defined by a user.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Hook(object):
+    &#39;&#39;&#39;
+    Maintains the state of a hook as defined by a user.
+    &#39;&#39;&#39;
+    def __init__(self,is_enabled=True,is_kernel=True,hook_cb=True,target_addr=0,target_library_offset=0,library_name=None,program_name=None):
+        self.is_enabled = is_enabled
+        self.is_kernel = is_kernel
+        self.hook_cb = hook_cb
+        self.target_addr = target_addr
+        self.target_library_offset = target_library_offset
+        self.library_name = library_name
+        self.program_name = program_name</code></pre>
+</details>
+</dd>
+<dt id="panda.utils.plugin_list"><code class="flex name class">
+<span>class <span class="ident">plugin_list</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Wrapper class around list of active C plugins</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class plugin_list(dict):
+    &#39;&#39;&#39;
+    Wrapper class around list of active C plugins
+    &#39;&#39;&#39;
+    def __init__(self,panda):
+        self._panda = panda
+        super().__init__()
+    def __getitem__(self,plugin_name):
+        if plugin_name not in self:
+            self._panda.load_plugin(plugin_name)
+        return super().__getitem__(plugin_name)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.dict</li>
+</ul>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -238,17 +412,30 @@ to until
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="panda.utils.disasemble" href="#panda.utils.disasemble">disasemble</a></code></li>
+<li><code><a title="panda.utils.blocking" href="#panda.utils.blocking">blocking</a></code></li>
 <li><code><a title="panda.utils.make_iso" href="#panda.utils.make_iso">make_iso</a></code></li>
 <li><code><a title="panda.utils.progress" href="#panda.utils.progress">progress</a></code></li>
 <li><code><a title="panda.utils.telescope" href="#panda.utils.telescope">telescope</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="panda.utils.GArrayIterator" href="#panda.utils.GArrayIterator">GArrayIterator</a></code></h4>
+</li>
+<li>
+<h4><code><a title="panda.utils.Hook" href="#panda.utils.Hook">Hook</a></code></h4>
+</li>
+<li>
+<h4><code><a title="panda.utils.plugin_list" href="#panda.utils.plugin_list">plugin_list</a></code></h4>
+</li>
 </ul>
 </li>
 </ul>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.4</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
 </footer>
 </body>
 </html>
