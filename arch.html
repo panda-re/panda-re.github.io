@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>panda.arch API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>panda.arch</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import binascii
+from panda.utils import telescope
+
+class PandaArch():
+    &#39;&#39;&#39;
+    Base class for architecture-specific implementations for PANDA-supported architectures
+    &#39;&#39;&#39;
+    def __init__(self, panda):
+        &#39;&#39;&#39;
+        Initialize a PANDA-supported architecture and hold a handle on the PANDA object
+        &#39;&#39;&#39;
+        self.panda = panda
+
+        self.reg_sp = None # Stack pointer register ID if stored in a register
+        self.reg_pc = None # PC register ID if stored in a register
+        self.reg_retaddr = None # Return address register ID if stored in a register
+        self.registers = {}
+        &#39;&#39;&#39;
+        Mapping of register names to indices into the appropriate CPUState array
+        &#39;&#39;&#39;
+
+    def _determine_bits(self):
+        &#39;&#39;&#39;
+        Determine bits and endianness for the panda object&#39;s architecture
+        &#39;&#39;&#39;
+        bits = None
+        endianness = None # String &#39;little&#39; or &#39;big&#39;
+        if self.panda.arch_name == &#34;i386&#34;:
+            bits = 32
+            endianness = &#34;little&#34;
+        elif self.panda.arch_name == &#34;x86_64&#34;:
+            bits = 64
+            endianness = &#34;little&#34;
+        elif self.panda.arch_name == &#34;arm&#34;:
+            endianness = &#34;little&#34; # XXX add support for arm BE?
+            bits = 32
+        elif self.panda.arch_name == &#34;aarch64&#34;:
+            bit = 64
+            endianness = &#34;little&#34; # XXX add support for arm BE?
+        elif self.panda.arch_name == &#34;ppc&#34;:
+            bits = 32
+            endianness = &#34;big&#34;
+        elif self.panda.arch_name == &#34;mips&#34;:
+            bits = 32
+            endianness = &#34;big&#34;
+        elif self.panda.arch_name == &#34;mipsel&#34;:
+            bits = 32
+            endianness = &#34;little&#34;
+
+        assert (bits is not None), &#34;Missing num_bits logic for {self.panda.arch_name}&#34;
+        assert (endianness is not None), &#34;Missing endianness logic for {self.panda.arch_name}&#34;
+        register_size = int(bits/8)
+        return bits, endianness, register_size
+
+    def get_reg(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return value in a `reg` which is either a register name or index (e.g., &#34;R0&#34; or 0)
+        &#39;&#39;&#39;
+        if isinstance(reg, str):
+            reg = reg.upper()
+            if reg not in self.registers.keys():
+                raise ValueError(f&#34;Invalid register name {reg}&#34;)
+            else:
+                reg = self.registers[reg]
+
+        return self._get_reg_val(cpu, reg)
+
+    def _get_reg_val(self, cpu, idx):
+        &#39;&#39;&#39;
+        Virtual method. Must be implemented for each architecture to return contents of register specified by idx.
+        &#39;&#39;&#39;
+        raise NotImplementedError()
+
+    def set_reg(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set register `reg` to a value where `reg` is either a register name or index (e.g., &#34;R0&#34; or 0)
+        &#39;&#39;&#39;
+        if isinstance(reg, str):
+            reg = reg.upper()
+            if reg not in self.registers.keys():
+                raise ValueError(f&#34;Invalid register name {reg}&#34;)
+            else:
+                reg = self.registers[reg]
+
+        return self._set_reg_val(cpu, reg, val)
+
+    def _set_reg_val(self, cpu, idx, val):
+        &#39;&#39;&#39;
+        Virtual method. Must be implemented for each architecture to return contents of register specified by idx.
+        &#39;&#39;&#39;
+        raise NotImplementedError()
+
+    def get_pc(self, cpu):
+        &#39;&#39;&#39;
+        Returns the current program counter. Must be overloaded if self.reg_pc is None
+        &#39;&#39;&#39;
+        if self.reg_pc:
+            return self.get_reg(cpu, self.reg_pc)
+        else:
+            raise RuntimeError(f&#34;get_pc unsupported for {self.panda.arch_name}&#34;)
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Set the program counter. Must be overloaded if self.reg_pc is None
+        &#39;&#39;&#39;
+        if self.reg_pc:
+            return self.set_reg(cpu, self.reg_pc, val)
+        else:
+            raise RuntimeError(f&#34;set_pc unsupported for {self.panda.arch_name}&#34;)
+
+    def dump_regs(self, cpu):
+        &#39;&#39;&#39;
+        Print (telescoping) each register and its values
+        &#39;&#39;&#39;
+        for (regname, reg) in self.registers.items():
+            val = self.get_reg(cpu, reg)
+            print(&#34;{}: 0x{:x}&#34;.format(regname, val), end=&#34;\t&#34;)
+            telescope(self.panda, cpu, val)
+
+    def dump_stack(self, cpu, words=8):
+        &#39;&#39;&#39;
+        Print (telescoping) most recent `words` words on the stack (from stack pointer to stack pointer + `words`*word_size)
+        &#39;&#39;&#39;
+
+        base_reg_s = &#34;SP&#34;
+        base_reg_val = self.get_reg(cpu, self.reg_sp)
+        word_size = int(self.panda.bits/4)
+
+        for word_idx in range(words):
+            val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
+            val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
+            print(&#34;[{}+0x{:0&gt;2x} == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
+            telescope(self.panda, cpu, val)
+
+    def dump_state(self, cpu):
+        &#34;&#34;&#34;
+        Print registers and stack
+        &#34;&#34;&#34;
+        print(&#34;Registers:&#34;)
+        print(len(self.registers))
+        self.dump_regs(cpu)
+        print(&#34;Stack:&#34;)
+        self.dump_stack(cpu)
+
+class ArmArch(PandaArch):
+    &#39;&#39;&#39;
+    Register names and accessors for ARM
+    &#39;&#39;&#39;
+    def __init__(self, panda):
+        PandaArch.__init__(self, panda)
+        self.reg_sp = 13 # SP
+        self.reg_retaddr = 14 # LR
+        self.reg_pc = 15 # IP
+
+        regnames = [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;, &#34;R4&#34;, &#34;R5&#34;, &#34;R6&#34;, &#34;R7&#34;,
+                    &#34;R8&#34;, &#34;R9&#34;, &#34;R10&#34;, &#34;R11&#34;, &#34;R12&#34;, &#34;SP&#34;, &#34;LR&#34;, &#34;IP&#34;]
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+        &#34;&#34;&#34;Register array for ARM&#34;&#34;&#34;
+
+        self.reg_sp = regnames.index(&#34;SP&#34;)
+        self.reg_retaddr = regnames.index(&#34;LR&#34;)
+        self.reg_pc = regnames.index(&#34;IP&#34;)
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return an arm register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.regs[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set an arm register
+        &#39;&#39;&#39;
+        cpu.env_ptr.regs[reg] = val
+
+class MipsArch(PandaArch):
+    &#39;&#39;&#39;
+    Register names and accessors for MIPS
+    &#39;&#39;&#39;
+
+    # Registers are:
+    &#39;&#39;&#39;
+    Register Number     Conventional Name       Usage
+    $0          $zero   Hard-wired to 0
+    $1          $at     Reserved for pseudo-instructions
+    $2 - $3             $v0, $v1        Return values from functions
+    $4 - $7             $a0 - $a3       Arguments to functions - not preserved by subprograms
+    $8 - $15    $t0 - $t7       Temporary data, not preserved by subprograms
+    $16 - $23   $s0 - $s7       Saved registers, preserved by subprograms
+    $24 - $25   $t8 - $t9       More temporary registers, not preserved by subprograms
+    $26 - $27   $k0 - $k1       Reserved for kernel. Do not use.
+    $28         $gp     Global Area Pointer (base of global data segment)
+    $29         $sp     Stack Pointer
+    $30         $fp     Frame Pointer
+    $31         $ra     Return Address
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        super().__init__(panda)
+        regnames = [&#39;zero&#39;, &#39;at&#39;, &#39;v0&#39;, &#39;v1&#39;, &#39;a0&#39;, &#39;a1&#39;, &#39;a2&#39;, &#39;a3&#39;,
+                    &#39;t0&#39;, &#39;t1&#39;, &#39;t2&#39;, &#39;t3&#39;, &#39;t4&#39;, &#39;t5&#39;, &#39;t6&#39;, &#39;t7&#39;,
+                    &#39;s0&#39;, &#39;s1&#39;, &#39;s2&#39;, &#39;s3&#39;, &#39;s4&#39;, &#39;s5&#39;, &#39;s6&#39;, &#39;s7&#39;,
+                    &#39;t8&#39;, &#39;t9&#39;, &#39;k0&#39;, &#39;k1&#39;, &#39;gp&#39;, &#39;sp&#39;, &#39;fp&#39;, &#39;ra&#39;]
+
+        self.reg_sp = regnames.index(&#39;sp&#39;)
+        self.reg_retaddr = regnames.index(&#39;ra&#39;)
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+
+    def get_pc(self, cpu):
+        &#39;&#39;&#39;
+        Overloaded function to return the MIPS current program counter
+        &#39;&#39;&#39;
+        return cpu.env_ptr.active_tc.PC
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Overloaded function set the MIPS program counter
+        &#39;&#39;&#39;
+        cpu.env_ptr.active_tc.PC = val
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return a mips register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.active_tc.gpr[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set a mips register
+        &#39;&#39;&#39;
+        cpu.env_ptr.active_tc.gpr[reg] = val
+
+class X86Arch(PandaArch):
+    &#39;&#39;&#39;
+    Register names and accessors for x86
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        super().__init__(panda)
+        regnames = [&#39;EAX&#39;, &#39;ECX&#39;, &#39;EDX&#39;, &#39;EBX&#39;, &#39;ESP&#39;, &#39;EBP&#39;, &#39;ESI&#39;, &#39;EDI&#39;]
+        # XXX Note order is A C D B, because that&#39;s how qemu does it . See target/i386/cpu.h
+
+        self.reg_sp = regnames.index(&#39;ESP&#39;)
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+
+    def get_pc(self, cpu):
+        &#39;&#39;&#39;
+        Overloaded function to return the x86 current program counter
+        &#39;&#39;&#39;
+        return cpu.env_ptr.eip
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Overloaded function to set the x86 program counter
+        &#39;&#39;&#39;
+        cpu.env_ptr.eip = val
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return an x86 register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.regs[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set an x86 register
+        &#39;&#39;&#39;
+        cpu.env_ptr.regs[reg] = val
+
+class X86_64Arch(PandaArch):
+    &#39;&#39;&#39;
+    Register names and accessors for x86_64
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        super().__init__(panda)
+        # The only place I could find the R_ names is in tcg/i386/tcg-target.h:50
+        regnames = [&#39;RAX&#39;, &#39;RCX&#39;, &#39;RDX&#39;, &#39;RBX&#39;, &#39;RSP&#39;, &#39;RBP&#39;, &#39;RSI&#39;, &#39;RDI&#39;,
+                    &#39;R8&#39;, &#39;R9&#39;, &#39;R10&#39;, &#39;R11&#39;, &#39;R12&#39;, &#39;R13&#39;, &#39;R14&#39;, &#39;R15&#39;]
+        # XXX Note order is A C D B, because that&#39;s how qemu does it
+
+        self.reg_sp = regnames.index(&#39;RSP&#39;)
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+
+    def get_pc(self, cpu):
+        &#39;&#39;&#39;
+        Overloaded function to return the x86_64 current program counter
+        &#39;&#39;&#39;
+        return cpu.env_ptr.eip
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Overloaded function to set the x86_64 program counter
+        &#39;&#39;&#39;
+        cpu.env_ptr.eip = val
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return an x86_64 register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.regs[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set an x86_64 register
+        &#39;&#39;&#39;
+        cpu.env_ptr.regs[reg] = val</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="panda.arch.ArmArch"><code class="flex name class">
+<span>class <span class="ident">ArmArch</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register names and accessors for ARM</p>
+<p>Initialize a PANDA-supported architecture and hold a handle on the PANDA object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ArmArch(PandaArch):
+    &#39;&#39;&#39;
+    Register names and accessors for ARM
+    &#39;&#39;&#39;
+    def __init__(self, panda):
+        PandaArch.__init__(self, panda)
+        self.reg_sp = 13 # SP
+        self.reg_retaddr = 14 # LR
+        self.reg_pc = 15 # IP
+
+        regnames = [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;, &#34;R4&#34;, &#34;R5&#34;, &#34;R6&#34;, &#34;R7&#34;,
+                    &#34;R8&#34;, &#34;R9&#34;, &#34;R10&#34;, &#34;R11&#34;, &#34;R12&#34;, &#34;SP&#34;, &#34;LR&#34;, &#34;IP&#34;]
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+        &#34;&#34;&#34;Register array for ARM&#34;&#34;&#34;
+
+        self.reg_sp = regnames.index(&#34;SP&#34;)
+        self.reg_retaddr = regnames.index(&#34;LR&#34;)
+        self.reg_pc = regnames.index(&#34;IP&#34;)
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return an arm register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.regs[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set an arm register
+        &#39;&#39;&#39;
+        cpu.env_ptr.regs[reg] = val</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.arch.PandaArch.dump_regs" href="#panda.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="panda.arch.PandaArch.dump_stack" href="#panda.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="panda.arch.PandaArch.dump_state" href="#panda.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="panda.arch.PandaArch.get_pc" href="#panda.arch.PandaArch.get_pc">get_pc</a></code></li>
+<li><code><a title="panda.arch.PandaArch.get_reg" href="#panda.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="panda.arch.PandaArch.registers" href="#panda.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="panda.arch.PandaArch.set_pc" href="#panda.arch.PandaArch.set_pc">set_pc</a></code></li>
+<li><code><a title="panda.arch.PandaArch.set_reg" href="#panda.arch.PandaArch.set_reg">set_reg</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="panda.arch.MipsArch"><code class="flex name class">
+<span>class <span class="ident">MipsArch</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register names and accessors for MIPS</p>
+<p>Initialize a PANDA-supported architecture and hold a handle on the PANDA object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MipsArch(PandaArch):
+    &#39;&#39;&#39;
+    Register names and accessors for MIPS
+    &#39;&#39;&#39;
+
+    # Registers are:
+    &#39;&#39;&#39;
+    Register Number     Conventional Name       Usage
+    $0          $zero   Hard-wired to 0
+    $1          $at     Reserved for pseudo-instructions
+    $2 - $3             $v0, $v1        Return values from functions
+    $4 - $7             $a0 - $a3       Arguments to functions - not preserved by subprograms
+    $8 - $15    $t0 - $t7       Temporary data, not preserved by subprograms
+    $16 - $23   $s0 - $s7       Saved registers, preserved by subprograms
+    $24 - $25   $t8 - $t9       More temporary registers, not preserved by subprograms
+    $26 - $27   $k0 - $k1       Reserved for kernel. Do not use.
+    $28         $gp     Global Area Pointer (base of global data segment)
+    $29         $sp     Stack Pointer
+    $30         $fp     Frame Pointer
+    $31         $ra     Return Address
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        super().__init__(panda)
+        regnames = [&#39;zero&#39;, &#39;at&#39;, &#39;v0&#39;, &#39;v1&#39;, &#39;a0&#39;, &#39;a1&#39;, &#39;a2&#39;, &#39;a3&#39;,
+                    &#39;t0&#39;, &#39;t1&#39;, &#39;t2&#39;, &#39;t3&#39;, &#39;t4&#39;, &#39;t5&#39;, &#39;t6&#39;, &#39;t7&#39;,
+                    &#39;s0&#39;, &#39;s1&#39;, &#39;s2&#39;, &#39;s3&#39;, &#39;s4&#39;, &#39;s5&#39;, &#39;s6&#39;, &#39;s7&#39;,
+                    &#39;t8&#39;, &#39;t9&#39;, &#39;k0&#39;, &#39;k1&#39;, &#39;gp&#39;, &#39;sp&#39;, &#39;fp&#39;, &#39;ra&#39;]
+
+        self.reg_sp = regnames.index(&#39;sp&#39;)
+        self.reg_retaddr = regnames.index(&#39;ra&#39;)
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+
+    def get_pc(self, cpu):
+        &#39;&#39;&#39;
+        Overloaded function to return the MIPS current program counter
+        &#39;&#39;&#39;
+        return cpu.env_ptr.active_tc.PC
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Overloaded function set the MIPS program counter
+        &#39;&#39;&#39;
+        cpu.env_ptr.active_tc.PC = val
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return a mips register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.active_tc.gpr[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set a mips register
+        &#39;&#39;&#39;
+        cpu.env_ptr.active_tc.gpr[reg] = val</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="panda.arch.MipsArch.get_pc"><code class="name flex">
+<span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function to return the MIPS current program counter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_pc(self, cpu):
+    &#39;&#39;&#39;
+    Overloaded function to return the MIPS current program counter
+    &#39;&#39;&#39;
+    return cpu.env_ptr.active_tc.PC</code></pre>
+</details>
+</dd>
+<dt id="panda.arch.MipsArch.set_pc"><code class="name flex">
+<span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function set the MIPS program counter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_pc(self, cpu, val):
+    &#39;&#39;&#39;
+    Overloaded function set the MIPS program counter
+    &#39;&#39;&#39;
+    cpu.env_ptr.active_tc.PC = val</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.arch.PandaArch.dump_regs" href="#panda.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="panda.arch.PandaArch.dump_stack" href="#panda.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="panda.arch.PandaArch.dump_state" href="#panda.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="panda.arch.PandaArch.get_reg" href="#panda.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="panda.arch.PandaArch.registers" href="#panda.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="panda.arch.PandaArch.set_reg" href="#panda.arch.PandaArch.set_reg">set_reg</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="panda.arch.PandaArch"><code class="flex name class">
+<span>class <span class="ident">PandaArch</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for architecture-specific implementations for PANDA-supported architectures</p>
+<p>Initialize a PANDA-supported architecture and hold a handle on the PANDA object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PandaArch():
+    &#39;&#39;&#39;
+    Base class for architecture-specific implementations for PANDA-supported architectures
+    &#39;&#39;&#39;
+    def __init__(self, panda):
+        &#39;&#39;&#39;
+        Initialize a PANDA-supported architecture and hold a handle on the PANDA object
+        &#39;&#39;&#39;
+        self.panda = panda
+
+        self.reg_sp = None # Stack pointer register ID if stored in a register
+        self.reg_pc = None # PC register ID if stored in a register
+        self.reg_retaddr = None # Return address register ID if stored in a register
+        self.registers = {}
+        &#39;&#39;&#39;
+        Mapping of register names to indices into the appropriate CPUState array
+        &#39;&#39;&#39;
+
+    def _determine_bits(self):
+        &#39;&#39;&#39;
+        Determine bits and endianness for the panda object&#39;s architecture
+        &#39;&#39;&#39;
+        bits = None
+        endianness = None # String &#39;little&#39; or &#39;big&#39;
+        if self.panda.arch_name == &#34;i386&#34;:
+            bits = 32
+            endianness = &#34;little&#34;
+        elif self.panda.arch_name == &#34;x86_64&#34;:
+            bits = 64
+            endianness = &#34;little&#34;
+        elif self.panda.arch_name == &#34;arm&#34;:
+            endianness = &#34;little&#34; # XXX add support for arm BE?
+            bits = 32
+        elif self.panda.arch_name == &#34;aarch64&#34;:
+            bit = 64
+            endianness = &#34;little&#34; # XXX add support for arm BE?
+        elif self.panda.arch_name == &#34;ppc&#34;:
+            bits = 32
+            endianness = &#34;big&#34;
+        elif self.panda.arch_name == &#34;mips&#34;:
+            bits = 32
+            endianness = &#34;big&#34;
+        elif self.panda.arch_name == &#34;mipsel&#34;:
+            bits = 32
+            endianness = &#34;little&#34;
+
+        assert (bits is not None), &#34;Missing num_bits logic for {self.panda.arch_name}&#34;
+        assert (endianness is not None), &#34;Missing endianness logic for {self.panda.arch_name}&#34;
+        register_size = int(bits/8)
+        return bits, endianness, register_size
+
+    def get_reg(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return value in a `reg` which is either a register name or index (e.g., &#34;R0&#34; or 0)
+        &#39;&#39;&#39;
+        if isinstance(reg, str):
+            reg = reg.upper()
+            if reg not in self.registers.keys():
+                raise ValueError(f&#34;Invalid register name {reg}&#34;)
+            else:
+                reg = self.registers[reg]
+
+        return self._get_reg_val(cpu, reg)
+
+    def _get_reg_val(self, cpu, idx):
+        &#39;&#39;&#39;
+        Virtual method. Must be implemented for each architecture to return contents of register specified by idx.
+        &#39;&#39;&#39;
+        raise NotImplementedError()
+
+    def set_reg(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set register `reg` to a value where `reg` is either a register name or index (e.g., &#34;R0&#34; or 0)
+        &#39;&#39;&#39;
+        if isinstance(reg, str):
+            reg = reg.upper()
+            if reg not in self.registers.keys():
+                raise ValueError(f&#34;Invalid register name {reg}&#34;)
+            else:
+                reg = self.registers[reg]
+
+        return self._set_reg_val(cpu, reg, val)
+
+    def _set_reg_val(self, cpu, idx, val):
+        &#39;&#39;&#39;
+        Virtual method. Must be implemented for each architecture to return contents of register specified by idx.
+        &#39;&#39;&#39;
+        raise NotImplementedError()
+
+    def get_pc(self, cpu):
+        &#39;&#39;&#39;
+        Returns the current program counter. Must be overloaded if self.reg_pc is None
+        &#39;&#39;&#39;
+        if self.reg_pc:
+            return self.get_reg(cpu, self.reg_pc)
+        else:
+            raise RuntimeError(f&#34;get_pc unsupported for {self.panda.arch_name}&#34;)
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Set the program counter. Must be overloaded if self.reg_pc is None
+        &#39;&#39;&#39;
+        if self.reg_pc:
+            return self.set_reg(cpu, self.reg_pc, val)
+        else:
+            raise RuntimeError(f&#34;set_pc unsupported for {self.panda.arch_name}&#34;)
+
+    def dump_regs(self, cpu):
+        &#39;&#39;&#39;
+        Print (telescoping) each register and its values
+        &#39;&#39;&#39;
+        for (regname, reg) in self.registers.items():
+            val = self.get_reg(cpu, reg)
+            print(&#34;{}: 0x{:x}&#34;.format(regname, val), end=&#34;\t&#34;)
+            telescope(self.panda, cpu, val)
+
+    def dump_stack(self, cpu, words=8):
+        &#39;&#39;&#39;
+        Print (telescoping) most recent `words` words on the stack (from stack pointer to stack pointer + `words`*word_size)
+        &#39;&#39;&#39;
+
+        base_reg_s = &#34;SP&#34;
+        base_reg_val = self.get_reg(cpu, self.reg_sp)
+        word_size = int(self.panda.bits/4)
+
+        for word_idx in range(words):
+            val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
+            val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
+            print(&#34;[{}+0x{:0&gt;2x} == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
+            telescope(self.panda, cpu, val)
+
+    def dump_state(self, cpu):
+        &#34;&#34;&#34;
+        Print registers and stack
+        &#34;&#34;&#34;
+        print(&#34;Registers:&#34;)
+        print(len(self.registers))
+        self.dump_regs(cpu)
+        print(&#34;Stack:&#34;)
+        self.dump_stack(cpu)</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="panda.arch.ArmArch" href="#panda.arch.ArmArch">ArmArch</a></li>
+<li><a title="panda.arch.MipsArch" href="#panda.arch.MipsArch">MipsArch</a></li>
+<li><a title="panda.arch.X86Arch" href="#panda.arch.X86Arch">X86Arch</a></li>
+<li><a title="panda.arch.X86_64Arch" href="#panda.arch.X86_64Arch">X86_64Arch</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="panda.arch.PandaArch.registers"><code class="name">var <span class="ident">registers</span></code></dt>
+<dd>
+<div class="desc"><p>Mapping of register names to indices into the appropriate CPUState array</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="panda.arch.PandaArch.dump_regs"><code class="name flex">
+<span>def <span class="ident">dump_regs</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print (telescoping) each register and its values</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dump_regs(self, cpu):
+    &#39;&#39;&#39;
+    Print (telescoping) each register and its values
+    &#39;&#39;&#39;
+    for (regname, reg) in self.registers.items():
+        val = self.get_reg(cpu, reg)
+        print(&#34;{}: 0x{:x}&#34;.format(regname, val), end=&#34;\t&#34;)
+        telescope(self.panda, cpu, val)</code></pre>
+</details>
+</dd>
+<dt id="panda.arch.PandaArch.dump_stack"><code class="name flex">
+<span>def <span class="ident">dump_stack</span></span>(<span>self, cpu, words=8)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print (telescoping) most recent <code>words</code> words on the stack (from stack pointer to stack pointer + <code>words</code>*word_size)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dump_stack(self, cpu, words=8):
+    &#39;&#39;&#39;
+    Print (telescoping) most recent `words` words on the stack (from stack pointer to stack pointer + `words`*word_size)
+    &#39;&#39;&#39;
+
+    base_reg_s = &#34;SP&#34;
+    base_reg_val = self.get_reg(cpu, self.reg_sp)
+    word_size = int(self.panda.bits/4)
+
+    for word_idx in range(words):
+        val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
+        val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
+        print(&#34;[{}+0x{:0&gt;2x} == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
+        telescope(self.panda, cpu, val)</code></pre>
+</details>
+</dd>
+<dt id="panda.arch.PandaArch.dump_state"><code class="name flex">
+<span>def <span class="ident">dump_state</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print registers and stack</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dump_state(self, cpu):
+    &#34;&#34;&#34;
+    Print registers and stack
+    &#34;&#34;&#34;
+    print(&#34;Registers:&#34;)
+    print(len(self.registers))
+    self.dump_regs(cpu)
+    print(&#34;Stack:&#34;)
+    self.dump_stack(cpu)</code></pre>
+</details>
+</dd>
+<dt id="panda.arch.PandaArch.get_pc"><code class="name flex">
+<span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the current program counter. Must be overloaded if self.reg_pc is None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_pc(self, cpu):
+    &#39;&#39;&#39;
+    Returns the current program counter. Must be overloaded if self.reg_pc is None
+    &#39;&#39;&#39;
+    if self.reg_pc:
+        return self.get_reg(cpu, self.reg_pc)
+    else:
+        raise RuntimeError(f&#34;get_pc unsupported for {self.panda.arch_name}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="panda.arch.PandaArch.get_reg"><code class="name flex">
+<span>def <span class="ident">get_reg</span></span>(<span>self, cpu, reg)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return value in a <code>reg</code> which is either a register name or index (e.g., "R0" or 0)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_reg(self, cpu, reg):
+    &#39;&#39;&#39;
+    Return value in a `reg` which is either a register name or index (e.g., &#34;R0&#34; or 0)
+    &#39;&#39;&#39;
+    if isinstance(reg, str):
+        reg = reg.upper()
+        if reg not in self.registers.keys():
+            raise ValueError(f&#34;Invalid register name {reg}&#34;)
+        else:
+            reg = self.registers[reg]
+
+    return self._get_reg_val(cpu, reg)</code></pre>
+</details>
+</dd>
+<dt id="panda.arch.PandaArch.set_pc"><code class="name flex">
+<span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the program counter. Must be overloaded if self.reg_pc is None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_pc(self, cpu, val):
+    &#39;&#39;&#39;
+    Set the program counter. Must be overloaded if self.reg_pc is None
+    &#39;&#39;&#39;
+    if self.reg_pc:
+        return self.set_reg(cpu, self.reg_pc, val)
+    else:
+        raise RuntimeError(f&#34;set_pc unsupported for {self.panda.arch_name}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="panda.arch.PandaArch.set_reg"><code class="name flex">
+<span>def <span class="ident">set_reg</span></span>(<span>self, cpu, reg, val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set register <code>reg</code> to a value where <code>reg</code> is either a register name or index (e.g., "R0" or 0)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_reg(self, cpu, reg, val):
+    &#39;&#39;&#39;
+    Set register `reg` to a value where `reg` is either a register name or index (e.g., &#34;R0&#34; or 0)
+    &#39;&#39;&#39;
+    if isinstance(reg, str):
+        reg = reg.upper()
+        if reg not in self.registers.keys():
+            raise ValueError(f&#34;Invalid register name {reg}&#34;)
+        else:
+            reg = self.registers[reg]
+
+    return self._set_reg_val(cpu, reg, val)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="panda.arch.X86Arch"><code class="flex name class">
+<span>class <span class="ident">X86Arch</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register names and accessors for x86</p>
+<p>Initialize a PANDA-supported architecture and hold a handle on the PANDA object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class X86Arch(PandaArch):
+    &#39;&#39;&#39;
+    Register names and accessors for x86
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        super().__init__(panda)
+        regnames = [&#39;EAX&#39;, &#39;ECX&#39;, &#39;EDX&#39;, &#39;EBX&#39;, &#39;ESP&#39;, &#39;EBP&#39;, &#39;ESI&#39;, &#39;EDI&#39;]
+        # XXX Note order is A C D B, because that&#39;s how qemu does it . See target/i386/cpu.h
+
+        self.reg_sp = regnames.index(&#39;ESP&#39;)
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+
+    def get_pc(self, cpu):
+        &#39;&#39;&#39;
+        Overloaded function to return the x86 current program counter
+        &#39;&#39;&#39;
+        return cpu.env_ptr.eip
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Overloaded function to set the x86 program counter
+        &#39;&#39;&#39;
+        cpu.env_ptr.eip = val
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return an x86 register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.regs[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set an x86 register
+        &#39;&#39;&#39;
+        cpu.env_ptr.regs[reg] = val</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="panda.arch.X86Arch.get_pc"><code class="name flex">
+<span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function to return the x86 current program counter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_pc(self, cpu):
+    &#39;&#39;&#39;
+    Overloaded function to return the x86 current program counter
+    &#39;&#39;&#39;
+    return cpu.env_ptr.eip</code></pre>
+</details>
+</dd>
+<dt id="panda.arch.X86Arch.set_pc"><code class="name flex">
+<span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function to set the x86 program counter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_pc(self, cpu, val):
+    &#39;&#39;&#39;
+    Overloaded function to set the x86 program counter
+    &#39;&#39;&#39;
+    cpu.env_ptr.eip = val</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.arch.PandaArch.dump_regs" href="#panda.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="panda.arch.PandaArch.dump_stack" href="#panda.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="panda.arch.PandaArch.dump_state" href="#panda.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="panda.arch.PandaArch.get_reg" href="#panda.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="panda.arch.PandaArch.registers" href="#panda.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="panda.arch.PandaArch.set_reg" href="#panda.arch.PandaArch.set_reg">set_reg</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="panda.arch.X86_64Arch"><code class="flex name class">
+<span>class <span class="ident">X86_64Arch</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register names and accessors for x86_64</p>
+<p>Initialize a PANDA-supported architecture and hold a handle on the PANDA object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class X86_64Arch(PandaArch):
+    &#39;&#39;&#39;
+    Register names and accessors for x86_64
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        super().__init__(panda)
+        # The only place I could find the R_ names is in tcg/i386/tcg-target.h:50
+        regnames = [&#39;RAX&#39;, &#39;RCX&#39;, &#39;RDX&#39;, &#39;RBX&#39;, &#39;RSP&#39;, &#39;RBP&#39;, &#39;RSI&#39;, &#39;RDI&#39;,
+                    &#39;R8&#39;, &#39;R9&#39;, &#39;R10&#39;, &#39;R11&#39;, &#39;R12&#39;, &#39;R13&#39;, &#39;R14&#39;, &#39;R15&#39;]
+        # XXX Note order is A C D B, because that&#39;s how qemu does it
+
+        self.reg_sp = regnames.index(&#39;RSP&#39;)
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+
+    def get_pc(self, cpu):
+        &#39;&#39;&#39;
+        Overloaded function to return the x86_64 current program counter
+        &#39;&#39;&#39;
+        return cpu.env_ptr.eip
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Overloaded function to set the x86_64 program counter
+        &#39;&#39;&#39;
+        cpu.env_ptr.eip = val
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return an x86_64 register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.regs[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set an x86_64 register
+        &#39;&#39;&#39;
+        cpu.env_ptr.regs[reg] = val</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="panda.arch.X86_64Arch.get_pc"><code class="name flex">
+<span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function to return the x86_64 current program counter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_pc(self, cpu):
+    &#39;&#39;&#39;
+    Overloaded function to return the x86_64 current program counter
+    &#39;&#39;&#39;
+    return cpu.env_ptr.eip</code></pre>
+</details>
+</dd>
+<dt id="panda.arch.X86_64Arch.set_pc"><code class="name flex">
+<span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function to set the x86_64 program counter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_pc(self, cpu, val):
+    &#39;&#39;&#39;
+    Overloaded function to set the x86_64 program counter
+    &#39;&#39;&#39;
+    cpu.env_ptr.eip = val</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></b></code>:
+<ul class="hlist">
+<li><code><a title="panda.arch.PandaArch.dump_regs" href="#panda.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="panda.arch.PandaArch.dump_stack" href="#panda.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="panda.arch.PandaArch.dump_state" href="#panda.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="panda.arch.PandaArch.get_reg" href="#panda.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="panda.arch.PandaArch.registers" href="#panda.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="panda.arch.PandaArch.set_reg" href="#panda.arch.PandaArch.set_reg">set_reg</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="panda" href="index.html">panda</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="panda.arch.ArmArch" href="#panda.arch.ArmArch">ArmArch</a></code></h4>
+</li>
+<li>
+<h4><code><a title="panda.arch.MipsArch" href="#panda.arch.MipsArch">MipsArch</a></code></h4>
+<ul class="">
+<li><code><a title="panda.arch.MipsArch.get_pc" href="#panda.arch.MipsArch.get_pc">get_pc</a></code></li>
+<li><code><a title="panda.arch.MipsArch.set_pc" href="#panda.arch.MipsArch.set_pc">set_pc</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></code></h4>
+<ul class="two-column">
+<li><code><a title="panda.arch.PandaArch.dump_regs" href="#panda.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="panda.arch.PandaArch.dump_stack" href="#panda.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="panda.arch.PandaArch.dump_state" href="#panda.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="panda.arch.PandaArch.get_pc" href="#panda.arch.PandaArch.get_pc">get_pc</a></code></li>
+<li><code><a title="panda.arch.PandaArch.get_reg" href="#panda.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="panda.arch.PandaArch.registers" href="#panda.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="panda.arch.PandaArch.set_pc" href="#panda.arch.PandaArch.set_pc">set_pc</a></code></li>
+<li><code><a title="panda.arch.PandaArch.set_reg" href="#panda.arch.PandaArch.set_reg">set_reg</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="panda.arch.X86Arch" href="#panda.arch.X86Arch">X86Arch</a></code></h4>
+<ul class="">
+<li><code><a title="panda.arch.X86Arch.get_pc" href="#panda.arch.X86Arch.get_pc">get_pc</a></code></li>
+<li><code><a title="panda.arch.X86Arch.set_pc" href="#panda.arch.X86Arch.set_pc">set_pc</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="panda.arch.X86_64Arch" href="#panda.arch.X86_64Arch">X86_64Arch</a></code></h4>
+<ul class="">
+<li><code><a title="panda.arch.X86_64Arch.get_pc" href="#panda.arch.X86_64Arch.get_pc">get_pc</a></code></li>
+<li><code><a title="panda.arch.X86_64Arch.set_pc" href="#panda.arch.X86_64Arch.set_pc">set_pc</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>

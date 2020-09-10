@@ -60,6 +60,7 @@ from .panda_expect import Expect
 from .asyncthread import AsyncThread
 from .qcows import Qcows
 from .plog import PLogReader
+from .arch import ArmArch, MipsArch, X86Arch, X86_64Arch
 
 
 class Panda():
@@ -92,7 +93,7 @@ class Panda():
             generic=None, # Helper: specify a generic qcow to use and set other arguments. Supported values: arm/ppc/x86_64/i386. Will download qcow automatically
             raw_monitor = False, # When set, don&#39;t specify a -monitor. arg Allows for use of -nographic in args with ctrl-A+C for interactive qemu prompt.
             extra_args=[]):
-        self.arch = arch
+        self.arch_name = arch
         self.mem = mem
         self.os = os_version
         self.os_type = os
@@ -108,7 +109,7 @@ class Panda():
         if generic:                                 # other args. See details in images.py
             print(&#34;using generic &#34; +str(generic))
             q = Qcows.get_qcow_info(generic)
-            self.arch     = q.arch
+            self.arch_name     = q.arch
             self.os       = q.os
             self.mem      = q.default_mem # Might clobber a specified argument, but required if you want snapshots
             self.qcow     = Qcows.get_qcow(generic)
@@ -120,13 +121,25 @@ class Panda():
             if not (exists(self.qcow)):
                 print(&#34;Missing qcow &#39;{}&#39; Please go create that qcow and give it to the PANDA maintainers&#34;.format(self.qcow))
 
+        # panda.arch is a subclass with architecture-specific functions
+
+        if self.arch_name == &#34;i386&#34;:
+            self.arch = X86Arch(self)
+        elif self.arch_name == &#34;x86_64&#34;:
+            self.arch = X86_64Arch(self)
+        elif self.arch_name == &#34;arm&#34;:
+            self.arch = ArmArch(self)
+        elif self.arch_name in [&#34;mips&#34;, &#34;mipsel&#34;]:
+            self.arch = MipsArch(self)
+        else:
+            raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
+        self.bits, self.endianness, self.register_size = self.arch._determine_bits()
+
         self.build_dir  = self._find_build_dir()
         environ[&#34;PANDA_DIR&#34;] = self.build_dir
-        self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch))
+        self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
         self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
-        #self.panda = pjoin(self.build_dir, &#34;{0}-softmmu/panda-system-{0}&#34;.format(self.arch)) # Path to binary
 
-        self.bits, self.endianness, self.register_size = self._determine_bits()
         self._do_types_import()
         self.libpanda = ffi.dlopen(self.libpanda_path)
 
@@ -201,7 +214,7 @@ class Panda():
 
         # There is almost certainly a better way to do this.
         environ[&#34;PANDA_BITS&#34;] = str(self.bits)
-        environ[&#34;PANDA_ARCH&#34;] = self.arch
+        environ[&#34;PANDA_ARCH&#34;] = self.arch_name
         from .autogen.panda_datatypes import pcb, C, callback_dictionary # XXX: What is C and do we need it?
         self.callback_dictionary = callback_dictionary
         self.callback = pcb
@@ -232,39 +245,6 @@ class Panda():
 
         self._initialized_panda = True
 
-    def _determine_bits(self):
-        &#39;&#39;&#39;
-        Given self.arch, determine bits, endianness and register_size
-        &#39;&#39;&#39;
-        bits = None
-        endianness = None # String &#39;little&#39; or &#39;big&#39;
-        if self.arch == &#34;i386&#34;:
-            bits = 32
-            endianness = &#34;little&#34;
-        elif self.arch == &#34;x86_64&#34;:
-            bits = 64
-            endianness = &#34;little&#34;
-        elif self.arch == &#34;arm&#34;:
-            endianness = &#34;little&#34; # XXX add support for arm BE?
-            bits = 32
-        elif self.arch == &#34;aarch64&#34;:
-            bit = 64
-            endianness = &#34;little&#34; # XXX add support for arm BE?
-        elif self.arch == &#34;ppc&#34;:
-            bits = 32
-            endianness = &#34;big&#34;
-        elif self.arch == &#34;mips&#34;:
-            bits = 32
-            endianness = &#34;big&#34;
-        elif self.arch == &#34;mipsel&#34;:
-            bits = 32
-            endianness = &#34;little&#34;
-
-        assert (bits is not None), &#34;For arch %s: I need logic to figure out num bits&#34; % self.arch
-        assert (endianness is not None), &#34;For arch %s: I need logic to figure out endianness&#34; % self.arch
-        register_size = int(bits/8)
-
-        return bits, endianness, register_size
 
     def __main_loop_wait_cb(self):
         &#39;&#39;&#39;
@@ -293,7 +273,7 @@ class Panda():
         archs = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;ppc&#39;]
         python_package = pjoin(*[dirname(__file__), &#34;data&#34;])
         local_build = realpath(pjoin(dirname(__file__), &#34;../../../../build&#34;))
-        path_end = &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch)
+        path_end = &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name)
 
         pot_paths = [python_package, local_build]
         for potential_path in pot_paths:
@@ -305,7 +285,7 @@ class Panda():
         raise RuntimeError((&#34;Couldn&#39;t find libpanda-{}.so.\n&#34;
                             &#34;Did you built PANDA for this architecture?\n&#34;
                             &#34;Searched paths:\n{}&#34;
-                           ).format(self.arch, searched_paths))
+                           ).format(self.arch_name, searched_paths))
 
 
     def queue_main_loop_wait_fn(self, fn, args=[]):
@@ -574,29 +554,6 @@ class Panda():
         self.libpanda.panda_memsavep(newfd)
         self.libpanda.fclose(newfd)
 
-    def current_sp(self, cpustate): # under construction
-        &#39;&#39;&#39;
-        Returns the current stack pointer for your target.
-
-            Parameters:
-                cpustate: CPUState structure
-        
-            Returns:
-                Stack pointer as python integer.
-        
-            Raises:
-                NotImplemented error if architecture isn&#39;t supported.
-        &#39;&#39;&#39;
-        if self.arch == &#34;i386&#34;:
-            # XXX see far more complex logic in panda/include/panda/common.h
-            from panda.x86.helper import R_ESP
-            return cpustate.env_ptr.regs[R_ESP]
-        elif self.arch == &#34;arm&#34;:
-            from panda.arm.helper import R_SP
-            return cpustate.env_ptr.regs[R_SP]
-        else:
-            raise NotImplemented(&#34;current_sp doesn&#39;t yet support arch {}&#34;.format(self.arch))
-
     def physical_memory_read(self, addr, length, fmt=&#39;bytearray&#39;):
         &#39;&#39;&#39;
         Read guest physical memory.
@@ -746,8 +703,8 @@ class Panda():
             libpanda_path_chr = ffi.new(&#34;char[]&#34;,bytes(self.libpanda_path, &#34;UTF-8&#34;))
             self.__did_load_libpanda = self.libpanda.panda_load_libpanda(libpanda_path_chr)
         if not name in self.plugins.keys():
-            assert(isfile(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)])))
-            library = ffi.dlopen(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)]))
+            assert(isfile(pjoin(*[self.build_dir, self.arch_name+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)])))
+            library = ffi.dlopen(pjoin(*[self.build_dir, self.arch_name+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)]))
             self.plugins[name] = library
 
     def queue_async(self, f, internal=False):
@@ -967,8 +924,11 @@ class Panda():
 
             Return:
                 integer value of current program counter
+
+            .. Deprecated:: Use panda.arch.get_pc(cpu) instead
         &#39;&#39;&#39;
         return self.libpanda.panda_current_pc(cpustate)
+
 
     def current_asid(self, cpustate):
         &#39;&#39;&#39;
@@ -1601,9 +1561,11 @@ class Panda():
         if self.plugins[&#39;taint2&#39;].taint2_query_ram(addr) &gt; 0:
             return True
 
-    # returns array of results, one for each byte in this register
-    # None if no taint.  QueryResult struct otherwise
     def taint_get_reg(self, reg_num):
+        &#39;&#39;&#39;
+        Returns array of results, one for each byte in this register
+        None if no taint.  QueryResult struct otherwise
+        &#39;&#39;&#39;
         if not self.taint_enabled: return None
         if debug:
             progress(&#34;taint_get_reg %d&#34; % (reg_num)) 
@@ -1676,7 +1638,7 @@ class Panda():
                 return self.closed
 
             def read(self, size=1):
-                if self.panda.bits == 32 and self.panda.arch == &#34;i386&#34;:
+                if self.panda.bits == 32 and self.panda.arch_name == &#34;i386&#34;:
                     data = self.panda.physical_memory_read(
                         self.pos &amp; 0xfffffff, size)
                 else:
@@ -2431,7 +2393,7 @@ class Panda():
             generic=None, # Helper: specify a generic qcow to use and set other arguments. Supported values: arm/ppc/x86_64/i386. Will download qcow automatically
             raw_monitor = False, # When set, don&#39;t specify a -monitor. arg Allows for use of -nographic in args with ctrl-A+C for interactive qemu prompt.
             extra_args=[]):
-        self.arch = arch
+        self.arch_name = arch
         self.mem = mem
         self.os = os_version
         self.os_type = os
@@ -2447,7 +2409,7 @@ class Panda():
         if generic:                                 # other args. See details in images.py
             print(&#34;using generic &#34; +str(generic))
             q = Qcows.get_qcow_info(generic)
-            self.arch     = q.arch
+            self.arch_name     = q.arch
             self.os       = q.os
             self.mem      = q.default_mem # Might clobber a specified argument, but required if you want snapshots
             self.qcow     = Qcows.get_qcow(generic)
@@ -2459,13 +2421,25 @@ class Panda():
             if not (exists(self.qcow)):
                 print(&#34;Missing qcow &#39;{}&#39; Please go create that qcow and give it to the PANDA maintainers&#34;.format(self.qcow))
 
+        # panda.arch is a subclass with architecture-specific functions
+
+        if self.arch_name == &#34;i386&#34;:
+            self.arch = X86Arch(self)
+        elif self.arch_name == &#34;x86_64&#34;:
+            self.arch = X86_64Arch(self)
+        elif self.arch_name == &#34;arm&#34;:
+            self.arch = ArmArch(self)
+        elif self.arch_name in [&#34;mips&#34;, &#34;mipsel&#34;]:
+            self.arch = MipsArch(self)
+        else:
+            raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
+        self.bits, self.endianness, self.register_size = self.arch._determine_bits()
+
         self.build_dir  = self._find_build_dir()
         environ[&#34;PANDA_DIR&#34;] = self.build_dir
-        self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch))
+        self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
         self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
-        #self.panda = pjoin(self.build_dir, &#34;{0}-softmmu/panda-system-{0}&#34;.format(self.arch)) # Path to binary
 
-        self.bits, self.endianness, self.register_size = self._determine_bits()
         self._do_types_import()
         self.libpanda = ffi.dlopen(self.libpanda_path)
 
@@ -2540,7 +2514,7 @@ class Panda():
 
         # There is almost certainly a better way to do this.
         environ[&#34;PANDA_BITS&#34;] = str(self.bits)
-        environ[&#34;PANDA_ARCH&#34;] = self.arch
+        environ[&#34;PANDA_ARCH&#34;] = self.arch_name
         from .autogen.panda_datatypes import pcb, C, callback_dictionary # XXX: What is C and do we need it?
         self.callback_dictionary = callback_dictionary
         self.callback = pcb
@@ -2571,39 +2545,6 @@ class Panda():
 
         self._initialized_panda = True
 
-    def _determine_bits(self):
-        &#39;&#39;&#39;
-        Given self.arch, determine bits, endianness and register_size
-        &#39;&#39;&#39;
-        bits = None
-        endianness = None # String &#39;little&#39; or &#39;big&#39;
-        if self.arch == &#34;i386&#34;:
-            bits = 32
-            endianness = &#34;little&#34;
-        elif self.arch == &#34;x86_64&#34;:
-            bits = 64
-            endianness = &#34;little&#34;
-        elif self.arch == &#34;arm&#34;:
-            endianness = &#34;little&#34; # XXX add support for arm BE?
-            bits = 32
-        elif self.arch == &#34;aarch64&#34;:
-            bit = 64
-            endianness = &#34;little&#34; # XXX add support for arm BE?
-        elif self.arch == &#34;ppc&#34;:
-            bits = 32
-            endianness = &#34;big&#34;
-        elif self.arch == &#34;mips&#34;:
-            bits = 32
-            endianness = &#34;big&#34;
-        elif self.arch == &#34;mipsel&#34;:
-            bits = 32
-            endianness = &#34;little&#34;
-
-        assert (bits is not None), &#34;For arch %s: I need logic to figure out num bits&#34; % self.arch
-        assert (endianness is not None), &#34;For arch %s: I need logic to figure out endianness&#34; % self.arch
-        register_size = int(bits/8)
-
-        return bits, endianness, register_size
 
     def __main_loop_wait_cb(self):
         &#39;&#39;&#39;
@@ -2632,7 +2573,7 @@ class Panda():
         archs = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;ppc&#39;]
         python_package = pjoin(*[dirname(__file__), &#34;data&#34;])
         local_build = realpath(pjoin(dirname(__file__), &#34;../../../../build&#34;))
-        path_end = &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch)
+        path_end = &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name)
 
         pot_paths = [python_package, local_build]
         for potential_path in pot_paths:
@@ -2644,7 +2585,7 @@ class Panda():
         raise RuntimeError((&#34;Couldn&#39;t find libpanda-{}.so.\n&#34;
                             &#34;Did you built PANDA for this architecture?\n&#34;
                             &#34;Searched paths:\n{}&#34;
-                           ).format(self.arch, searched_paths))
+                           ).format(self.arch_name, searched_paths))
 
 
     def queue_main_loop_wait_fn(self, fn, args=[]):
@@ -2913,29 +2854,6 @@ class Panda():
         self.libpanda.panda_memsavep(newfd)
         self.libpanda.fclose(newfd)
 
-    def current_sp(self, cpustate): # under construction
-        &#39;&#39;&#39;
-        Returns the current stack pointer for your target.
-
-            Parameters:
-                cpustate: CPUState structure
-        
-            Returns:
-                Stack pointer as python integer.
-        
-            Raises:
-                NotImplemented error if architecture isn&#39;t supported.
-        &#39;&#39;&#39;
-        if self.arch == &#34;i386&#34;:
-            # XXX see far more complex logic in panda/include/panda/common.h
-            from panda.x86.helper import R_ESP
-            return cpustate.env_ptr.regs[R_ESP]
-        elif self.arch == &#34;arm&#34;:
-            from panda.arm.helper import R_SP
-            return cpustate.env_ptr.regs[R_SP]
-        else:
-            raise NotImplemented(&#34;current_sp doesn&#39;t yet support arch {}&#34;.format(self.arch))
-
     def physical_memory_read(self, addr, length, fmt=&#39;bytearray&#39;):
         &#39;&#39;&#39;
         Read guest physical memory.
@@ -3085,8 +3003,8 @@ class Panda():
             libpanda_path_chr = ffi.new(&#34;char[]&#34;,bytes(self.libpanda_path, &#34;UTF-8&#34;))
             self.__did_load_libpanda = self.libpanda.panda_load_libpanda(libpanda_path_chr)
         if not name in self.plugins.keys():
-            assert(isfile(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)])))
-            library = ffi.dlopen(pjoin(*[self.build_dir, self.arch+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)]))
+            assert(isfile(pjoin(*[self.build_dir, self.arch_name+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)])))
+            library = ffi.dlopen(pjoin(*[self.build_dir, self.arch_name+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)]))
             self.plugins[name] = library
 
     def queue_async(self, f, internal=False):
@@ -3306,8 +3224,11 @@ class Panda():
 
             Return:
                 integer value of current program counter
+
+            .. Deprecated:: Use panda.arch.get_pc(cpu) instead
         &#39;&#39;&#39;
         return self.libpanda.panda_current_pc(cpustate)
+
 
     def current_asid(self, cpustate):
         &#39;&#39;&#39;
@@ -3940,9 +3861,11 @@ class Panda():
         if self.plugins[&#39;taint2&#39;].taint2_query_ram(addr) &gt; 0:
             return True
 
-    # returns array of results, one for each byte in this register
-    # None if no taint.  QueryResult struct otherwise
     def taint_get_reg(self, reg_num):
+        &#39;&#39;&#39;
+        Returns array of results, one for each byte in this register
+        None if no taint.  QueryResult struct otherwise
+        &#39;&#39;&#39;
         if not self.taint_enabled: return None
         if debug:
             progress(&#34;taint_get_reg %d&#34; % (reg_num)) 
@@ -4015,7 +3938,7 @@ class Panda():
                 return self.closed
 
             def read(self, size=1):
-                if self.panda.bits == 32 and self.panda.arch == &#34;i386&#34;:
+                if self.panda.bits == 32 and self.panda.arch_name == &#34;i386&#34;:
                     data = self.panda.physical_memory_read(
                         self.pos &amp; 0xfffffff, size)
                 else:
@@ -4973,6 +4896,8 @@ Return:
 
 Return:
     integer value of current program counter
+
+!!! Deprecated "Deprecated:&amp;ensp;Use panda.arch.get_pc(cpu) instead"
 </code></pre></div>
 <details class="source">
 <summary>
@@ -4987,6 +4912,8 @@ Return:
 
         Return:
             integer value of current program counter
+
+        .. Deprecated:: Use panda.arch.get_pc(cpu) instead
     &#39;&#39;&#39;
     return self.libpanda.panda_current_pc(cpustate)</code></pre>
 </details>
@@ -6130,7 +6057,7 @@ Returns:
             return self.closed
 
         def read(self, size=1):
-            if self.panda.bits == 32 and self.panda.arch == &#34;i386&#34;:
+            if self.panda.bits == 32 and self.panda.arch_name == &#34;i386&#34;:
                 data = self.panda.physical_memory_read(
                     self.pos &amp; 0xfffffff, size)
             else:
@@ -7667,12 +7594,18 @@ Return:
 <span>def <span class="ident">taint_get_reg</span></span>(<span>self, reg_num)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns array of results, one for each byte in this register
+None if no taint.
+QueryResult struct otherwise</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def taint_get_reg(self, reg_num):
+    &#39;&#39;&#39;
+    Returns array of results, one for each byte in this register
+    None if no taint.  QueryResult struct otherwise
+    &#39;&#39;&#39;
     if not self.taint_enabled: return None
     if debug:
         progress(&#34;taint_get_reg %d&#34; % (reg_num)) 

@@ -40,7 +40,7 @@ VM_DIR = path.join(path.expanduser(&#34;~&#34;), &#34;.panda&#34;)
 
 class Image(namedtuple(&#39;Image&#39;, [&#39;arch&#39;, &#39;os&#39;, &#39;prompt&#39;, &#39;cdrom&#39;, &#39;snapshot&#39;, &#39;url&#39;, &#39;extra_files&#39;, &#39;qcow&#39;, &#39;default_mem&#39;, &#39;extra_args&#39;])):
     &#39;&#39;&#39;
-    The Image stores information about a qcow image:
+    The Image class stores information about a supported PANDA image:
 
         Fields:
             arch : Arch for the given architecture.
@@ -272,7 +272,7 @@ class Qcows():
 <span>(</span><span>arch=None, os=None, prompt=None, cdrom=None, snapshot=None, url=None, extra_files=None, qcow=None, default_mem=None, extra_args=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>The Image stores information about a qcow image:</p>
+<div class="desc"><p>The Image class stores information about a supported PANDA image:</p>
 <pre><code>Fields:
     arch : Arch for the given architecture.
     os : an os string we can pass to panda with -os
@@ -290,7 +290,7 @@ class Qcows():
 </summary>
 <pre><code class="python">class Image(namedtuple(&#39;Image&#39;, [&#39;arch&#39;, &#39;os&#39;, &#39;prompt&#39;, &#39;cdrom&#39;, &#39;snapshot&#39;, &#39;url&#39;, &#39;extra_files&#39;, &#39;qcow&#39;, &#39;default_mem&#39;, &#39;extra_args&#39;])):
     &#39;&#39;&#39;
-    The Image stores information about a qcow image:
+    The Image class stores information about a supported PANDA image:
 
         Fields:
             arch : Arch for the given architecture.
