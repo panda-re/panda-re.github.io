@@ -190,6 +190,7 @@ class Panda():
 
         # Register asid_changed CB if and only if a callback requires procname
         self._registered_asid_changed_internal_cb = False
+        self._registered_mmap_cb = False
 
         self._initialized_panda = False
         self.disabled_tb_chaining = False
@@ -501,7 +502,7 @@ class Panda():
         self.libpanda.panda_require_from_library(charptr, plugin_args, len(argstrs_ffi))
         self._load_plugin_library(name)
 
-    def _procname_changed(self, name):
+    def _procname_changed(self, cpu, name):
         for cb_name, cb in self.registered_callbacks.items():
             if not cb[&#34;procname&#34;]:
                 continue
@@ -510,7 +511,7 @@ class Panda():
             if name != cb[&#34;procname&#34;] and cb[&#39;enabled&#39;]:
                 self.disable_callback(cb_name)
 
-            self.update_hooks_new_procname(name)
+        self._update_hooks_new_procname(cpu, name)
 
     def unload_plugin(self, name):
         &#39;&#39;&#39;
@@ -1338,6 +1339,18 @@ class Panda():
             assert(not (proc.pid != 0 and proc.pid == proc.ppid)) # No cycles allowed other than at 0
         return procs
 
+    def get_process_name(self, cpu):
+        &#39;&#39;&#39;
+        Get the name of the current process. May return None if OSI cannot identify the current process
+        &#39;&#39;&#39;
+        proc = self.plugins[&#39;osi&#39;].get_current_process(cpu)
+        if proc == ffi.NULL or proc.name == ffi.NULL:
+            return None
+
+        procname = ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;)
+        return ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;)
+
+
     ################## PYPERIPHERAL FUNCTIONS #####################
     # Pyperipherals are objects which handle mmio read/writes using the PANDA callback infrastructure.
     # Under the hood, they use the cb_unassigned_io_read/cb_unassigned_io_write callbacks.
@@ -1990,6 +2003,14 @@ class Panda():
         if self._registered_asid_changed_internal_cb: # Already registered these callbacks
             return
 
+        @self.ppp(&#34;syscalls2&#34;, &#34;on_sys_brk_enter&#34;)
+        def on_sys_brk_enter(cpu, pc, brk):
+            name = self.get_process_name(cpu)
+            asid = self.libpanda.panda_current_asid(cpu)
+            if self.asid_mapping.get(asid, None) != name:
+                self.asid_mapping[asid] = name
+                self._procname_changed(cpu, name)
+
         @self.callback.after_block_exec
         def __get_pending_procname_change(cpu, tb, exit_code):
             if exit_code: # Didn&#39;t actually execute block
@@ -2002,7 +2023,7 @@ class Panda():
                     return None # Couldn&#39;t figure out the process
                 asid = self.libpanda.panda_current_asid(cpu)
                 self.asid_mapping[asid] = name
-                self._procname_changed(name)
+                self._procname_changed(cpu, name)
                 self.disable_callback(&#39;__get_pending_procname_change&#39;) # Disabled to begin
 
 
@@ -2011,9 +2032,9 @@ class Panda():
         def __asid_changed(cpustate, old_asid, new_asid):
             &#39;&#39;&#39;
             When the ASID changes, check if we know its procname (in self.asid_mapping),
-            if so, call panda._procname_changed(name). Otherwise, we enable __get_pending_procname_change CB, which
+            if so, call panda._procname_changed(cpu, name). Otherwise, we enable __get_pending_procname_change CB, which
             waits until the procname changes. Then we grab the new procname, update self.asid_mapping and call
-            panda._procname_changed(name)
+            panda._procname_changed(cpu, name)
             &#39;&#39;&#39;
             if old_asid == new_asid:
                 return 0
@@ -2022,7 +2043,7 @@ class Panda():
                 if not self.is_callback_enabled(&#39;__get_pending_procname_change&#39;):
                     self.enable_callback(&#39;__get_pending_procname_change&#39;)
             else: # We do know this ASID-&gt;procname, just call procname_changed
-                self._procname_changed(self.asid_mapping[new_asid])
+                self._procname_changed(cpustate, self.asid_mapping[new_asid])
 
             return 0
 
@@ -2251,35 +2272,53 @@ class Panda():
         else:
             print(f&#34;{hook_name} not in list of hooks&#34;)
 
-    def update_hooks_new_procname(self, name):
+    def _update_hooks_new_procname(self, cpu, name):
         &#39;&#39;&#39;
         Uses user-defined information to update the state of hooks based on things such as libraryname, procname and whether 
         or not the hook points to kernel space.
         &#39;&#39;&#39;
         for h in self.hook_list:
-            if not h.is_kernel and ffi.NULL != current:
-                if h.program_name:
-                    if h.program_name == curent_name and not h.is_enabled:
+            if h.is_kernel:
+                continue
+
+            if h.program_name:
+                if (h.program_name != name):
+                    if h.is_enabled:
+                        self.disable_hook(h)
+                    continue
+
+                if h.library_name is None:
+                    if h.is_enabled:
                         self.enable_hook(h)
-                    elif hook.program_name != current_name and hook.is_enabled:
-                        self.disable_hook(h)
-                libs = self.get_mappings(cpustate,current)
-                if h.library_name:
-                    lowest_matching_lib = None
-                    if libs == ffi.NULL: continue
-                    for i in range(libs.num):
-                        lib = libs.module[i]
+                    continue
+
+            if h.library_name:
+                asid = self.libpanda.panda_current_asid(cpu)
+                lowest_matching_addr = 0
+
+                if lowest_matching_addr == 0:
+                    libs = self.get_mappings(cpu)
+                    if libs == ffi.NULL:
+                        continue
+                    for lib in libs:
                         if lib.file != ffi.NULL:
-                            filename = ffi.string(lib.file).decode()
+                            filename = ffi.string(lib.file).decode(&#34;utf8&#34;, &#34;ignore&#34;)
                             if h.library_name in filename:
-                                if lowest_matching_lib:
-                                    lowest_matching_lib = lib if lib.base &lt; lowest_matching_lib.base else lowest_matching_lib
-                                else:
-                                    lowest_matching_lib = lib
-                    if lowest_matching_lib:
-                        self.update_hook(h, lowest_matching_lib.base + h.target_library_offset)
-                    else:
-                        self.disable_hook(h)
+                                if (lowest_matching_addr == 0) or (lib.base &lt; lowest_matching_addr):
+                                    lowest_matching_addr = lib.base
+
+                if lowest_matching_addr:
+                    self.update_hook(h, lowest_matching_addr + h.target_library_offset)
+                else:
+                    self.disable_hook(h)
+
+    def _register_mmap_cb(self):
+        if self._registered_mmap_cb:
+            return
+
+        @self.ppp(&#34;syscalls2&#34;, &#34;on_do_mmap2_return&#34;)
+        def on_do_mmap2_return(cpu, pc, addr, length, prot, flags, fd, pgoff):
+            self._update_hooks_new_procname(cpu, self.get_process_name(cpu))
 
     def hook(self, addr, enabled=True, kernel=True, libraryname=None, procname=None, name=None):
         &#39;&#39;&#39;
@@ -2288,6 +2327,10 @@ class Panda():
         &#39;&#39;&#39;
         if procname:
             self._register_internal_asid_changed_cb()
+
+        if libraryname:
+            self._register_mmap_cb()
+
         def decorator(fun):
             # Ultimately, our hook resolves as a before_block_exec_invalidate_opt callback so we must match its args
             hook_cb_type = self.callback.before_block_exec_invalidate_opt # (CPUState, TranslationBlock)
@@ -2490,6 +2533,7 @@ class Panda():
 
         # Register asid_changed CB if and only if a callback requires procname
         self._registered_asid_changed_internal_cb = False
+        self._registered_mmap_cb = False
 
         self._initialized_panda = False
         self.disabled_tb_chaining = False
@@ -2801,7 +2845,7 @@ class Panda():
         self.libpanda.panda_require_from_library(charptr, plugin_args, len(argstrs_ffi))
         self._load_plugin_library(name)
 
-    def _procname_changed(self, name):
+    def _procname_changed(self, cpu, name):
         for cb_name, cb in self.registered_callbacks.items():
             if not cb[&#34;procname&#34;]:
                 continue
@@ -2810,7 +2854,7 @@ class Panda():
             if name != cb[&#34;procname&#34;] and cb[&#39;enabled&#39;]:
                 self.disable_callback(cb_name)
 
-            self.update_hooks_new_procname(name)
+        self._update_hooks_new_procname(cpu, name)
 
     def unload_plugin(self, name):
         &#39;&#39;&#39;
@@ -3638,6 +3682,18 @@ class Panda():
             assert(not (proc.pid != 0 and proc.pid == proc.ppid)) # No cycles allowed other than at 0
         return procs
 
+    def get_process_name(self, cpu):
+        &#39;&#39;&#39;
+        Get the name of the current process. May return None if OSI cannot identify the current process
+        &#39;&#39;&#39;
+        proc = self.plugins[&#39;osi&#39;].get_current_process(cpu)
+        if proc == ffi.NULL or proc.name == ffi.NULL:
+            return None
+
+        procname = ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;)
+        return ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;)
+
+
     ################## PYPERIPHERAL FUNCTIONS #####################
     # Pyperipherals are objects which handle mmio read/writes using the PANDA callback infrastructure.
     # Under the hood, they use the cb_unassigned_io_read/cb_unassigned_io_write callbacks.
@@ -4290,6 +4346,14 @@ class Panda():
         if self._registered_asid_changed_internal_cb: # Already registered these callbacks
             return
 
+        @self.ppp(&#34;syscalls2&#34;, &#34;on_sys_brk_enter&#34;)
+        def on_sys_brk_enter(cpu, pc, brk):
+            name = self.get_process_name(cpu)
+            asid = self.libpanda.panda_current_asid(cpu)
+            if self.asid_mapping.get(asid, None) != name:
+                self.asid_mapping[asid] = name
+                self._procname_changed(cpu, name)
+
         @self.callback.after_block_exec
         def __get_pending_procname_change(cpu, tb, exit_code):
             if exit_code: # Didn&#39;t actually execute block
@@ -4302,7 +4366,7 @@ class Panda():
                     return None # Couldn&#39;t figure out the process
                 asid = self.libpanda.panda_current_asid(cpu)
                 self.asid_mapping[asid] = name
-                self._procname_changed(name)
+                self._procname_changed(cpu, name)
                 self.disable_callback(&#39;__get_pending_procname_change&#39;) # Disabled to begin
 
 
@@ -4311,9 +4375,9 @@ class Panda():
         def __asid_changed(cpustate, old_asid, new_asid):
             &#39;&#39;&#39;
             When the ASID changes, check if we know its procname (in self.asid_mapping),
-            if so, call panda._procname_changed(name). Otherwise, we enable __get_pending_procname_change CB, which
+            if so, call panda._procname_changed(cpu, name). Otherwise, we enable __get_pending_procname_change CB, which
             waits until the procname changes. Then we grab the new procname, update self.asid_mapping and call
-            panda._procname_changed(name)
+            panda._procname_changed(cpu, name)
             &#39;&#39;&#39;
             if old_asid == new_asid:
                 return 0
@@ -4322,7 +4386,7 @@ class Panda():
                 if not self.is_callback_enabled(&#39;__get_pending_procname_change&#39;):
                     self.enable_callback(&#39;__get_pending_procname_change&#39;)
             else: # We do know this ASID-&gt;procname, just call procname_changed
-                self._procname_changed(self.asid_mapping[new_asid])
+                self._procname_changed(cpustate, self.asid_mapping[new_asid])
 
             return 0
 
@@ -4551,35 +4615,53 @@ class Panda():
         else:
             print(f&#34;{hook_name} not in list of hooks&#34;)
 
-    def update_hooks_new_procname(self, name):
+    def _update_hooks_new_procname(self, cpu, name):
         &#39;&#39;&#39;
         Uses user-defined information to update the state of hooks based on things such as libraryname, procname and whether 
         or not the hook points to kernel space.
         &#39;&#39;&#39;
         for h in self.hook_list:
-            if not h.is_kernel and ffi.NULL != current:
-                if h.program_name:
-                    if h.program_name == curent_name and not h.is_enabled:
+            if h.is_kernel:
+                continue
+
+            if h.program_name:
+                if (h.program_name != name):
+                    if h.is_enabled:
+                        self.disable_hook(h)
+                    continue
+
+                if h.library_name is None:
+                    if h.is_enabled:
                         self.enable_hook(h)
-                    elif hook.program_name != current_name and hook.is_enabled:
-                        self.disable_hook(h)
-                libs = self.get_mappings(cpustate,current)
-                if h.library_name:
-                    lowest_matching_lib = None
-                    if libs == ffi.NULL: continue
-                    for i in range(libs.num):
-                        lib = libs.module[i]
+                    continue
+
+            if h.library_name:
+                asid = self.libpanda.panda_current_asid(cpu)
+                lowest_matching_addr = 0
+
+                if lowest_matching_addr == 0:
+                    libs = self.get_mappings(cpu)
+                    if libs == ffi.NULL:
+                        continue
+                    for lib in libs:
                         if lib.file != ffi.NULL:
-                            filename = ffi.string(lib.file).decode()
+                            filename = ffi.string(lib.file).decode(&#34;utf8&#34;, &#34;ignore&#34;)
                             if h.library_name in filename:
-                                if lowest_matching_lib:
-                                    lowest_matching_lib = lib if lib.base &lt; lowest_matching_lib.base else lowest_matching_lib
-                                else:
-                                    lowest_matching_lib = lib
-                    if lowest_matching_lib:
-                        self.update_hook(h, lowest_matching_lib.base + h.target_library_offset)
-                    else:
-                        self.disable_hook(h)
+                                if (lowest_matching_addr == 0) or (lib.base &lt; lowest_matching_addr):
+                                    lowest_matching_addr = lib.base
+
+                if lowest_matching_addr:
+                    self.update_hook(h, lowest_matching_addr + h.target_library_offset)
+                else:
+                    self.disable_hook(h)
+
+    def _register_mmap_cb(self):
+        if self._registered_mmap_cb:
+            return
+
+        @self.ppp(&#34;syscalls2&#34;, &#34;on_do_mmap2_return&#34;)
+        def on_do_mmap2_return(cpu, pc, addr, length, prot, flags, fd, pgoff):
+            self._update_hooks_new_procname(cpu, self.get_process_name(cpu))
 
     def hook(self, addr, enabled=True, kernel=True, libraryname=None, procname=None, name=None):
         &#39;&#39;&#39;
@@ -4588,6 +4670,10 @@ class Panda():
         &#39;&#39;&#39;
         if procname:
             self._register_internal_asid_changed_cb()
+
+        if libraryname:
+            self._register_mmap_cb()
+
         def decorator(fun):
             # Ultimately, our hook resolves as a before_block_exec_invalidate_opt callback so we must match its args
             hook_cb_type = self.callback.before_block_exec_invalidate_opt # (CPUState, TranslationBlock)
@@ -5696,6 +5782,27 @@ Returns:
     return GArrayIterator(self.plugins[&#39;osi&#39;].get_one_module, maps, map_len, self.plugins[&#39;osi&#39;].cleanup_garray)</code></pre>
 </details>
 </dd>
+<dt id="panda.main.Panda.get_process_name"><code class="name flex">
+<span>def <span class="ident">get_process_name</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the name of the current process. May return None if OSI cannot identify the current process</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_process_name(self, cpu):
+    &#39;&#39;&#39;
+    Get the name of the current process. May return None if OSI cannot identify the current process
+    &#39;&#39;&#39;
+    proc = self.plugins[&#39;osi&#39;].get_current_process(cpu)
+    if proc == ffi.NULL or proc.name == ffi.NULL:
+        return None
+
+    procname = ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;)
+    return ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;)</code></pre>
+</details>
+</dd>
 <dt id="panda.main.Panda.get_processes"><code class="name flex">
 <span>def <span class="ident">get_processes</span></span>(<span>self, cpu)</span>
 </code></dt>
@@ -5839,6 +5946,10 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
     &#39;&#39;&#39;
     if procname:
         self._register_internal_asid_changed_cb()
+
+    if libraryname:
+        self._register_mmap_cb()
+
     def decorator(fun):
         # Ultimately, our hook resolves as a before_block_exec_invalidate_opt callback so we must match its args
         hook_cb_type = self.callback.before_block_exec_invalidate_opt # (CPUState, TranslationBlock)
@@ -7824,47 +7935,6 @@ Returns true if the pyperipheral was successfully removed, else false.</p></div>
             self.enable_hook(hook)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.update_hooks_new_procname"><code class="name flex">
-<span>def <span class="ident">update_hooks_new_procname</span></span>(<span>self, name)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Uses user-defined information to update the state of hooks based on things such as libraryname, procname and whether
-or not the hook points to kernel space.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def update_hooks_new_procname(self, name):
-    &#39;&#39;&#39;
-    Uses user-defined information to update the state of hooks based on things such as libraryname, procname and whether 
-    or not the hook points to kernel space.
-    &#39;&#39;&#39;
-    for h in self.hook_list:
-        if not h.is_kernel and ffi.NULL != current:
-            if h.program_name:
-                if h.program_name == curent_name and not h.is_enabled:
-                    self.enable_hook(h)
-                elif hook.program_name != current_name and hook.is_enabled:
-                    self.disable_hook(h)
-            libs = self.get_mappings(cpustate,current)
-            if h.library_name:
-                lowest_matching_lib = None
-                if libs == ffi.NULL: continue
-                for i in range(libs.num):
-                    lib = libs.module[i]
-                    if lib.file != ffi.NULL:
-                        filename = ffi.string(lib.file).decode()
-                        if h.library_name in filename:
-                            if lowest_matching_lib:
-                                lowest_matching_lib = lib if lib.base &lt; lowest_matching_lib.base else lowest_matching_lib
-                            else:
-                                lowest_matching_lib = lib
-                if lowest_matching_lib:
-                    self.update_hook(h, lowest_matching_lib.base + h.target_library_offset)
-                else:
-                    self.disable_hook(h)</code></pre>
-</details>
-</dd>
 <dt id="panda.main.Panda.virt_to_phys"><code class="name flex">
 <span>def <span class="ident">virt_to_phys</span></span>(<span>self, env, addr)</span>
 </code></dt>
@@ -8073,6 +8143,7 @@ Returns:
 <li><code><a title="panda.main.Panda.garray_len" href="#panda.main.Panda.garray_len">garray_len</a></code></li>
 <li><code><a title="panda.main.Panda.get_cpu" href="#panda.main.Panda.get_cpu">get_cpu</a></code></li>
 <li><code><a title="panda.main.Panda.get_mappings" href="#panda.main.Panda.get_mappings">get_mappings</a></code></li>
+<li><code><a title="panda.main.Panda.get_process_name" href="#panda.main.Panda.get_process_name">get_process_name</a></code></li>
 <li><code><a title="panda.main.Panda.get_processes" href="#panda.main.Panda.get_processes">get_processes</a></code></li>
 <li><code><a title="panda.main.Panda.get_processes_dict" href="#panda.main.Panda.get_processes_dict">get_processes_dict</a></code></li>
 <li><code><a title="panda.main.Panda.get_system_memory" href="#panda.main.Panda.get_system_memory">get_system_memory</a></code></li>
@@ -8144,7 +8215,6 @@ Returns:
 <li><code><a title="panda.main.Panda.unload_plugins" href="#panda.main.Panda.unload_plugins">unload_plugins</a></code></li>
 <li><code><a title="panda.main.Panda.unregister_pyperipheral" href="#panda.main.Panda.unregister_pyperipheral">unregister_pyperipheral</a></code></li>
 <li><code><a title="panda.main.Panda.update_hook" href="#panda.main.Panda.update_hook">update_hook</a></code></li>
-<li><code><a title="panda.main.Panda.update_hooks_new_procname" href="#panda.main.Panda.update_hooks_new_procname">update_hooks_new_procname</a></code></li>
 <li><code><a title="panda.main.Panda.virt_to_phys" href="#panda.main.Panda.virt_to_phys">virt_to_phys</a></code></li>
 <li><code><a title="panda.main.Panda.virtual_memory_read" href="#panda.main.Panda.virtual_memory_read">virtual_memory_read</a></code></li>
 <li><code><a title="panda.main.Panda.virtual_memory_write" href="#panda.main.Panda.virtual_memory_write">virtual_memory_write</a></code></li>
