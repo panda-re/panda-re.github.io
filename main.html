@@ -54,7 +54,7 @@ from time import sleep
 from cffi import FFI
 
 from .ffi_importer import ffi
-from .utils import progress, make_iso, debug, blocking, GArrayIterator, Hook, plugin_list
+from .utils import progress, make_iso, debug, blocking, GArrayIterator, plugin_list
 from .taint import TaintQuery
 from .panda_expect import Expect
 from .asyncthread import AsyncThread
@@ -195,7 +195,7 @@ class Panda():
         self._initialized_panda = False
         self.disabled_tb_chaining = False
         self.taint_enabled = False
-        self.hook_list = []
+        self.hook_list = {}
 
         # Asid stuff
         self.current_asid_name = None
@@ -501,17 +501,6 @@ class Panda():
         charptr = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
         self.libpanda.panda_require_from_library(charptr, plugin_args, len(argstrs_ffi))
         self._load_plugin_library(name)
-
-    def _procname_changed(self, cpu, name):
-        for cb_name, cb in self.registered_callbacks.items():
-            if not cb[&#34;procname&#34;]:
-                continue
-            if name == cb[&#34;procname&#34;] and not cb[&#39;enabled&#39;]:
-                self.enable_callback(cb_name)
-            if name != cb[&#34;procname&#34;] and cb[&#39;enabled&#39;]:
-                self.disable_callback(cb_name)
-
-        self._update_hooks_new_procname(cpu, name)
 
     def unload_plugin(self, name):
         &#39;&#39;&#39;
@@ -2240,125 +2229,50 @@ class Panda():
     Provides the ability to interact with the hooks2 plugin and receive callbacks based on user-provided criteria.
     &#34;&#34;&#34;
 
-    def update_hook(self,hook_name,addr):
-        &#39;&#39;&#39;
-        Update hook to point to a different addres.
-        &#39;&#39;&#39;
-        if hook_name in self.named_hooks:
-            hook = self.named_hooks[hook_name]
-            if addr != hook.target_addr:
-                hook.target_addr = addr
-                self.enable_hook(hook)
-
     def enable_hook(self,hook_name):
         &#39;&#39;&#39;
         Set hook status to active.        
         &#39;&#39;&#39;
-        if hook_name in self.named_hooks:
-            hook = self.named_hooks[hook_name]
-            if not hook.is_enabled:
-                hook.is_enabled = True
-                self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)
+        if hook_name in self.hook_list:
+            self.plugins[&#39;hooks2&#39;].enable_hooks2(self.hook_list[hook_name])
+        else:
+            print(&#34;ERROR: Your hook name was not in the hook list&#34;)
 
     def disable_hook(self,hook_name):
         &#39;&#39;&#39;
         Set hook status to inactive.
         &#39;&#39;&#39;
-        if hook_name in self.named_hooks:
-            hook = self.named_hooks[hook_name]
-            if hook.is_enabled:
-                hook.is_enabled = False
-                self.plugins[&#39;hooks&#39;].disable_hook(hook.hook_cb)
+        if hook_name in self.hook_list:
+            self.plugins[&#39;hooks2&#39;].disable_hooks2(self.hook_list[hook_name])
         else:
-            print(f&#34;{hook_name} not in list of hooks&#34;)
+            print(&#34;ERROR: Your hook name was not in the hook list&#34;)
 
-    def _update_hooks_new_procname(self, cpu, name):
-        &#39;&#39;&#39;
-        Uses user-defined information to update the state of hooks based on things such as libraryname, procname and whether 
-        or not the hook points to kernel space.
-        &#39;&#39;&#39;
-        for h in self.hook_list:
-            if h.is_kernel:
-                continue
-
-            if h.program_name:
-                if (h.program_name != name):
-                    if h.is_enabled:
-                        self.disable_hook(h)
-                    continue
-
-                if h.library_name is None:
-                    if h.is_enabled:
-                        self.enable_hook(h)
-                    continue
-
-            if h.library_name:
-                asid = self.libpanda.panda_current_asid(cpu)
-                lowest_matching_addr = 0
-
-                if lowest_matching_addr == 0:
-                    libs = self.get_mappings(cpu)
-                    if libs == ffi.NULL:
-                        continue
-                    for lib in libs:
-                        if lib.file != ffi.NULL:
-                            filename = ffi.string(lib.file).decode(&#34;utf8&#34;, &#34;ignore&#34;)
-                            if h.library_name in filename:
-                                if (lowest_matching_addr == 0) or (lib.base &lt; lowest_matching_addr):
-                                    lowest_matching_addr = lib.base
-
-                if lowest_matching_addr:
-                    self.update_hook(h, lowest_matching_addr + h.target_library_offset)
-                else:
-                    self.disable_hook(h)
-
-    def _register_mmap_cb(self):
-        if self._registered_mmap_cb:
-            return
-
-        @self.ppp(&#34;syscalls2&#34;, &#34;on_do_mmap2_return&#34;)
-        def on_do_mmap2_return(cpu, pc, addr, length, prot, flags, fd, pgoff):
-            self._update_hooks_new_procname(cpu, self.get_process_name(cpu))
-
-    def hook(self, addr, enabled=True, kernel=True, libraryname=None, procname=None, name=None):
+    def hook(self,name, kernel=True, procname=ffi.NULL, libname=ffi.NULL, trace_start=0, trace_stop=0, range_begin=0, range_end=0):
+        if procname != ffi.NULL:
+            procname = ffi.new(&#34;char[]&#34;,bytes(procname,&#34;utf-8&#34;))
+        if libname != ffi.NULL:
+            libname = ffi.new(&#34;char[]&#34;,bytes(libname,&#34;utf-8&#34;))
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
         &#39;&#39;&#39;
-        if procname:
-            self._register_internal_asid_changed_cb()
-
-        if libraryname:
-            self._register_mmap_cb()
-
         def decorator(fun):
             # Ultimately, our hook resolves as a before_block_exec_invalidate_opt callback so we must match its args
-            hook_cb_type = self.callback.before_block_exec_invalidate_opt # (CPUState, TranslationBlock)
-
-            if &#39;hooks&#39; not in self.plugins:
-                # Enable hooks plugin on first request
-                self.load_plugin(&#34;hooks&#34;)
-
-            if debug:
-                print(&#34;Registering breakpoint at 0x{:x} -&gt; {} == {}&#34;.format(addr, fun, &#39;cdata_cb&#39;))
-
+            hook_cb_type = ffi.callback(&#34;bool (CPUState*, TranslationBlock*, void*)&#34;)
             # Inform the plugin that it has a new breakpoint at addr
+            
             hook_cb_passed = hook_cb_type(fun)
-            self.plugins[&#39;hooks&#39;].add_hook(addr, hook_cb_passed)
-            hook_to_add = Hook(is_enabled=enabled,is_kernel=kernel,target_addr=addr,library_name=libraryname,program_name=procname,hook_cb=None, target_library_offset=None)
-            if libraryname: 
-                hook_to_add.target_library_offset = addr
-                hook_to_add.target_addr = 0
-                hook_to_add.hook_cb = hook_cb_passed
+            if not hasattr(self, &#34;hook_gc_list&#34;):
+                self.hook_gc_list = [hook_cb_passed]
             else:
-                hook_to_add.hook_cb = hook_cb_passed
-            self.hook_list.append(hook_to_add)
-            if name:
-                if not hasattr(self, &#34;named_hooks&#34;):
-                    self.named_hooks = {}
-                self.named_hooks[name] = hook_to_add
-            if libraryname or procname:
-                self.disable_hook(hook_to_add)
+                self.hook_gc_list.append(hook_cb_passed)
+
+            # I don&#39;t know what this is/does
+            cb_data = ffi.NULL
+            hook_number = self.plugins[&#39;hooks2&#39;].add_hooks2(hook_cb_passed, cb_data, kernel, \
+                procname, libname, trace_start, trace_stop, range_begin,range_end)
+            
+            self.hook_list[name] = hook_number
 
             @hook_cb_type # Make CFFI know it&#39;s a callback. Different from _generated_callback for some reason?
             def wrapper(*args, **kw):
@@ -2366,6 +2280,11 @@ class Panda():
 
             return wrapper
         return decorator
+    
+    def hook_single_insn(self, name, pc, kernel=False, procname=ffi.NULL, libname=ffi.NULL):
+        return self.hook(name, kernel=kernel, procname=procname,libname=libname,range_begin=pc, range_end=pc)
+    
+
 
 # vim: expandtab:tabstop=4:</code></pre>
 </details>
@@ -2538,7 +2457,7 @@ class Panda():
         self._initialized_panda = False
         self.disabled_tb_chaining = False
         self.taint_enabled = False
-        self.hook_list = []
+        self.hook_list = {}
 
         # Asid stuff
         self.current_asid_name = None
@@ -2844,17 +2763,6 @@ class Panda():
         charptr = ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
         self.libpanda.panda_require_from_library(charptr, plugin_args, len(argstrs_ffi))
         self._load_plugin_library(name)
-
-    def _procname_changed(self, cpu, name):
-        for cb_name, cb in self.registered_callbacks.items():
-            if not cb[&#34;procname&#34;]:
-                continue
-            if name == cb[&#34;procname&#34;] and not cb[&#39;enabled&#39;]:
-                self.enable_callback(cb_name)
-            if name != cb[&#34;procname&#34;] and cb[&#39;enabled&#39;]:
-                self.disable_callback(cb_name)
-
-        self._update_hooks_new_procname(cpu, name)
 
     def unload_plugin(self, name):
         &#39;&#39;&#39;
@@ -4583,132 +4491,60 @@ class Panda():
     Provides the ability to interact with the hooks2 plugin and receive callbacks based on user-provided criteria.
     &#34;&#34;&#34;
 
-    def update_hook(self,hook_name,addr):
-        &#39;&#39;&#39;
-        Update hook to point to a different addres.
-        &#39;&#39;&#39;
-        if hook_name in self.named_hooks:
-            hook = self.named_hooks[hook_name]
-            if addr != hook.target_addr:
-                hook.target_addr = addr
-                self.enable_hook(hook)
-
     def enable_hook(self,hook_name):
         &#39;&#39;&#39;
         Set hook status to active.        
         &#39;&#39;&#39;
-        if hook_name in self.named_hooks:
-            hook = self.named_hooks[hook_name]
-            if not hook.is_enabled:
-                hook.is_enabled = True
-                self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)
+        if hook_name in self.hook_list:
+            self.plugins[&#39;hooks2&#39;].enable_hooks2(self.hook_list[hook_name])
+        else:
+            print(&#34;ERROR: Your hook name was not in the hook list&#34;)
 
     def disable_hook(self,hook_name):
         &#39;&#39;&#39;
         Set hook status to inactive.
         &#39;&#39;&#39;
-        if hook_name in self.named_hooks:
-            hook = self.named_hooks[hook_name]
-            if hook.is_enabled:
-                hook.is_enabled = False
-                self.plugins[&#39;hooks&#39;].disable_hook(hook.hook_cb)
+        if hook_name in self.hook_list:
+            self.plugins[&#39;hooks2&#39;].disable_hooks2(self.hook_list[hook_name])
         else:
-            print(f&#34;{hook_name} not in list of hooks&#34;)
+            print(&#34;ERROR: Your hook name was not in the hook list&#34;)
 
-    def _update_hooks_new_procname(self, cpu, name):
-        &#39;&#39;&#39;
-        Uses user-defined information to update the state of hooks based on things such as libraryname, procname and whether 
-        or not the hook points to kernel space.
-        &#39;&#39;&#39;
-        for h in self.hook_list:
-            if h.is_kernel:
-                continue
-
-            if h.program_name:
-                if (h.program_name != name):
-                    if h.is_enabled:
-                        self.disable_hook(h)
-                    continue
-
-                if h.library_name is None:
-                    if h.is_enabled:
-                        self.enable_hook(h)
-                    continue
-
-            if h.library_name:
-                asid = self.libpanda.panda_current_asid(cpu)
-                lowest_matching_addr = 0
-
-                if lowest_matching_addr == 0:
-                    libs = self.get_mappings(cpu)
-                    if libs == ffi.NULL:
-                        continue
-                    for lib in libs:
-                        if lib.file != ffi.NULL:
-                            filename = ffi.string(lib.file).decode(&#34;utf8&#34;, &#34;ignore&#34;)
-                            if h.library_name in filename:
-                                if (lowest_matching_addr == 0) or (lib.base &lt; lowest_matching_addr):
-                                    lowest_matching_addr = lib.base
-
-                if lowest_matching_addr:
-                    self.update_hook(h, lowest_matching_addr + h.target_library_offset)
-                else:
-                    self.disable_hook(h)
-
-    def _register_mmap_cb(self):
-        if self._registered_mmap_cb:
-            return
-
-        @self.ppp(&#34;syscalls2&#34;, &#34;on_do_mmap2_return&#34;)
-        def on_do_mmap2_return(cpu, pc, addr, length, prot, flags, fd, pgoff):
-            self._update_hooks_new_procname(cpu, self.get_process_name(cpu))
-
-    def hook(self, addr, enabled=True, kernel=True, libraryname=None, procname=None, name=None):
+    def hook(self,name, kernel=True, procname=ffi.NULL, libname=ffi.NULL, trace_start=0, trace_stop=0, range_begin=0, range_end=0):
+        if procname != ffi.NULL:
+            procname = ffi.new(&#34;char[]&#34;,bytes(procname,&#34;utf-8&#34;))
+        if libname != ffi.NULL:
+            libname = ffi.new(&#34;char[]&#34;,bytes(libname,&#34;utf-8&#34;))
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
         &#39;&#39;&#39;
-        if procname:
-            self._register_internal_asid_changed_cb()
-
-        if libraryname:
-            self._register_mmap_cb()
-
         def decorator(fun):
             # Ultimately, our hook resolves as a before_block_exec_invalidate_opt callback so we must match its args
-            hook_cb_type = self.callback.before_block_exec_invalidate_opt # (CPUState, TranslationBlock)
-
-            if &#39;hooks&#39; not in self.plugins:
-                # Enable hooks plugin on first request
-                self.load_plugin(&#34;hooks&#34;)
-
-            if debug:
-                print(&#34;Registering breakpoint at 0x{:x} -&gt; {} == {}&#34;.format(addr, fun, &#39;cdata_cb&#39;))
-
+            hook_cb_type = ffi.callback(&#34;bool (CPUState*, TranslationBlock*, void*)&#34;)
             # Inform the plugin that it has a new breakpoint at addr
+            
             hook_cb_passed = hook_cb_type(fun)
-            self.plugins[&#39;hooks&#39;].add_hook(addr, hook_cb_passed)
-            hook_to_add = Hook(is_enabled=enabled,is_kernel=kernel,target_addr=addr,library_name=libraryname,program_name=procname,hook_cb=None, target_library_offset=None)
-            if libraryname: 
-                hook_to_add.target_library_offset = addr
-                hook_to_add.target_addr = 0
-                hook_to_add.hook_cb = hook_cb_passed
+            if not hasattr(self, &#34;hook_gc_list&#34;):
+                self.hook_gc_list = [hook_cb_passed]
             else:
-                hook_to_add.hook_cb = hook_cb_passed
-            self.hook_list.append(hook_to_add)
-            if name:
-                if not hasattr(self, &#34;named_hooks&#34;):
-                    self.named_hooks = {}
-                self.named_hooks[name] = hook_to_add
-            if libraryname or procname:
-                self.disable_hook(hook_to_add)
+                self.hook_gc_list.append(hook_cb_passed)
+
+            # I don&#39;t know what this is/does
+            cb_data = ffi.NULL
+            hook_number = self.plugins[&#39;hooks2&#39;].add_hooks2(hook_cb_passed, cb_data, kernel, \
+                procname, libname, trace_start, trace_stop, range_begin,range_end)
+            
+            self.hook_list[name] = hook_number
 
             @hook_cb_type # Make CFFI know it&#39;s a callback. Different from _generated_callback for some reason?
             def wrapper(*args, **kw):
                 return fun(*args, **kw)
 
             return wrapper
-        return decorator</code></pre>
+        return decorator
+    
+    def hook_single_insn(self, name, pc, kernel=False, procname=ffi.NULL, libname=ffi.NULL):
+        return self.hook(name, kernel=kernel, procname=procname,libname=libname,range_begin=pc, range_end=pc)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -5109,13 +4945,10 @@ you want to really turn off something with a procname filter.</p></div>
     &#39;&#39;&#39;
     Set hook status to inactive.
     &#39;&#39;&#39;
-    if hook_name in self.named_hooks:
-        hook = self.named_hooks[hook_name]
-        if hook.is_enabled:
-            hook.is_enabled = False
-            self.plugins[&#39;hooks&#39;].disable_hook(hook.hook_cb)
+    if hook_name in self.hook_list:
+        self.plugins[&#39;hooks2&#39;].disable_hooks2(self.hook_list[hook_name])
     else:
-        print(f&#34;{hook_name} not in list of hooks&#34;)</code></pre>
+        print(&#34;ERROR: Your hook name was not in the hook list&#34;)</code></pre>
 </details>
 </dd>
 <dt id="panda.main.Panda.disable_llvm"><code class="name flex">
@@ -5414,11 +5247,10 @@ Return:
     &#39;&#39;&#39;
     Set hook status to active.        
     &#39;&#39;&#39;
-    if hook_name in self.named_hooks:
-        hook = self.named_hooks[hook_name]
-        if not hook.is_enabled:
-            hook.is_enabled = True
-            self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)</code></pre>
+    if hook_name in self.hook_list:
+        self.plugins[&#39;hooks2&#39;].enable_hooks2(self.hook_list[hook_name])
+    else:
+        print(&#34;ERROR: Your hook name was not in the hook list&#34;)</code></pre>
 </details>
 </dd>
 <dt id="panda.main.Panda.enable_internal_callbacks"><code class="name flex">
@@ -5930,54 +5762,40 @@ Returns:
 </details>
 </dd>
 <dt id="panda.main.Panda.hook"><code class="name flex">
-<span>def <span class="ident">hook</span></span>(<span>self, addr, enabled=True, kernel=True, libraryname=None, procname=None, name=None)</span>
+<span>def <span class="ident">hook</span></span>(<span>self, name, kernel=True, procname=&lt;cdata &#x27;void *&#x27; NULL&gt;, libname=&lt;cdata &#x27;void *&#x27; NULL&gt;, trace_start=0, trace_stop=0, range_begin=0, range_end=0)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
-the function will be called with args (CPUState, TranslationBlock)</p></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def hook(self, addr, enabled=True, kernel=True, libraryname=None, procname=None, name=None):
+<pre><code class="python">def hook(self,name, kernel=True, procname=ffi.NULL, libname=ffi.NULL, trace_start=0, trace_stop=0, range_begin=0, range_end=0):
+    if procname != ffi.NULL:
+        procname = ffi.new(&#34;char[]&#34;,bytes(procname,&#34;utf-8&#34;))
+    if libname != ffi.NULL:
+        libname = ffi.new(&#34;char[]&#34;,bytes(libname,&#34;utf-8&#34;))
     &#39;&#39;&#39;
     Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
     the function will be called with args (CPUState, TranslationBlock)
     &#39;&#39;&#39;
-    if procname:
-        self._register_internal_asid_changed_cb()
-
-    if libraryname:
-        self._register_mmap_cb()
-
     def decorator(fun):
         # Ultimately, our hook resolves as a before_block_exec_invalidate_opt callback so we must match its args
-        hook_cb_type = self.callback.before_block_exec_invalidate_opt # (CPUState, TranslationBlock)
-
-        if &#39;hooks&#39; not in self.plugins:
-            # Enable hooks plugin on first request
-            self.load_plugin(&#34;hooks&#34;)
-
-        if debug:
-            print(&#34;Registering breakpoint at 0x{:x} -&gt; {} == {}&#34;.format(addr, fun, &#39;cdata_cb&#39;))
-
+        hook_cb_type = ffi.callback(&#34;bool (CPUState*, TranslationBlock*, void*)&#34;)
         # Inform the plugin that it has a new breakpoint at addr
+        
         hook_cb_passed = hook_cb_type(fun)
-        self.plugins[&#39;hooks&#39;].add_hook(addr, hook_cb_passed)
-        hook_to_add = Hook(is_enabled=enabled,is_kernel=kernel,target_addr=addr,library_name=libraryname,program_name=procname,hook_cb=None, target_library_offset=None)
-        if libraryname: 
-            hook_to_add.target_library_offset = addr
-            hook_to_add.target_addr = 0
-            hook_to_add.hook_cb = hook_cb_passed
+        if not hasattr(self, &#34;hook_gc_list&#34;):
+            self.hook_gc_list = [hook_cb_passed]
         else:
-            hook_to_add.hook_cb = hook_cb_passed
-        self.hook_list.append(hook_to_add)
-        if name:
-            if not hasattr(self, &#34;named_hooks&#34;):
-                self.named_hooks = {}
-            self.named_hooks[name] = hook_to_add
-        if libraryname or procname:
-            self.disable_hook(hook_to_add)
+            self.hook_gc_list.append(hook_cb_passed)
+
+        # I don&#39;t know what this is/does
+        cb_data = ffi.NULL
+        hook_number = self.plugins[&#39;hooks2&#39;].add_hooks2(hook_cb_passed, cb_data, kernel, \
+            procname, libname, trace_start, trace_stop, range_begin,range_end)
+        
+        self.hook_list[name] = hook_number
 
         @hook_cb_type # Make CFFI know it&#39;s a callback. Different from _generated_callback for some reason?
         def wrapper(*args, **kw):
@@ -5985,6 +5803,19 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 
         return wrapper
     return decorator</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.hook_single_insn"><code class="name flex">
+<span>def <span class="ident">hook_single_insn</span></span>(<span>self, name, pc, kernel=False, procname=&lt;cdata &#x27;void *&#x27; NULL&gt;, libname=&lt;cdata &#x27;void *&#x27; NULL&gt;)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def hook_single_insn(self, name, pc, kernel=False, procname=ffi.NULL, libname=ffi.NULL):
+    return self.hook(name, kernel=kernel, procname=procname,libname=libname,range_begin=pc, range_end=pc)</code></pre>
 </details>
 </dd>
 <dt id="panda.main.Panda.in_kernel"><code class="name flex">
@@ -7915,26 +7746,6 @@ Returns true if the pyperipheral was successfully removed, else false.</p></div>
     return True</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.update_hook"><code class="name flex">
-<span>def <span class="ident">update_hook</span></span>(<span>self, hook_name, addr)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Update hook to point to a different addres.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def update_hook(self,hook_name,addr):
-    &#39;&#39;&#39;
-    Update hook to point to a different addres.
-    &#39;&#39;&#39;
-    if hook_name in self.named_hooks:
-        hook = self.named_hooks[hook_name]
-        if addr != hook.target_addr:
-            hook.target_addr = addr
-            self.enable_hook(hook)</code></pre>
-</details>
-</dd>
 <dt id="panda.main.Panda.virt_to_phys"><code class="name flex">
 <span>def <span class="ident">virt_to_phys</span></span>(<span>self, env, addr)</span>
 </code></dt>
@@ -8149,6 +7960,7 @@ Returns:
 <li><code><a title="panda.main.Panda.get_system_memory" href="#panda.main.Panda.get_system_memory">get_system_memory</a></code></li>
 <li><code><a title="panda.main.Panda.get_volatility_symbols" href="#panda.main.Panda.get_volatility_symbols">get_volatility_symbols</a></code></li>
 <li><code><a title="panda.main.Panda.hook" href="#panda.main.Panda.hook">hook</a></code></li>
+<li><code><a title="panda.main.Panda.hook_single_insn" href="#panda.main.Panda.hook_single_insn">hook_single_insn</a></code></li>
 <li><code><a title="panda.main.Panda.in_kernel" href="#panda.main.Panda.in_kernel">in_kernel</a></code></li>
 <li><code><a title="panda.main.Panda.interact" href="#panda.main.Panda.interact">interact</a></code></li>
 <li><code><a title="panda.main.Panda.is_callback_enabled" href="#panda.main.Panda.is_callback_enabled">is_callback_enabled</a></code></li>
@@ -8214,7 +8026,6 @@ Returns:
 <li><code><a title="panda.main.Panda.unload_plugin" href="#panda.main.Panda.unload_plugin">unload_plugin</a></code></li>
 <li><code><a title="panda.main.Panda.unload_plugins" href="#panda.main.Panda.unload_plugins">unload_plugins</a></code></li>
 <li><code><a title="panda.main.Panda.unregister_pyperipheral" href="#panda.main.Panda.unregister_pyperipheral">unregister_pyperipheral</a></code></li>
-<li><code><a title="panda.main.Panda.update_hook" href="#panda.main.Panda.update_hook">update_hook</a></code></li>
 <li><code><a title="panda.main.Panda.virt_to_phys" href="#panda.main.Panda.virt_to_phys">virt_to_phys</a></code></li>
 <li><code><a title="panda.main.Panda.virtual_memory_read" href="#panda.main.Panda.virtual_memory_read">virtual_memory_read</a></code></li>
 <li><code><a title="panda.main.Panda.virtual_memory_write" href="#panda.main.Panda.virtual_memory_write">virtual_memory_write</a></code></li>
