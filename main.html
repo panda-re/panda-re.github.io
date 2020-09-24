@@ -2284,6 +2284,69 @@ class Panda():
     def hook_single_insn(self, name, pc, kernel=False, procname=ffi.NULL, libname=ffi.NULL):
         return self.hook(name, kernel=kernel, procname=procname,libname=libname,range_begin=pc, range_end=pc)
     
+         ############# GHIDRA MIXINS ###############
+    
+    def delete_all_ghidra_memory_segments(self,memory, monitor):
+        for block in memory.getBlocks(): 
+            memory.removeBlock(block,monitor)
+
+
+    def populate_ghidra(self,cpu, pc, bridge, namespace, analyze=True):
+        globals().update(namespace)
+        tid = currentProgram.startTransaction(&#34;BRIDGE: Change Memory Sections&#34;)
+        memory = currentProgram.getMemory()
+        self.delete_all_ghidra_memory_segments(memory,monitor)
+
+        def read_memory(cpu, start, size):
+            output = b&#34;&#34;
+            pos = start
+            while len(output) &lt; size:
+                try:
+                    output += self.virtual_memory_read(cpu, pos, 0x100)
+                except:
+                    output += b&#34;\x00&#34;*0x100
+                pos += 0x100
+            return output
+
+        names = set()
+        for mapping in self.get_mappings(cpu):
+            if mapping.file != ffi.NULL:
+                name = ffi.string(mapping.file).decode()
+            else:
+                name = &#34;[unknown]&#34;
+            while name in names:
+                from random import randint
+                name += &#34;:&#34;+hex(randint(0,100000000))
+            names.add(name)
+            memory.createInitializedBlock(name,toAddr(mapping.base),mapping.size,0,monitor,False)
+            memory_read = read_memory(cpu,mapping.base,mapping.size)
+            if memory_read:
+                memory.setBytes(toAddr(mapping.base), read_memory(cpu,mapping.base, mapping.size))
+        if analyze:
+            analyzeAll(currentProgram)
+        setCurrentLocation(toAddr(pc))
+        currentProgram.endTransaction(tid,True)
+
+    def ghidra_decompilation(cpu,pc, bridge):
+        #import ghidra.app.decompiler as decomp
+        decomp = bridge.remote_import(&#34;ghidra.app.decompiler&#34;)
+        # ## get the decompiler interface
+        iface = decomp.DecompInterface()
+
+        # ## decompile the function
+        iface.openProgram(currentProgram)
+        fn = getFunctionContaining(toAddr(pc))
+        d = iface.decompileFunction(fn, 5, monitor)
+
+        ## get the C code as string
+        if not d.decompileCompleted():
+            code = d.getErrorMessage()
+        else:
+            code = d.getDecompiledFunction()
+            ccode = code.getC()
+            code = ccode
+        return code
+    
 
 
 # vim: expandtab:tabstop=4:</code></pre>
@@ -4544,7 +4607,70 @@ class Panda():
         return decorator
     
     def hook_single_insn(self, name, pc, kernel=False, procname=ffi.NULL, libname=ffi.NULL):
-        return self.hook(name, kernel=kernel, procname=procname,libname=libname,range_begin=pc, range_end=pc)</code></pre>
+        return self.hook(name, kernel=kernel, procname=procname,libname=libname,range_begin=pc, range_end=pc)
+    
+         ############# GHIDRA MIXINS ###############
+    
+    def delete_all_ghidra_memory_segments(self,memory, monitor):
+        for block in memory.getBlocks(): 
+            memory.removeBlock(block,monitor)
+
+
+    def populate_ghidra(self,cpu, pc, bridge, namespace, analyze=True):
+        globals().update(namespace)
+        tid = currentProgram.startTransaction(&#34;BRIDGE: Change Memory Sections&#34;)
+        memory = currentProgram.getMemory()
+        self.delete_all_ghidra_memory_segments(memory,monitor)
+
+        def read_memory(cpu, start, size):
+            output = b&#34;&#34;
+            pos = start
+            while len(output) &lt; size:
+                try:
+                    output += self.virtual_memory_read(cpu, pos, 0x100)
+                except:
+                    output += b&#34;\x00&#34;*0x100
+                pos += 0x100
+            return output
+
+        names = set()
+        for mapping in self.get_mappings(cpu):
+            if mapping.file != ffi.NULL:
+                name = ffi.string(mapping.file).decode()
+            else:
+                name = &#34;[unknown]&#34;
+            while name in names:
+                from random import randint
+                name += &#34;:&#34;+hex(randint(0,100000000))
+            names.add(name)
+            memory.createInitializedBlock(name,toAddr(mapping.base),mapping.size,0,monitor,False)
+            memory_read = read_memory(cpu,mapping.base,mapping.size)
+            if memory_read:
+                memory.setBytes(toAddr(mapping.base), read_memory(cpu,mapping.base, mapping.size))
+        if analyze:
+            analyzeAll(currentProgram)
+        setCurrentLocation(toAddr(pc))
+        currentProgram.endTransaction(tid,True)
+
+    def ghidra_decompilation(cpu,pc, bridge):
+        #import ghidra.app.decompiler as decomp
+        decomp = bridge.remote_import(&#34;ghidra.app.decompiler&#34;)
+        # ## get the decompiler interface
+        iface = decomp.DecompInterface()
+
+        # ## decompile the function
+        iface.openProgram(currentProgram)
+        fn = getFunctionContaining(toAddr(pc))
+        d = iface.decompileFunction(fn, 5, monitor)
+
+        ## get the C code as string
+        if not d.decompileCompleted():
+            code = d.getErrorMessage()
+        else:
+            code = d.getDecompiledFunction()
+            ccode = code.getC()
+            code = ccode
+        return code</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -4866,6 +4992,20 @@ Return:
             integer value of stack pointer
     &#39;&#39;&#39;
     return self.libpanda.panda_current_sp_external(cpustate)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.delete_all_ghidra_memory_segments"><code class="name flex">
+<span>def <span class="ident">delete_all_ghidra_memory_segments</span></span>(<span>self, memory, monitor)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delete_all_ghidra_memory_segments(self,memory, monitor):
+    for block in memory.getBlocks(): 
+        memory.removeBlock(block,monitor)</code></pre>
 </details>
 </dd>
 <dt id="panda.main.Panda.delvm"><code class="name flex">
@@ -5761,6 +5901,36 @@ Returns:
         return None</code></pre>
 </details>
 </dd>
+<dt id="panda.main.Panda.ghidra_decompilation"><code class="name flex">
+<span>def <span class="ident">ghidra_decompilation</span></span>(<span>cpu, pc, bridge)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ghidra_decompilation(cpu,pc, bridge):
+    #import ghidra.app.decompiler as decomp
+    decomp = bridge.remote_import(&#34;ghidra.app.decompiler&#34;)
+    # ## get the decompiler interface
+    iface = decomp.DecompInterface()
+
+    # ## decompile the function
+    iface.openProgram(currentProgram)
+    fn = getFunctionContaining(toAddr(pc))
+    d = iface.decompileFunction(fn, 5, monitor)
+
+    ## get the C code as string
+    if not d.decompileCompleted():
+        code = d.getErrorMessage()
+    else:
+        code = d.getDecompiledFunction()
+        ccode = code.getC()
+        code = ccode
+    return code</code></pre>
+</details>
+</dd>
 <dt id="panda.main.Panda.hook"><code class="name flex">
 <span>def <span class="ident">hook</span></span>(<span>self, name, kernel=True, procname=&lt;cdata &#x27;void *&#x27; NULL&gt;, libname=&lt;cdata &#x27;void *&#x27; NULL&gt;, trace_start=0, trace_stop=0, range_begin=0, range_end=0)</span>
 </code></dt>
@@ -6632,6 +6802,52 @@ Raises:
                 buf:  byte string to write
     &#39;&#39;&#39;
     return self._memory_write(None, addr, buf, physical=True)</code></pre>
+</details>
+</dd>
+<dt id="panda.main.Panda.populate_ghidra"><code class="name flex">
+<span>def <span class="ident">populate_ghidra</span></span>(<span>self, cpu, pc, bridge, namespace, analyze=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def populate_ghidra(self,cpu, pc, bridge, namespace, analyze=True):
+    globals().update(namespace)
+    tid = currentProgram.startTransaction(&#34;BRIDGE: Change Memory Sections&#34;)
+    memory = currentProgram.getMemory()
+    self.delete_all_ghidra_memory_segments(memory,monitor)
+
+    def read_memory(cpu, start, size):
+        output = b&#34;&#34;
+        pos = start
+        while len(output) &lt; size:
+            try:
+                output += self.virtual_memory_read(cpu, pos, 0x100)
+            except:
+                output += b&#34;\x00&#34;*0x100
+            pos += 0x100
+        return output
+
+    names = set()
+    for mapping in self.get_mappings(cpu):
+        if mapping.file != ffi.NULL:
+            name = ffi.string(mapping.file).decode()
+        else:
+            name = &#34;[unknown]&#34;
+        while name in names:
+            from random import randint
+            name += &#34;:&#34;+hex(randint(0,100000000))
+        names.add(name)
+        memory.createInitializedBlock(name,toAddr(mapping.base),mapping.size,0,monitor,False)
+        memory_read = read_memory(cpu,mapping.base,mapping.size)
+        if memory_read:
+            memory.setBytes(toAddr(mapping.base), read_memory(cpu,mapping.base, mapping.size))
+    if analyze:
+        analyzeAll(currentProgram)
+    setCurrentLocation(toAddr(pc))
+    currentProgram.endTransaction(tid,True)</code></pre>
 </details>
 </dd>
 <dt id="panda.main.Panda.ppp"><code class="name flex">
@@ -7919,6 +8135,7 @@ Returns:
 <li><code><a title="panda.main.Panda.current_asid" href="#panda.main.Panda.current_asid">current_asid</a></code></li>
 <li><code><a title="panda.main.Panda.current_pc" href="#panda.main.Panda.current_pc">current_pc</a></code></li>
 <li><code><a title="panda.main.Panda.current_sp" href="#panda.main.Panda.current_sp">current_sp</a></code></li>
+<li><code><a title="panda.main.Panda.delete_all_ghidra_memory_segments" href="#panda.main.Panda.delete_all_ghidra_memory_segments">delete_all_ghidra_memory_segments</a></code></li>
 <li><code><a title="panda.main.Panda.delvm" href="#panda.main.Panda.delvm">delvm</a></code></li>
 <li><code><a title="panda.main.Panda.delvm_sync" href="#panda.main.Panda.delvm_sync">delvm_sync</a></code></li>
 <li><code><a title="panda.main.Panda.disable_callback" href="#panda.main.Panda.disable_callback">disable_callback</a></code></li>
@@ -7959,6 +8176,7 @@ Returns:
 <li><code><a title="panda.main.Panda.get_processes_dict" href="#panda.main.Panda.get_processes_dict">get_processes_dict</a></code></li>
 <li><code><a title="panda.main.Panda.get_system_memory" href="#panda.main.Panda.get_system_memory">get_system_memory</a></code></li>
 <li><code><a title="panda.main.Panda.get_volatility_symbols" href="#panda.main.Panda.get_volatility_symbols">get_volatility_symbols</a></code></li>
+<li><code><a title="panda.main.Panda.ghidra_decompilation" href="#panda.main.Panda.ghidra_decompilation">ghidra_decompilation</a></code></li>
 <li><code><a title="panda.main.Panda.hook" href="#panda.main.Panda.hook">hook</a></code></li>
 <li><code><a title="panda.main.Panda.hook_single_insn" href="#panda.main.Panda.hook_single_insn">hook_single_insn</a></code></li>
 <li><code><a title="panda.main.Panda.in_kernel" href="#panda.main.Panda.in_kernel">in_kernel</a></code></li>
@@ -7985,6 +8203,7 @@ Returns:
 <li><code><a title="panda.main.Panda.panda_finish" href="#panda.main.Panda.panda_finish">panda_finish</a></code></li>
 <li><code><a title="panda.main.Panda.physical_memory_read" href="#panda.main.Panda.physical_memory_read">physical_memory_read</a></code></li>
 <li><code><a title="panda.main.Panda.physical_memory_write" href="#panda.main.Panda.physical_memory_write">physical_memory_write</a></code></li>
+<li><code><a title="panda.main.Panda.populate_ghidra" href="#panda.main.Panda.populate_ghidra">populate_ghidra</a></code></li>
 <li><code><a title="panda.main.Panda.ppp" href="#panda.main.Panda.ppp">ppp</a></code></li>
 <li><code><a title="panda.main.Panda.pyperiph_read_cb" href="#panda.main.Panda.pyperiph_read_cb">pyperiph_read_cb</a></code></li>
 <li><code><a title="panda.main.Panda.pyperiph_write_cb" href="#panda.main.Panda.pyperiph_write_cb">pyperiph_write_cb</a></code></li>
