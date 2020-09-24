@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>panda.panda_expect API documentation</title>
+<title>pandare.panda_expect API documentation</title>
 <meta name="description" content="Custom library for interacting/expecting data via serial-like FDs" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>panda.panda_expect</code></h1>
+<h1 class="title">Module <code>pandare.panda_expect</code></h1>
 </header>
 <section id="section-intro">
 <p>Custom library for interacting/expecting data via serial-like FDs</p>
@@ -175,7 +175,7 @@ class Expect(object):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="panda.panda_expect.Expect"><code class="flex name class">
+<dt id="pandare.panda_expect.Expect"><code class="flex name class">
 <span>class <span class="ident">Expect</span></span>
 <span>(</span><span>filelike=None, expectation=None, logfile=None, quiet=False, consume_first=False)</span>
 </code></dt>
@@ -311,7 +311,7 @@ class Expect(object):
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.panda_expect.Expect.abort"><code class="name flex">
+<dt id="pandare.panda_expect.Expect.abort"><code class="name flex">
 <span>def <span class="ident">abort</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -324,7 +324,7 @@ class Expect(object):
     self.running = False</code></pre>
 </details>
 </dd>
-<dt id="panda.panda_expect.Expect.connect"><code class="name flex">
+<dt id="pandare.panda_expect.Expect.connect"><code class="name flex">
 <span>def <span class="ident">connect</span></span>(<span>self, filelike)</span>
 </code></dt>
 <dd>
@@ -342,7 +342,7 @@ class Expect(object):
     self.poller.register(self.fd, select.POLLIN)</code></pre>
 </details>
 </dd>
-<dt id="panda.panda_expect.Expect.expect"><code class="name flex">
+<dt id="pandare.panda_expect.Expect.expect"><code class="name flex">
 <span>def <span class="ident">expect</span></span>(<span>self, expectation=None, timeout=30)</span>
 </code></dt>
 <dd>
@@ -412,7 +412,7 @@ class Expect(object):
     raise TimeoutExpired(&#34;Read message \n{}\n&#34;.format(self.sofar))</code></pre>
 </details>
 </dd>
-<dt id="panda.panda_expect.Expect.is_connected"><code class="name flex">
+<dt id="pandare.panda_expect.Expect.is_connected"><code class="name flex">
 <span>def <span class="ident">is_connected</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -425,7 +425,7 @@ class Expect(object):
     return self.fd != None</code></pre>
 </details>
 </dd>
-<dt id="panda.panda_expect.Expect.send"><code class="name flex">
+<dt id="pandare.panda_expect.Expect.send"><code class="name flex">
 <span>def <span class="ident">send</span></span>(<span>self, msg)</span>
 </code></dt>
 <dd>
@@ -445,7 +445,7 @@ class Expect(object):
     self.logfile.flush()</code></pre>
 </details>
 </dd>
-<dt id="panda.panda_expect.Expect.send_eol"><code class="name flex">
+<dt id="pandare.panda_expect.Expect.send_eol"><code class="name flex">
 <span>def <span class="ident">send_eol</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -462,7 +462,7 @@ class Expect(object):
     self.logfile.flush()</code></pre>
 </details>
 </dd>
-<dt id="panda.panda_expect.Expect.sendline"><code class="name flex">
+<dt id="pandare.panda_expect.Expect.sendline"><code class="name flex">
 <span>def <span class="ident">sendline</span></span>(<span>self, msg=b'')</span>
 </code></dt>
 <dd>
@@ -476,7 +476,7 @@ class Expect(object):
     self.last_msg = msg+b&#34;\n&#34;</code></pre>
 </details>
 </dd>
-<dt id="panda.panda_expect.Expect.update_expectation"><code class="name flex">
+<dt id="pandare.panda_expect.Expect.update_expectation"><code class="name flex">
 <span>def <span class="ident">update_expectation</span></span>(<span>self, expectation)</span>
 </code></dt>
 <dd>
@@ -492,7 +492,7 @@ class Expect(object):
 </dd>
 </dl>
 </dd>
-<dt id="panda.panda_expect.TimeoutExpired"><code class="flex name class">
+<dt id="pandare.panda_expect.TimeoutExpired"><code class="flex name class">
 <span>class <span class="ident">TimeoutExpired</span></span>
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
@@ -521,26 +521,26 @@ class Expect(object):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="panda" href="index.html">panda</a></code></li>
+<li><code><a title="pandare" href="index.html">pandare</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="panda.panda_expect.Expect" href="#panda.panda_expect.Expect">Expect</a></code></h4>
+<h4><code><a title="pandare.panda_expect.Expect" href="#pandare.panda_expect.Expect">Expect</a></code></h4>
 <ul class="two-column">
-<li><code><a title="panda.panda_expect.Expect.abort" href="#panda.panda_expect.Expect.abort">abort</a></code></li>
-<li><code><a title="panda.panda_expect.Expect.connect" href="#panda.panda_expect.Expect.connect">connect</a></code></li>
-<li><code><a title="panda.panda_expect.Expect.expect" href="#panda.panda_expect.Expect.expect">expect</a></code></li>
-<li><code><a title="panda.panda_expect.Expect.is_connected" href="#panda.panda_expect.Expect.is_connected">is_connected</a></code></li>
-<li><code><a title="panda.panda_expect.Expect.send" href="#panda.panda_expect.Expect.send">send</a></code></li>
-<li><code><a title="panda.panda_expect.Expect.send_eol" href="#panda.panda_expect.Expect.send_eol">send_eol</a></code></li>
-<li><code><a title="panda.panda_expect.Expect.sendline" href="#panda.panda_expect.Expect.sendline">sendline</a></code></li>
-<li><code><a title="panda.panda_expect.Expect.update_expectation" href="#panda.panda_expect.Expect.update_expectation">update_expectation</a></code></li>
+<li><code><a title="pandare.panda_expect.Expect.abort" href="#pandare.panda_expect.Expect.abort">abort</a></code></li>
+<li><code><a title="pandare.panda_expect.Expect.connect" href="#pandare.panda_expect.Expect.connect">connect</a></code></li>
+<li><code><a title="pandare.panda_expect.Expect.expect" href="#pandare.panda_expect.Expect.expect">expect</a></code></li>
+<li><code><a title="pandare.panda_expect.Expect.is_connected" href="#pandare.panda_expect.Expect.is_connected">is_connected</a></code></li>
+<li><code><a title="pandare.panda_expect.Expect.send" href="#pandare.panda_expect.Expect.send">send</a></code></li>
+<li><code><a title="pandare.panda_expect.Expect.send_eol" href="#pandare.panda_expect.Expect.send_eol">send_eol</a></code></li>
+<li><code><a title="pandare.panda_expect.Expect.sendline" href="#pandare.panda_expect.Expect.sendline">sendline</a></code></li>
+<li><code><a title="pandare.panda_expect.Expect.update_expectation" href="#pandare.panda_expect.Expect.update_expectation">update_expectation</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="panda.panda_expect.TimeoutExpired" href="#panda.panda_expect.TimeoutExpired">TimeoutExpired</a></code></h4>
+<h4><code><a title="pandare.panda_expect.TimeoutExpired" href="#pandare.panda_expect.TimeoutExpired">TimeoutExpired</a></code></h4>
 </li>
 </ul>
 </li>

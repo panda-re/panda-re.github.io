@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>panda.arch API documentation</title>
+<title>pandare.arch API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>panda.arch</code></h1>
+<h1 class="title">Module <code>pandare.arch</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -27,7 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import binascii
-from panda.utils import telescope
+from .utils import telescope
 
 class PandaArch():
     &#39;&#39;&#39;
@@ -344,7 +344,7 @@ class X86_64Arch(PandaArch):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="panda.arch.ArmArch"><code class="flex name class">
+<dt id="pandare.arch.ArmArch"><code class="flex name class">
 <span>class <span class="ident">ArmArch</span></span>
 <span>(</span><span>panda)</span>
 </code></dt>
@@ -388,25 +388,25 @@ class X86_64Arch(PandaArch):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></li>
+<li><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></b></code>:
+<li><code><b><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></b></code>:
 <ul class="hlist">
-<li><code><a title="panda.arch.PandaArch.dump_regs" href="#panda.arch.PandaArch.dump_regs">dump_regs</a></code></li>
-<li><code><a title="panda.arch.PandaArch.dump_stack" href="#panda.arch.PandaArch.dump_stack">dump_stack</a></code></li>
-<li><code><a title="panda.arch.PandaArch.dump_state" href="#panda.arch.PandaArch.dump_state">dump_state</a></code></li>
-<li><code><a title="panda.arch.PandaArch.get_pc" href="#panda.arch.PandaArch.get_pc">get_pc</a></code></li>
-<li><code><a title="panda.arch.PandaArch.get_reg" href="#panda.arch.PandaArch.get_reg">get_reg</a></code></li>
-<li><code><a title="panda.arch.PandaArch.registers" href="#panda.arch.PandaArch.registers">registers</a></code></li>
-<li><code><a title="panda.arch.PandaArch.set_pc" href="#panda.arch.PandaArch.set_pc">set_pc</a></code></li>
-<li><code><a title="panda.arch.PandaArch.set_reg" href="#panda.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_pc" href="#pandare.arch.PandaArch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_pc" href="#pandare.arch.PandaArch.set_pc">set_pc</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
 </ul>
 </li>
 </ul>
 </dd>
-<dt id="panda.arch.MipsArch"><code class="flex name class">
+<dt id="pandare.arch.MipsArch"><code class="flex name class">
 <span>class <span class="ident">MipsArch</span></span>
 <span>(</span><span>panda)</span>
 </code></dt>
@@ -476,11 +476,11 @@ class X86_64Arch(PandaArch):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></li>
+<li><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.arch.MipsArch.get_pc"><code class="name flex">
+<dt id="pandare.arch.MipsArch.get_pc"><code class="name flex">
 <span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
@@ -496,7 +496,7 @@ class X86_64Arch(PandaArch):
     return cpu.env_ptr.active_tc.PC</code></pre>
 </details>
 </dd>
-<dt id="panda.arch.MipsArch.set_pc"><code class="name flex">
+<dt id="pandare.arch.MipsArch.set_pc"><code class="name flex">
 <span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
 </code></dt>
 <dd>
@@ -515,19 +515,19 @@ class X86_64Arch(PandaArch):
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></b></code>:
+<li><code><b><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></b></code>:
 <ul class="hlist">
-<li><code><a title="panda.arch.PandaArch.dump_regs" href="#panda.arch.PandaArch.dump_regs">dump_regs</a></code></li>
-<li><code><a title="panda.arch.PandaArch.dump_stack" href="#panda.arch.PandaArch.dump_stack">dump_stack</a></code></li>
-<li><code><a title="panda.arch.PandaArch.dump_state" href="#panda.arch.PandaArch.dump_state">dump_state</a></code></li>
-<li><code><a title="panda.arch.PandaArch.get_reg" href="#panda.arch.PandaArch.get_reg">get_reg</a></code></li>
-<li><code><a title="panda.arch.PandaArch.registers" href="#panda.arch.PandaArch.registers">registers</a></code></li>
-<li><code><a title="panda.arch.PandaArch.set_reg" href="#panda.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
 </ul>
 </li>
 </ul>
 </dd>
-<dt id="panda.arch.PandaArch"><code class="flex name class">
+<dt id="pandare.arch.PandaArch"><code class="flex name class">
 <span>class <span class="ident">PandaArch</span></span>
 <span>(</span><span>panda)</span>
 </code></dt>
@@ -681,21 +681,21 @@ class X86_64Arch(PandaArch):
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="panda.arch.ArmArch" href="#panda.arch.ArmArch">ArmArch</a></li>
-<li><a title="panda.arch.MipsArch" href="#panda.arch.MipsArch">MipsArch</a></li>
-<li><a title="panda.arch.X86Arch" href="#panda.arch.X86Arch">X86Arch</a></li>
-<li><a title="panda.arch.X86_64Arch" href="#panda.arch.X86_64Arch">X86_64Arch</a></li>
+<li><a title="pandare.arch.ArmArch" href="#pandare.arch.ArmArch">ArmArch</a></li>
+<li><a title="pandare.arch.MipsArch" href="#pandare.arch.MipsArch">MipsArch</a></li>
+<li><a title="pandare.arch.X86Arch" href="#pandare.arch.X86Arch">X86Arch</a></li>
+<li><a title="pandare.arch.X86_64Arch" href="#pandare.arch.X86_64Arch">X86_64Arch</a></li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="panda.arch.PandaArch.registers"><code class="name">var <span class="ident">registers</span></code></dt>
+<dt id="pandare.arch.PandaArch.registers"><code class="name">var <span class="ident">registers</span></code></dt>
 <dd>
 <div class="desc"><p>Mapping of register names to indices into the appropriate CPUState array</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.arch.PandaArch.dump_regs"><code class="name flex">
+<dt id="pandare.arch.PandaArch.dump_regs"><code class="name flex">
 <span>def <span class="ident">dump_regs</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
@@ -714,7 +714,7 @@ class X86_64Arch(PandaArch):
         telescope(self.panda, cpu, val)</code></pre>
 </details>
 </dd>
-<dt id="panda.arch.PandaArch.dump_stack"><code class="name flex">
+<dt id="pandare.arch.PandaArch.dump_stack"><code class="name flex">
 <span>def <span class="ident">dump_stack</span></span>(<span>self, cpu, words=8)</span>
 </code></dt>
 <dd>
@@ -739,7 +739,7 @@ class X86_64Arch(PandaArch):
         telescope(self.panda, cpu, val)</code></pre>
 </details>
 </dd>
-<dt id="panda.arch.PandaArch.dump_state"><code class="name flex">
+<dt id="pandare.arch.PandaArch.dump_state"><code class="name flex">
 <span>def <span class="ident">dump_state</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
@@ -759,7 +759,7 @@ class X86_64Arch(PandaArch):
     self.dump_stack(cpu)</code></pre>
 </details>
 </dd>
-<dt id="panda.arch.PandaArch.get_pc"><code class="name flex">
+<dt id="pandare.arch.PandaArch.get_pc"><code class="name flex">
 <span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
@@ -778,7 +778,7 @@ class X86_64Arch(PandaArch):
         raise RuntimeError(f&#34;get_pc unsupported for {self.panda.arch_name}&#34;)</code></pre>
 </details>
 </dd>
-<dt id="panda.arch.PandaArch.get_reg"><code class="name flex">
+<dt id="pandare.arch.PandaArch.get_reg"><code class="name flex">
 <span>def <span class="ident">get_reg</span></span>(<span>self, cpu, reg)</span>
 </code></dt>
 <dd>
@@ -801,7 +801,7 @@ class X86_64Arch(PandaArch):
     return self._get_reg_val(cpu, reg)</code></pre>
 </details>
 </dd>
-<dt id="panda.arch.PandaArch.set_pc"><code class="name flex">
+<dt id="pandare.arch.PandaArch.set_pc"><code class="name flex">
 <span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
 </code></dt>
 <dd>
@@ -820,7 +820,7 @@ class X86_64Arch(PandaArch):
         raise RuntimeError(f&#34;set_pc unsupported for {self.panda.arch_name}&#34;)</code></pre>
 </details>
 </dd>
-<dt id="panda.arch.PandaArch.set_reg"><code class="name flex">
+<dt id="pandare.arch.PandaArch.set_reg"><code class="name flex">
 <span>def <span class="ident">set_reg</span></span>(<span>self, cpu, reg, val)</span>
 </code></dt>
 <dd>
@@ -845,7 +845,7 @@ class X86_64Arch(PandaArch):
 </dd>
 </dl>
 </dd>
-<dt id="panda.arch.X86Arch"><code class="flex name class">
+<dt id="pandare.arch.X86Arch"><code class="flex name class">
 <span>class <span class="ident">X86Arch</span></span>
 <span>(</span><span>panda)</span>
 </code></dt>
@@ -895,11 +895,11 @@ class X86_64Arch(PandaArch):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></li>
+<li><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.arch.X86Arch.get_pc"><code class="name flex">
+<dt id="pandare.arch.X86Arch.get_pc"><code class="name flex">
 <span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
@@ -915,7 +915,7 @@ class X86_64Arch(PandaArch):
     return cpu.env_ptr.eip</code></pre>
 </details>
 </dd>
-<dt id="panda.arch.X86Arch.set_pc"><code class="name flex">
+<dt id="pandare.arch.X86Arch.set_pc"><code class="name flex">
 <span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
 </code></dt>
 <dd>
@@ -934,19 +934,19 @@ class X86_64Arch(PandaArch):
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></b></code>:
+<li><code><b><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></b></code>:
 <ul class="hlist">
-<li><code><a title="panda.arch.PandaArch.dump_regs" href="#panda.arch.PandaArch.dump_regs">dump_regs</a></code></li>
-<li><code><a title="panda.arch.PandaArch.dump_stack" href="#panda.arch.PandaArch.dump_stack">dump_stack</a></code></li>
-<li><code><a title="panda.arch.PandaArch.dump_state" href="#panda.arch.PandaArch.dump_state">dump_state</a></code></li>
-<li><code><a title="panda.arch.PandaArch.get_reg" href="#panda.arch.PandaArch.get_reg">get_reg</a></code></li>
-<li><code><a title="panda.arch.PandaArch.registers" href="#panda.arch.PandaArch.registers">registers</a></code></li>
-<li><code><a title="panda.arch.PandaArch.set_reg" href="#panda.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
 </ul>
 </li>
 </ul>
 </dd>
-<dt id="panda.arch.X86_64Arch"><code class="flex name class">
+<dt id="pandare.arch.X86_64Arch"><code class="flex name class">
 <span>class <span class="ident">X86_64Arch</span></span>
 <span>(</span><span>panda)</span>
 </code></dt>
@@ -998,11 +998,11 @@ class X86_64Arch(PandaArch):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></li>
+<li><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.arch.X86_64Arch.get_pc"><code class="name flex">
+<dt id="pandare.arch.X86_64Arch.get_pc"><code class="name flex">
 <span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
@@ -1018,7 +1018,7 @@ class X86_64Arch(PandaArch):
     return cpu.env_ptr.eip</code></pre>
 </details>
 </dd>
-<dt id="panda.arch.X86_64Arch.set_pc"><code class="name flex">
+<dt id="pandare.arch.X86_64Arch.set_pc"><code class="name flex">
 <span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
 </code></dt>
 <dd>
@@ -1037,14 +1037,14 @@ class X86_64Arch(PandaArch):
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></b></code>:
+<li><code><b><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></b></code>:
 <ul class="hlist">
-<li><code><a title="panda.arch.PandaArch.dump_regs" href="#panda.arch.PandaArch.dump_regs">dump_regs</a></code></li>
-<li><code><a title="panda.arch.PandaArch.dump_stack" href="#panda.arch.PandaArch.dump_stack">dump_stack</a></code></li>
-<li><code><a title="panda.arch.PandaArch.dump_state" href="#panda.arch.PandaArch.dump_state">dump_state</a></code></li>
-<li><code><a title="panda.arch.PandaArch.get_reg" href="#panda.arch.PandaArch.get_reg">get_reg</a></code></li>
-<li><code><a title="panda.arch.PandaArch.registers" href="#panda.arch.PandaArch.registers">registers</a></code></li>
-<li><code><a title="panda.arch.PandaArch.set_reg" href="#panda.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1060,46 +1060,46 @@ class X86_64Arch(PandaArch):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="panda" href="index.html">panda</a></code></li>
+<li><code><a title="pandare" href="index.html">pandare</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="panda.arch.ArmArch" href="#panda.arch.ArmArch">ArmArch</a></code></h4>
+<h4><code><a title="pandare.arch.ArmArch" href="#pandare.arch.ArmArch">ArmArch</a></code></h4>
 </li>
 <li>
-<h4><code><a title="panda.arch.MipsArch" href="#panda.arch.MipsArch">MipsArch</a></code></h4>
+<h4><code><a title="pandare.arch.MipsArch" href="#pandare.arch.MipsArch">MipsArch</a></code></h4>
 <ul class="">
-<li><code><a title="panda.arch.MipsArch.get_pc" href="#panda.arch.MipsArch.get_pc">get_pc</a></code></li>
-<li><code><a title="panda.arch.MipsArch.set_pc" href="#panda.arch.MipsArch.set_pc">set_pc</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_pc" href="#pandare.arch.MipsArch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.set_pc" href="#pandare.arch.MipsArch.set_pc">set_pc</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="panda.arch.PandaArch" href="#panda.arch.PandaArch">PandaArch</a></code></h4>
+<h4><code><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></code></h4>
 <ul class="two-column">
-<li><code><a title="panda.arch.PandaArch.dump_regs" href="#panda.arch.PandaArch.dump_regs">dump_regs</a></code></li>
-<li><code><a title="panda.arch.PandaArch.dump_stack" href="#panda.arch.PandaArch.dump_stack">dump_stack</a></code></li>
-<li><code><a title="panda.arch.PandaArch.dump_state" href="#panda.arch.PandaArch.dump_state">dump_state</a></code></li>
-<li><code><a title="panda.arch.PandaArch.get_pc" href="#panda.arch.PandaArch.get_pc">get_pc</a></code></li>
-<li><code><a title="panda.arch.PandaArch.get_reg" href="#panda.arch.PandaArch.get_reg">get_reg</a></code></li>
-<li><code><a title="panda.arch.PandaArch.registers" href="#panda.arch.PandaArch.registers">registers</a></code></li>
-<li><code><a title="panda.arch.PandaArch.set_pc" href="#panda.arch.PandaArch.set_pc">set_pc</a></code></li>
-<li><code><a title="panda.arch.PandaArch.set_reg" href="#panda.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_pc" href="#pandare.arch.PandaArch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_pc" href="#pandare.arch.PandaArch.set_pc">set_pc</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="panda.arch.X86Arch" href="#panda.arch.X86Arch">X86Arch</a></code></h4>
+<h4><code><a title="pandare.arch.X86Arch" href="#pandare.arch.X86Arch">X86Arch</a></code></h4>
 <ul class="">
-<li><code><a title="panda.arch.X86Arch.get_pc" href="#panda.arch.X86Arch.get_pc">get_pc</a></code></li>
-<li><code><a title="panda.arch.X86Arch.set_pc" href="#panda.arch.X86Arch.set_pc">set_pc</a></code></li>
+<li><code><a title="pandare.arch.X86Arch.get_pc" href="#pandare.arch.X86Arch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.X86Arch.set_pc" href="#pandare.arch.X86Arch.set_pc">set_pc</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="panda.arch.X86_64Arch" href="#panda.arch.X86_64Arch">X86_64Arch</a></code></h4>
+<h4><code><a title="pandare.arch.X86_64Arch" href="#pandare.arch.X86_64Arch">X86_64Arch</a></code></h4>
 <ul class="">
-<li><code><a title="panda.arch.X86_64Arch.get_pc" href="#panda.arch.X86_64Arch.get_pc">get_pc</a></code></li>
-<li><code><a title="panda.arch.X86_64Arch.set_pc" href="#panda.arch.X86_64Arch.set_pc">set_pc</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.get_pc" href="#pandare.arch.X86_64Arch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.set_pc" href="#pandare.arch.X86_64Arch.set_pc">set_pc</a></code></li>
 </ul>
 </li>
 </ul>

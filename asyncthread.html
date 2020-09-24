@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>panda.asyncthread API documentation</title>
+<title>pandare.asyncthread API documentation</title>
 <meta name="description" content="Module to run a thread in parallel to QEMU&#39;s main cpu loop.
 Enables queuing up python functions from main thread and vice versa" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -20,7 +20,7 @@ Enables queuing up python functions from main thread and vice versa" />
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>panda.asyncthread</code></h1>
+<h1 class="title">Module <code>pandare.asyncthread</code></h1>
 </header>
 <section id="section-intro">
 <p>Module to run a thread in parallel to QEMU's main cpu loop.
@@ -39,7 +39,7 @@ import functools
 from queue import Queue, Empty
 from time import sleep
 from colorama import Fore, Style
-from panda.utils import debug
+from .utils import debug
 
 
 def progress(msg):
@@ -182,7 +182,7 @@ if __name__ == &#39;__main__&#39;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="panda.asyncthread.progress"><code class="name flex">
+<dt id="pandare.asyncthread.progress"><code class="name flex">
 <span>def <span class="ident">progress</span></span>(<span>msg)</span>
 </code></dt>
 <dd>
@@ -195,7 +195,7 @@ if __name__ == &#39;__main__&#39;:
     print(Fore.CYAN + &#39;[asyncthread.py] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)</code></pre>
 </details>
 </dd>
-<dt id="panda.asyncthread.test1"><code class="name flex">
+<dt id="pandare.asyncthread.test1"><code class="name flex">
 <span>def <span class="ident">test1</span></span>(<span>)</span>
 </code></dt>
 <dd>
@@ -233,7 +233,7 @@ if __name__ == &#39;__main__&#39;:
     a.stop()</code></pre>
 </details>
 </dd>
-<dt id="panda.asyncthread.test2"><code class="name flex">
+<dt id="pandare.asyncthread.test2"><code class="name flex">
 <span>def <span class="ident">test2</span></span>(<span>)</span>
 </code></dt>
 <dd>
@@ -272,7 +272,7 @@ if __name__ == &#39;__main__&#39;:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="panda.asyncthread.AsyncThread"><code class="flex name class">
+<dt id="pandare.asyncthread.AsyncThread"><code class="flex name class">
 <span>class <span class="ident">AsyncThread</span></span>
 <span>(</span><span>panda_started)</span>
 </code></dt>
@@ -352,7 +352,7 @@ if __name__ == &#39;__main__&#39;:
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.asyncthread.AsyncThread.queue"><code class="name flex">
+<dt id="pandare.asyncthread.AsyncThread.queue"><code class="name flex">
 <span>def <span class="ident">queue</span></span>(<span>self, func, internal=False)</span>
 </code></dt>
 <dd>
@@ -372,7 +372,7 @@ if __name__ == &#39;__main__&#39;:
         self.task_queue.put_nowait(func)</code></pre>
 </details>
 </dd>
-<dt id="panda.asyncthread.AsyncThread.run"><code class="name flex">
+<dt id="pandare.asyncthread.AsyncThread.run"><code class="name flex">
 <span>def <span class="ident">run</span></span>(<span>self, task_queue)</span>
 </code></dt>
 <dd>
@@ -411,7 +411,7 @@ if __name__ == &#39;__main__&#39;:
             task_queue.task_done()</code></pre>
 </details>
 </dd>
-<dt id="panda.asyncthread.AsyncThread.stop"><code class="name flex">
+<dt id="pandare.asyncthread.AsyncThread.stop"><code class="name flex">
 <span>def <span class="ident">stop</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -438,24 +438,24 @@ if __name__ == &#39;__main__&#39;:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="panda" href="index.html">panda</a></code></li>
+<li><code><a title="pandare" href="index.html">pandare</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="panda.asyncthread.progress" href="#panda.asyncthread.progress">progress</a></code></li>
-<li><code><a title="panda.asyncthread.test1" href="#panda.asyncthread.test1">test1</a></code></li>
-<li><code><a title="panda.asyncthread.test2" href="#panda.asyncthread.test2">test2</a></code></li>
+<li><code><a title="pandare.asyncthread.progress" href="#pandare.asyncthread.progress">progress</a></code></li>
+<li><code><a title="pandare.asyncthread.test1" href="#pandare.asyncthread.test1">test1</a></code></li>
+<li><code><a title="pandare.asyncthread.test2" href="#pandare.asyncthread.test2">test2</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="panda.asyncthread.AsyncThread" href="#panda.asyncthread.AsyncThread">AsyncThread</a></code></h4>
+<h4><code><a title="pandare.asyncthread.AsyncThread" href="#pandare.asyncthread.AsyncThread">AsyncThread</a></code></h4>
 <ul class="">
-<li><code><a title="panda.asyncthread.AsyncThread.queue" href="#panda.asyncthread.AsyncThread.queue">queue</a></code></li>
-<li><code><a title="panda.asyncthread.AsyncThread.run" href="#panda.asyncthread.AsyncThread.run">run</a></code></li>
-<li><code><a title="panda.asyncthread.AsyncThread.stop" href="#panda.asyncthread.AsyncThread.stop">stop</a></code></li>
+<li><code><a title="pandare.asyncthread.AsyncThread.queue" href="#pandare.asyncthread.AsyncThread.queue">queue</a></code></li>
+<li><code><a title="pandare.asyncthread.AsyncThread.run" href="#pandare.asyncthread.AsyncThread.run">run</a></code></li>
+<li><code><a title="pandare.asyncthread.AsyncThread.stop" href="#pandare.asyncthread.AsyncThread.stop">stop</a></code></li>
 </ul>
 </li>
 </ul>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>panda.plog API documentation</title>
+<title>pandare.plog API documentation</title>
 <meta name="description" content="Functionality to interact with the PANDA Log." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>panda.plog</code></h1>
+<h1 class="title">Module <code>pandare.plog</code></h1>
 </header>
 <section id="section-intro">
 <p>Functionality to interact with the PANDA Log.</p>
@@ -39,44 +39,11 @@ import struct
 import itertools
 from google.protobuf.json_format import MessageToJson
 from os.path import dirname, join, isdir
-
-python_package = dirname(os.path.realpath(__file__)) # when installed site-packages/panda
-arch_dirs = [&#39;i386-softmmu&#39;, &#39;x86_64-softmmu&#39;, &#39;ppc-softmmu&#39;, &#39;arm-softmmu&#39;, &#39;mips-softmmu&#39;]
-
-# First check if pypanda was installed as a python package with a data subdirectory
-if isdir(join(python_package, &#39;data&#39;)):
-    for d in [join(*[python_package, &#39;data&#39;, ad]) for ad in arch_dirs]:
-        if os.path.isdir(d):
-            sys.path.append(d)
-            try:
-                import plog_pb2
-                break
-            except ImportError:
-                pass
-
-if &#39;plog_pb2&#39; not in sys.modules:
-    # Otherwise try to search relative to file in standard panda directory names
-    # components of paths to be serched
-    panda_dir = dirname(dirname(dirname(dirname(os.path.realpath(__file__)))))
-    top_dirs = [panda_dir, dirname(panda_dir)]
-    build_dirs = [&#39;build-panda&#39;, &#39;build&#39;, &#39;opt-panda&#39;, &#39;debug-panda&#39;]
-    searched_paths = []
-
-    for dc in itertools.product(top_dirs, build_dirs, arch_dirs):
-        d = os.path.join(*dc)
-        searched_paths.append(d)
-        if not os.path.isdir(d): continue
-        try:
-            sys.path.append(d)
-            import plog_pb2
-            break
-        except ImportError:
-            sys.path.pop()
-
-assert &#39;plog_pb2&#39; in sys.modules, &#34;Couldn&#39;t load module plog_pb2. Searched paths:\n\t%s&#34; % &#34;\n\t&#34;.join(searched_paths)
+from importlib import import_module
+from pandare import plog_pb2
 
 class PLogReader:
-    def __init__(self, fn):
+    def __init__(self, fn, arch=&#34;i386&#34;): 
         self.f = open(fn, &#34;rb&#34;)
         self.version, _, self.dir_pos, _, self.chunk_gsize = struct.unpack(&#39;&lt;IIQII&#39;, self.f.read(24))
 
@@ -141,7 +108,7 @@ class PLogReader:
 
 if __name__ == &#34;__main__&#34;:
     print(&#39;[&#39;)
-    with PLogReader(sys.argv[1]) as plr:
+    with PLogReader(sys.argv[1], arch=&#34;i386&#34; if len(sys.argv) &lt; 3 else sys.argv[2]) as plr:
         for i, m in enumerate(plr):
             if i &gt; 0: print(&#39;,&#39;)
             print(MessageToJson(m), end=&#39;&#39;)
@@ -157,9 +124,9 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="panda.plog.PLogReader"><code class="flex name class">
+<dt id="pandare.plog.PLogReader"><code class="flex name class">
 <span>class <span class="ident">PLogReader</span></span>
-<span>(</span><span>fn)</span>
+<span>(</span><span>fn, arch='i386')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -168,7 +135,7 @@ if __name__ == &#34;__main__&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class PLogReader:
-    def __init__(self, fn):
+    def __init__(self, fn, arch=&#34;i386&#34;): 
         self.f = open(fn, &#34;rb&#34;)
         self.version, _, self.dir_pos, _, self.chunk_gsize = struct.unpack(&#39;&lt;IIQII&#39;, self.f.read(24))
 
@@ -243,13 +210,13 @@ if __name__ == &#34;__main__&#34;:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="panda" href="index.html">panda</a></code></li>
+<li><code><a title="pandare" href="index.html">pandare</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="panda.plog.PLogReader" href="#panda.plog.PLogReader">PLogReader</a></code></h4>
+<h4><code><a title="pandare.plog.PLogReader" href="#pandare.plog.PLogReader">PLogReader</a></code></h4>
 </li>
 </ul>
 </li>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>panda.main API documentation</title>
+<title>pandare.main API documentation</title>
 <meta name="description" content="The main module is a container for the Panda class." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>panda.main</code></h1>
+<h1 class="title">Module <code>pandare.main</code></h1>
 </header>
 <section id="section-intro">
 <p>The main module is a container for the Panda class.</p>
@@ -59,8 +59,11 @@ from .taint import TaintQuery
 from .panda_expect import Expect
 from .asyncthread import AsyncThread
 from .qcows import Qcows
-from .plog import PLogReader
 from .arch import ArmArch, MipsArch, X86Arch, X86_64Arch
+
+# Might be worth importing and auto-initilizing a PLogReader
+# object within Panda for the current architecture?
+#from .plog import PLogReader
 
 
 class Panda():
@@ -2361,7 +2364,7 @@ class Panda():
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="panda.main.Panda"><code class="flex name class">
+<dt id="pandare.main.Panda"><code class="flex name class">
 <span>class <span class="ident">Panda</span></span>
 <span>(</span><span>arch='i386', mem='128M', expect_prompt=None, os_version=None, qcow=None, os='linux', generic=None, raw_monitor=False, extra_args=[])</span>
 </code></dt>
@@ -4674,7 +4677,7 @@ class Panda():
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.main.Panda.arm_load_kernel"><code class="name flex">
+<dt id="pandare.main.Panda.arm_load_kernel"><code class="name flex">
 <span>def <span class="ident">arm_load_kernel</span></span>(<span>self, cpu, bootinfo)</span>
 </code></dt>
 <dd>
@@ -4687,7 +4690,7 @@ class Panda():
     return self.libpanda.arm_load_kernel(cpu, bootinfo)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.callstack_callers"><code class="name flex">
+<dt id="pandare.main.Panda.callstack_callers"><code class="name flex">
 <span>def <span class="ident">callstack_callers</span></span>(<span>self, lim, cpu)</span>
 </code></dt>
 <dd>
@@ -4712,7 +4715,7 @@ class Panda():
     return c</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.check_crashed"><code class="name flex">
+<dt id="pandare.main.Panda.check_crashed"><code class="name flex">
 <span>def <span class="ident">check_crashed</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -4739,7 +4742,7 @@ def check_crashed(self):
         os._exit(1) # Force process to exit now</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.cleanup"><code class="name flex">
+<dt id="pandare.main.Panda.cleanup"><code class="name flex">
 <span>def <span class="ident">cleanup</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -4755,7 +4758,7 @@ def check_crashed(self):
     self.libpanda.panda_cleanup()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.clear_breakpoint"><code class="name flex">
+<dt id="pandare.main.Panda.clear_breakpoint"><code class="name flex">
 <span>def <span class="ident">clear_breakpoint</span></span>(<span>self, cpu, pc)</span>
 </code></dt>
 <dd>
@@ -4772,7 +4775,7 @@ def check_crashed(self):
     self.libpanda.cpu_breakpoint_remove(cpu, pc, BP_GDB)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.cont"><code class="name flex">
+<dt id="pandare.main.Panda.cont"><code class="name flex">
 <span>def <span class="ident">cont</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -4787,7 +4790,7 @@ def check_crashed(self):
     self.running.set()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.copy_to_guest"><code class="name flex">
+<dt id="pandare.main.Panda.copy_to_guest"><code class="name flex">
 <span>def <span class="ident">copy_to_guest</span></span>(<span>self, copy_directory, iso_name=None)</span>
 </code></dt>
 <dd>
@@ -4822,7 +4825,7 @@ def copy_to_guest(self, copy_directory, iso_name=None):
     progress(self.run_serial_cmd(setup_sh))</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.cpu_class_by_name"><code class="name flex">
+<dt id="pandare.main.Panda.cpu_class_by_name"><code class="name flex">
 <span>def <span class="ident">cpu_class_by_name</span></span>(<span>self, name, cpu_model)</span>
 </code></dt>
 <dd>
@@ -4854,7 +4857,7 @@ Returns:
     return self.libpanda.cpu_class_by_name(name, cpu_model)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.create_external_gic"><code class="name flex">
+<dt id="pandare.main.Panda.create_external_gic"><code class="name flex">
 <span>def <span class="ident">create_external_gic</span></span>(<span>self, vbi, irqs, gic_vers, secure)</span>
 </code></dt>
 <dd>
@@ -4867,7 +4870,7 @@ Returns:
     return self.libpanda.create_external_gic(vbi, irqs, gic_vers, secure)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.create_internal_gic"><code class="name flex">
+<dt id="pandare.main.Panda.create_internal_gic"><code class="name flex">
 <span>def <span class="ident">create_internal_gic</span></span>(<span>self, vbi, irqs, gic_vers)</span>
 </code></dt>
 <dd>
@@ -4880,7 +4883,7 @@ Returns:
     return self.libpanda.create_internal_gic(vbi, irqs, gic_vers)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.create_one_flash"><code class="name flex">
+<dt id="pandare.main.Panda.create_one_flash"><code class="name flex">
 <span>def <span class="ident">create_one_flash</span></span>(<span>self, name, flashbase, flashsize, filename, mr)</span>
 </code></dt>
 <dd>
@@ -4893,7 +4896,7 @@ Returns:
     return self.libpanda.create_one_flash(name, flashbase, flashsize, filename, mr)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.create_virtio_devices"><code class="name flex">
+<dt id="pandare.main.Panda.create_virtio_devices"><code class="name flex">
 <span>def <span class="ident">create_virtio_devices</span></span>(<span>self, vbi, pic)</span>
 </code></dt>
 <dd>
@@ -4906,7 +4909,7 @@ Returns:
     return self.libpanda.create_virtio_devices(vbi, pic)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.current_asid"><code class="name flex">
+<dt id="pandare.main.Panda.current_asid"><code class="name flex">
 <span>def <span class="ident">current_asid</span></span>(<span>self, cpustate)</span>
 </code></dt>
 <dd>
@@ -4934,7 +4937,7 @@ Return:
     return self.libpanda.panda_current_asid(cpustate)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.current_pc"><code class="name flex">
+<dt id="pandare.main.Panda.current_pc"><code class="name flex">
 <span>def <span class="ident">current_pc</span></span>(<span>self, cpustate)</span>
 </code></dt>
 <dd>
@@ -4966,7 +4969,7 @@ Return:
     return self.libpanda.panda_current_pc(cpustate)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.current_sp"><code class="name flex">
+<dt id="pandare.main.Panda.current_sp"><code class="name flex">
 <span>def <span class="ident">current_sp</span></span>(<span>self, cpustate)</span>
 </code></dt>
 <dd>
@@ -4994,7 +4997,7 @@ Return:
     return self.libpanda.panda_current_sp_external(cpustate)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.delete_all_ghidra_memory_segments"><code class="name flex">
+<dt id="pandare.main.Panda.delete_all_ghidra_memory_segments"><code class="name flex">
 <span>def <span class="ident">delete_all_ghidra_memory_segments</span></span>(<span>self, memory, monitor)</span>
 </code></dt>
 <dd>
@@ -5008,7 +5011,7 @@ Return:
         memory.removeBlock(block,monitor)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.delvm"><code class="name flex">
+<dt id="pandare.main.Panda.delvm"><code class="name flex">
 <span>def <span class="ident">delvm</span></span>(<span>self, snapshot_name)</span>
 </code></dt>
 <dd>
@@ -5028,7 +5031,7 @@ Return:
     self.queue_main_loop_wait_fn(self.libpanda.panda_delvm, [charptr])</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.delvm_sync"><code class="name flex">
+<dt id="pandare.main.Panda.delvm_sync"><code class="name flex">
 <span>def <span class="ident">delvm_sync</span></span>(<span>self, snapshot_name)</span>
 </code></dt>
 <dd>
@@ -5042,7 +5045,7 @@ def delvm_sync(self, snapshot_name):
     self.run_monitor_cmd(&#34;delvm {}&#34;.format(snapshot_name))</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.disable_callback"><code class="name flex">
+<dt id="pandare.main.Panda.disable_callback"><code class="name flex">
 <span>def <span class="ident">disable_callback</span></span>(<span>self, name, forever=False)</span>
 </code></dt>
 <dd>
@@ -5072,7 +5075,7 @@ you want to really turn off something with a procname filter.</p></div>
         del self.registered_callbacks[name]</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.disable_hook"><code class="name flex">
+<dt id="pandare.main.Panda.disable_hook"><code class="name flex">
 <span>def <span class="ident">disable_hook</span></span>(<span>self, hook_name)</span>
 </code></dt>
 <dd>
@@ -5091,7 +5094,7 @@ you want to really turn off something with a procname filter.</p></div>
         print(&#34;ERROR: Your hook name was not in the hook list&#34;)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.disable_llvm"><code class="name flex">
+<dt id="pandare.main.Panda.disable_llvm"><code class="name flex">
 <span>def <span class="ident">disable_llvm</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5107,7 +5110,7 @@ you want to really turn off something with a procname filter.</p></div>
     self.libpanda.panda_disable_llvm()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.disable_llvm_helpers"><code class="name flex">
+<dt id="pandare.main.Panda.disable_llvm_helpers"><code class="name flex">
 <span>def <span class="ident">disable_llvm_helpers</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5123,7 +5126,7 @@ you want to really turn off something with a procname filter.</p></div>
     self.libpanda.panda_disable_llvm_helpers()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.disable_memcb"><code class="name flex">
+<dt id="pandare.main.Panda.disable_memcb"><code class="name flex">
 <span>def <span class="ident">disable_memcb</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5142,7 +5145,7 @@ pypanda enables this automatically with some callbacks.</p></div>
     self.libpanda.panda_disable_memcb()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.disable_plugin"><code class="name flex">
+<dt id="pandare.main.Panda.disable_plugin"><code class="name flex">
 <span>def <span class="ident">disable_plugin</span></span>(<span>self, handle)</span>
 </code></dt>
 <dd>
@@ -5170,7 +5173,7 @@ Return:
     self.libpanda.panda_disable_plugin(handle)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.disable_ppp"><code class="name flex">
+<dt id="pandare.main.Panda.disable_ppp"><code class="name flex">
 <span>def <span class="ident">disable_ppp</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
@@ -5223,7 +5226,7 @@ def my_fun(cpu, pc, filename, flags, mode):
     del self.ppp_registered_cbs[name] # It&#39;s now safe to be garbage collected</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.disable_precise_pc"><code class="name flex">
+<dt id="pandare.main.Panda.disable_precise_pc"><code class="name flex">
 <span>def <span class="ident">disable_precise_pc</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5241,7 +5244,7 @@ This function disables precise tracking of the program counter.</p></div>
     self.libpanda.panda_disable_precise_pc()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.disable_tb_chaining"><code class="name flex">
+<dt id="pandare.main.Panda.disable_tb_chaining"><code class="name flex">
 <span>def <span class="ident">disable_tb_chaining</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5259,7 +5262,7 @@ This function disables precise tracking of the program counter.</p></div>
         self.libpanda.panda_disable_tb_chaining()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.disas2"><code class="name flex">
+<dt id="pandare.main.Panda.disas2"><code class="name flex">
 <span>def <span class="ident">disas2</span></span>(<span>self, code, size)</span>
 </code></dt>
 <dd>
@@ -5277,7 +5280,7 @@ FIXME: seem to not match up to PANDA definition</p></div>
     self.libpanda.panda_disas(code, size)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.do_panda_finish"><code class="name flex">
+<dt id="pandare.main.Panda.do_panda_finish"><code class="name flex">
 <span>def <span class="ident">do_panda_finish</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5301,7 +5304,7 @@ so it must also be labeled as blocking.</p></div>
         self.panda_finish()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.drive_get"><code class="name flex">
+<dt id="pandare.main.Panda.drive_get"><code class="name flex">
 <span>def <span class="ident">drive_get</span></span>(<span>self, blocktype, bus, unit)</span>
 </code></dt>
 <dd>
@@ -5333,7 +5336,7 @@ Return:
     return self.libpanda.drive_get(blocktype,bus,unit)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.enable_all_callbacks"><code class="name flex">
+<dt id="pandare.main.Panda.enable_all_callbacks"><code class="name flex">
 <span>def <span class="ident">enable_all_callbacks</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5350,7 +5353,7 @@ Return:
         self.enable_callback(name)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.enable_callback"><code class="name flex">
+<dt id="pandare.main.Panda.enable_callback"><code class="name flex">
 <span>def <span class="ident">enable_callback</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
@@ -5374,7 +5377,7 @@ Return:
     self.libpanda.panda_enable_callback_helper(handle, cb.number, pcb)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.enable_hook"><code class="name flex">
+<dt id="pandare.main.Panda.enable_hook"><code class="name flex">
 <span>def <span class="ident">enable_hook</span></span>(<span>self, hook_name)</span>
 </code></dt>
 <dd>
@@ -5393,7 +5396,7 @@ Return:
         print(&#34;ERROR: Your hook name was not in the hook list&#34;)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.enable_internal_callbacks"><code class="name flex">
+<dt id="pandare.main.Panda.enable_internal_callbacks"><code class="name flex">
 <span>def <span class="ident">enable_internal_callbacks</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5415,7 +5418,7 @@ and then (re)called run</p></div>
             self.enable_callback(name)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.enable_llvm"><code class="name flex">
+<dt id="pandare.main.Panda.enable_llvm"><code class="name flex">
 <span>def <span class="ident">enable_llvm</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5431,7 +5434,7 @@ and then (re)called run</p></div>
     self.libpanda.panda_enable_llvm()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.enable_llvm_helpers"><code class="name flex">
+<dt id="pandare.main.Panda.enable_llvm_helpers"><code class="name flex">
 <span>def <span class="ident">enable_llvm_helpers</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5447,7 +5450,7 @@ and then (re)called run</p></div>
     self.libpanda.panda_enable_llvm_helpers()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.enable_memcb"><code class="name flex">
+<dt id="pandare.main.Panda.enable_memcb"><code class="name flex">
 <span>def <span class="ident">enable_memcb</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5466,7 +5469,7 @@ pypanda enables this automatically with some callbacks.</p></div>
     self.libpanda.panda_enable_memcb()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.enable_plugin"><code class="name flex">
+<dt id="pandare.main.Panda.enable_plugin"><code class="name flex">
 <span>def <span class="ident">enable_plugin</span></span>(<span>self, handle)</span>
 </code></dt>
 <dd>
@@ -5494,7 +5497,7 @@ Return:
     self.libpanda.panda_enable_plugin(handle)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.enable_precise_pc"><code class="name flex">
+<dt id="pandare.main.Panda.enable_precise_pc"><code class="name flex">
 <span>def <span class="ident">enable_precise_pc</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5512,7 +5515,7 @@ This function enables precise tracking of the program counter. After enabling pr
     self.libpanda.panda_enable_precise_pc()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.enable_tb_chaining"><code class="name flex">
+<dt id="pandare.main.Panda.enable_tb_chaining"><code class="name flex">
 <span>def <span class="ident">enable_tb_chaining</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5529,7 +5532,7 @@ This function enables precise tracking of the program counter. After enabling pr
     self.libpanda.panda_enable_tb_chaining()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.end_analysis"><code class="name flex">
+<dt id="pandare.main.Panda.end_analysis"><code class="name flex">
 <span>def <span class="ident">end_analysis</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5559,7 +5562,7 @@ without needing to wait for tasks in the main async thread</p></div>
         self.queue_async(self.check_crashed, internal=True)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.error_report"><code class="name flex">
+<dt id="pandare.main.Panda.error_report"><code class="name flex">
 <span>def <span class="ident">error_report</span></span>(<span>self, s)</span>
 </code></dt>
 <dd>
@@ -5572,7 +5575,7 @@ without needing to wait for tasks in the main async thread</p></div>
     return self.libpanda.error_report(s)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.exit_cpu_loop"><code class="name flex">
+<dt id="pandare.main.Panda.exit_cpu_loop"><code class="name flex">
 <span>def <span class="ident">exit_cpu_loop</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5588,7 +5591,7 @@ without needing to wait for tasks in the main async thread</p></div>
     self.libpanda.panda_exit_loop = True</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.finish_serial_cmd"><code class="name flex">
+<dt id="pandare.main.Panda.finish_serial_cmd"><code class="name flex">
 <span>def <span class="ident">finish_serial_cmd</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5603,7 +5606,7 @@ without needing to wait for tasks in the main async thread</p></div>
     return result</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.finish_timer"><code class="name flex">
+<dt id="pandare.main.Panda.finish_timer"><code class="name flex">
 <span>def <span class="ident">finish_timer</span></span>(<span>self, start, msg)</span>
 </code></dt>
 <dd>
@@ -5618,7 +5621,7 @@ without needing to wait for tasks in the main async thread</p></div>
     print(&#34;{} in {1:.08f} seconds&#34;.format(msg, t))</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.flush_tb"><code class="name flex">
+<dt id="pandare.main.Panda.flush_tb"><code class="name flex">
 <span>def <span class="ident">flush_tb</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5636,7 +5639,7 @@ Flushing the translation block cache is additionally necessary if the plugin mak
     return self.libpanda.panda_flush_tb()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.from_unsigned_guest"><code class="name flex">
+<dt id="pandare.main.Panda.from_unsigned_guest"><code class="name flex">
 <span>def <span class="ident">from_unsigned_guest</span></span>(<span>self, x)</span>
 </code></dt>
 <dd>
@@ -5657,7 +5660,7 @@ Flushing the translation block cache is additionally necessary if the plugin mak
         return x</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.g_malloc0"><code class="name flex">
+<dt id="pandare.main.Panda.g_malloc0"><code class="name flex">
 <span>def <span class="ident">g_malloc0</span></span>(<span>self, size)</span>
 </code></dt>
 <dd>
@@ -5685,7 +5688,7 @@ Returns:
     return self.libpanda.g_malloc0(size)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.garray_len"><code class="name flex">
+<dt id="pandare.main.Panda.garray_len"><code class="name flex">
 <span>def <span class="ident">garray_len</span></span>(<span>self, garray)</span>
 </code></dt>
 <dd>
@@ -5701,7 +5704,7 @@ Returns:
     return self.libpanda.garray_len(garray)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.get_cpu"><code class="name flex">
+<dt id="pandare.main.Panda.get_cpu"><code class="name flex">
 <span>def <span class="ident">get_cpu</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5719,7 +5722,7 @@ XXX: You rarely want this</p></div>
     return self.libpanda.get_cpu()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.get_mappings"><code class="name flex">
+<dt id="pandare.main.Panda.get_mappings"><code class="name flex">
 <span>def <span class="ident">get_mappings</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
@@ -5754,7 +5757,7 @@ Returns:
     return GArrayIterator(self.plugins[&#39;osi&#39;].get_one_module, maps, map_len, self.plugins[&#39;osi&#39;].cleanup_garray)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.get_process_name"><code class="name flex">
+<dt id="pandare.main.Panda.get_process_name"><code class="name flex">
 <span>def <span class="ident">get_process_name</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
@@ -5775,7 +5778,7 @@ Returns:
     return ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.get_processes"><code class="name flex">
+<dt id="pandare.main.Panda.get_processes"><code class="name flex">
 <span>def <span class="ident">get_processes</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
@@ -5809,7 +5812,7 @@ Returns:
     return GArrayIterator(self.plugins[&#39;osi&#39;].get_one_proc, processes, processes_len, self.plugins[&#39;osi&#39;].cleanup_garray)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.get_processes_dict"><code class="name flex">
+<dt id="pandare.main.Panda.get_processes_dict"><code class="name flex">
 <span>def <span class="ident">get_processes_dict</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
@@ -5854,7 +5857,7 @@ Returns:
     return procs</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.get_system_memory"><code class="name flex">
+<dt id="pandare.main.Panda.get_system_memory"><code class="name flex">
 <span>def <span class="ident">get_system_memory</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -5867,7 +5870,7 @@ Returns:
     return self.libpanda.get_system_memory()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.get_volatility_symbols"><code class="name flex">
+<dt id="pandare.main.Panda.get_volatility_symbols"><code class="name flex">
 <span>def <span class="ident">get_volatility_symbols</span></span>(<span>self, debug=False)</span>
 </code></dt>
 <dd>
@@ -5901,7 +5904,7 @@ Returns:
         return None</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.ghidra_decompilation"><code class="name flex">
+<dt id="pandare.main.Panda.ghidra_decompilation"><code class="name flex">
 <span>def <span class="ident">ghidra_decompilation</span></span>(<span>cpu, pc, bridge)</span>
 </code></dt>
 <dd>
@@ -5931,7 +5934,7 @@ Returns:
     return code</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.hook"><code class="name flex">
+<dt id="pandare.main.Panda.hook"><code class="name flex">
 <span>def <span class="ident">hook</span></span>(<span>self, name, kernel=True, procname=&lt;cdata &#x27;void *&#x27; NULL&gt;, libname=&lt;cdata &#x27;void *&#x27; NULL&gt;, trace_start=0, trace_stop=0, range_begin=0, range_end=0)</span>
 </code></dt>
 <dd>
@@ -5975,7 +5978,7 @@ Returns:
     return decorator</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.hook_single_insn"><code class="name flex">
+<dt id="pandare.main.Panda.hook_single_insn"><code class="name flex">
 <span>def <span class="ident">hook_single_insn</span></span>(<span>self, name, pc, kernel=False, procname=&lt;cdata &#x27;void *&#x27; NULL&gt;, libname=&lt;cdata &#x27;void *&#x27; NULL&gt;)</span>
 </code></dt>
 <dd>
@@ -5988,7 +5991,7 @@ Returns:
     return self.hook(name, kernel=kernel, procname=procname,libname=libname,range_begin=pc, range_end=pc)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.in_kernel"><code class="name flex">
+<dt id="pandare.main.Panda.in_kernel"><code class="name flex">
 <span>def <span class="ident">in_kernel</span></span>(<span>self, cpustate)</span>
 </code></dt>
 <dd>
@@ -6004,7 +6007,7 @@ Returns:
     return self.libpanda.panda_in_kernel_external(cpustate)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.interact"><code class="name flex">
+<dt id="pandare.main.Panda.interact"><code class="name flex">
 <span>def <span class="ident">interact</span></span>(<span>self, confirm_quit=True)</span>
 </code></dt>
 <dd>
@@ -6047,7 +6050,7 @@ def interact(self, confirm_quit=True):
         print(r)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.is_callback_enabled"><code class="name flex">
+<dt id="pandare.main.Panda.is_callback_enabled"><code class="name flex">
 <span>def <span class="ident">is_callback_enabled</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
@@ -6062,7 +6065,7 @@ def interact(self, confirm_quit=True):
     return self.registered_callbacks[name][&#39;enabled&#39;]</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.load_plugin"><code class="name flex">
+<dt id="pandare.main.Panda.load_plugin"><code class="name flex">
 <span>def <span class="ident">load_plugin</span></span>(<span>self, name, args={})</span>
 </code></dt>
 <dd>
@@ -6124,7 +6127,7 @@ Returns:
     self._load_plugin_library(name)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.lookup_gic"><code class="name flex">
+<dt id="pandare.main.Panda.lookup_gic"><code class="name flex">
 <span>def <span class="ident">lookup_gic</span></span>(<span>self, n)</span>
 </code></dt>
 <dd>
@@ -6137,7 +6140,7 @@ Returns:
     return self.libpanda.lookup_gic(n)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.make_panda_file_handler"><code class="name flex">
+<dt id="pandare.main.Panda.make_panda_file_handler"><code class="name flex">
 <span>def <span class="ident">make_panda_file_handler</span></span>(<span>self, debug=False)</span>
 </code></dt>
 <dd>
@@ -6220,7 +6223,7 @@ Returns:
     globals()[&#34;PandaFileHandler&#34;] = PandaFileHandler</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.map_memory"><code class="name flex">
+<dt id="pandare.main.Panda.map_memory"><code class="name flex">
 <span>def <span class="ident">map_memory</span></span>(<span>self, name, size, address)</span>
 </code></dt>
 <dd>
@@ -6250,7 +6253,7 @@ Returns:
     return self.libpanda.map_memory(name_c, size, address)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.memory_region_add_subregion"><code class="name flex">
+<dt id="pandare.main.Panda.memory_region_add_subregion"><code class="name flex">
 <span>def <span class="ident">memory_region_add_subregion</span></span>(<span>self, mr, offset, sr)</span>
 </code></dt>
 <dd>
@@ -6297,7 +6300,7 @@ Returns:
     return self.libpanda.memory_region_add_subregion(mr,offset,sr)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.memory_region_allocate_system_memory"><code class="name flex">
+<dt id="pandare.main.Panda.memory_region_allocate_system_memory"><code class="name flex">
 <span>def <span class="ident">memory_region_allocate_system_memory</span></span>(<span>self, mr, obj, name, ram_size)</span>
 </code></dt>
 <dd>
@@ -6333,7 +6336,7 @@ Returns:
     return self.libpanda.memory_region_allocate_system_memory(mr, obj, name, ram_size)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.memory_region_init_ram_from_file"><code class="name flex">
+<dt id="pandare.main.Panda.memory_region_init_ram_from_file"><code class="name flex">
 <span>def <span class="ident">memory_region_init_ram_from_file</span></span>(<span>self, mr, owner, name, size, share, path)</span>
 </code></dt>
 <dd>
@@ -6376,7 +6379,7 @@ Returns:
     return self.libpanda.memory_region_init_ram_from_file(mr, owner, name, size, share, path, self.libpanda.error_fatal)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.memsavep"><code class="name flex">
+<dt id="pandare.main.Panda.memsavep"><code class="name flex">
 <span>def <span class="ident">memsavep</span></span>(<span>self, file_out)</span>
 </code></dt>
 <dd>
@@ -6394,7 +6397,7 @@ Returns:
     self.libpanda.fclose(newfd)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.object_class_by_name"><code class="name flex">
+<dt id="pandare.main.Panda.object_class_by_name"><code class="name flex">
 <span>def <span class="ident">object_class_by_name</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
@@ -6424,7 +6427,7 @@ Returns:
     return self.libpanda.object_class_by_name(name)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.object_class_get_name"><code class="name flex">
+<dt id="pandare.main.Panda.object_class_get_name"><code class="name flex">
 <span>def <span class="ident">object_class_get_name</span></span>(<span>self, objclass)</span>
 </code></dt>
 <dd>
@@ -6454,7 +6457,7 @@ Returns:
     return self.libpanda.object_class_get_name(objclass)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.object_new"><code class="name flex">
+<dt id="pandare.main.Panda.object_new"><code class="name flex">
 <span>def <span class="ident">object_new</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
@@ -6490,7 +6493,7 @@ Returns:
     return self.libpanda.object_new(name)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.object_property_find"><code class="name flex">
+<dt id="pandare.main.Panda.object_property_find"><code class="name flex">
 <span>def <span class="ident">object_property_find</span></span>(<span>self, obj, name)</span>
 </code></dt>
 <dd>
@@ -6524,7 +6527,7 @@ Returns:
     return self.libpanda.object_property_find(obj,name,ffi.NULL)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.object_property_get_bool"><code class="name flex">
+<dt id="pandare.main.Panda.object_property_get_bool"><code class="name flex">
 <span>def <span class="ident">object_property_get_bool</span></span>(<span>self, obj, name)</span>
 </code></dt>
 <dd>
@@ -6556,7 +6559,7 @@ Returns:
     return self.libpanda.object_property_get_bool(obj,name,self.libpanda.error_abort)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.object_property_get_int"><code class="name flex">
+<dt id="pandare.main.Panda.object_property_get_int"><code class="name flex">
 <span>def <span class="ident">object_property_get_int</span></span>(<span>self, obj, name)</span>
 </code></dt>
 <dd>
@@ -6588,7 +6591,7 @@ Returns:
     return self.libpanda.object_property_get_int(obj, name, self.libpanda.error_abort)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.object_property_get_link"><code class="name flex">
+<dt id="pandare.main.Panda.object_property_get_link"><code class="name flex">
 <span>def <span class="ident">object_property_get_link</span></span>(<span>self, obj, name)</span>
 </code></dt>
 <dd>
@@ -6622,7 +6625,7 @@ Returns:
     return self.libpanda.object_property_get_link(obj,name,self.libpanda.error_abort)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.object_property_set_bool"><code class="name flex">
+<dt id="pandare.main.Panda.object_property_set_bool"><code class="name flex">
 <span>def <span class="ident">object_property_set_bool</span></span>(<span>self, obj, value, name)</span>
 </code></dt>
 <dd>
@@ -6656,7 +6659,7 @@ Returns:
     return self.libpanda.object_property_set_bool(obj,value,name,self.libpanda.error_abort)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.object_property_set_int"><code class="name flex">
+<dt id="pandare.main.Panda.object_property_set_int"><code class="name flex">
 <span>def <span class="ident">object_property_set_int</span></span>(<span>self, obj, value, name)</span>
 </code></dt>
 <dd>
@@ -6688,7 +6691,7 @@ Returns:
     return self.libpanda.object_property_set_int(obj, value, name, self.libpanda.error_abort)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.object_property_set_link"><code class="name flex">
+<dt id="pandare.main.Panda.object_property_set_link"><code class="name flex">
 <span>def <span class="ident">object_property_set_link</span></span>(<span>self, obj, val, name)</span>
 </code></dt>
 <dd>
@@ -6722,7 +6725,7 @@ Returns:
     return self.libpanda.object_property_set_link(obj,val,name,self.libpanda.error_abort)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.panda_finish"><code class="name flex">
+<dt id="pandare.main.Panda.panda_finish"><code class="name flex">
 <span>def <span class="ident">panda_finish</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -6738,7 +6741,7 @@ Returns:
     return self.libpanda.panda_finish()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.physical_memory_read"><code class="name flex">
+<dt id="pandare.main.Panda.physical_memory_read"><code class="name flex">
 <span>def <span class="ident">physical_memory_read</span></span>(<span>self, addr, length, fmt='bytearray')</span>
 </code></dt>
 <dd>
@@ -6780,7 +6783,7 @@ Raises:
     return self._memory_read(None, addr, length, physical=True, fmt=fmt)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.physical_memory_write"><code class="name flex">
+<dt id="pandare.main.Panda.physical_memory_write"><code class="name flex">
 <span>def <span class="ident">physical_memory_write</span></span>(<span>self, addr, buf)</span>
 </code></dt>
 <dd>
@@ -6804,7 +6807,7 @@ Raises:
     return self._memory_write(None, addr, buf, physical=True)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.populate_ghidra"><code class="name flex">
+<dt id="pandare.main.Panda.populate_ghidra"><code class="name flex">
 <span>def <span class="ident">populate_ghidra</span></span>(<span>self, cpu, pc, bridge, namespace, analyze=True)</span>
 </code></dt>
 <dd>
@@ -6850,7 +6853,7 @@ Raises:
     currentProgram.endTransaction(tid,True)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.ppp"><code class="name flex">
+<dt id="pandare.main.Panda.ppp"><code class="name flex">
 <span>def <span class="ident">ppp</span></span>(<span>self, plugin_name, attr, name=None)</span>
 </code></dt>
 <dd>
@@ -6906,7 +6909,7 @@ def my_fun(cpu, pc, filename, flags, mode):
     return decorator</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.pyperiph_read_cb"><code class="name flex">
+<dt id="pandare.main.Panda.pyperiph_read_cb"><code class="name flex">
 <span>def <span class="ident">pyperiph_read_cb</span></span>(<span>self, cpu, pc, physaddr, size, val_ptr)</span>
 </code></dt>
 <dd>
@@ -6930,7 +6933,7 @@ def my_fun(cpu, pc, filename, flags, mode):
     return True</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.pyperiph_write_cb"><code class="name flex">
+<dt id="pandare.main.Panda.pyperiph_write_cb"><code class="name flex">
 <span>def <span class="ident">pyperiph_write_cb</span></span>(<span>self, cpu, pc, physaddr, size, val)</span>
 </code></dt>
 <dd>
@@ -6948,7 +6951,7 @@ def my_fun(cpu, pc, filename, flags, mode):
     return True</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.queue_async"><code class="name flex">
+<dt id="pandare.main.Panda.queue_async"><code class="name flex">
 <span>def <span class="ident">queue_async</span></span>(<span>self, f, internal=False)</span>
 </code></dt>
 <dd>
@@ -6976,7 +6979,7 @@ Returns:
     self.athread.queue(f, internal=internal)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.queue_main_loop_wait_fn"><code class="name flex">
+<dt id="pandare.main.Panda.queue_main_loop_wait_fn"><code class="name flex">
 <span>def <span class="ident">queue_main_loop_wait_fn</span></span>(<span>self, fn, args=[])</span>
 </code></dt>
 <dd>
@@ -6994,7 +6997,7 @@ fn is a function we want to run, args are arguments to apss to it</p></div>
     self.main_loop_wait_fnargs.append((fn, args))</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.read_str"><code class="name flex">
+<dt id="pandare.main.Panda.read_str"><code class="name flex">
 <span>def <span class="ident">read_str</span></span>(<span>self, cpu, ptr)</span>
 </code></dt>
 <dd>
@@ -7021,7 +7024,7 @@ pointer to an unmapped page)</p></div>
     return r.decode(&#34;utf8&#34;, &#34;ignore&#34;)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.record_cmd"><code class="name flex">
+<dt id="pandare.main.Panda.record_cmd"><code class="name flex">
 <span>def <span class="ident">record_cmd</span></span>(<span>self, guest_command, copy_directory=None, iso_name=None, setup_command=None, recording_name='recording', snap_name='root', ignore_errors=False)</span>
 </code></dt>
 <dd>
@@ -7091,7 +7094,7 @@ def record_cmd(self, guest_command, copy_directory=None, iso_name=None, setup_co
     print(&#34;Finished recording&#34;)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.register_callback"><code class="name flex">
+<dt id="pandare.main.Panda.register_callback"><code class="name flex">
 <span>def <span class="ident">register_callback</span></span>(<span>self, callback, function, name, enabled=True, procname=None)</span>
 </code></dt>
 <dd>
@@ -7133,7 +7136,7 @@ def record_cmd(self, guest_command, copy_directory=None, iso_name=None, setup_co
             self.disable_tb_chaining()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.register_cb_decorators"><code class="name flex">
+<dt id="pandare.main.Panda.register_cb_decorators"><code class="name flex">
 <span>def <span class="ident">register_cb_decorators</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -7167,7 +7170,7 @@ Or they can be called as @panda.cb_XYZ(name='A', procname='B', enabled=True). De
         setattr(self, &#39;cb_&#39;+cb_name, closure(cb_name, pandatype))</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.register_pyperipheral"><code class="name flex">
+<dt id="pandare.main.Panda.register_pyperipheral"><code class="name flex">
 <span>def <span class="ident">register_pyperipheral</span></span>(<span>self, object)</span>
 </code></dt>
 <dd>
@@ -7210,7 +7213,7 @@ panda-object, if not present yet.</p></div>
     self.pyperipherals.append(object)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.require"><code class="name flex">
+<dt id="pandare.main.Panda.require"><code class="name flex">
 <span>def <span class="ident">require</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
@@ -7226,7 +7229,7 @@ panda-object, if not present yet.</p></div>
     self.load_plugin(name, args={})</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.reset"><code class="name flex">
+<dt id="pandare.main.Panda.reset"><code class="name flex">
 <span>def <span class="ident">reset</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -7246,7 +7249,7 @@ panda-object, if not present yet.</p></div>
     self.queue_main_loop_wait_fn(self.libpanda.panda_cont)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.revert_async"><code class="name flex">
+<dt id="pandare.main.Panda.revert_async"><code class="name flex">
 <span>def <span class="ident">revert_async</span></span>(<span>self, snapshot_name)</span>
 </code></dt>
 <dd>
@@ -7277,7 +7280,7 @@ from a blocking function instead</p></div>
         self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Loaded snapshot&#34;])</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.revert_sync"><code class="name flex">
+<dt id="pandare.main.Panda.revert_sync"><code class="name flex">
 <span>def <span class="ident">revert_sync</span></span>(<span>self, snapshot_name)</span>
 </code></dt>
 <dd>
@@ -7294,7 +7297,7 @@ def revert_sync(self, snapshot_name):
     return result</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.rr_get_guest_instr_count"><code class="name flex">
+<dt id="pandare.main.Panda.rr_get_guest_instr_count"><code class="name flex">
 <span>def <span class="ident">rr_get_guest_instr_count</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -7310,7 +7313,7 @@ def revert_sync(self, snapshot_name):
     return self.libpanda.rr_get_guest_instr_count_external()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.run"><code class="name flex">
+<dt id="pandare.main.Panda.run"><code class="name flex">
 <span>def <span class="ident">run</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -7352,7 +7355,7 @@ It also initializes panda object, clears main_loop_wait fns, and sets up interna
     self.libpanda.panda_unload_plugins() # Unload c plugins - should be safe now since exec has stopped</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.run_monitor_cmd"><code class="name flex">
+<dt id="pandare.main.Panda.run_monitor_cmd"><code class="name flex">
 <span>def <span class="ident">run_monitor_cmd</span></span>(<span>self, cmd)</span>
 </code></dt>
 <dd>
@@ -7368,7 +7371,7 @@ def run_monitor_cmd(self, cmd):
     return result</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.run_replay"><code class="name flex">
+<dt id="pandare.main.Panda.run_replay"><code class="name flex">
 <span>def <span class="ident">run_replay</span></span>(<span>self, replaypfx)</span>
 </code></dt>
 <dd>
@@ -7404,7 +7407,7 @@ Returns:
     self.run()</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.run_serial_cmd"><code class="name flex">
+<dt id="pandare.main.Panda.run_serial_cmd"><code class="name flex">
 <span>def <span class="ident">run_serial_cmd</span></span>(<span>self, cmd, no_timeout=False, timeout=30)</span>
 </code></dt>
 <dd>
@@ -7424,7 +7427,7 @@ def run_serial_cmd(self, cmd, no_timeout=False, timeout=30):
     return result</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.run_serial_cmd_async"><code class="name flex">
+<dt id="pandare.main.Panda.run_serial_cmd_async"><code class="name flex">
 <span>def <span class="ident">run_serial_cmd_async</span></span>(<span>self, cmd, delay=1)</span>
 </code></dt>
 <dd>
@@ -7446,7 +7449,7 @@ def run_serial_cmd_async(self, cmd, delay=1):
         sleep(delay) # Ensure it has a chance to run</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.run_volatility"><code class="name flex">
+<dt id="pandare.main.Panda.run_volatility"><code class="name flex">
 <span>def <span class="ident">run_volatility</span></span>(<span>self, plugin, debug=False)</span>
 </code></dt>
 <dd>
@@ -7467,7 +7470,7 @@ def run_serial_cmd_async(self, cmd, delay=1):
     return output</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.set_breakpoint"><code class="name flex">
+<dt id="pandare.main.Panda.set_breakpoint"><code class="name flex">
 <span>def <span class="ident">set_breakpoint</span></span>(<span>self, cpu, pc)</span>
 </code></dt>
 <dd>
@@ -7486,7 +7489,7 @@ GDB instance can introspect on guest memory. Requires starting panda with -s, at
     self.libpanda.cpu_breakpoint_insert(cpu, pc, BP_GDB, ffi.NULL)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.set_os_name"><code class="name flex">
+<dt id="pandare.main.Panda.set_os_name"><code class="name flex">
 <span>def <span class="ident">set_os_name</span></span>(<span>self, os_name)</span>
 </code></dt>
 <dd>
@@ -7527,7 +7530,7 @@ Returns:
     self.libpanda.panda_set_os_name(os_name_new)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.set_pandalog"><code class="name flex">
+<dt id="pandare.main.Panda.set_pandalog"><code class="name flex">
 <span>def <span class="ident">set_pandalog</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
@@ -7556,7 +7559,7 @@ Returns:
     self.libpanda.panda_start_pandalog(charptr)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.snap"><code class="name flex">
+<dt id="pandare.main.Panda.snap"><code class="name flex">
 <span>def <span class="ident">snap</span></span>(<span>self, snapshot_name)</span>
 </code></dt>
 <dd>
@@ -7580,7 +7583,7 @@ Returns:
         self.queue_main_loop_wait_fn(self.finish_timer, [timer_start, &#34;Saved snapshot&#34;])</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.stop_run"><code class="name flex">
+<dt id="pandare.main.Panda.stop_run"><code class="name flex">
 <span>def <span class="ident">stop_run</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -7604,7 +7607,7 @@ def stop_run(self):
     self.libpanda.panda_break_vl_loop_req = True</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.sysbus_create_varargs"><code class="name flex">
+<dt id="pandare.main.Panda.sysbus_create_varargs"><code class="name flex">
 <span>def <span class="ident">sysbus_create_varargs</span></span>(<span>self, name, addr)</span>
 </code></dt>
 <dd>
@@ -7636,7 +7639,7 @@ Return:
     return self.libpanda.sysbus_create_varargs(name,addr,ffi.NULL)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.taint_check_laddr"><code class="name flex">
+<dt id="pandare.main.Panda.taint_check_laddr"><code class="name flex">
 <span>def <span class="ident">taint_check_laddr</span></span>(<span>self, addr, off)</span>
 </code></dt>
 <dd>
@@ -7651,7 +7654,7 @@ Return:
         return True</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.taint_check_ram"><code class="name flex">
+<dt id="pandare.main.Panda.taint_check_ram"><code class="name flex">
 <span>def <span class="ident">taint_check_ram</span></span>(<span>self, addr)</span>
 </code></dt>
 <dd>
@@ -7666,7 +7669,7 @@ Return:
         return True</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.taint_check_reg"><code class="name flex">
+<dt id="pandare.main.Panda.taint_check_reg"><code class="name flex">
 <span>def <span class="ident">taint_check_reg</span></span>(<span>self, reg_num)</span>
 </code></dt>
 <dd>
@@ -7684,7 +7687,7 @@ Return:
                 return True</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.taint_enable"><code class="name flex">
+<dt id="pandare.main.Panda.taint_enable"><code class="name flex">
 <span>def <span class="ident">taint_enable</span></span>(<span>self, cont=True)</span>
 </code></dt>
 <dd>
@@ -7708,7 +7711,7 @@ Return:
             self.taint_enabled = True</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.taint_get_laddr"><code class="name flex">
+<dt id="pandare.main.Panda.taint_get_laddr"><code class="name flex">
 <span>def <span class="ident">taint_get_laddr</span></span>(<span>self, addr, offset)</span>
 </code></dt>
 <dd>
@@ -7728,7 +7731,7 @@ Return:
         return None</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.taint_get_ram"><code class="name flex">
+<dt id="pandare.main.Panda.taint_get_ram"><code class="name flex">
 <span>def <span class="ident">taint_get_ram</span></span>(<span>self, addr)</span>
 </code></dt>
 <dd>
@@ -7748,7 +7751,7 @@ Return:
         return None</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.taint_get_reg"><code class="name flex">
+<dt id="pandare.main.Panda.taint_get_reg"><code class="name flex">
 <span>def <span class="ident">taint_get_reg</span></span>(<span>self, reg_num)</span>
 </code></dt>
 <dd>
@@ -7779,7 +7782,7 @@ QueryResult struct otherwise</p></div>
     return res</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.taint_label_ram"><code class="name flex">
+<dt id="pandare.main.Panda.taint_label_ram"><code class="name flex">
 <span>def <span class="ident">taint_label_ram</span></span>(<span>self, addr, label)</span>
 </code></dt>
 <dd>
@@ -7800,7 +7803,7 @@ QueryResult struct otherwise</p></div>
     self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.taint_label_reg"><code class="name flex">
+<dt id="pandare.main.Panda.taint_label_reg"><code class="name flex">
 <span>def <span class="ident">taint_label_reg</span></span>(<span>self, reg_num, label)</span>
 </code></dt>
 <dd>
@@ -7822,7 +7825,7 @@ QueryResult struct otherwise</p></div>
     self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.to_unsigned_guest"><code class="name flex">
+<dt id="pandare.main.Panda.to_unsigned_guest"><code class="name flex">
 <span>def <span class="ident">to_unsigned_guest</span></span>(<span>self, x)</span>
 </code></dt>
 <dd>
@@ -7846,7 +7849,7 @@ depending on guest bit-size</p></div>
         raise ValueError(&#34;Unsupported number of bits&#34;)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.type_serial_cmd"><code class="name flex">
+<dt id="pandare.main.Panda.type_serial_cmd"><code class="name flex">
 <span>def <span class="ident">type_serial_cmd</span></span>(<span>self, cmd)</span>
 </code></dt>
 <dd>
@@ -7861,7 +7864,7 @@ def type_serial_cmd(self, cmd):
     self.serial_console.send(cmd.encode(&#34;utf8&#34;)) # send, not sendline</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.unload_plugin"><code class="name flex">
+<dt id="pandare.main.Panda.unload_plugin"><code class="name flex">
 <span>def <span class="ident">unload_plugin</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
@@ -7892,7 +7895,7 @@ Returns:
     self.libpanda.panda_unload_plugin_by_name(name_ffi)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.unload_plugins"><code class="name flex">
+<dt id="pandare.main.Panda.unload_plugins"><code class="name flex">
 <span>def <span class="ident">unload_plugins</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -7925,7 +7928,7 @@ panda.panda_finish directly (which is done at the end of panda.run())</p></div>
     self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.unregister_pyperipheral"><code class="name flex">
+<dt id="pandare.main.Panda.unregister_pyperipheral"><code class="name flex">
 <span>def <span class="ident">unregister_pyperipheral</span></span>(<span>self, pyperiph)</span>
 </code></dt>
 <dd>
@@ -7962,7 +7965,7 @@ Returns true if the pyperipheral was successfully removed, else false.</p></div>
     return True</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.virt_to_phys"><code class="name flex">
+<dt id="pandare.main.Panda.virt_to_phys"><code class="name flex">
 <span>def <span class="ident">virt_to_phys</span></span>(<span>self, env, addr)</span>
 </code></dt>
 <dd>
@@ -7992,7 +7995,7 @@ Return:
     return self.libpanda.panda_virt_to_phys_external(env, addr)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.virtual_memory_read"><code class="name flex">
+<dt id="pandare.main.Panda.virtual_memory_read"><code class="name flex">
 <span>def <span class="ident">virtual_memory_read</span></span>(<span>self, env, addr, length, fmt='bytearray')</span>
 </code></dt>
 <dd>
@@ -8036,7 +8039,7 @@ Raises:
     return self._memory_read(env, addr, length, physical=False, fmt=fmt)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.virtual_memory_write"><code class="name flex">
+<dt id="pandare.main.Panda.virtual_memory_write"><code class="name flex">
 <span>def <span class="ident">virtual_memory_write</span></span>(<span>self, env, addr, buf)</span>
 </code></dt>
 <dd>
@@ -8069,7 +8072,7 @@ Returns:
     return self._memory_write(env, addr, buf, physical=False)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.vm_stop"><code class="name flex">
+<dt id="pandare.main.Panda.vm_stop"><code class="name flex">
 <span>def <span class="ident">vm_stop</span></span>(<span>self, code=4)</span>
 </code></dt>
 <dd>
@@ -8083,7 +8086,7 @@ Returns:
     self.libpanda.panda_stop(code)</code></pre>
 </details>
 </dd>
-<dt id="panda.main.Panda.was_aborted"><code class="name flex">
+<dt id="pandare.main.Panda.was_aborted"><code class="name flex">
 <span>def <span class="ident">was_aborted</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -8112,144 +8115,144 @@ Returns:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="panda" href="index.html">panda</a></code></li>
+<li><code><a title="pandare" href="index.html">pandare</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="panda.main.Panda" href="#panda.main.Panda">Panda</a></code></h4>
+<h4><code><a title="pandare.main.Panda" href="#pandare.main.Panda">Panda</a></code></h4>
 <ul class="">
-<li><code><a title="panda.main.Panda.arm_load_kernel" href="#panda.main.Panda.arm_load_kernel">arm_load_kernel</a></code></li>
-<li><code><a title="panda.main.Panda.callstack_callers" href="#panda.main.Panda.callstack_callers">callstack_callers</a></code></li>
-<li><code><a title="panda.main.Panda.check_crashed" href="#panda.main.Panda.check_crashed">check_crashed</a></code></li>
-<li><code><a title="panda.main.Panda.cleanup" href="#panda.main.Panda.cleanup">cleanup</a></code></li>
-<li><code><a title="panda.main.Panda.clear_breakpoint" href="#panda.main.Panda.clear_breakpoint">clear_breakpoint</a></code></li>
-<li><code><a title="panda.main.Panda.cont" href="#panda.main.Panda.cont">cont</a></code></li>
-<li><code><a title="panda.main.Panda.copy_to_guest" href="#panda.main.Panda.copy_to_guest">copy_to_guest</a></code></li>
-<li><code><a title="panda.main.Panda.cpu_class_by_name" href="#panda.main.Panda.cpu_class_by_name">cpu_class_by_name</a></code></li>
-<li><code><a title="panda.main.Panda.create_external_gic" href="#panda.main.Panda.create_external_gic">create_external_gic</a></code></li>
-<li><code><a title="panda.main.Panda.create_internal_gic" href="#panda.main.Panda.create_internal_gic">create_internal_gic</a></code></li>
-<li><code><a title="panda.main.Panda.create_one_flash" href="#panda.main.Panda.create_one_flash">create_one_flash</a></code></li>
-<li><code><a title="panda.main.Panda.create_virtio_devices" href="#panda.main.Panda.create_virtio_devices">create_virtio_devices</a></code></li>
-<li><code><a title="panda.main.Panda.current_asid" href="#panda.main.Panda.current_asid">current_asid</a></code></li>
-<li><code><a title="panda.main.Panda.current_pc" href="#panda.main.Panda.current_pc">current_pc</a></code></li>
-<li><code><a title="panda.main.Panda.current_sp" href="#panda.main.Panda.current_sp">current_sp</a></code></li>
-<li><code><a title="panda.main.Panda.delete_all_ghidra_memory_segments" href="#panda.main.Panda.delete_all_ghidra_memory_segments">delete_all_ghidra_memory_segments</a></code></li>
-<li><code><a title="panda.main.Panda.delvm" href="#panda.main.Panda.delvm">delvm</a></code></li>
-<li><code><a title="panda.main.Panda.delvm_sync" href="#panda.main.Panda.delvm_sync">delvm_sync</a></code></li>
-<li><code><a title="panda.main.Panda.disable_callback" href="#panda.main.Panda.disable_callback">disable_callback</a></code></li>
-<li><code><a title="panda.main.Panda.disable_hook" href="#panda.main.Panda.disable_hook">disable_hook</a></code></li>
-<li><code><a title="panda.main.Panda.disable_llvm" href="#panda.main.Panda.disable_llvm">disable_llvm</a></code></li>
-<li><code><a title="panda.main.Panda.disable_llvm_helpers" href="#panda.main.Panda.disable_llvm_helpers">disable_llvm_helpers</a></code></li>
-<li><code><a title="panda.main.Panda.disable_memcb" href="#panda.main.Panda.disable_memcb">disable_memcb</a></code></li>
-<li><code><a title="panda.main.Panda.disable_plugin" href="#panda.main.Panda.disable_plugin">disable_plugin</a></code></li>
-<li><code><a title="panda.main.Panda.disable_ppp" href="#panda.main.Panda.disable_ppp">disable_ppp</a></code></li>
-<li><code><a title="panda.main.Panda.disable_precise_pc" href="#panda.main.Panda.disable_precise_pc">disable_precise_pc</a></code></li>
-<li><code><a title="panda.main.Panda.disable_tb_chaining" href="#panda.main.Panda.disable_tb_chaining">disable_tb_chaining</a></code></li>
-<li><code><a title="panda.main.Panda.disas2" href="#panda.main.Panda.disas2">disas2</a></code></li>
-<li><code><a title="panda.main.Panda.do_panda_finish" href="#panda.main.Panda.do_panda_finish">do_panda_finish</a></code></li>
-<li><code><a title="panda.main.Panda.drive_get" href="#panda.main.Panda.drive_get">drive_get</a></code></li>
-<li><code><a title="panda.main.Panda.enable_all_callbacks" href="#panda.main.Panda.enable_all_callbacks">enable_all_callbacks</a></code></li>
-<li><code><a title="panda.main.Panda.enable_callback" href="#panda.main.Panda.enable_callback">enable_callback</a></code></li>
-<li><code><a title="panda.main.Panda.enable_hook" href="#panda.main.Panda.enable_hook">enable_hook</a></code></li>
-<li><code><a title="panda.main.Panda.enable_internal_callbacks" href="#panda.main.Panda.enable_internal_callbacks">enable_internal_callbacks</a></code></li>
-<li><code><a title="panda.main.Panda.enable_llvm" href="#panda.main.Panda.enable_llvm">enable_llvm</a></code></li>
-<li><code><a title="panda.main.Panda.enable_llvm_helpers" href="#panda.main.Panda.enable_llvm_helpers">enable_llvm_helpers</a></code></li>
-<li><code><a title="panda.main.Panda.enable_memcb" href="#panda.main.Panda.enable_memcb">enable_memcb</a></code></li>
-<li><code><a title="panda.main.Panda.enable_plugin" href="#panda.main.Panda.enable_plugin">enable_plugin</a></code></li>
-<li><code><a title="panda.main.Panda.enable_precise_pc" href="#panda.main.Panda.enable_precise_pc">enable_precise_pc</a></code></li>
-<li><code><a title="panda.main.Panda.enable_tb_chaining" href="#panda.main.Panda.enable_tb_chaining">enable_tb_chaining</a></code></li>
-<li><code><a title="panda.main.Panda.end_analysis" href="#panda.main.Panda.end_analysis">end_analysis</a></code></li>
-<li><code><a title="panda.main.Panda.error_report" href="#panda.main.Panda.error_report">error_report</a></code></li>
-<li><code><a title="panda.main.Panda.exit_cpu_loop" href="#panda.main.Panda.exit_cpu_loop">exit_cpu_loop</a></code></li>
-<li><code><a title="panda.main.Panda.finish_serial_cmd" href="#panda.main.Panda.finish_serial_cmd">finish_serial_cmd</a></code></li>
-<li><code><a title="panda.main.Panda.finish_timer" href="#panda.main.Panda.finish_timer">finish_timer</a></code></li>
-<li><code><a title="panda.main.Panda.flush_tb" href="#panda.main.Panda.flush_tb">flush_tb</a></code></li>
-<li><code><a title="panda.main.Panda.from_unsigned_guest" href="#panda.main.Panda.from_unsigned_guest">from_unsigned_guest</a></code></li>
-<li><code><a title="panda.main.Panda.g_malloc0" href="#panda.main.Panda.g_malloc0">g_malloc0</a></code></li>
-<li><code><a title="panda.main.Panda.garray_len" href="#panda.main.Panda.garray_len">garray_len</a></code></li>
-<li><code><a title="panda.main.Panda.get_cpu" href="#panda.main.Panda.get_cpu">get_cpu</a></code></li>
-<li><code><a title="panda.main.Panda.get_mappings" href="#panda.main.Panda.get_mappings">get_mappings</a></code></li>
-<li><code><a title="panda.main.Panda.get_process_name" href="#panda.main.Panda.get_process_name">get_process_name</a></code></li>
-<li><code><a title="panda.main.Panda.get_processes" href="#panda.main.Panda.get_processes">get_processes</a></code></li>
-<li><code><a title="panda.main.Panda.get_processes_dict" href="#panda.main.Panda.get_processes_dict">get_processes_dict</a></code></li>
-<li><code><a title="panda.main.Panda.get_system_memory" href="#panda.main.Panda.get_system_memory">get_system_memory</a></code></li>
-<li><code><a title="panda.main.Panda.get_volatility_symbols" href="#panda.main.Panda.get_volatility_symbols">get_volatility_symbols</a></code></li>
-<li><code><a title="panda.main.Panda.ghidra_decompilation" href="#panda.main.Panda.ghidra_decompilation">ghidra_decompilation</a></code></li>
-<li><code><a title="panda.main.Panda.hook" href="#panda.main.Panda.hook">hook</a></code></li>
-<li><code><a title="panda.main.Panda.hook_single_insn" href="#panda.main.Panda.hook_single_insn">hook_single_insn</a></code></li>
-<li><code><a title="panda.main.Panda.in_kernel" href="#panda.main.Panda.in_kernel">in_kernel</a></code></li>
-<li><code><a title="panda.main.Panda.interact" href="#panda.main.Panda.interact">interact</a></code></li>
-<li><code><a title="panda.main.Panda.is_callback_enabled" href="#panda.main.Panda.is_callback_enabled">is_callback_enabled</a></code></li>
-<li><code><a title="panda.main.Panda.load_plugin" href="#panda.main.Panda.load_plugin">load_plugin</a></code></li>
-<li><code><a title="panda.main.Panda.lookup_gic" href="#panda.main.Panda.lookup_gic">lookup_gic</a></code></li>
-<li><code><a title="panda.main.Panda.make_panda_file_handler" href="#panda.main.Panda.make_panda_file_handler">make_panda_file_handler</a></code></li>
-<li><code><a title="panda.main.Panda.map_memory" href="#panda.main.Panda.map_memory">map_memory</a></code></li>
-<li><code><a title="panda.main.Panda.memory_region_add_subregion" href="#panda.main.Panda.memory_region_add_subregion">memory_region_add_subregion</a></code></li>
-<li><code><a title="panda.main.Panda.memory_region_allocate_system_memory" href="#panda.main.Panda.memory_region_allocate_system_memory">memory_region_allocate_system_memory</a></code></li>
-<li><code><a title="panda.main.Panda.memory_region_init_ram_from_file" href="#panda.main.Panda.memory_region_init_ram_from_file">memory_region_init_ram_from_file</a></code></li>
-<li><code><a title="panda.main.Panda.memsavep" href="#panda.main.Panda.memsavep">memsavep</a></code></li>
-<li><code><a title="panda.main.Panda.object_class_by_name" href="#panda.main.Panda.object_class_by_name">object_class_by_name</a></code></li>
-<li><code><a title="panda.main.Panda.object_class_get_name" href="#panda.main.Panda.object_class_get_name">object_class_get_name</a></code></li>
-<li><code><a title="panda.main.Panda.object_new" href="#panda.main.Panda.object_new">object_new</a></code></li>
-<li><code><a title="panda.main.Panda.object_property_find" href="#panda.main.Panda.object_property_find">object_property_find</a></code></li>
-<li><code><a title="panda.main.Panda.object_property_get_bool" href="#panda.main.Panda.object_property_get_bool">object_property_get_bool</a></code></li>
-<li><code><a title="panda.main.Panda.object_property_get_int" href="#panda.main.Panda.object_property_get_int">object_property_get_int</a></code></li>
-<li><code><a title="panda.main.Panda.object_property_get_link" href="#panda.main.Panda.object_property_get_link">object_property_get_link</a></code></li>
-<li><code><a title="panda.main.Panda.object_property_set_bool" href="#panda.main.Panda.object_property_set_bool">object_property_set_bool</a></code></li>
-<li><code><a title="panda.main.Panda.object_property_set_int" href="#panda.main.Panda.object_property_set_int">object_property_set_int</a></code></li>
-<li><code><a title="panda.main.Panda.object_property_set_link" href="#panda.main.Panda.object_property_set_link">object_property_set_link</a></code></li>
-<li><code><a title="panda.main.Panda.panda_finish" href="#panda.main.Panda.panda_finish">panda_finish</a></code></li>
-<li><code><a title="panda.main.Panda.physical_memory_read" href="#panda.main.Panda.physical_memory_read">physical_memory_read</a></code></li>
-<li><code><a title="panda.main.Panda.physical_memory_write" href="#panda.main.Panda.physical_memory_write">physical_memory_write</a></code></li>
-<li><code><a title="panda.main.Panda.populate_ghidra" href="#panda.main.Panda.populate_ghidra">populate_ghidra</a></code></li>
-<li><code><a title="panda.main.Panda.ppp" href="#panda.main.Panda.ppp">ppp</a></code></li>
-<li><code><a title="panda.main.Panda.pyperiph_read_cb" href="#panda.main.Panda.pyperiph_read_cb">pyperiph_read_cb</a></code></li>
-<li><code><a title="panda.main.Panda.pyperiph_write_cb" href="#panda.main.Panda.pyperiph_write_cb">pyperiph_write_cb</a></code></li>
-<li><code><a title="panda.main.Panda.queue_async" href="#panda.main.Panda.queue_async">queue_async</a></code></li>
-<li><code><a title="panda.main.Panda.queue_main_loop_wait_fn" href="#panda.main.Panda.queue_main_loop_wait_fn">queue_main_loop_wait_fn</a></code></li>
-<li><code><a title="panda.main.Panda.read_str" href="#panda.main.Panda.read_str">read_str</a></code></li>
-<li><code><a title="panda.main.Panda.record_cmd" href="#panda.main.Panda.record_cmd">record_cmd</a></code></li>
-<li><code><a title="panda.main.Panda.register_callback" href="#panda.main.Panda.register_callback">register_callback</a></code></li>
-<li><code><a title="panda.main.Panda.register_cb_decorators" href="#panda.main.Panda.register_cb_decorators">register_cb_decorators</a></code></li>
-<li><code><a title="panda.main.Panda.register_pyperipheral" href="#panda.main.Panda.register_pyperipheral">register_pyperipheral</a></code></li>
-<li><code><a title="panda.main.Panda.require" href="#panda.main.Panda.require">require</a></code></li>
-<li><code><a title="panda.main.Panda.reset" href="#panda.main.Panda.reset">reset</a></code></li>
-<li><code><a title="panda.main.Panda.revert_async" href="#panda.main.Panda.revert_async">revert_async</a></code></li>
-<li><code><a title="panda.main.Panda.revert_sync" href="#panda.main.Panda.revert_sync">revert_sync</a></code></li>
-<li><code><a title="panda.main.Panda.rr_get_guest_instr_count" href="#panda.main.Panda.rr_get_guest_instr_count">rr_get_guest_instr_count</a></code></li>
-<li><code><a title="panda.main.Panda.run" href="#panda.main.Panda.run">run</a></code></li>
-<li><code><a title="panda.main.Panda.run_monitor_cmd" href="#panda.main.Panda.run_monitor_cmd">run_monitor_cmd</a></code></li>
-<li><code><a title="panda.main.Panda.run_replay" href="#panda.main.Panda.run_replay">run_replay</a></code></li>
-<li><code><a title="panda.main.Panda.run_serial_cmd" href="#panda.main.Panda.run_serial_cmd">run_serial_cmd</a></code></li>
-<li><code><a title="panda.main.Panda.run_serial_cmd_async" href="#panda.main.Panda.run_serial_cmd_async">run_serial_cmd_async</a></code></li>
-<li><code><a title="panda.main.Panda.run_volatility" href="#panda.main.Panda.run_volatility">run_volatility</a></code></li>
-<li><code><a title="panda.main.Panda.set_breakpoint" href="#panda.main.Panda.set_breakpoint">set_breakpoint</a></code></li>
-<li><code><a title="panda.main.Panda.set_os_name" href="#panda.main.Panda.set_os_name">set_os_name</a></code></li>
-<li><code><a title="panda.main.Panda.set_pandalog" href="#panda.main.Panda.set_pandalog">set_pandalog</a></code></li>
-<li><code><a title="panda.main.Panda.snap" href="#panda.main.Panda.snap">snap</a></code></li>
-<li><code><a title="panda.main.Panda.stop_run" href="#panda.main.Panda.stop_run">stop_run</a></code></li>
-<li><code><a title="panda.main.Panda.sysbus_create_varargs" href="#panda.main.Panda.sysbus_create_varargs">sysbus_create_varargs</a></code></li>
-<li><code><a title="panda.main.Panda.taint_check_laddr" href="#panda.main.Panda.taint_check_laddr">taint_check_laddr</a></code></li>
-<li><code><a title="panda.main.Panda.taint_check_ram" href="#panda.main.Panda.taint_check_ram">taint_check_ram</a></code></li>
-<li><code><a title="panda.main.Panda.taint_check_reg" href="#panda.main.Panda.taint_check_reg">taint_check_reg</a></code></li>
-<li><code><a title="panda.main.Panda.taint_enable" href="#panda.main.Panda.taint_enable">taint_enable</a></code></li>
-<li><code><a title="panda.main.Panda.taint_get_laddr" href="#panda.main.Panda.taint_get_laddr">taint_get_laddr</a></code></li>
-<li><code><a title="panda.main.Panda.taint_get_ram" href="#panda.main.Panda.taint_get_ram">taint_get_ram</a></code></li>
-<li><code><a title="panda.main.Panda.taint_get_reg" href="#panda.main.Panda.taint_get_reg">taint_get_reg</a></code></li>
-<li><code><a title="panda.main.Panda.taint_label_ram" href="#panda.main.Panda.taint_label_ram">taint_label_ram</a></code></li>
-<li><code><a title="panda.main.Panda.taint_label_reg" href="#panda.main.Panda.taint_label_reg">taint_label_reg</a></code></li>
-<li><code><a title="panda.main.Panda.to_unsigned_guest" href="#panda.main.Panda.to_unsigned_guest">to_unsigned_guest</a></code></li>
-<li><code><a title="panda.main.Panda.type_serial_cmd" href="#panda.main.Panda.type_serial_cmd">type_serial_cmd</a></code></li>
-<li><code><a title="panda.main.Panda.unload_plugin" href="#panda.main.Panda.unload_plugin">unload_plugin</a></code></li>
-<li><code><a title="panda.main.Panda.unload_plugins" href="#panda.main.Panda.unload_plugins">unload_plugins</a></code></li>
-<li><code><a title="panda.main.Panda.unregister_pyperipheral" href="#panda.main.Panda.unregister_pyperipheral">unregister_pyperipheral</a></code></li>
-<li><code><a title="panda.main.Panda.virt_to_phys" href="#panda.main.Panda.virt_to_phys">virt_to_phys</a></code></li>
-<li><code><a title="panda.main.Panda.virtual_memory_read" href="#panda.main.Panda.virtual_memory_read">virtual_memory_read</a></code></li>
-<li><code><a title="panda.main.Panda.virtual_memory_write" href="#panda.main.Panda.virtual_memory_write">virtual_memory_write</a></code></li>
-<li><code><a title="panda.main.Panda.vm_stop" href="#panda.main.Panda.vm_stop">vm_stop</a></code></li>
-<li><code><a title="panda.main.Panda.was_aborted" href="#panda.main.Panda.was_aborted">was_aborted</a></code></li>
+<li><code><a title="pandare.main.Panda.arm_load_kernel" href="#pandare.main.Panda.arm_load_kernel">arm_load_kernel</a></code></li>
+<li><code><a title="pandare.main.Panda.callstack_callers" href="#pandare.main.Panda.callstack_callers">callstack_callers</a></code></li>
+<li><code><a title="pandare.main.Panda.check_crashed" href="#pandare.main.Panda.check_crashed">check_crashed</a></code></li>
+<li><code><a title="pandare.main.Panda.cleanup" href="#pandare.main.Panda.cleanup">cleanup</a></code></li>
+<li><code><a title="pandare.main.Panda.clear_breakpoint" href="#pandare.main.Panda.clear_breakpoint">clear_breakpoint</a></code></li>
+<li><code><a title="pandare.main.Panda.cont" href="#pandare.main.Panda.cont">cont</a></code></li>
+<li><code><a title="pandare.main.Panda.copy_to_guest" href="#pandare.main.Panda.copy_to_guest">copy_to_guest</a></code></li>
+<li><code><a title="pandare.main.Panda.cpu_class_by_name" href="#pandare.main.Panda.cpu_class_by_name">cpu_class_by_name</a></code></li>
+<li><code><a title="pandare.main.Panda.create_external_gic" href="#pandare.main.Panda.create_external_gic">create_external_gic</a></code></li>
+<li><code><a title="pandare.main.Panda.create_internal_gic" href="#pandare.main.Panda.create_internal_gic">create_internal_gic</a></code></li>
+<li><code><a title="pandare.main.Panda.create_one_flash" href="#pandare.main.Panda.create_one_flash">create_one_flash</a></code></li>
+<li><code><a title="pandare.main.Panda.create_virtio_devices" href="#pandare.main.Panda.create_virtio_devices">create_virtio_devices</a></code></li>
+<li><code><a title="pandare.main.Panda.current_asid" href="#pandare.main.Panda.current_asid">current_asid</a></code></li>
+<li><code><a title="pandare.main.Panda.current_pc" href="#pandare.main.Panda.current_pc">current_pc</a></code></li>
+<li><code><a title="pandare.main.Panda.current_sp" href="#pandare.main.Panda.current_sp">current_sp</a></code></li>
+<li><code><a title="pandare.main.Panda.delete_all_ghidra_memory_segments" href="#pandare.main.Panda.delete_all_ghidra_memory_segments">delete_all_ghidra_memory_segments</a></code></li>
+<li><code><a title="pandare.main.Panda.delvm" href="#pandare.main.Panda.delvm">delvm</a></code></li>
+<li><code><a title="pandare.main.Panda.delvm_sync" href="#pandare.main.Panda.delvm_sync">delvm_sync</a></code></li>
+<li><code><a title="pandare.main.Panda.disable_callback" href="#pandare.main.Panda.disable_callback">disable_callback</a></code></li>
+<li><code><a title="pandare.main.Panda.disable_hook" href="#pandare.main.Panda.disable_hook">disable_hook</a></code></li>
+<li><code><a title="pandare.main.Panda.disable_llvm" href="#pandare.main.Panda.disable_llvm">disable_llvm</a></code></li>
+<li><code><a title="pandare.main.Panda.disable_llvm_helpers" href="#pandare.main.Panda.disable_llvm_helpers">disable_llvm_helpers</a></code></li>
+<li><code><a title="pandare.main.Panda.disable_memcb" href="#pandare.main.Panda.disable_memcb">disable_memcb</a></code></li>
+<li><code><a title="pandare.main.Panda.disable_plugin" href="#pandare.main.Panda.disable_plugin">disable_plugin</a></code></li>
+<li><code><a title="pandare.main.Panda.disable_ppp" href="#pandare.main.Panda.disable_ppp">disable_ppp</a></code></li>
+<li><code><a title="pandare.main.Panda.disable_precise_pc" href="#pandare.main.Panda.disable_precise_pc">disable_precise_pc</a></code></li>
+<li><code><a title="pandare.main.Panda.disable_tb_chaining" href="#pandare.main.Panda.disable_tb_chaining">disable_tb_chaining</a></code></li>
+<li><code><a title="pandare.main.Panda.disas2" href="#pandare.main.Panda.disas2">disas2</a></code></li>
+<li><code><a title="pandare.main.Panda.do_panda_finish" href="#pandare.main.Panda.do_panda_finish">do_panda_finish</a></code></li>
+<li><code><a title="pandare.main.Panda.drive_get" href="#pandare.main.Panda.drive_get">drive_get</a></code></li>
+<li><code><a title="pandare.main.Panda.enable_all_callbacks" href="#pandare.main.Panda.enable_all_callbacks">enable_all_callbacks</a></code></li>
+<li><code><a title="pandare.main.Panda.enable_callback" href="#pandare.main.Panda.enable_callback">enable_callback</a></code></li>
+<li><code><a title="pandare.main.Panda.enable_hook" href="#pandare.main.Panda.enable_hook">enable_hook</a></code></li>
+<li><code><a title="pandare.main.Panda.enable_internal_callbacks" href="#pandare.main.Panda.enable_internal_callbacks">enable_internal_callbacks</a></code></li>
+<li><code><a title="pandare.main.Panda.enable_llvm" href="#pandare.main.Panda.enable_llvm">enable_llvm</a></code></li>
+<li><code><a title="pandare.main.Panda.enable_llvm_helpers" href="#pandare.main.Panda.enable_llvm_helpers">enable_llvm_helpers</a></code></li>
+<li><code><a title="pandare.main.Panda.enable_memcb" href="#pandare.main.Panda.enable_memcb">enable_memcb</a></code></li>
+<li><code><a title="pandare.main.Panda.enable_plugin" href="#pandare.main.Panda.enable_plugin">enable_plugin</a></code></li>
+<li><code><a title="pandare.main.Panda.enable_precise_pc" href="#pandare.main.Panda.enable_precise_pc">enable_precise_pc</a></code></li>
+<li><code><a title="pandare.main.Panda.enable_tb_chaining" href="#pandare.main.Panda.enable_tb_chaining">enable_tb_chaining</a></code></li>
+<li><code><a title="pandare.main.Panda.end_analysis" href="#pandare.main.Panda.end_analysis">end_analysis</a></code></li>
+<li><code><a title="pandare.main.Panda.error_report" href="#pandare.main.Panda.error_report">error_report</a></code></li>
+<li><code><a title="pandare.main.Panda.exit_cpu_loop" href="#pandare.main.Panda.exit_cpu_loop">exit_cpu_loop</a></code></li>
+<li><code><a title="pandare.main.Panda.finish_serial_cmd" href="#pandare.main.Panda.finish_serial_cmd">finish_serial_cmd</a></code></li>
+<li><code><a title="pandare.main.Panda.finish_timer" href="#pandare.main.Panda.finish_timer">finish_timer</a></code></li>
+<li><code><a title="pandare.main.Panda.flush_tb" href="#pandare.main.Panda.flush_tb">flush_tb</a></code></li>
+<li><code><a title="pandare.main.Panda.from_unsigned_guest" href="#pandare.main.Panda.from_unsigned_guest">from_unsigned_guest</a></code></li>
+<li><code><a title="pandare.main.Panda.g_malloc0" href="#pandare.main.Panda.g_malloc0">g_malloc0</a></code></li>
+<li><code><a title="pandare.main.Panda.garray_len" href="#pandare.main.Panda.garray_len">garray_len</a></code></li>
+<li><code><a title="pandare.main.Panda.get_cpu" href="#pandare.main.Panda.get_cpu">get_cpu</a></code></li>
+<li><code><a title="pandare.main.Panda.get_mappings" href="#pandare.main.Panda.get_mappings">get_mappings</a></code></li>
+<li><code><a title="pandare.main.Panda.get_process_name" href="#pandare.main.Panda.get_process_name">get_process_name</a></code></li>
+<li><code><a title="pandare.main.Panda.get_processes" href="#pandare.main.Panda.get_processes">get_processes</a></code></li>
+<li><code><a title="pandare.main.Panda.get_processes_dict" href="#pandare.main.Panda.get_processes_dict">get_processes_dict</a></code></li>
+<li><code><a title="pandare.main.Panda.get_system_memory" href="#pandare.main.Panda.get_system_memory">get_system_memory</a></code></li>
+<li><code><a title="pandare.main.Panda.get_volatility_symbols" href="#pandare.main.Panda.get_volatility_symbols">get_volatility_symbols</a></code></li>
+<li><code><a title="pandare.main.Panda.ghidra_decompilation" href="#pandare.main.Panda.ghidra_decompilation">ghidra_decompilation</a></code></li>
+<li><code><a title="pandare.main.Panda.hook" href="#pandare.main.Panda.hook">hook</a></code></li>
+<li><code><a title="pandare.main.Panda.hook_single_insn" href="#pandare.main.Panda.hook_single_insn">hook_single_insn</a></code></li>
+<li><code><a title="pandare.main.Panda.in_kernel" href="#pandare.main.Panda.in_kernel">in_kernel</a></code></li>
+<li><code><a title="pandare.main.Panda.interact" href="#pandare.main.Panda.interact">interact</a></code></li>
+<li><code><a title="pandare.main.Panda.is_callback_enabled" href="#pandare.main.Panda.is_callback_enabled">is_callback_enabled</a></code></li>
+<li><code><a title="pandare.main.Panda.load_plugin" href="#pandare.main.Panda.load_plugin">load_plugin</a></code></li>
+<li><code><a title="pandare.main.Panda.lookup_gic" href="#pandare.main.Panda.lookup_gic">lookup_gic</a></code></li>
+<li><code><a title="pandare.main.Panda.make_panda_file_handler" href="#pandare.main.Panda.make_panda_file_handler">make_panda_file_handler</a></code></li>
+<li><code><a title="pandare.main.Panda.map_memory" href="#pandare.main.Panda.map_memory">map_memory</a></code></li>
+<li><code><a title="pandare.main.Panda.memory_region_add_subregion" href="#pandare.main.Panda.memory_region_add_subregion">memory_region_add_subregion</a></code></li>
+<li><code><a title="pandare.main.Panda.memory_region_allocate_system_memory" href="#pandare.main.Panda.memory_region_allocate_system_memory">memory_region_allocate_system_memory</a></code></li>
+<li><code><a title="pandare.main.Panda.memory_region_init_ram_from_file" href="#pandare.main.Panda.memory_region_init_ram_from_file">memory_region_init_ram_from_file</a></code></li>
+<li><code><a title="pandare.main.Panda.memsavep" href="#pandare.main.Panda.memsavep">memsavep</a></code></li>
+<li><code><a title="pandare.main.Panda.object_class_by_name" href="#pandare.main.Panda.object_class_by_name">object_class_by_name</a></code></li>
+<li><code><a title="pandare.main.Panda.object_class_get_name" href="#pandare.main.Panda.object_class_get_name">object_class_get_name</a></code></li>
+<li><code><a title="pandare.main.Panda.object_new" href="#pandare.main.Panda.object_new">object_new</a></code></li>
+<li><code><a title="pandare.main.Panda.object_property_find" href="#pandare.main.Panda.object_property_find">object_property_find</a></code></li>
+<li><code><a title="pandare.main.Panda.object_property_get_bool" href="#pandare.main.Panda.object_property_get_bool">object_property_get_bool</a></code></li>
+<li><code><a title="pandare.main.Panda.object_property_get_int" href="#pandare.main.Panda.object_property_get_int">object_property_get_int</a></code></li>
+<li><code><a title="pandare.main.Panda.object_property_get_link" href="#pandare.main.Panda.object_property_get_link">object_property_get_link</a></code></li>
+<li><code><a title="pandare.main.Panda.object_property_set_bool" href="#pandare.main.Panda.object_property_set_bool">object_property_set_bool</a></code></li>
+<li><code><a title="pandare.main.Panda.object_property_set_int" href="#pandare.main.Panda.object_property_set_int">object_property_set_int</a></code></li>
+<li><code><a title="pandare.main.Panda.object_property_set_link" href="#pandare.main.Panda.object_property_set_link">object_property_set_link</a></code></li>
+<li><code><a title="pandare.main.Panda.panda_finish" href="#pandare.main.Panda.panda_finish">panda_finish</a></code></li>
+<li><code><a title="pandare.main.Panda.physical_memory_read" href="#pandare.main.Panda.physical_memory_read">physical_memory_read</a></code></li>
+<li><code><a title="pandare.main.Panda.physical_memory_write" href="#pandare.main.Panda.physical_memory_write">physical_memory_write</a></code></li>
+<li><code><a title="pandare.main.Panda.populate_ghidra" href="#pandare.main.Panda.populate_ghidra">populate_ghidra</a></code></li>
+<li><code><a title="pandare.main.Panda.ppp" href="#pandare.main.Panda.ppp">ppp</a></code></li>
+<li><code><a title="pandare.main.Panda.pyperiph_read_cb" href="#pandare.main.Panda.pyperiph_read_cb">pyperiph_read_cb</a></code></li>
+<li><code><a title="pandare.main.Panda.pyperiph_write_cb" href="#pandare.main.Panda.pyperiph_write_cb">pyperiph_write_cb</a></code></li>
+<li><code><a title="pandare.main.Panda.queue_async" href="#pandare.main.Panda.queue_async">queue_async</a></code></li>
+<li><code><a title="pandare.main.Panda.queue_main_loop_wait_fn" href="#pandare.main.Panda.queue_main_loop_wait_fn">queue_main_loop_wait_fn</a></code></li>
+<li><code><a title="pandare.main.Panda.read_str" href="#pandare.main.Panda.read_str">read_str</a></code></li>
+<li><code><a title="pandare.main.Panda.record_cmd" href="#pandare.main.Panda.record_cmd">record_cmd</a></code></li>
+<li><code><a title="pandare.main.Panda.register_callback" href="#pandare.main.Panda.register_callback">register_callback</a></code></li>
+<li><code><a title="pandare.main.Panda.register_cb_decorators" href="#pandare.main.Panda.register_cb_decorators">register_cb_decorators</a></code></li>
+<li><code><a title="pandare.main.Panda.register_pyperipheral" href="#pandare.main.Panda.register_pyperipheral">register_pyperipheral</a></code></li>
+<li><code><a title="pandare.main.Panda.require" href="#pandare.main.Panda.require">require</a></code></li>
+<li><code><a title="pandare.main.Panda.reset" href="#pandare.main.Panda.reset">reset</a></code></li>
+<li><code><a title="pandare.main.Panda.revert_async" href="#pandare.main.Panda.revert_async">revert_async</a></code></li>
+<li><code><a title="pandare.main.Panda.revert_sync" href="#pandare.main.Panda.revert_sync">revert_sync</a></code></li>
+<li><code><a title="pandare.main.Panda.rr_get_guest_instr_count" href="#pandare.main.Panda.rr_get_guest_instr_count">rr_get_guest_instr_count</a></code></li>
+<li><code><a title="pandare.main.Panda.run" href="#pandare.main.Panda.run">run</a></code></li>
+<li><code><a title="pandare.main.Panda.run_monitor_cmd" href="#pandare.main.Panda.run_monitor_cmd">run_monitor_cmd</a></code></li>
+<li><code><a title="pandare.main.Panda.run_replay" href="#pandare.main.Panda.run_replay">run_replay</a></code></li>
+<li><code><a title="pandare.main.Panda.run_serial_cmd" href="#pandare.main.Panda.run_serial_cmd">run_serial_cmd</a></code></li>
+<li><code><a title="pandare.main.Panda.run_serial_cmd_async" href="#pandare.main.Panda.run_serial_cmd_async">run_serial_cmd_async</a></code></li>
+<li><code><a title="pandare.main.Panda.run_volatility" href="#pandare.main.Panda.run_volatility">run_volatility</a></code></li>
+<li><code><a title="pandare.main.Panda.set_breakpoint" href="#pandare.main.Panda.set_breakpoint">set_breakpoint</a></code></li>
+<li><code><a title="pandare.main.Panda.set_os_name" href="#pandare.main.Panda.set_os_name">set_os_name</a></code></li>
+<li><code><a title="pandare.main.Panda.set_pandalog" href="#pandare.main.Panda.set_pandalog">set_pandalog</a></code></li>
+<li><code><a title="pandare.main.Panda.snap" href="#pandare.main.Panda.snap">snap</a></code></li>
+<li><code><a title="pandare.main.Panda.stop_run" href="#pandare.main.Panda.stop_run">stop_run</a></code></li>
+<li><code><a title="pandare.main.Panda.sysbus_create_varargs" href="#pandare.main.Panda.sysbus_create_varargs">sysbus_create_varargs</a></code></li>
+<li><code><a title="pandare.main.Panda.taint_check_laddr" href="#pandare.main.Panda.taint_check_laddr">taint_check_laddr</a></code></li>
+<li><code><a title="pandare.main.Panda.taint_check_ram" href="#pandare.main.Panda.taint_check_ram">taint_check_ram</a></code></li>
+<li><code><a title="pandare.main.Panda.taint_check_reg" href="#pandare.main.Panda.taint_check_reg">taint_check_reg</a></code></li>
+<li><code><a title="pandare.main.Panda.taint_enable" href="#pandare.main.Panda.taint_enable">taint_enable</a></code></li>
+<li><code><a title="pandare.main.Panda.taint_get_laddr" href="#pandare.main.Panda.taint_get_laddr">taint_get_laddr</a></code></li>
+<li><code><a title="pandare.main.Panda.taint_get_ram" href="#pandare.main.Panda.taint_get_ram">taint_get_ram</a></code></li>
+<li><code><a title="pandare.main.Panda.taint_get_reg" href="#pandare.main.Panda.taint_get_reg">taint_get_reg</a></code></li>
+<li><code><a title="pandare.main.Panda.taint_label_ram" href="#pandare.main.Panda.taint_label_ram">taint_label_ram</a></code></li>
+<li><code><a title="pandare.main.Panda.taint_label_reg" href="#pandare.main.Panda.taint_label_reg">taint_label_reg</a></code></li>
+<li><code><a title="pandare.main.Panda.to_unsigned_guest" href="#pandare.main.Panda.to_unsigned_guest">to_unsigned_guest</a></code></li>
+<li><code><a title="pandare.main.Panda.type_serial_cmd" href="#pandare.main.Panda.type_serial_cmd">type_serial_cmd</a></code></li>
+<li><code><a title="pandare.main.Panda.unload_plugin" href="#pandare.main.Panda.unload_plugin">unload_plugin</a></code></li>
+<li><code><a title="pandare.main.Panda.unload_plugins" href="#pandare.main.Panda.unload_plugins">unload_plugins</a></code></li>
+<li><code><a title="pandare.main.Panda.unregister_pyperipheral" href="#pandare.main.Panda.unregister_pyperipheral">unregister_pyperipheral</a></code></li>
+<li><code><a title="pandare.main.Panda.virt_to_phys" href="#pandare.main.Panda.virt_to_phys">virt_to_phys</a></code></li>
+<li><code><a title="pandare.main.Panda.virtual_memory_read" href="#pandare.main.Panda.virtual_memory_read">virtual_memory_read</a></code></li>
+<li><code><a title="pandare.main.Panda.virtual_memory_write" href="#pandare.main.Panda.virtual_memory_write">virtual_memory_write</a></code></li>
+<li><code><a title="pandare.main.Panda.vm_stop" href="#pandare.main.Panda.vm_stop">vm_stop</a></code></li>
+<li><code><a title="pandare.main.Panda.was_aborted" href="#pandare.main.Panda.was_aborted">was_aborted</a></code></li>
 </ul>
 </li>
 </ul>

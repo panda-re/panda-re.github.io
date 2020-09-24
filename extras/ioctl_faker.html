@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>panda.extras.ioctl_faker API documentation</title>
+<title>pandare.extras.ioctl_faker API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>panda.extras.ioctl_faker</code></h1>
+<h1 class="title">Module <code>pandare.extras.ioctl_faker</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -29,10 +29,10 @@
 <pre><code class="python">import sys
 import logging
 
-from panda import ffi
+from pandare import ffi
 
 # TODO: only for logger, should probably move it to a separate file
-from panda.extras.file_hook import FileHook
+from pandare.extras.file_hook import FileHook
 
 # TODO: Ability to fake buffers for specific commands
 
@@ -271,7 +271,7 @@ if __name__ == &#34;__main__&#34;:
     Bash will issue ioctls on /dev/ttys0 - this is just a simple test to make sure they&#39;re being captured
     &#39;&#39;&#39;
 
-    from panda import blocking, Panda
+    from pandare import blocking, Panda
 
     # No arguments, i386. Otherwise argument should be guest arch
     generic_type = sys.argv[1] if len(sys.argv) &gt; 1 else &#34;i386&#34;
@@ -323,7 +323,7 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="panda.extras.ioctl_faker.do_ioctl_init"><code class="name flex">
+<dt id="pandare.extras.ioctl_faker.do_ioctl_init"><code class="name flex">
 <span>def <span class="ident">do_ioctl_init</span></span>(<span>arch)</span>
 </code></dt>
 <dd>
@@ -376,7 +376,7 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="panda.extras.ioctl_faker.Ioctl"><code class="flex name class">
+<dt id="pandare.extras.ioctl_faker.Ioctl"><code class="flex name class">
 <span>class <span class="ident">Ioctl</span></span>
 <span>(</span><span>panda, cpu, fd, cmd, guest_ptr, use_osi_linux=False)</span>
 </code></dt>
@@ -479,7 +479,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.extras.ioctl_faker.Ioctl.get_ret_code"><code class="name flex">
+<dt id="pandare.extras.ioctl_faker.Ioctl.get_ret_code"><code class="name flex">
 <span>def <span class="ident">get_ret_code</span></span>(<span>self, panda, cpu)</span>
 </code></dt>
 <dd>
@@ -508,7 +508,7 @@ Helper retrive original return code, handles arch-specifc ABI</p></div>
 </dd>
 </dl>
 </dd>
-<dt id="panda.extras.ioctl_faker.IoctlFaker"><code class="flex name class">
+<dt id="pandare.extras.ioctl_faker.IoctlFaker"><code class="flex name class">
 <span>class <span class="ident">IoctlFaker</span></span>
 <span>(</span><span>panda, use_osi_linux=False, log=False, ignore=[], intercept_ret_vals=[-25], intercept_all_non_zero=False)</span>
 </code></dt>
@@ -626,7 +626,7 @@ intercept_all_non_zero is aggressive setting that takes precedence if set - any 
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.extras.ioctl_faker.IoctlFaker.get_forced_returns"><code class="name flex">
+<dt id="pandare.extras.ioctl_faker.IoctlFaker.get_forced_returns"><code class="name flex">
 <span>def <span class="ident">get_forced_returns</span></span>(<span>self, with_buf_only=False)</span>
 </code></dt>
 <dd>
@@ -644,7 +644,7 @@ intercept_all_non_zero is aggressive setting that takes precedence if set - any 
     return self._get_returns(self._forced_returns, with_buf_only)</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.ioctl_faker.IoctlFaker.get_unmodified_returns"><code class="name flex">
+<dt id="pandare.extras.ioctl_faker.IoctlFaker.get_unmodified_returns"><code class="name flex">
 <span>def <span class="ident">get_unmodified_returns</span></span>(<span>self, with_buf_only=False)</span>
 </code></dt>
 <dd>
@@ -675,27 +675,27 @@ intercept_all_non_zero is aggressive setting that takes precedence if set - any 
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="panda.extras" href="index.html">panda.extras</a></code></li>
+<li><code><a title="pandare.extras" href="index.html">pandare.extras</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="panda.extras.ioctl_faker.do_ioctl_init" href="#panda.extras.ioctl_faker.do_ioctl_init">do_ioctl_init</a></code></li>
+<li><code><a title="pandare.extras.ioctl_faker.do_ioctl_init" href="#pandare.extras.ioctl_faker.do_ioctl_init">do_ioctl_init</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="panda.extras.ioctl_faker.Ioctl" href="#panda.extras.ioctl_faker.Ioctl">Ioctl</a></code></h4>
+<h4><code><a title="pandare.extras.ioctl_faker.Ioctl" href="#pandare.extras.ioctl_faker.Ioctl">Ioctl</a></code></h4>
 <ul class="">
-<li><code><a title="panda.extras.ioctl_faker.Ioctl.get_ret_code" href="#panda.extras.ioctl_faker.Ioctl.get_ret_code">get_ret_code</a></code></li>
+<li><code><a title="pandare.extras.ioctl_faker.Ioctl.get_ret_code" href="#pandare.extras.ioctl_faker.Ioctl.get_ret_code">get_ret_code</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="panda.extras.ioctl_faker.IoctlFaker" href="#panda.extras.ioctl_faker.IoctlFaker">IoctlFaker</a></code></h4>
+<h4><code><a title="pandare.extras.ioctl_faker.IoctlFaker" href="#pandare.extras.ioctl_faker.IoctlFaker">IoctlFaker</a></code></h4>
 <ul class="">
-<li><code><a title="panda.extras.ioctl_faker.IoctlFaker.get_forced_returns" href="#panda.extras.ioctl_faker.IoctlFaker.get_forced_returns">get_forced_returns</a></code></li>
-<li><code><a title="panda.extras.ioctl_faker.IoctlFaker.get_unmodified_returns" href="#panda.extras.ioctl_faker.IoctlFaker.get_unmodified_returns">get_unmodified_returns</a></code></li>
+<li><code><a title="pandare.extras.ioctl_faker.IoctlFaker.get_forced_returns" href="#pandare.extras.ioctl_faker.IoctlFaker.get_forced_returns">get_forced_returns</a></code></li>
+<li><code><a title="pandare.extras.ioctl_faker.IoctlFaker.get_unmodified_returns" href="#pandare.extras.ioctl_faker.IoctlFaker.get_unmodified_returns">get_unmodified_returns</a></code></li>
 </ul>
 </li>
 </ul>

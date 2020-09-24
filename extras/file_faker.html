@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>panda.extras.file_faker API documentation</title>
+<title>pandare.extras.file_faker API documentation</title>
 <meta name="description" content="Framework for halucinating files inside the guest through
 modifications around syscalls involving filenames and file
 descriptors …" />
@@ -21,7 +21,7 @@ descriptors …" />
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>panda.extras.file_faker</code></h1>
+<h1 class="title">Module <code>pandare.extras.file_faker</code></h1>
 </header>
 <section id="section-intro">
 <p>Framework for halucinating files inside the guest through
@@ -49,8 +49,8 @@ High-level idea:
 &#34;&#34;&#34;
 
 
-from panda.extras.file_hook import FileHook
-from panda.ffi_importer import ffi
+from pandare.extras.file_hook import FileHook
+from pandare.ffi_importer import ffi
 import logging
 
 
@@ -430,7 +430,7 @@ class FileFaker(FileHook):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="panda.extras.file_faker.FakeFile"><code class="flex name class">
+<dt id="pandare.extras.file_faker.FakeFile"><code class="flex name class">
 <span>class <span class="ident">FakeFile</span></span>
 <span>(</span><span>fake_contents='', filename=None)</span>
 </code></dt>
@@ -516,7 +516,7 @@ Users can inherit and modify this to customize how data is generated</p>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.extras.file_faker.FakeFile.close"><code class="name flex">
+<dt id="pandare.extras.file_faker.FakeFile.close"><code class="name flex">
 <span>def <span class="ident">close</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -534,7 +534,7 @@ Users can inherit and modify this to customize how data is generated</p>
             self.logger.info(f&#34;All handles to Faker({self.filename}) closed. Modified contents: {repr(self.contents)}&#34;)</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.file_faker.FakeFile.get_mode"><code class="name flex">
+<dt id="pandare.extras.file_faker.FakeFile.get_mode"><code class="name flex">
 <span>def <span class="ident">get_mode</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -547,7 +547,7 @@ Users can inherit and modify this to customize how data is generated</p>
     return 0o664 # Regular file (octal)</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.file_faker.FakeFile.get_size"><code class="name flex">
+<dt id="pandare.extras.file_faker.FakeFile.get_size"><code class="name flex">
 <span>def <span class="ident">get_size</span></span>(<span>self, bytesize)</span>
 </code></dt>
 <dd>
@@ -560,7 +560,7 @@ Users can inherit and modify this to customize how data is generated</p>
     return ceil(len(self.contents)/bytesize)</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.file_faker.FakeFile.read"><code class="name flex">
+<dt id="pandare.extras.file_faker.FakeFile.read"><code class="name flex">
 <span>def <span class="ident">read</span></span>(<span>self, size, offset)</span>
 </code></dt>
 <dd>
@@ -583,7 +583,7 @@ Returns data.</p></div>
     return read_data</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.file_faker.FakeFile.write"><code class="name flex">
+<dt id="pandare.extras.file_faker.FakeFile.write"><code class="name flex">
 <span>def <span class="ident">write</span></span>(<span>self, offset, write_data)</span>
 </code></dt>
 <dd>
@@ -611,7 +611,7 @@ XXX what about writes past end of the file?</p></div>
 </dd>
 </dl>
 </dd>
-<dt id="panda.extras.file_faker.FileFaker"><code class="flex name class">
+<dt id="pandare.extras.file_faker.FileFaker"><code class="flex name class">
 <span>class <span class="ident">FileFaker</span></span>
 <span>(</span><span>panda)</span>
 </code></dt>
@@ -858,11 +858,11 @@ from fake conents and writes are logged.</p>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="panda.extras.file_hook.FileHook" href="file_hook.html#panda.extras.file_hook.FileHook">FileHook</a></li>
+<li><a title="pandare.extras.file_hook.FileHook" href="file_hook.html#pandare.extras.file_hook.FileHook">FileHook</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.extras.file_faker.FileFaker.close"><code class="name flex">
+<dt id="pandare.extras.file_faker.FileFaker.close"><code class="name flex">
 <span>def <span class="ident">close</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -880,7 +880,7 @@ from fake conents and writes are logged.</p>
             del self.hooked_fds[(fd, asid)]</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.file_faker.FileFaker.replace_file"><code class="name flex">
+<dt id="pandare.extras.file_faker.FileFaker.replace_file"><code class="name flex">
 <span>def <span class="ident">replace_file</span></span>(<span>self, filename, faker)</span>
 </code></dt>
 <dd>
@@ -903,14 +903,14 @@ from fake conents and writes are logged.</p>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="panda.extras.file_hook.FileHook" href="file_hook.html#panda.extras.file_hook.FileHook">FileHook</a></b></code>:
+<li><code><b><a title="pandare.extras.file_hook.FileHook" href="file_hook.html#pandare.extras.file_hook.FileHook">FileHook</a></b></code>:
 <ul class="hlist">
-<li><code><a title="panda.extras.file_hook.FileHook.rename_file" href="file_hook.html#panda.extras.file_hook.FileHook.rename_file">rename_file</a></code></li>
+<li><code><a title="pandare.extras.file_hook.FileHook.rename_file" href="file_hook.html#pandare.extras.file_hook.FileHook.rename_file">rename_file</a></code></li>
 </ul>
 </li>
 </ul>
 </dd>
-<dt id="panda.extras.file_faker.HyperFD"><code class="flex name class">
+<dt id="pandare.extras.file_faker.HyperFD"><code class="flex name class">
 <span>class <span class="ident">HyperFD</span></span>
 <span>(</span><span>filename, fakefile, offset=0)</span>
 </code></dt>
@@ -987,7 +987,7 @@ Stores the filename originally associated with it at time of open</p></div>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="panda.extras.file_faker.HyperFD.close"><code class="name flex">
+<dt id="pandare.extras.file_faker.HyperFD.close"><code class="name flex">
 <span>def <span class="ident">close</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1004,7 +1004,7 @@ Stores the filename originally associated with it at time of open</p></div>
     self.file.close()</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.file_faker.HyperFD.get_mode"><code class="name flex">
+<dt id="pandare.extras.file_faker.HyperFD.get_mode"><code class="name flex">
 <span>def <span class="ident">get_mode</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1018,7 +1018,7 @@ Stores the filename originally associated with it at time of open</p></div>
     return self.file.get_mode()</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.file_faker.HyperFD.get_size"><code class="name flex">
+<dt id="pandare.extras.file_faker.HyperFD.get_size"><code class="name flex">
 <span>def <span class="ident">get_size</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1032,7 +1032,7 @@ Stores the filename originally associated with it at time of open</p></div>
     return self.file.get_mode()</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.file_faker.HyperFD.read"><code class="name flex">
+<dt id="pandare.extras.file_faker.HyperFD.read"><code class="name flex">
 <span>def <span class="ident">read</span></span>(<span>self, size)</span>
 </code></dt>
 <dd>
@@ -1055,7 +1055,7 @@ Returns (data read, count)</p></div>
     return (data, len(data))</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.file_faker.HyperFD.seek"><code class="name flex">
+<dt id="pandare.extras.file_faker.HyperFD.seek"><code class="name flex">
 <span>def <span class="ident">seek</span></span>(<span>self, offset, whence)</span>
 </code></dt>
 <dd>
@@ -1080,7 +1080,7 @@ Returns (data read, count)</p></div>
         raise ValueError(f&#34;Unsupported whence {whence} in seek&#34;)</code></pre>
 </details>
 </dd>
-<dt id="panda.extras.file_faker.HyperFD.write"><code class="name flex">
+<dt id="pandare.extras.file_faker.HyperFD.write"><code class="name flex">
 <span>def <span class="ident">write</span></span>(<span>self, data)</span>
 </code></dt>
 <dd>
@@ -1109,37 +1109,37 @@ Returns (data read, count)</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="panda.extras" href="index.html">panda.extras</a></code></li>
+<li><code><a title="pandare.extras" href="index.html">pandare.extras</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="panda.extras.file_faker.FakeFile" href="#panda.extras.file_faker.FakeFile">FakeFile</a></code></h4>
+<h4><code><a title="pandare.extras.file_faker.FakeFile" href="#pandare.extras.file_faker.FakeFile">FakeFile</a></code></h4>
 <ul class="">
-<li><code><a title="panda.extras.file_faker.FakeFile.close" href="#panda.extras.file_faker.FakeFile.close">close</a></code></li>
-<li><code><a title="panda.extras.file_faker.FakeFile.get_mode" href="#panda.extras.file_faker.FakeFile.get_mode">get_mode</a></code></li>
-<li><code><a title="panda.extras.file_faker.FakeFile.get_size" href="#panda.extras.file_faker.FakeFile.get_size">get_size</a></code></li>
-<li><code><a title="panda.extras.file_faker.FakeFile.read" href="#panda.extras.file_faker.FakeFile.read">read</a></code></li>
-<li><code><a title="panda.extras.file_faker.FakeFile.write" href="#panda.extras.file_faker.FakeFile.write">write</a></code></li>
+<li><code><a title="pandare.extras.file_faker.FakeFile.close" href="#pandare.extras.file_faker.FakeFile.close">close</a></code></li>
+<li><code><a title="pandare.extras.file_faker.FakeFile.get_mode" href="#pandare.extras.file_faker.FakeFile.get_mode">get_mode</a></code></li>
+<li><code><a title="pandare.extras.file_faker.FakeFile.get_size" href="#pandare.extras.file_faker.FakeFile.get_size">get_size</a></code></li>
+<li><code><a title="pandare.extras.file_faker.FakeFile.read" href="#pandare.extras.file_faker.FakeFile.read">read</a></code></li>
+<li><code><a title="pandare.extras.file_faker.FakeFile.write" href="#pandare.extras.file_faker.FakeFile.write">write</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="panda.extras.file_faker.FileFaker" href="#panda.extras.file_faker.FileFaker">FileFaker</a></code></h4>
+<h4><code><a title="pandare.extras.file_faker.FileFaker" href="#pandare.extras.file_faker.FileFaker">FileFaker</a></code></h4>
 <ul class="">
-<li><code><a title="panda.extras.file_faker.FileFaker.close" href="#panda.extras.file_faker.FileFaker.close">close</a></code></li>
-<li><code><a title="panda.extras.file_faker.FileFaker.replace_file" href="#panda.extras.file_faker.FileFaker.replace_file">replace_file</a></code></li>
+<li><code><a title="pandare.extras.file_faker.FileFaker.close" href="#pandare.extras.file_faker.FileFaker.close">close</a></code></li>
+<li><code><a title="pandare.extras.file_faker.FileFaker.replace_file" href="#pandare.extras.file_faker.FileFaker.replace_file">replace_file</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="panda.extras.file_faker.HyperFD" href="#panda.extras.file_faker.HyperFD">HyperFD</a></code></h4>
+<h4><code><a title="pandare.extras.file_faker.HyperFD" href="#pandare.extras.file_faker.HyperFD">HyperFD</a></code></h4>
 <ul class="two-column">
-<li><code><a title="panda.extras.file_faker.HyperFD.close" href="#panda.extras.file_faker.HyperFD.close">close</a></code></li>
-<li><code><a title="panda.extras.file_faker.HyperFD.get_mode" href="#panda.extras.file_faker.HyperFD.get_mode">get_mode</a></code></li>
-<li><code><a title="panda.extras.file_faker.HyperFD.get_size" href="#panda.extras.file_faker.HyperFD.get_size">get_size</a></code></li>
-<li><code><a title="panda.extras.file_faker.HyperFD.read" href="#panda.extras.file_faker.HyperFD.read">read</a></code></li>
-<li><code><a title="panda.extras.file_faker.HyperFD.seek" href="#panda.extras.file_faker.HyperFD.seek">seek</a></code></li>
-<li><code><a title="panda.extras.file_faker.HyperFD.write" href="#panda.extras.file_faker.HyperFD.write">write</a></code></li>
+<li><code><a title="pandare.extras.file_faker.HyperFD.close" href="#pandare.extras.file_faker.HyperFD.close">close</a></code></li>
+<li><code><a title="pandare.extras.file_faker.HyperFD.get_mode" href="#pandare.extras.file_faker.HyperFD.get_mode">get_mode</a></code></li>
+<li><code><a title="pandare.extras.file_faker.HyperFD.get_size" href="#pandare.extras.file_faker.HyperFD.get_size">get_size</a></code></li>
+<li><code><a title="pandare.extras.file_faker.HyperFD.read" href="#pandare.extras.file_faker.HyperFD.read">read</a></code></li>
+<li><code><a title="pandare.extras.file_faker.HyperFD.seek" href="#pandare.extras.file_faker.HyperFD.seek">seek</a></code></li>
+<li><code><a title="pandare.extras.file_faker.HyperFD.write" href="#pandare.extras.file_faker.HyperFD.write">write</a></code></li>
 </ul>
 </li>
 </ul>

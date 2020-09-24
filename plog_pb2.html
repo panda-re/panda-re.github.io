@@ -1,0 +1,2989 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>pandare.plog_pb2 API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pandare.plog_pb2</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># Generated by the protocol buffer compiler.  DO NOT EDIT!
+# source: plog.proto
+
+import sys
+_b=sys.version_info[0]&lt;3 and (lambda x:x) or (lambda x:x.encode(&#39;latin1&#39;))
+from google.protobuf import descriptor as _descriptor
+from google.protobuf import message as _message
+from google.protobuf import reflection as _reflection
+from google.protobuf import symbol_database as _symbol_database
+from google.protobuf import descriptor_pb2
+# @@protoc_insertion_point(imports)
+
+_sym_db = _symbol_database.Default()
+
+
+
+
+DESCRIPTOR = _descriptor.FileDescriptor(
+  name=&#39;plog.proto&#39;,
+  package=&#39;panda&#39;,
+  syntax=&#39;proto2&#39;,
+  serialized_pb=_b(&#39;\n\nplog.proto\x12\x05panda\&#34;j\n\x08\x41sidInfo\x12\x0c\n\x04\x61sid\x18\x01 \x02(\x04\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\x0b\n\x03pid\x18\x03 \x02(\r\x12\x13\n\x0bstart_instr\x18\x04 \x02(\x04\x12\x11\n\tend_instr\x18\x05 \x02(\x04\x12\r\n\x05\x63ount\x18\x06 \x01(\x04\&#34;\x19\n\tCallStack\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x03(\x04\&#34;6\n\nBasicBlock\x12\x0c\n\x04\x61sid\x18\x01 \x01(\x04\x12\x0c\n\x04size\x18\x03 \x01(\r\x12\x0c\n\x04\x63ode\x18\x05 \x01(\x0c\&#34;%\n\x04\x45\x64ge\x12\n\n\x02pc\x18\x02 \x03(\x04\x12\x11\n\thit_count\x18\x03 \x02(\x04\&#34;\&#39;\n\tAsidEdges\x12\x1a\n\x05\x65\x64ges\x18\x02 \x03(\x0b\x32\x0b.panda.Edge\&#34;\x18\n\tAsidTrace\x12\x0b\n\x03pcs\x18\x01 \x03(\x04\&#34;E\n\x06Module\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04\x66ile\x18\x02 \x02(\t\x12\x11\n\tbase_addr\x18\x03 \x02(\x04\x12\x0c\n\x04size\x18\x04 \x02(\x04\&#34;,\n\nLoadedLibs\x12\x1e\n\x07modules\x18\x02 \x03(\x0b\x32\r.panda.Module\&#34;\x8b\x01\n\tDwarfCall\x12\x13\n\x0b\x66ile_callee\x18\x01 \x02(\t\x12\x1c\n\x14\x66unction_name_callee\x18\x02 \x02(\t\x12\x1a\n\x12line_number_callee\x18\x03 \x02(\x04\x12\x13\n\x0b\x66ile_caller\x18\x04 \x02(\t\x12\x1a\n\x12line_number_caller\x18\x05 \x02(\x04\&#34;t\n\x0bSignalEvent\x12\x0b\n\x03sig\x18\x01 \x02(\x05\x12\x12\n\nsuppressed\x18\x02 \x02(\x08\x12\x10\n\x08src_name\x18\x03 \x02(\t\x12\x10\n\x08\x64st_name\x18\x04 \x02(\t\x12\x0f\n\x07src_pid\x18\x05 \x02(\x05\x12\x0f\n\x07\x64st_pid\x18\x06 \x02(\x05\&#34;p\n\nSrcInfoPri\x12\x10\n\x08\x66ilename\x18\x01 \x02(\t\x12\x0f\n\x07linenum\x18\x02 \x02(\r\x12\x13\n\x0b\x61stnodename\x18\x03 \x02(\t\x12\x16\n\x0einsertionpoint\x18\x04 \x01(\r\x12\x12\n\nast_loc_id\x18\x05 \x01(\r\&#34;i\n\x0e\x41ttackPointPri\x12\x0c\n\x04info\x18\x01 \x02(\r\x12$\n\ncall_stack\x18\x02 \x02(\x0b\x32\x10.panda.CallStack\x12#\n\x08src_info\x18\x03 \x02(\x0b\x32\x11.panda.SrcInfoPri\&#34;\xbf\x01\n\rTaintQueryPri\x12\x0b\n\x03\x62uf\x18\x01 \x02(\x04\x12\x0b\n\x03len\x18\x02 \x02(\r\x12\x0c\n\x04\x64\x61ta\x18\x03 \x03(\r\x12\x13\n\x0bnum_tainted\x18\x04 \x02(\r\x12$\n\ncall_stack\x18\x05 \x02(\x0b\x32\x10.panda.CallStack\x12#\n\x08src_info\x18\x06 \x02(\x0b\x32\x11.panda.SrcInfoPri\x12&amp;\n\x0btaint_query\x18\x07 \x03(\x0b\x32\x11.panda.TaintQuery\&#34;)\n\x08SerialTx\x12\r\n\x05value\x18\x01 \x02(\r\x12\x0e\n\x06labels\x18\x02 \x03(\r\&#34;6\n\x18TaintQueryUniqueLabelSet\x12\x0b\n\x03ptr\x18\x01 \x02(\x04\x12\r\n\x05label\x18\x02 \x03(\r\&#34;m\n\x07SrcInfo\x12\x10\n\x08\x66ilename\x18\x01 \x02(\r\x12\x0f\n\x07linenum\x18\x02 \x02(\r\x12\x13\n\x0b\x61stnodename\x18\x03 \x02(\r\x12\x16\n\x0einsertionpoint\x18\x04 \x01(\r\x12\x12\n\nast_loc_id\x18\x05 \x01(\r\&#34;q\n\nTaintQuery\x12\x0b\n\x03ptr\x18\x01 \x02(\x04\x12\x0b\n\x03tcn\x18\x02 \x02(\r\x12\x0e\n\x06offset\x18\x03 \x02(\r\x12\x39\n\x10unique_label_set\x18\x04 \x01(\x0b\x32\x1f.panda.TaintQueryUniqueLabelSet\&#34;c\n\x0b\x41ttackPoint\x12\x0c\n\x04info\x18\x01 \x02(\r\x12$\n\ncall_stack\x18\x02 \x02(\x0b\x32\x10.panda.CallStack\x12 \n\x08src_info\x18\x03 \x02(\x0b\x32\x0e.panda.SrcInfo\&#34;\xc2\x01\n\x13TaintQueryHypercall\x12\x0b\n\x03\x62uf\x18\x01 \x02(\x04\x12\x0b\n\x03len\x18\x02 \x02(\r\x12\x0c\n\x04\x64\x61ta\x18\x03 \x03(\r\x12\x13\n\x0bnum_tainted\x18\x04 \x02(\r\x12$\n\ncall_stack\x18\x05 \x02(\x0b\x32\x10.panda.CallStack\x12 \n\x08src_info\x18\x06 \x02(\x0b\x32\x0e.panda.SrcInfo\x12&amp;\n\x0btaint_query\x18\x07 \x03(\x0b\x32\x11.panda.TaintQuery\&#34;]\n\rTaintedBranch\x12$\n\ncall_stack\x18\x01 \x02(\x0b\x32\x10.panda.CallStack\x12&amp;\n\x0btaint_query\x18\x02 \x03(\x0b\x32\x11.panda.TaintQuery\&#34;0\n\x14TaintedBranchSummary\x12\x0c\n\x04\x61sid\x18\x01 \x02(\x04\x12\n\n\x02pc\x18\x02 \x02(\x04\&#34;-\n\rLabelLiveness\x12\r\n\x05label\x18\x01 \x02(\r\x12\r\n\x05\x63ount\x18\x02 \x02(\x04\&#34;\\\n\x0cTaintedInstr\x12$\n\ncall_stack\x18\x01 \x02(\x0b\x32\x10.panda.CallStack\x12&amp;\n\x0btaint_query\x18\x02 \x03(\x0b\x32\x11.panda.TaintQuery\&#34;/\n\x13TaintedInstrSummary\x12\x0c\n\x04\x61sid\x18\x01 \x02(\x04\x12\n\n\x02pc\x18\x02 \x02(\x04\&#34;;\n\x10TaintedMmioLabel\x12\n\n\x02pc\x18\x01 \x02(\x04\x12\r\n\x05label\x18\x02 \x02(\r\x12\x0c\n\x04\x61\x64\x64r\x18\x03 \x02(\x04\&#34;\xbd\x08\n\x08LogEntry\x12\n\n\x02pc\x18\x01 \x02(\x04\x12\r\n\x05instr\x18\x02 \x02(\x04\x12\&#34;\n\tasid_info\x18( \x01(\x0b\x32\x0f.panda.AsidInfo\x12\x0c\n\x04\x61sid\x18\x03 \x01(\x04\x12$\n\ncall_stack\x18\n \x01(\x0b\x32\x10.panda.CallStack\x12&amp;\n\x0b\x62\x61sic_block\x18* \x01(\x0b\x32\x11.panda.BasicBlock\x12\&#39;\n\redge_coverage\x18) \x01(\x0b\x32\x10.panda.AsidEdges\x12\x1f\n\x05trace\x18+ \x01(\x0b\x32\x10.panda.AsidTrace\x12)\n\x0e\x61sid_libraries\x18\x05 \x01(\x0b\x32\x11.panda.LoadedLibs\x12$\n\ndwarf_call\x18\x42 \x01(\x0b\x32\x10.panda.DwarfCall\x12#\n\tdwarf_ret\x18\x43 \x01(\x0b\x32\x10.panda.DwarfCall\x12(\n\x0csignal_event\x18\x32 \x01(\x0b\x32\x12.panda.SignalEvent\x12-\n\x0ftaint_query_pri\x18\x44 \x01(\x0b\x32\x14.panda.TaintQueryPri\x12/\n\x10\x61ttack_point_pri\x18\x45 \x01(\x0b\x32\x15.panda.AttackPointPri\x12-\n\x12pri_trace_src_info\x18\x46 \x01(\x0b\x32\x11.panda.SrcInfoPri\x12\&#34;\n\tserial_tx\x18\x66 \x01(\x0b\x32\x0f.panda.SerialTx\x12\x39\n\x15taint_query_hypercall\x18&amp; \x01(\x0b\x32\x1a.panda.TaintQueryHypercall\x12(\n\x0c\x61ttack_point\x18\&#39; \x01(\x0b\x32\x12.panda.AttackPoint\x12 \n\x18taint_label_virtual_addr\x18\x06 \x01(\x04\x12!\n\x19taint_label_physical_addr\x18\x07 \x01(\x04\x12\x1a\n\x12taint_label_number\x18\x08 \x01(\r\x12,\n\x0etainted_branch\x18$ \x01(\x0b\x32\x14.panda.TaintedBranch\x12;\n\x16tainted_branch_summary\x18H \x01(\x0b\x32\x1b.panda.TaintedBranchSummary\x12,\n\x0elabel_liveness\x18- \x01(\x0b\x32\x14.panda.LabelLiveness\x12*\n\rtainted_instr\x18% \x01(\x0b\x32\x13.panda.TaintedInstr\x12\x39\n\x15tainted_instr_summary\x18\x38 \x01(\x0b\x32\x1a.panda.TaintedInstrSummary\x12\x33\n\x12tainted_mmio_label\x18I \x01(\x0b\x32\x17.panda.TaintedMmioLabel&#39;)
+)
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+
+
+
+_ASIDINFO = _descriptor.Descriptor(
+  name=&#39;AsidInfo&#39;,
+  full_name=&#39;panda.AsidInfo&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;asid&#39;, full_name=&#39;panda.AsidInfo.asid&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;name&#39;, full_name=&#39;panda.AsidInfo.name&#39;, index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(&#34;&#34;).decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;pid&#39;, full_name=&#39;panda.AsidInfo.pid&#39;, index=2,
+      number=3, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;start_instr&#39;, full_name=&#39;panda.AsidInfo.start_instr&#39;, index=3,
+      number=4, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;end_instr&#39;, full_name=&#39;panda.AsidInfo.end_instr&#39;, index=4,
+      number=5, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;count&#39;, full_name=&#39;panda.AsidInfo.count&#39;, index=5,
+      number=6, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=21,
+  serialized_end=127,
+)
+
+
+_CALLSTACK = _descriptor.Descriptor(
+  name=&#39;CallStack&#39;,
+  full_name=&#39;panda.CallStack&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;addr&#39;, full_name=&#39;panda.CallStack.addr&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=129,
+  serialized_end=154,
+)
+
+
+_BASICBLOCK = _descriptor.Descriptor(
+  name=&#39;BasicBlock&#39;,
+  full_name=&#39;panda.BasicBlock&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;asid&#39;, full_name=&#39;panda.BasicBlock.asid&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;size&#39;, full_name=&#39;panda.BasicBlock.size&#39;, index=1,
+      number=3, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;code&#39;, full_name=&#39;panda.BasicBlock.code&#39;, index=2,
+      number=5, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(&#34;&#34;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=156,
+  serialized_end=210,
+)
+
+
+_EDGE = _descriptor.Descriptor(
+  name=&#39;Edge&#39;,
+  full_name=&#39;panda.Edge&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;pc&#39;, full_name=&#39;panda.Edge.pc&#39;, index=0,
+      number=2, type=4, cpp_type=4, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;hit_count&#39;, full_name=&#39;panda.Edge.hit_count&#39;, index=1,
+      number=3, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=212,
+  serialized_end=249,
+)
+
+
+_ASIDEDGES = _descriptor.Descriptor(
+  name=&#39;AsidEdges&#39;,
+  full_name=&#39;panda.AsidEdges&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;edges&#39;, full_name=&#39;panda.AsidEdges.edges&#39;, index=0,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=251,
+  serialized_end=290,
+)
+
+
+_ASIDTRACE = _descriptor.Descriptor(
+  name=&#39;AsidTrace&#39;,
+  full_name=&#39;panda.AsidTrace&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;pcs&#39;, full_name=&#39;panda.AsidTrace.pcs&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=292,
+  serialized_end=316,
+)
+
+
+_MODULE = _descriptor.Descriptor(
+  name=&#39;Module&#39;,
+  full_name=&#39;panda.Module&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;name&#39;, full_name=&#39;panda.Module.name&#39;, index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(&#34;&#34;).decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;file&#39;, full_name=&#39;panda.Module.file&#39;, index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(&#34;&#34;).decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;base_addr&#39;, full_name=&#39;panda.Module.base_addr&#39;, index=2,
+      number=3, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;size&#39;, full_name=&#39;panda.Module.size&#39;, index=3,
+      number=4, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=318,
+  serialized_end=387,
+)
+
+
+_LOADEDLIBS = _descriptor.Descriptor(
+  name=&#39;LoadedLibs&#39;,
+  full_name=&#39;panda.LoadedLibs&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;modules&#39;, full_name=&#39;panda.LoadedLibs.modules&#39;, index=0,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=389,
+  serialized_end=433,
+)
+
+
+_DWARFCALL = _descriptor.Descriptor(
+  name=&#39;DwarfCall&#39;,
+  full_name=&#39;panda.DwarfCall&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;file_callee&#39;, full_name=&#39;panda.DwarfCall.file_callee&#39;, index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(&#34;&#34;).decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;function_name_callee&#39;, full_name=&#39;panda.DwarfCall.function_name_callee&#39;, index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(&#34;&#34;).decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;line_number_callee&#39;, full_name=&#39;panda.DwarfCall.line_number_callee&#39;, index=2,
+      number=3, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;file_caller&#39;, full_name=&#39;panda.DwarfCall.file_caller&#39;, index=3,
+      number=4, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(&#34;&#34;).decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;line_number_caller&#39;, full_name=&#39;panda.DwarfCall.line_number_caller&#39;, index=4,
+      number=5, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=436,
+  serialized_end=575,
+)
+
+
+_SIGNALEVENT = _descriptor.Descriptor(
+  name=&#39;SignalEvent&#39;,
+  full_name=&#39;panda.SignalEvent&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;sig&#39;, full_name=&#39;panda.SignalEvent.sig&#39;, index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;suppressed&#39;, full_name=&#39;panda.SignalEvent.suppressed&#39;, index=1,
+      number=2, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;src_name&#39;, full_name=&#39;panda.SignalEvent.src_name&#39;, index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(&#34;&#34;).decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;dst_name&#39;, full_name=&#39;panda.SignalEvent.dst_name&#39;, index=3,
+      number=4, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(&#34;&#34;).decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;src_pid&#39;, full_name=&#39;panda.SignalEvent.src_pid&#39;, index=4,
+      number=5, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;dst_pid&#39;, full_name=&#39;panda.SignalEvent.dst_pid&#39;, index=5,
+      number=6, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=577,
+  serialized_end=693,
+)
+
+
+_SRCINFOPRI = _descriptor.Descriptor(
+  name=&#39;SrcInfoPri&#39;,
+  full_name=&#39;panda.SrcInfoPri&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;filename&#39;, full_name=&#39;panda.SrcInfoPri.filename&#39;, index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(&#34;&#34;).decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;linenum&#39;, full_name=&#39;panda.SrcInfoPri.linenum&#39;, index=1,
+      number=2, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;astnodename&#39;, full_name=&#39;panda.SrcInfoPri.astnodename&#39;, index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(&#34;&#34;).decode(&#39;utf-8&#39;),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;insertionpoint&#39;, full_name=&#39;panda.SrcInfoPri.insertionpoint&#39;, index=3,
+      number=4, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;ast_loc_id&#39;, full_name=&#39;panda.SrcInfoPri.ast_loc_id&#39;, index=4,
+      number=5, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=695,
+  serialized_end=807,
+)
+
+
+_ATTACKPOINTPRI = _descriptor.Descriptor(
+  name=&#39;AttackPointPri&#39;,
+  full_name=&#39;panda.AttackPointPri&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;info&#39;, full_name=&#39;panda.AttackPointPri.info&#39;, index=0,
+      number=1, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;call_stack&#39;, full_name=&#39;panda.AttackPointPri.call_stack&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;src_info&#39;, full_name=&#39;panda.AttackPointPri.src_info&#39;, index=2,
+      number=3, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=809,
+  serialized_end=914,
+)
+
+
+_TAINTQUERYPRI = _descriptor.Descriptor(
+  name=&#39;TaintQueryPri&#39;,
+  full_name=&#39;panda.TaintQueryPri&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;buf&#39;, full_name=&#39;panda.TaintQueryPri.buf&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;len&#39;, full_name=&#39;panda.TaintQueryPri.len&#39;, index=1,
+      number=2, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;data&#39;, full_name=&#39;panda.TaintQueryPri.data&#39;, index=2,
+      number=3, type=13, cpp_type=3, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;num_tainted&#39;, full_name=&#39;panda.TaintQueryPri.num_tainted&#39;, index=3,
+      number=4, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;call_stack&#39;, full_name=&#39;panda.TaintQueryPri.call_stack&#39;, index=4,
+      number=5, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;src_info&#39;, full_name=&#39;panda.TaintQueryPri.src_info&#39;, index=5,
+      number=6, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;taint_query&#39;, full_name=&#39;panda.TaintQueryPri.taint_query&#39;, index=6,
+      number=7, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=917,
+  serialized_end=1108,
+)
+
+
+_SERIALTX = _descriptor.Descriptor(
+  name=&#39;SerialTx&#39;,
+  full_name=&#39;panda.SerialTx&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;value&#39;, full_name=&#39;panda.SerialTx.value&#39;, index=0,
+      number=1, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;labels&#39;, full_name=&#39;panda.SerialTx.labels&#39;, index=1,
+      number=2, type=13, cpp_type=3, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1110,
+  serialized_end=1151,
+)
+
+
+_TAINTQUERYUNIQUELABELSET = _descriptor.Descriptor(
+  name=&#39;TaintQueryUniqueLabelSet&#39;,
+  full_name=&#39;panda.TaintQueryUniqueLabelSet&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;ptr&#39;, full_name=&#39;panda.TaintQueryUniqueLabelSet.ptr&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;label&#39;, full_name=&#39;panda.TaintQueryUniqueLabelSet.label&#39;, index=1,
+      number=2, type=13, cpp_type=3, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1153,
+  serialized_end=1207,
+)
+
+
+_SRCINFO = _descriptor.Descriptor(
+  name=&#39;SrcInfo&#39;,
+  full_name=&#39;panda.SrcInfo&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;filename&#39;, full_name=&#39;panda.SrcInfo.filename&#39;, index=0,
+      number=1, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;linenum&#39;, full_name=&#39;panda.SrcInfo.linenum&#39;, index=1,
+      number=2, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;astnodename&#39;, full_name=&#39;panda.SrcInfo.astnodename&#39;, index=2,
+      number=3, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;insertionpoint&#39;, full_name=&#39;panda.SrcInfo.insertionpoint&#39;, index=3,
+      number=4, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;ast_loc_id&#39;, full_name=&#39;panda.SrcInfo.ast_loc_id&#39;, index=4,
+      number=5, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1209,
+  serialized_end=1318,
+)
+
+
+_TAINTQUERY = _descriptor.Descriptor(
+  name=&#39;TaintQuery&#39;,
+  full_name=&#39;panda.TaintQuery&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;ptr&#39;, full_name=&#39;panda.TaintQuery.ptr&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;tcn&#39;, full_name=&#39;panda.TaintQuery.tcn&#39;, index=1,
+      number=2, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;offset&#39;, full_name=&#39;panda.TaintQuery.offset&#39;, index=2,
+      number=3, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;unique_label_set&#39;, full_name=&#39;panda.TaintQuery.unique_label_set&#39;, index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1320,
+  serialized_end=1433,
+)
+
+
+_ATTACKPOINT = _descriptor.Descriptor(
+  name=&#39;AttackPoint&#39;,
+  full_name=&#39;panda.AttackPoint&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;info&#39;, full_name=&#39;panda.AttackPoint.info&#39;, index=0,
+      number=1, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;call_stack&#39;, full_name=&#39;panda.AttackPoint.call_stack&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;src_info&#39;, full_name=&#39;panda.AttackPoint.src_info&#39;, index=2,
+      number=3, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1435,
+  serialized_end=1534,
+)
+
+
+_TAINTQUERYHYPERCALL = _descriptor.Descriptor(
+  name=&#39;TaintQueryHypercall&#39;,
+  full_name=&#39;panda.TaintQueryHypercall&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;buf&#39;, full_name=&#39;panda.TaintQueryHypercall.buf&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;len&#39;, full_name=&#39;panda.TaintQueryHypercall.len&#39;, index=1,
+      number=2, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;data&#39;, full_name=&#39;panda.TaintQueryHypercall.data&#39;, index=2,
+      number=3, type=13, cpp_type=3, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;num_tainted&#39;, full_name=&#39;panda.TaintQueryHypercall.num_tainted&#39;, index=3,
+      number=4, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;call_stack&#39;, full_name=&#39;panda.TaintQueryHypercall.call_stack&#39;, index=4,
+      number=5, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;src_info&#39;, full_name=&#39;panda.TaintQueryHypercall.src_info&#39;, index=5,
+      number=6, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;taint_query&#39;, full_name=&#39;panda.TaintQueryHypercall.taint_query&#39;, index=6,
+      number=7, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1537,
+  serialized_end=1731,
+)
+
+
+_TAINTEDBRANCH = _descriptor.Descriptor(
+  name=&#39;TaintedBranch&#39;,
+  full_name=&#39;panda.TaintedBranch&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;call_stack&#39;, full_name=&#39;panda.TaintedBranch.call_stack&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;taint_query&#39;, full_name=&#39;panda.TaintedBranch.taint_query&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1733,
+  serialized_end=1826,
+)
+
+
+_TAINTEDBRANCHSUMMARY = _descriptor.Descriptor(
+  name=&#39;TaintedBranchSummary&#39;,
+  full_name=&#39;panda.TaintedBranchSummary&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;asid&#39;, full_name=&#39;panda.TaintedBranchSummary.asid&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;pc&#39;, full_name=&#39;panda.TaintedBranchSummary.pc&#39;, index=1,
+      number=2, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1828,
+  serialized_end=1876,
+)
+
+
+_LABELLIVENESS = _descriptor.Descriptor(
+  name=&#39;LabelLiveness&#39;,
+  full_name=&#39;panda.LabelLiveness&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;label&#39;, full_name=&#39;panda.LabelLiveness.label&#39;, index=0,
+      number=1, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;count&#39;, full_name=&#39;panda.LabelLiveness.count&#39;, index=1,
+      number=2, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1878,
+  serialized_end=1923,
+)
+
+
+_TAINTEDINSTR = _descriptor.Descriptor(
+  name=&#39;TaintedInstr&#39;,
+  full_name=&#39;panda.TaintedInstr&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;call_stack&#39;, full_name=&#39;panda.TaintedInstr.call_stack&#39;, index=0,
+      number=1, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;taint_query&#39;, full_name=&#39;panda.TaintedInstr.taint_query&#39;, index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1925,
+  serialized_end=2017,
+)
+
+
+_TAINTEDINSTRSUMMARY = _descriptor.Descriptor(
+  name=&#39;TaintedInstrSummary&#39;,
+  full_name=&#39;panda.TaintedInstrSummary&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;asid&#39;, full_name=&#39;panda.TaintedInstrSummary.asid&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;pc&#39;, full_name=&#39;panda.TaintedInstrSummary.pc&#39;, index=1,
+      number=2, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2019,
+  serialized_end=2066,
+)
+
+
+_TAINTEDMMIOLABEL = _descriptor.Descriptor(
+  name=&#39;TaintedMmioLabel&#39;,
+  full_name=&#39;panda.TaintedMmioLabel&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;pc&#39;, full_name=&#39;panda.TaintedMmioLabel.pc&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;label&#39;, full_name=&#39;panda.TaintedMmioLabel.label&#39;, index=1,
+      number=2, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;addr&#39;, full_name=&#39;panda.TaintedMmioLabel.addr&#39;, index=2,
+      number=3, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2068,
+  serialized_end=2127,
+)
+
+
+_LOGENTRY = _descriptor.Descriptor(
+  name=&#39;LogEntry&#39;,
+  full_name=&#39;panda.LogEntry&#39;,
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name=&#39;pc&#39;, full_name=&#39;panda.LogEntry.pc&#39;, index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;instr&#39;, full_name=&#39;panda.LogEntry.instr&#39;, index=1,
+      number=2, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;asid_info&#39;, full_name=&#39;panda.LogEntry.asid_info&#39;, index=2,
+      number=40, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;asid&#39;, full_name=&#39;panda.LogEntry.asid&#39;, index=3,
+      number=3, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;call_stack&#39;, full_name=&#39;panda.LogEntry.call_stack&#39;, index=4,
+      number=10, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;basic_block&#39;, full_name=&#39;panda.LogEntry.basic_block&#39;, index=5,
+      number=42, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;edge_coverage&#39;, full_name=&#39;panda.LogEntry.edge_coverage&#39;, index=6,
+      number=41, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;trace&#39;, full_name=&#39;panda.LogEntry.trace&#39;, index=7,
+      number=43, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;asid_libraries&#39;, full_name=&#39;panda.LogEntry.asid_libraries&#39;, index=8,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;dwarf_call&#39;, full_name=&#39;panda.LogEntry.dwarf_call&#39;, index=9,
+      number=66, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;dwarf_ret&#39;, full_name=&#39;panda.LogEntry.dwarf_ret&#39;, index=10,
+      number=67, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;signal_event&#39;, full_name=&#39;panda.LogEntry.signal_event&#39;, index=11,
+      number=50, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;taint_query_pri&#39;, full_name=&#39;panda.LogEntry.taint_query_pri&#39;, index=12,
+      number=68, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;attack_point_pri&#39;, full_name=&#39;panda.LogEntry.attack_point_pri&#39;, index=13,
+      number=69, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;pri_trace_src_info&#39;, full_name=&#39;panda.LogEntry.pri_trace_src_info&#39;, index=14,
+      number=70, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;serial_tx&#39;, full_name=&#39;panda.LogEntry.serial_tx&#39;, index=15,
+      number=102, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;taint_query_hypercall&#39;, full_name=&#39;panda.LogEntry.taint_query_hypercall&#39;, index=16,
+      number=38, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;attack_point&#39;, full_name=&#39;panda.LogEntry.attack_point&#39;, index=17,
+      number=39, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;taint_label_virtual_addr&#39;, full_name=&#39;panda.LogEntry.taint_label_virtual_addr&#39;, index=18,
+      number=6, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;taint_label_physical_addr&#39;, full_name=&#39;panda.LogEntry.taint_label_physical_addr&#39;, index=19,
+      number=7, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;taint_label_number&#39;, full_name=&#39;panda.LogEntry.taint_label_number&#39;, index=20,
+      number=8, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;tainted_branch&#39;, full_name=&#39;panda.LogEntry.tainted_branch&#39;, index=21,
+      number=36, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;tainted_branch_summary&#39;, full_name=&#39;panda.LogEntry.tainted_branch_summary&#39;, index=22,
+      number=72, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;label_liveness&#39;, full_name=&#39;panda.LogEntry.label_liveness&#39;, index=23,
+      number=45, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;tainted_instr&#39;, full_name=&#39;panda.LogEntry.tainted_instr&#39;, index=24,
+      number=37, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;tainted_instr_summary&#39;, full_name=&#39;panda.LogEntry.tainted_instr_summary&#39;, index=25,
+      number=56, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name=&#39;tainted_mmio_label&#39;, full_name=&#39;panda.LogEntry.tainted_mmio_label&#39;, index=26,
+      number=73, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax=&#39;proto2&#39;,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2130,
+  serialized_end=3215,
+)
+
+_ASIDEDGES.fields_by_name[&#39;edges&#39;].message_type = _EDGE
+_LOADEDLIBS.fields_by_name[&#39;modules&#39;].message_type = _MODULE
+_ATTACKPOINTPRI.fields_by_name[&#39;call_stack&#39;].message_type = _CALLSTACK
+_ATTACKPOINTPRI.fields_by_name[&#39;src_info&#39;].message_type = _SRCINFOPRI
+_TAINTQUERYPRI.fields_by_name[&#39;call_stack&#39;].message_type = _CALLSTACK
+_TAINTQUERYPRI.fields_by_name[&#39;src_info&#39;].message_type = _SRCINFOPRI
+_TAINTQUERYPRI.fields_by_name[&#39;taint_query&#39;].message_type = _TAINTQUERY
+_TAINTQUERY.fields_by_name[&#39;unique_label_set&#39;].message_type = _TAINTQUERYUNIQUELABELSET
+_ATTACKPOINT.fields_by_name[&#39;call_stack&#39;].message_type = _CALLSTACK
+_ATTACKPOINT.fields_by_name[&#39;src_info&#39;].message_type = _SRCINFO
+_TAINTQUERYHYPERCALL.fields_by_name[&#39;call_stack&#39;].message_type = _CALLSTACK
+_TAINTQUERYHYPERCALL.fields_by_name[&#39;src_info&#39;].message_type = _SRCINFO
+_TAINTQUERYHYPERCALL.fields_by_name[&#39;taint_query&#39;].message_type = _TAINTQUERY
+_TAINTEDBRANCH.fields_by_name[&#39;call_stack&#39;].message_type = _CALLSTACK
+_TAINTEDBRANCH.fields_by_name[&#39;taint_query&#39;].message_type = _TAINTQUERY
+_TAINTEDINSTR.fields_by_name[&#39;call_stack&#39;].message_type = _CALLSTACK
+_TAINTEDINSTR.fields_by_name[&#39;taint_query&#39;].message_type = _TAINTQUERY
+_LOGENTRY.fields_by_name[&#39;asid_info&#39;].message_type = _ASIDINFO
+_LOGENTRY.fields_by_name[&#39;call_stack&#39;].message_type = _CALLSTACK
+_LOGENTRY.fields_by_name[&#39;basic_block&#39;].message_type = _BASICBLOCK
+_LOGENTRY.fields_by_name[&#39;edge_coverage&#39;].message_type = _ASIDEDGES
+_LOGENTRY.fields_by_name[&#39;trace&#39;].message_type = _ASIDTRACE
+_LOGENTRY.fields_by_name[&#39;asid_libraries&#39;].message_type = _LOADEDLIBS
+_LOGENTRY.fields_by_name[&#39;dwarf_call&#39;].message_type = _DWARFCALL
+_LOGENTRY.fields_by_name[&#39;dwarf_ret&#39;].message_type = _DWARFCALL
+_LOGENTRY.fields_by_name[&#39;signal_event&#39;].message_type = _SIGNALEVENT
+_LOGENTRY.fields_by_name[&#39;taint_query_pri&#39;].message_type = _TAINTQUERYPRI
+_LOGENTRY.fields_by_name[&#39;attack_point_pri&#39;].message_type = _ATTACKPOINTPRI
+_LOGENTRY.fields_by_name[&#39;pri_trace_src_info&#39;].message_type = _SRCINFOPRI
+_LOGENTRY.fields_by_name[&#39;serial_tx&#39;].message_type = _SERIALTX
+_LOGENTRY.fields_by_name[&#39;taint_query_hypercall&#39;].message_type = _TAINTQUERYHYPERCALL
+_LOGENTRY.fields_by_name[&#39;attack_point&#39;].message_type = _ATTACKPOINT
+_LOGENTRY.fields_by_name[&#39;tainted_branch&#39;].message_type = _TAINTEDBRANCH
+_LOGENTRY.fields_by_name[&#39;tainted_branch_summary&#39;].message_type = _TAINTEDBRANCHSUMMARY
+_LOGENTRY.fields_by_name[&#39;label_liveness&#39;].message_type = _LABELLIVENESS
+_LOGENTRY.fields_by_name[&#39;tainted_instr&#39;].message_type = _TAINTEDINSTR
+_LOGENTRY.fields_by_name[&#39;tainted_instr_summary&#39;].message_type = _TAINTEDINSTRSUMMARY
+_LOGENTRY.fields_by_name[&#39;tainted_mmio_label&#39;].message_type = _TAINTEDMMIOLABEL
+DESCRIPTOR.message_types_by_name[&#39;AsidInfo&#39;] = _ASIDINFO
+DESCRIPTOR.message_types_by_name[&#39;CallStack&#39;] = _CALLSTACK
+DESCRIPTOR.message_types_by_name[&#39;BasicBlock&#39;] = _BASICBLOCK
+DESCRIPTOR.message_types_by_name[&#39;Edge&#39;] = _EDGE
+DESCRIPTOR.message_types_by_name[&#39;AsidEdges&#39;] = _ASIDEDGES
+DESCRIPTOR.message_types_by_name[&#39;AsidTrace&#39;] = _ASIDTRACE
+DESCRIPTOR.message_types_by_name[&#39;Module&#39;] = _MODULE
+DESCRIPTOR.message_types_by_name[&#39;LoadedLibs&#39;] = _LOADEDLIBS
+DESCRIPTOR.message_types_by_name[&#39;DwarfCall&#39;] = _DWARFCALL
+DESCRIPTOR.message_types_by_name[&#39;SignalEvent&#39;] = _SIGNALEVENT
+DESCRIPTOR.message_types_by_name[&#39;SrcInfoPri&#39;] = _SRCINFOPRI
+DESCRIPTOR.message_types_by_name[&#39;AttackPointPri&#39;] = _ATTACKPOINTPRI
+DESCRIPTOR.message_types_by_name[&#39;TaintQueryPri&#39;] = _TAINTQUERYPRI
+DESCRIPTOR.message_types_by_name[&#39;SerialTx&#39;] = _SERIALTX
+DESCRIPTOR.message_types_by_name[&#39;TaintQueryUniqueLabelSet&#39;] = _TAINTQUERYUNIQUELABELSET
+DESCRIPTOR.message_types_by_name[&#39;SrcInfo&#39;] = _SRCINFO
+DESCRIPTOR.message_types_by_name[&#39;TaintQuery&#39;] = _TAINTQUERY
+DESCRIPTOR.message_types_by_name[&#39;AttackPoint&#39;] = _ATTACKPOINT
+DESCRIPTOR.message_types_by_name[&#39;TaintQueryHypercall&#39;] = _TAINTQUERYHYPERCALL
+DESCRIPTOR.message_types_by_name[&#39;TaintedBranch&#39;] = _TAINTEDBRANCH
+DESCRIPTOR.message_types_by_name[&#39;TaintedBranchSummary&#39;] = _TAINTEDBRANCHSUMMARY
+DESCRIPTOR.message_types_by_name[&#39;LabelLiveness&#39;] = _LABELLIVENESS
+DESCRIPTOR.message_types_by_name[&#39;TaintedInstr&#39;] = _TAINTEDINSTR
+DESCRIPTOR.message_types_by_name[&#39;TaintedInstrSummary&#39;] = _TAINTEDINSTRSUMMARY
+DESCRIPTOR.message_types_by_name[&#39;TaintedMmioLabel&#39;] = _TAINTEDMMIOLABEL
+DESCRIPTOR.message_types_by_name[&#39;LogEntry&#39;] = _LOGENTRY
+
+AsidInfo = _reflection.GeneratedProtocolMessageType(&#39;AsidInfo&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _ASIDINFO,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.AsidInfo)
+  ))
+_sym_db.RegisterMessage(AsidInfo)
+
+CallStack = _reflection.GeneratedProtocolMessageType(&#39;CallStack&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _CALLSTACK,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.CallStack)
+  ))
+_sym_db.RegisterMessage(CallStack)
+
+BasicBlock = _reflection.GeneratedProtocolMessageType(&#39;BasicBlock&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _BASICBLOCK,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.BasicBlock)
+  ))
+_sym_db.RegisterMessage(BasicBlock)
+
+Edge = _reflection.GeneratedProtocolMessageType(&#39;Edge&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _EDGE,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.Edge)
+  ))
+_sym_db.RegisterMessage(Edge)
+
+AsidEdges = _reflection.GeneratedProtocolMessageType(&#39;AsidEdges&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _ASIDEDGES,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.AsidEdges)
+  ))
+_sym_db.RegisterMessage(AsidEdges)
+
+AsidTrace = _reflection.GeneratedProtocolMessageType(&#39;AsidTrace&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _ASIDTRACE,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.AsidTrace)
+  ))
+_sym_db.RegisterMessage(AsidTrace)
+
+Module = _reflection.GeneratedProtocolMessageType(&#39;Module&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _MODULE,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.Module)
+  ))
+_sym_db.RegisterMessage(Module)
+
+LoadedLibs = _reflection.GeneratedProtocolMessageType(&#39;LoadedLibs&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _LOADEDLIBS,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.LoadedLibs)
+  ))
+_sym_db.RegisterMessage(LoadedLibs)
+
+DwarfCall = _reflection.GeneratedProtocolMessageType(&#39;DwarfCall&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _DWARFCALL,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.DwarfCall)
+  ))
+_sym_db.RegisterMessage(DwarfCall)
+
+SignalEvent = _reflection.GeneratedProtocolMessageType(&#39;SignalEvent&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _SIGNALEVENT,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.SignalEvent)
+  ))
+_sym_db.RegisterMessage(SignalEvent)
+
+SrcInfoPri = _reflection.GeneratedProtocolMessageType(&#39;SrcInfoPri&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _SRCINFOPRI,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.SrcInfoPri)
+  ))
+_sym_db.RegisterMessage(SrcInfoPri)
+
+AttackPointPri = _reflection.GeneratedProtocolMessageType(&#39;AttackPointPri&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _ATTACKPOINTPRI,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.AttackPointPri)
+  ))
+_sym_db.RegisterMessage(AttackPointPri)
+
+TaintQueryPri = _reflection.GeneratedProtocolMessageType(&#39;TaintQueryPri&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _TAINTQUERYPRI,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.TaintQueryPri)
+  ))
+_sym_db.RegisterMessage(TaintQueryPri)
+
+SerialTx = _reflection.GeneratedProtocolMessageType(&#39;SerialTx&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _SERIALTX,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.SerialTx)
+  ))
+_sym_db.RegisterMessage(SerialTx)
+
+TaintQueryUniqueLabelSet = _reflection.GeneratedProtocolMessageType(&#39;TaintQueryUniqueLabelSet&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _TAINTQUERYUNIQUELABELSET,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.TaintQueryUniqueLabelSet)
+  ))
+_sym_db.RegisterMessage(TaintQueryUniqueLabelSet)
+
+SrcInfo = _reflection.GeneratedProtocolMessageType(&#39;SrcInfo&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _SRCINFO,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.SrcInfo)
+  ))
+_sym_db.RegisterMessage(SrcInfo)
+
+TaintQuery = _reflection.GeneratedProtocolMessageType(&#39;TaintQuery&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _TAINTQUERY,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.TaintQuery)
+  ))
+_sym_db.RegisterMessage(TaintQuery)
+
+AttackPoint = _reflection.GeneratedProtocolMessageType(&#39;AttackPoint&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _ATTACKPOINT,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.AttackPoint)
+  ))
+_sym_db.RegisterMessage(AttackPoint)
+
+TaintQueryHypercall = _reflection.GeneratedProtocolMessageType(&#39;TaintQueryHypercall&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _TAINTQUERYHYPERCALL,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.TaintQueryHypercall)
+  ))
+_sym_db.RegisterMessage(TaintQueryHypercall)
+
+TaintedBranch = _reflection.GeneratedProtocolMessageType(&#39;TaintedBranch&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _TAINTEDBRANCH,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.TaintedBranch)
+  ))
+_sym_db.RegisterMessage(TaintedBranch)
+
+TaintedBranchSummary = _reflection.GeneratedProtocolMessageType(&#39;TaintedBranchSummary&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _TAINTEDBRANCHSUMMARY,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.TaintedBranchSummary)
+  ))
+_sym_db.RegisterMessage(TaintedBranchSummary)
+
+LabelLiveness = _reflection.GeneratedProtocolMessageType(&#39;LabelLiveness&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _LABELLIVENESS,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.LabelLiveness)
+  ))
+_sym_db.RegisterMessage(LabelLiveness)
+
+TaintedInstr = _reflection.GeneratedProtocolMessageType(&#39;TaintedInstr&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _TAINTEDINSTR,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.TaintedInstr)
+  ))
+_sym_db.RegisterMessage(TaintedInstr)
+
+TaintedInstrSummary = _reflection.GeneratedProtocolMessageType(&#39;TaintedInstrSummary&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _TAINTEDINSTRSUMMARY,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.TaintedInstrSummary)
+  ))
+_sym_db.RegisterMessage(TaintedInstrSummary)
+
+TaintedMmioLabel = _reflection.GeneratedProtocolMessageType(&#39;TaintedMmioLabel&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _TAINTEDMMIOLABEL,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.TaintedMmioLabel)
+  ))
+_sym_db.RegisterMessage(TaintedMmioLabel)
+
+LogEntry = _reflection.GeneratedProtocolMessageType(&#39;LogEntry&#39;, (_message.Message,), dict(
+  DESCRIPTOR = _LOGENTRY,
+  __module__ = &#39;plog_pb2&#39;
+  # @@protoc_insertion_point(class_scope:panda.LogEntry)
+  ))
+_sym_db.RegisterMessage(LogEntry)
+
+
+# @@protoc_insertion_point(module_scope)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pandare.plog_pb2.AsidEdges"><code class="flex name class">
+<span>class <span class="ident">AsidEdges</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.AsidEdges.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.AsidEdges.edges"><code class="name">var <span class="ident">edges</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AsidEdges.edges</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.AsidInfo"><code class="flex name class">
+<span>class <span class="ident">AsidInfo</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.AsidInfo.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.AsidInfo.asid"><code class="name">var <span class="ident">asid</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AsidInfo.asid</p></div>
+</dd>
+<dt id="pandare.plog_pb2.AsidInfo.count"><code class="name">var <span class="ident">count</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AsidInfo.count</p></div>
+</dd>
+<dt id="pandare.plog_pb2.AsidInfo.end_instr"><code class="name">var <span class="ident">end_instr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AsidInfo.end_instr</p></div>
+</dd>
+<dt id="pandare.plog_pb2.AsidInfo.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AsidInfo.name</p></div>
+</dd>
+<dt id="pandare.plog_pb2.AsidInfo.pid"><code class="name">var <span class="ident">pid</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AsidInfo.pid</p></div>
+</dd>
+<dt id="pandare.plog_pb2.AsidInfo.start_instr"><code class="name">var <span class="ident">start_instr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AsidInfo.start_instr</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.AsidTrace"><code class="flex name class">
+<span>class <span class="ident">AsidTrace</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.AsidTrace.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.AsidTrace.pcs"><code class="name">var <span class="ident">pcs</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AsidTrace.pcs</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.AttackPoint"><code class="flex name class">
+<span>class <span class="ident">AttackPoint</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.AttackPoint.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.AttackPoint.call_stack"><code class="name">var <span class="ident">call_stack</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AttackPoint.call_stack</p></div>
+</dd>
+<dt id="pandare.plog_pb2.AttackPoint.info"><code class="name">var <span class="ident">info</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AttackPoint.info</p></div>
+</dd>
+<dt id="pandare.plog_pb2.AttackPoint.src_info"><code class="name">var <span class="ident">src_info</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AttackPoint.src_info</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.AttackPointPri"><code class="flex name class">
+<span>class <span class="ident">AttackPointPri</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.AttackPointPri.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.AttackPointPri.call_stack"><code class="name">var <span class="ident">call_stack</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AttackPointPri.call_stack</p></div>
+</dd>
+<dt id="pandare.plog_pb2.AttackPointPri.info"><code class="name">var <span class="ident">info</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AttackPointPri.info</p></div>
+</dd>
+<dt id="pandare.plog_pb2.AttackPointPri.src_info"><code class="name">var <span class="ident">src_info</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.AttackPointPri.src_info</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.BasicBlock"><code class="flex name class">
+<span>class <span class="ident">BasicBlock</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.BasicBlock.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.BasicBlock.asid"><code class="name">var <span class="ident">asid</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.BasicBlock.asid</p></div>
+</dd>
+<dt id="pandare.plog_pb2.BasicBlock.code"><code class="name">var <span class="ident">code</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.BasicBlock.code</p></div>
+</dd>
+<dt id="pandare.plog_pb2.BasicBlock.size"><code class="name">var <span class="ident">size</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.BasicBlock.size</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.CallStack"><code class="flex name class">
+<span>class <span class="ident">CallStack</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.CallStack.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.CallStack.addr"><code class="name">var <span class="ident">addr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.CallStack.addr</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.DwarfCall"><code class="flex name class">
+<span>class <span class="ident">DwarfCall</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.DwarfCall.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.DwarfCall.file_callee"><code class="name">var <span class="ident">file_callee</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.DwarfCall.file_callee</p></div>
+</dd>
+<dt id="pandare.plog_pb2.DwarfCall.file_caller"><code class="name">var <span class="ident">file_caller</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.DwarfCall.file_caller</p></div>
+</dd>
+<dt id="pandare.plog_pb2.DwarfCall.function_name_callee"><code class="name">var <span class="ident">function_name_callee</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.DwarfCall.function_name_callee</p></div>
+</dd>
+<dt id="pandare.plog_pb2.DwarfCall.line_number_callee"><code class="name">var <span class="ident">line_number_callee</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.DwarfCall.line_number_callee</p></div>
+</dd>
+<dt id="pandare.plog_pb2.DwarfCall.line_number_caller"><code class="name">var <span class="ident">line_number_caller</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.DwarfCall.line_number_caller</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.Edge"><code class="flex name class">
+<span>class <span class="ident">Edge</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.Edge.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.Edge.hit_count"><code class="name">var <span class="ident">hit_count</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.Edge.hit_count</p></div>
+</dd>
+<dt id="pandare.plog_pb2.Edge.pc"><code class="name">var <span class="ident">pc</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.Edge.pc</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.LabelLiveness"><code class="flex name class">
+<span>class <span class="ident">LabelLiveness</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.LabelLiveness.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.LabelLiveness.count"><code class="name">var <span class="ident">count</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LabelLiveness.count</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LabelLiveness.label"><code class="name">var <span class="ident">label</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LabelLiveness.label</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.LoadedLibs"><code class="flex name class">
+<span>class <span class="ident">LoadedLibs</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.LoadedLibs.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.LoadedLibs.modules"><code class="name">var <span class="ident">modules</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LoadedLibs.modules</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry"><code class="flex name class">
+<span>class <span class="ident">LogEntry</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.LogEntry.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.LogEntry.asid"><code class="name">var <span class="ident">asid</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.asid</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.asid_info"><code class="name">var <span class="ident">asid_info</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.asid_info</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.asid_libraries"><code class="name">var <span class="ident">asid_libraries</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.asid_libraries</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.attack_point"><code class="name">var <span class="ident">attack_point</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.attack_point</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.attack_point_pri"><code class="name">var <span class="ident">attack_point_pri</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.attack_point_pri</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.basic_block"><code class="name">var <span class="ident">basic_block</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.basic_block</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.call_stack"><code class="name">var <span class="ident">call_stack</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.call_stack</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.dwarf_call"><code class="name">var <span class="ident">dwarf_call</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.dwarf_call</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.dwarf_ret"><code class="name">var <span class="ident">dwarf_ret</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.dwarf_ret</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.edge_coverage"><code class="name">var <span class="ident">edge_coverage</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.edge_coverage</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.instr"><code class="name">var <span class="ident">instr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.instr</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.label_liveness"><code class="name">var <span class="ident">label_liveness</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.label_liveness</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.pc"><code class="name">var <span class="ident">pc</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.pc</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.pri_trace_src_info"><code class="name">var <span class="ident">pri_trace_src_info</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.pri_trace_src_info</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.serial_tx"><code class="name">var <span class="ident">serial_tx</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.serial_tx</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.signal_event"><code class="name">var <span class="ident">signal_event</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.signal_event</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.taint_label_number"><code class="name">var <span class="ident">taint_label_number</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.taint_label_number</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.taint_label_physical_addr"><code class="name">var <span class="ident">taint_label_physical_addr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.taint_label_physical_addr</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.taint_label_virtual_addr"><code class="name">var <span class="ident">taint_label_virtual_addr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.taint_label_virtual_addr</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.taint_query_hypercall"><code class="name">var <span class="ident">taint_query_hypercall</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.taint_query_hypercall</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.taint_query_pri"><code class="name">var <span class="ident">taint_query_pri</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.taint_query_pri</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.tainted_branch"><code class="name">var <span class="ident">tainted_branch</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.tainted_branch</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.tainted_branch_summary"><code class="name">var <span class="ident">tainted_branch_summary</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.tainted_branch_summary</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.tainted_instr"><code class="name">var <span class="ident">tainted_instr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.tainted_instr</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.tainted_instr_summary"><code class="name">var <span class="ident">tainted_instr_summary</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.tainted_instr_summary</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.tainted_mmio_label"><code class="name">var <span class="ident">tainted_mmio_label</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.tainted_mmio_label</p></div>
+</dd>
+<dt id="pandare.plog_pb2.LogEntry.trace"><code class="name">var <span class="ident">trace</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.LogEntry.trace</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.Module"><code class="flex name class">
+<span>class <span class="ident">Module</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.Module.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.Module.base_addr"><code class="name">var <span class="ident">base_addr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.Module.base_addr</p></div>
+</dd>
+<dt id="pandare.plog_pb2.Module.file"><code class="name">var <span class="ident">file</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.Module.file</p></div>
+</dd>
+<dt id="pandare.plog_pb2.Module.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.Module.name</p></div>
+</dd>
+<dt id="pandare.plog_pb2.Module.size"><code class="name">var <span class="ident">size</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.Module.size</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.SerialTx"><code class="flex name class">
+<span>class <span class="ident">SerialTx</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.SerialTx.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.SerialTx.labels"><code class="name">var <span class="ident">labels</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SerialTx.labels</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SerialTx.value"><code class="name">var <span class="ident">value</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SerialTx.value</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.SignalEvent"><code class="flex name class">
+<span>class <span class="ident">SignalEvent</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.SignalEvent.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.SignalEvent.dst_name"><code class="name">var <span class="ident">dst_name</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SignalEvent.dst_name</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SignalEvent.dst_pid"><code class="name">var <span class="ident">dst_pid</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SignalEvent.dst_pid</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SignalEvent.sig"><code class="name">var <span class="ident">sig</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SignalEvent.sig</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SignalEvent.src_name"><code class="name">var <span class="ident">src_name</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SignalEvent.src_name</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SignalEvent.src_pid"><code class="name">var <span class="ident">src_pid</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SignalEvent.src_pid</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SignalEvent.suppressed"><code class="name">var <span class="ident">suppressed</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SignalEvent.suppressed</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.SrcInfo"><code class="flex name class">
+<span>class <span class="ident">SrcInfo</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.SrcInfo.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.SrcInfo.ast_loc_id"><code class="name">var <span class="ident">ast_loc_id</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SrcInfo.ast_loc_id</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SrcInfo.astnodename"><code class="name">var <span class="ident">astnodename</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SrcInfo.astnodename</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SrcInfo.filename"><code class="name">var <span class="ident">filename</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SrcInfo.filename</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SrcInfo.insertionpoint"><code class="name">var <span class="ident">insertionpoint</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SrcInfo.insertionpoint</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SrcInfo.linenum"><code class="name">var <span class="ident">linenum</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SrcInfo.linenum</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.SrcInfoPri"><code class="flex name class">
+<span>class <span class="ident">SrcInfoPri</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.SrcInfoPri.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.SrcInfoPri.ast_loc_id"><code class="name">var <span class="ident">ast_loc_id</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SrcInfoPri.ast_loc_id</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SrcInfoPri.astnodename"><code class="name">var <span class="ident">astnodename</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SrcInfoPri.astnodename</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SrcInfoPri.filename"><code class="name">var <span class="ident">filename</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SrcInfoPri.filename</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SrcInfoPri.insertionpoint"><code class="name">var <span class="ident">insertionpoint</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SrcInfoPri.insertionpoint</p></div>
+</dd>
+<dt id="pandare.plog_pb2.SrcInfoPri.linenum"><code class="name">var <span class="ident">linenum</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.SrcInfoPri.linenum</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.TaintQuery"><code class="flex name class">
+<span>class <span class="ident">TaintQuery</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintQuery.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintQuery.offset"><code class="name">var <span class="ident">offset</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQuery.offset</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQuery.ptr"><code class="name">var <span class="ident">ptr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQuery.ptr</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQuery.tcn"><code class="name">var <span class="ident">tcn</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQuery.tcn</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQuery.unique_label_set"><code class="name">var <span class="ident">unique_label_set</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQuery.unique_label_set</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryHypercall"><code class="flex name class">
+<span>class <span class="ident">TaintQueryHypercall</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintQueryHypercall.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintQueryHypercall.buf"><code class="name">var <span class="ident">buf</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryHypercall.buf</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryHypercall.call_stack"><code class="name">var <span class="ident">call_stack</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryHypercall.call_stack</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryHypercall.data"><code class="name">var <span class="ident">data</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryHypercall.data</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryHypercall.len"><code class="name">var <span class="ident">len</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryHypercall.len</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryHypercall.num_tainted"><code class="name">var <span class="ident">num_tainted</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryHypercall.num_tainted</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryHypercall.src_info"><code class="name">var <span class="ident">src_info</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryHypercall.src_info</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryHypercall.taint_query"><code class="name">var <span class="ident">taint_query</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryHypercall.taint_query</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryPri"><code class="flex name class">
+<span>class <span class="ident">TaintQueryPri</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintQueryPri.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintQueryPri.buf"><code class="name">var <span class="ident">buf</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryPri.buf</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryPri.call_stack"><code class="name">var <span class="ident">call_stack</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryPri.call_stack</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryPri.data"><code class="name">var <span class="ident">data</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryPri.data</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryPri.len"><code class="name">var <span class="ident">len</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryPri.len</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryPri.num_tainted"><code class="name">var <span class="ident">num_tainted</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryPri.num_tainted</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryPri.src_info"><code class="name">var <span class="ident">src_info</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryPri.src_info</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryPri.taint_query"><code class="name">var <span class="ident">taint_query</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryPri.taint_query</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryUniqueLabelSet"><code class="flex name class">
+<span>class <span class="ident">TaintQueryUniqueLabelSet</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintQueryUniqueLabelSet.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintQueryUniqueLabelSet.label"><code class="name">var <span class="ident">label</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryUniqueLabelSet.label</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintQueryUniqueLabelSet.ptr"><code class="name">var <span class="ident">ptr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintQueryUniqueLabelSet.ptr</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.TaintedBranch"><code class="flex name class">
+<span>class <span class="ident">TaintedBranch</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintedBranch.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintedBranch.call_stack"><code class="name">var <span class="ident">call_stack</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedBranch.call_stack</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintedBranch.taint_query"><code class="name">var <span class="ident">taint_query</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedBranch.taint_query</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.TaintedBranchSummary"><code class="flex name class">
+<span>class <span class="ident">TaintedBranchSummary</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintedBranchSummary.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintedBranchSummary.asid"><code class="name">var <span class="ident">asid</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedBranchSummary.asid</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintedBranchSummary.pc"><code class="name">var <span class="ident">pc</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedBranchSummary.pc</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.TaintedInstr"><code class="flex name class">
+<span>class <span class="ident">TaintedInstr</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintedInstr.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintedInstr.call_stack"><code class="name">var <span class="ident">call_stack</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedInstr.call_stack</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintedInstr.taint_query"><code class="name">var <span class="ident">taint_query</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedInstr.taint_query</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.TaintedInstrSummary"><code class="flex name class">
+<span>class <span class="ident">TaintedInstrSummary</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintedInstrSummary.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintedInstrSummary.asid"><code class="name">var <span class="ident">asid</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedInstrSummary.asid</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintedInstrSummary.pc"><code class="name">var <span class="ident">pc</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedInstrSummary.pc</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.plog_pb2.TaintedMmioLabel"><code class="flex name class">
+<span>class <span class="ident">TaintedMmioLabel</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A ProtocolMessage</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>google.protobuf.pyext._message.CMessage</li>
+<li>google.protobuf.message.Message</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintedMmioLabel.DESCRIPTOR"><code class="name">var <span class="ident">DESCRIPTOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.plog_pb2.TaintedMmioLabel.addr"><code class="name">var <span class="ident">addr</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedMmioLabel.addr</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintedMmioLabel.label"><code class="name">var <span class="ident">label</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedMmioLabel.label</p></div>
+</dd>
+<dt id="pandare.plog_pb2.TaintedMmioLabel.pc"><code class="name">var <span class="ident">pc</span></code></dt>
+<dd>
+<div class="desc"><p>Field panda.TaintedMmioLabel.pc</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pandare" href="index.html">pandare</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pandare.plog_pb2.AsidEdges" href="#pandare.plog_pb2.AsidEdges">AsidEdges</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.AsidEdges.DESCRIPTOR" href="#pandare.plog_pb2.AsidEdges.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.AsidEdges.edges" href="#pandare.plog_pb2.AsidEdges.edges">edges</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.AsidInfo" href="#pandare.plog_pb2.AsidInfo">AsidInfo</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pandare.plog_pb2.AsidInfo.DESCRIPTOR" href="#pandare.plog_pb2.AsidInfo.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.AsidInfo.asid" href="#pandare.plog_pb2.AsidInfo.asid">asid</a></code></li>
+<li><code><a title="pandare.plog_pb2.AsidInfo.count" href="#pandare.plog_pb2.AsidInfo.count">count</a></code></li>
+<li><code><a title="pandare.plog_pb2.AsidInfo.end_instr" href="#pandare.plog_pb2.AsidInfo.end_instr">end_instr</a></code></li>
+<li><code><a title="pandare.plog_pb2.AsidInfo.name" href="#pandare.plog_pb2.AsidInfo.name">name</a></code></li>
+<li><code><a title="pandare.plog_pb2.AsidInfo.pid" href="#pandare.plog_pb2.AsidInfo.pid">pid</a></code></li>
+<li><code><a title="pandare.plog_pb2.AsidInfo.start_instr" href="#pandare.plog_pb2.AsidInfo.start_instr">start_instr</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.AsidTrace" href="#pandare.plog_pb2.AsidTrace">AsidTrace</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.AsidTrace.DESCRIPTOR" href="#pandare.plog_pb2.AsidTrace.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.AsidTrace.pcs" href="#pandare.plog_pb2.AsidTrace.pcs">pcs</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.AttackPoint" href="#pandare.plog_pb2.AttackPoint">AttackPoint</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.AttackPoint.DESCRIPTOR" href="#pandare.plog_pb2.AttackPoint.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.AttackPoint.call_stack" href="#pandare.plog_pb2.AttackPoint.call_stack">call_stack</a></code></li>
+<li><code><a title="pandare.plog_pb2.AttackPoint.info" href="#pandare.plog_pb2.AttackPoint.info">info</a></code></li>
+<li><code><a title="pandare.plog_pb2.AttackPoint.src_info" href="#pandare.plog_pb2.AttackPoint.src_info">src_info</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.AttackPointPri" href="#pandare.plog_pb2.AttackPointPri">AttackPointPri</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.AttackPointPri.DESCRIPTOR" href="#pandare.plog_pb2.AttackPointPri.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.AttackPointPri.call_stack" href="#pandare.plog_pb2.AttackPointPri.call_stack">call_stack</a></code></li>
+<li><code><a title="pandare.plog_pb2.AttackPointPri.info" href="#pandare.plog_pb2.AttackPointPri.info">info</a></code></li>
+<li><code><a title="pandare.plog_pb2.AttackPointPri.src_info" href="#pandare.plog_pb2.AttackPointPri.src_info">src_info</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.BasicBlock" href="#pandare.plog_pb2.BasicBlock">BasicBlock</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.BasicBlock.DESCRIPTOR" href="#pandare.plog_pb2.BasicBlock.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.BasicBlock.asid" href="#pandare.plog_pb2.BasicBlock.asid">asid</a></code></li>
+<li><code><a title="pandare.plog_pb2.BasicBlock.code" href="#pandare.plog_pb2.BasicBlock.code">code</a></code></li>
+<li><code><a title="pandare.plog_pb2.BasicBlock.size" href="#pandare.plog_pb2.BasicBlock.size">size</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.CallStack" href="#pandare.plog_pb2.CallStack">CallStack</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.CallStack.DESCRIPTOR" href="#pandare.plog_pb2.CallStack.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.CallStack.addr" href="#pandare.plog_pb2.CallStack.addr">addr</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.DwarfCall" href="#pandare.plog_pb2.DwarfCall">DwarfCall</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.DwarfCall.DESCRIPTOR" href="#pandare.plog_pb2.DwarfCall.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.DwarfCall.file_callee" href="#pandare.plog_pb2.DwarfCall.file_callee">file_callee</a></code></li>
+<li><code><a title="pandare.plog_pb2.DwarfCall.file_caller" href="#pandare.plog_pb2.DwarfCall.file_caller">file_caller</a></code></li>
+<li><code><a title="pandare.plog_pb2.DwarfCall.function_name_callee" href="#pandare.plog_pb2.DwarfCall.function_name_callee">function_name_callee</a></code></li>
+<li><code><a title="pandare.plog_pb2.DwarfCall.line_number_callee" href="#pandare.plog_pb2.DwarfCall.line_number_callee">line_number_callee</a></code></li>
+<li><code><a title="pandare.plog_pb2.DwarfCall.line_number_caller" href="#pandare.plog_pb2.DwarfCall.line_number_caller">line_number_caller</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.Edge" href="#pandare.plog_pb2.Edge">Edge</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.Edge.DESCRIPTOR" href="#pandare.plog_pb2.Edge.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.Edge.hit_count" href="#pandare.plog_pb2.Edge.hit_count">hit_count</a></code></li>
+<li><code><a title="pandare.plog_pb2.Edge.pc" href="#pandare.plog_pb2.Edge.pc">pc</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.LabelLiveness" href="#pandare.plog_pb2.LabelLiveness">LabelLiveness</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.LabelLiveness.DESCRIPTOR" href="#pandare.plog_pb2.LabelLiveness.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.LabelLiveness.count" href="#pandare.plog_pb2.LabelLiveness.count">count</a></code></li>
+<li><code><a title="pandare.plog_pb2.LabelLiveness.label" href="#pandare.plog_pb2.LabelLiveness.label">label</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.LoadedLibs" href="#pandare.plog_pb2.LoadedLibs">LoadedLibs</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.LoadedLibs.DESCRIPTOR" href="#pandare.plog_pb2.LoadedLibs.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.LoadedLibs.modules" href="#pandare.plog_pb2.LoadedLibs.modules">modules</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.LogEntry" href="#pandare.plog_pb2.LogEntry">LogEntry</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.LogEntry.DESCRIPTOR" href="#pandare.plog_pb2.LogEntry.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.asid" href="#pandare.plog_pb2.LogEntry.asid">asid</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.asid_info" href="#pandare.plog_pb2.LogEntry.asid_info">asid_info</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.asid_libraries" href="#pandare.plog_pb2.LogEntry.asid_libraries">asid_libraries</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.attack_point" href="#pandare.plog_pb2.LogEntry.attack_point">attack_point</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.attack_point_pri" href="#pandare.plog_pb2.LogEntry.attack_point_pri">attack_point_pri</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.basic_block" href="#pandare.plog_pb2.LogEntry.basic_block">basic_block</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.call_stack" href="#pandare.plog_pb2.LogEntry.call_stack">call_stack</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.dwarf_call" href="#pandare.plog_pb2.LogEntry.dwarf_call">dwarf_call</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.dwarf_ret" href="#pandare.plog_pb2.LogEntry.dwarf_ret">dwarf_ret</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.edge_coverage" href="#pandare.plog_pb2.LogEntry.edge_coverage">edge_coverage</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.instr" href="#pandare.plog_pb2.LogEntry.instr">instr</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.label_liveness" href="#pandare.plog_pb2.LogEntry.label_liveness">label_liveness</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.pc" href="#pandare.plog_pb2.LogEntry.pc">pc</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.pri_trace_src_info" href="#pandare.plog_pb2.LogEntry.pri_trace_src_info">pri_trace_src_info</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.serial_tx" href="#pandare.plog_pb2.LogEntry.serial_tx">serial_tx</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.signal_event" href="#pandare.plog_pb2.LogEntry.signal_event">signal_event</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.taint_label_number" href="#pandare.plog_pb2.LogEntry.taint_label_number">taint_label_number</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.taint_label_physical_addr" href="#pandare.plog_pb2.LogEntry.taint_label_physical_addr">taint_label_physical_addr</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.taint_label_virtual_addr" href="#pandare.plog_pb2.LogEntry.taint_label_virtual_addr">taint_label_virtual_addr</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.taint_query_hypercall" href="#pandare.plog_pb2.LogEntry.taint_query_hypercall">taint_query_hypercall</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.taint_query_pri" href="#pandare.plog_pb2.LogEntry.taint_query_pri">taint_query_pri</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.tainted_branch" href="#pandare.plog_pb2.LogEntry.tainted_branch">tainted_branch</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.tainted_branch_summary" href="#pandare.plog_pb2.LogEntry.tainted_branch_summary">tainted_branch_summary</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.tainted_instr" href="#pandare.plog_pb2.LogEntry.tainted_instr">tainted_instr</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.tainted_instr_summary" href="#pandare.plog_pb2.LogEntry.tainted_instr_summary">tainted_instr_summary</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.tainted_mmio_label" href="#pandare.plog_pb2.LogEntry.tainted_mmio_label">tainted_mmio_label</a></code></li>
+<li><code><a title="pandare.plog_pb2.LogEntry.trace" href="#pandare.plog_pb2.LogEntry.trace">trace</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.Module" href="#pandare.plog_pb2.Module">Module</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.Module.DESCRIPTOR" href="#pandare.plog_pb2.Module.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.Module.base_addr" href="#pandare.plog_pb2.Module.base_addr">base_addr</a></code></li>
+<li><code><a title="pandare.plog_pb2.Module.file" href="#pandare.plog_pb2.Module.file">file</a></code></li>
+<li><code><a title="pandare.plog_pb2.Module.name" href="#pandare.plog_pb2.Module.name">name</a></code></li>
+<li><code><a title="pandare.plog_pb2.Module.size" href="#pandare.plog_pb2.Module.size">size</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.SerialTx" href="#pandare.plog_pb2.SerialTx">SerialTx</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.SerialTx.DESCRIPTOR" href="#pandare.plog_pb2.SerialTx.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.SerialTx.labels" href="#pandare.plog_pb2.SerialTx.labels">labels</a></code></li>
+<li><code><a title="pandare.plog_pb2.SerialTx.value" href="#pandare.plog_pb2.SerialTx.value">value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.SignalEvent" href="#pandare.plog_pb2.SignalEvent">SignalEvent</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pandare.plog_pb2.SignalEvent.DESCRIPTOR" href="#pandare.plog_pb2.SignalEvent.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.SignalEvent.dst_name" href="#pandare.plog_pb2.SignalEvent.dst_name">dst_name</a></code></li>
+<li><code><a title="pandare.plog_pb2.SignalEvent.dst_pid" href="#pandare.plog_pb2.SignalEvent.dst_pid">dst_pid</a></code></li>
+<li><code><a title="pandare.plog_pb2.SignalEvent.sig" href="#pandare.plog_pb2.SignalEvent.sig">sig</a></code></li>
+<li><code><a title="pandare.plog_pb2.SignalEvent.src_name" href="#pandare.plog_pb2.SignalEvent.src_name">src_name</a></code></li>
+<li><code><a title="pandare.plog_pb2.SignalEvent.src_pid" href="#pandare.plog_pb2.SignalEvent.src_pid">src_pid</a></code></li>
+<li><code><a title="pandare.plog_pb2.SignalEvent.suppressed" href="#pandare.plog_pb2.SignalEvent.suppressed">suppressed</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.SrcInfo" href="#pandare.plog_pb2.SrcInfo">SrcInfo</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pandare.plog_pb2.SrcInfo.DESCRIPTOR" href="#pandare.plog_pb2.SrcInfo.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.SrcInfo.ast_loc_id" href="#pandare.plog_pb2.SrcInfo.ast_loc_id">ast_loc_id</a></code></li>
+<li><code><a title="pandare.plog_pb2.SrcInfo.astnodename" href="#pandare.plog_pb2.SrcInfo.astnodename">astnodename</a></code></li>
+<li><code><a title="pandare.plog_pb2.SrcInfo.filename" href="#pandare.plog_pb2.SrcInfo.filename">filename</a></code></li>
+<li><code><a title="pandare.plog_pb2.SrcInfo.insertionpoint" href="#pandare.plog_pb2.SrcInfo.insertionpoint">insertionpoint</a></code></li>
+<li><code><a title="pandare.plog_pb2.SrcInfo.linenum" href="#pandare.plog_pb2.SrcInfo.linenum">linenum</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.SrcInfoPri" href="#pandare.plog_pb2.SrcInfoPri">SrcInfoPri</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pandare.plog_pb2.SrcInfoPri.DESCRIPTOR" href="#pandare.plog_pb2.SrcInfoPri.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.SrcInfoPri.ast_loc_id" href="#pandare.plog_pb2.SrcInfoPri.ast_loc_id">ast_loc_id</a></code></li>
+<li><code><a title="pandare.plog_pb2.SrcInfoPri.astnodename" href="#pandare.plog_pb2.SrcInfoPri.astnodename">astnodename</a></code></li>
+<li><code><a title="pandare.plog_pb2.SrcInfoPri.filename" href="#pandare.plog_pb2.SrcInfoPri.filename">filename</a></code></li>
+<li><code><a title="pandare.plog_pb2.SrcInfoPri.insertionpoint" href="#pandare.plog_pb2.SrcInfoPri.insertionpoint">insertionpoint</a></code></li>
+<li><code><a title="pandare.plog_pb2.SrcInfoPri.linenum" href="#pandare.plog_pb2.SrcInfoPri.linenum">linenum</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.TaintQuery" href="#pandare.plog_pb2.TaintQuery">TaintQuery</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.TaintQuery.DESCRIPTOR" href="#pandare.plog_pb2.TaintQuery.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQuery.offset" href="#pandare.plog_pb2.TaintQuery.offset">offset</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQuery.ptr" href="#pandare.plog_pb2.TaintQuery.ptr">ptr</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQuery.tcn" href="#pandare.plog_pb2.TaintQuery.tcn">tcn</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQuery.unique_label_set" href="#pandare.plog_pb2.TaintQuery.unique_label_set">unique_label_set</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.TaintQueryHypercall" href="#pandare.plog_pb2.TaintQueryHypercall">TaintQueryHypercall</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pandare.plog_pb2.TaintQueryHypercall.DESCRIPTOR" href="#pandare.plog_pb2.TaintQueryHypercall.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryHypercall.buf" href="#pandare.plog_pb2.TaintQueryHypercall.buf">buf</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryHypercall.call_stack" href="#pandare.plog_pb2.TaintQueryHypercall.call_stack">call_stack</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryHypercall.data" href="#pandare.plog_pb2.TaintQueryHypercall.data">data</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryHypercall.len" href="#pandare.plog_pb2.TaintQueryHypercall.len">len</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryHypercall.num_tainted" href="#pandare.plog_pb2.TaintQueryHypercall.num_tainted">num_tainted</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryHypercall.src_info" href="#pandare.plog_pb2.TaintQueryHypercall.src_info">src_info</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryHypercall.taint_query" href="#pandare.plog_pb2.TaintQueryHypercall.taint_query">taint_query</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.TaintQueryPri" href="#pandare.plog_pb2.TaintQueryPri">TaintQueryPri</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pandare.plog_pb2.TaintQueryPri.DESCRIPTOR" href="#pandare.plog_pb2.TaintQueryPri.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryPri.buf" href="#pandare.plog_pb2.TaintQueryPri.buf">buf</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryPri.call_stack" href="#pandare.plog_pb2.TaintQueryPri.call_stack">call_stack</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryPri.data" href="#pandare.plog_pb2.TaintQueryPri.data">data</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryPri.len" href="#pandare.plog_pb2.TaintQueryPri.len">len</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryPri.num_tainted" href="#pandare.plog_pb2.TaintQueryPri.num_tainted">num_tainted</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryPri.src_info" href="#pandare.plog_pb2.TaintQueryPri.src_info">src_info</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryPri.taint_query" href="#pandare.plog_pb2.TaintQueryPri.taint_query">taint_query</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.TaintQueryUniqueLabelSet" href="#pandare.plog_pb2.TaintQueryUniqueLabelSet">TaintQueryUniqueLabelSet</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.TaintQueryUniqueLabelSet.DESCRIPTOR" href="#pandare.plog_pb2.TaintQueryUniqueLabelSet.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryUniqueLabelSet.label" href="#pandare.plog_pb2.TaintQueryUniqueLabelSet.label">label</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintQueryUniqueLabelSet.ptr" href="#pandare.plog_pb2.TaintQueryUniqueLabelSet.ptr">ptr</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.TaintedBranch" href="#pandare.plog_pb2.TaintedBranch">TaintedBranch</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.TaintedBranch.DESCRIPTOR" href="#pandare.plog_pb2.TaintedBranch.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedBranch.call_stack" href="#pandare.plog_pb2.TaintedBranch.call_stack">call_stack</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedBranch.taint_query" href="#pandare.plog_pb2.TaintedBranch.taint_query">taint_query</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.TaintedBranchSummary" href="#pandare.plog_pb2.TaintedBranchSummary">TaintedBranchSummary</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.TaintedBranchSummary.DESCRIPTOR" href="#pandare.plog_pb2.TaintedBranchSummary.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedBranchSummary.asid" href="#pandare.plog_pb2.TaintedBranchSummary.asid">asid</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedBranchSummary.pc" href="#pandare.plog_pb2.TaintedBranchSummary.pc">pc</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.TaintedInstr" href="#pandare.plog_pb2.TaintedInstr">TaintedInstr</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.TaintedInstr.DESCRIPTOR" href="#pandare.plog_pb2.TaintedInstr.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedInstr.call_stack" href="#pandare.plog_pb2.TaintedInstr.call_stack">call_stack</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedInstr.taint_query" href="#pandare.plog_pb2.TaintedInstr.taint_query">taint_query</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.TaintedInstrSummary" href="#pandare.plog_pb2.TaintedInstrSummary">TaintedInstrSummary</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.TaintedInstrSummary.DESCRIPTOR" href="#pandare.plog_pb2.TaintedInstrSummary.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedInstrSummary.asid" href="#pandare.plog_pb2.TaintedInstrSummary.asid">asid</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedInstrSummary.pc" href="#pandare.plog_pb2.TaintedInstrSummary.pc">pc</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.plog_pb2.TaintedMmioLabel" href="#pandare.plog_pb2.TaintedMmioLabel">TaintedMmioLabel</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.plog_pb2.TaintedMmioLabel.DESCRIPTOR" href="#pandare.plog_pb2.TaintedMmioLabel.DESCRIPTOR">DESCRIPTOR</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedMmioLabel.addr" href="#pandare.plog_pb2.TaintedMmioLabel.addr">addr</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedMmioLabel.label" href="#pandare.plog_pb2.TaintedMmioLabel.label">label</a></code></li>
+<li><code><a title="pandare.plog_pb2.TaintedMmioLabel.pc" href="#pandare.plog_pb2.TaintedMmioLabel.pc">pc</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>

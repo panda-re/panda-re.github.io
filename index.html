@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
-<title>panda API documentation</title>
+<title>pandare API documentation</title>
 <meta name="description" content="The panda python extension (pypanda) is a module built for interacting
 with the PANDA project. The project enables interaction and callbacks
 with a …" />
@@ -21,13 +21,13 @@ with a …" />
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>panda</code></h1>
+<h1 class="title">Package <code>pandare</code></h1>
 </header>
 <section id="section-intro">
 <p>The panda python extension (pypanda) is a module built for interacting
 with the PANDA project. The project enables interaction and callbacks
 with a use-specified virtual machine. </p>
-<p>The primary interface for pypanda is in <code><a title="panda.main" href="main.html">panda.main</a></code>.</p>
+<p>The primary interface for pypanda is in <code>panda.main</code>.</p>
 <p>Check out our example plugins here: <a href="https://github.com/panda-re/panda/tree/master/panda/python/examples">https://github.com/panda-re/panda/tree/master/panda/python/examples</a></p>
 <h1 id="pypanda">PYPANDA</h1>
 <p>PYPANDA is a python interface to PANDA. With PYPANDA, you can quickly develop plugins
@@ -36,11 +36,11 @@ nearly anything you can do using PANDA's C/C++ APIs.</p>
 <h2 id="installation">Installation</h2>
 <ol>
 <li>Follow instructions to build PANDA or run <code>scripts/panda/install_ubuntu.sh</code>.</li>
-<li><code>cd</code> into <code>panda/python/core</code> and run <code>python3 setup.py install</code> (possibly in a virtual environment). This will install the <code><a title="panda" href="#panda">panda</a></code> python package to your system.</li>
+<li><code>cd</code> into <code>panda/python/core</code> and run <code>python3 setup.py install</code> (possibly in a virtual environment). This will install the <code>panda</code> python package to your system.</li>
 </ol>
 <h2 id="example-program">Example program</h2>
 <p>This program counts the number of basic blocks executed while running <code>uname -a</code> inside a 32-bit guest.</p>
-<pre><code class="py">from panda import Panda, blocking
+<pre><code class="py">from pandare import Panda, blocking
 panda = Panda(generic='i386') # Create an instance of panda
 
 # Counter of the number of basic blocks
@@ -210,44 +210,48 @@ __pdoc__[&#39;autogen&#39;] = False</code></pre>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="panda.arch" href="arch.html">panda.arch</a></code></dt>
+<dt><code class="name"><a title="pandare.arch" href="arch.html">pandare.arch</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="panda.asyncthread" href="asyncthread.html">panda.asyncthread</a></code></dt>
+<dt><code class="name"><a title="pandare.asyncthread" href="asyncthread.html">pandare.asyncthread</a></code></dt>
 <dd>
 <div class="desc"><p>Module to run a thread in parallel to QEMU's main cpu loop.
 Enables queuing up python functions from main thread and vice versa</p></div>
 </dd>
-<dt><code class="name"><a title="panda.extras" href="extras/index.html">panda.extras</a></code></dt>
+<dt><code class="name"><a title="pandare.extras" href="extras/index.html">pandare.extras</a></code></dt>
 <dd>
 <div class="desc"><p>Extras are a bit like python-based plugins. You can import them, instantiate them as classes, and use their functionality.</p></div>
 </dd>
-<dt><code class="name"><a title="panda.ffi_importer" href="ffi_importer.html">panda.ffi_importer</a></code></dt>
+<dt><code class="name"><a title="pandare.ffi_importer" href="ffi_importer.html">pandare.ffi_importer</a></code></dt>
 <dd>
 <div class="desc"><p>This module is a workaround to maintain state of and not recreate cffi objects between mixins. All it does is import cffi and give you a handle to ffi.</p></div>
 </dd>
-<dt><code class="name"><a title="panda.main" href="main.html">panda.main</a></code></dt>
+<dt><code class="name"><a title="pandare.main" href="main.html">pandare.main</a></code></dt>
 <dd>
 <div class="desc"><p>The main module is a container for the Panda class.</p></div>
 </dd>
-<dt><code class="name"><a title="panda.panda_expect" href="panda_expect.html">panda.panda_expect</a></code></dt>
+<dt><code class="name"><a title="pandare.panda_expect" href="panda_expect.html">pandare.panda_expect</a></code></dt>
 <dd>
 <div class="desc"><p>Custom library for interacting/expecting data via serial-like FDs</p></div>
 </dd>
-<dt><code class="name"><a title="panda.plog" href="plog.html">panda.plog</a></code></dt>
+<dt><code class="name"><a title="pandare.plog" href="plog.html">pandare.plog</a></code></dt>
 <dd>
 <div class="desc"><p>Functionality to interact with the PANDA Log.</p></div>
 </dd>
-<dt><code class="name"><a title="panda.qcows" href="qcows.html">panda.qcows</a></code></dt>
+<dt><code class="name"><a title="pandare.plog_pb2" href="plog_pb2.html">pandare.plog_pb2</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="panda.taint" href="taint/index.html">panda.taint</a></code></dt>
+<dt><code class="name"><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="pandare.taint" href="taint/index.html">pandare.taint</a></code></dt>
 <dd>
 <div class="desc"><p>Structures to support the taint subsystem.</p></div>
 </dd>
-<dt><code class="name"><a title="panda.utils" href="utils.html">panda.utils</a></code></dt>
+<dt><code class="name"><a title="pandare.utils" href="utils.html">pandare.utils</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -291,16 +295,17 @@ Enables queuing up python functions from main thread and vice versa</p></div>
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="panda.arch" href="arch.html">panda.arch</a></code></li>
-<li><code><a title="panda.asyncthread" href="asyncthread.html">panda.asyncthread</a></code></li>
-<li><code><a title="panda.extras" href="extras/index.html">panda.extras</a></code></li>
-<li><code><a title="panda.ffi_importer" href="ffi_importer.html">panda.ffi_importer</a></code></li>
-<li><code><a title="panda.main" href="main.html">panda.main</a></code></li>
-<li><code><a title="panda.panda_expect" href="panda_expect.html">panda.panda_expect</a></code></li>
-<li><code><a title="panda.plog" href="plog.html">panda.plog</a></code></li>
-<li><code><a title="panda.qcows" href="qcows.html">panda.qcows</a></code></li>
-<li><code><a title="panda.taint" href="taint/index.html">panda.taint</a></code></li>
-<li><code><a title="panda.utils" href="utils.html">panda.utils</a></code></li>
+<li><code><a title="pandare.arch" href="arch.html">pandare.arch</a></code></li>
+<li><code><a title="pandare.asyncthread" href="asyncthread.html">pandare.asyncthread</a></code></li>
+<li><code><a title="pandare.extras" href="extras/index.html">pandare.extras</a></code></li>
+<li><code><a title="pandare.ffi_importer" href="ffi_importer.html">pandare.ffi_importer</a></code></li>
+<li><code><a title="pandare.main" href="main.html">pandare.main</a></code></li>
+<li><code><a title="pandare.panda_expect" href="panda_expect.html">pandare.panda_expect</a></code></li>
+<li><code><a title="pandare.plog" href="plog.html">pandare.plog</a></code></li>
+<li><code><a title="pandare.plog_pb2" href="plog_pb2.html">pandare.plog_pb2</a></code></li>
+<li><code><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></li>
+<li><code><a title="pandare.taint" href="taint/index.html">pandare.taint</a></code></li>
+<li><code><a title="pandare.utils" href="utils.html">pandare.utils</a></code></li>
 </ul>
 </li>
 </ul>
