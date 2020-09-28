@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.1" />
 <title>pandare API documentation</title>
-<meta name="description" content="The panda python extension (pypanda) is a module built for interacting
-with the PANDA project. The project enables interaction and callbacks
-with a …" />
+<meta name="description" content="The PANDA python interface (sometimes called pypanda) is a python module built for interacting with the PANDA project.
+The module enables driving an …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -24,11 +23,11 @@ with a …" />
 <h1 class="title">Package <code>pandare</code></h1>
 </header>
 <section id="section-intro">
-<p>The panda python extension (pypanda) is a module built for interacting
-with the PANDA project. The project enables interaction and callbacks
-with a use-specified virtual machine. </p>
-<p>The primary interface for pypanda is in <code>panda.main</code>.</p>
-<p>Check out our example plugins here: <a href="https://github.com/panda-re/panda/tree/master/panda/python/examples">https://github.com/panda-re/panda/tree/master/panda/python/examples</a></p>
+<p>The PANDA python interface (sometimes called pypanda) is a python module built for interacting with the PANDA project.
+The module enables driving an execution of a virtual machine while also introspecting on its execution using PANDA's callback
+and plugin systems.</p>
+<p>Most of the commonly used APIs are in <code><a title="pandare.panda" href="panda.html">pandare.panda</a></code>.</p>
+<p>Example plugins are available <a href="https://github.com/panda-re/panda/tree/master/panda/python/examples">on GitHub</a>.</p>
 <h1 id="pypanda">PYPANDA</h1>
 <p>PYPANDA is a python interface to PANDA. With PYPANDA, you can quickly develop plugins
 to analyze behavior of a running system, record a system and analyze replays, or do
@@ -36,7 +35,7 @@ nearly anything you can do using PANDA's C/C++ APIs.</p>
 <h2 id="installation">Installation</h2>
 <ol>
 <li>Follow instructions to build PANDA or run <code>scripts/panda/install_ubuntu.sh</code>.</li>
-<li><code>cd</code> into <code>panda/python/core</code> and run <code>python3 setup.py install</code> (possibly in a virtual environment). This will install the <code>panda</code> python package to your system.</li>
+<li><code>cd</code> into <code>panda/python/core</code> and run <code>python3 setup.py install</code> (possibly in a virtual environment). This will install the <code><a title="pandare.panda" href="panda.html">pandare.panda</a></code> python package to your system.</li>
 </ol>
 <h2 id="example-program">Example program</h2>
 <p>This program counts the number of basic blocks executed while running <code>uname -a</code> inside a 32-bit guest.</p>
@@ -185,18 +184,18 @@ and the magic <code>BEGIN_PYPANDA_NEEDS_THIS</code> strings it searches for.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-The panda python extension (pypanda) is a module built for interacting
-with the PANDA project. The project enables interaction and callbacks
-with a use-specified virtual machine. 
+The PANDA python interface (sometimes called pypanda) is a python module built for interacting with the PANDA project.
+The module enables driving an execution of a virtual machine while also introspecting on its execution using PANDA&#39;s callback
+and plugin systems.
 
-The primary interface for pypanda is in `panda.main`.
+Most of the commonly used APIs are in `pandare.panda`.
 
-Check out our example plugins here: https://github.com/panda-re/panda/tree/master/panda/python/examples
+Example plugins are available [on GitHub](https://github.com/panda-re/panda/tree/master/panda/python/examples).
 
 .. include:: ../../docs/USAGE.md
 &#34;&#34;&#34;
 
-from .main import Panda, blocking
+from .panda import Panda, blocking
 from .ffi_importer import ffi
 from .extras import *
 
@@ -204,7 +203,8 @@ __pdoc__ = {}
 
 __pdoc__[&#39;volatility_cli_classes&#39;] = False
 __pdoc__[&#39;data&#39;] = False
-__pdoc__[&#39;autogen&#39;] = False</code></pre>
+__pdoc__[&#39;autogen&#39;] = False
+__pdoc__[&#39;plog_pb2&#39;] = False</code></pre>
 </details>
 </section>
 <section>
@@ -212,11 +212,11 @@ __pdoc__[&#39;autogen&#39;] = False</code></pre>
 <dl>
 <dt><code class="name"><a title="pandare.arch" href="arch.html">pandare.arch</a></code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>This module contains architecture-specific code …</p></div>
 </dd>
 <dt><code class="name"><a title="pandare.asyncthread" href="asyncthread.html">pandare.asyncthread</a></code></dt>
 <dd>
-<div class="desc"><p>Module to run a thread in parallel to QEMU's main cpu loop.
+<div class="desc"><p>Internal module to run a thread in parallel to QEMU's main cpu loop.
 Enables queuing up python functions from main thread and vice versa</p></div>
 </dd>
 <dt><code class="name"><a title="pandare.extras" href="extras/index.html">pandare.extras</a></code></dt>
@@ -225,11 +225,12 @@ Enables queuing up python functions from main thread and vice versa</p></div>
 </dd>
 <dt><code class="name"><a title="pandare.ffi_importer" href="ffi_importer.html">pandare.ffi_importer</a></code></dt>
 <dd>
-<div class="desc"><p>This module is a workaround to maintain state of and not recreate cffi objects between mixins. All it does is import cffi and give you a handle to ffi.</p></div>
+<div class="desc"><p>This internal module is a workaround to maintain state of cffi objects between submodules.
+It simply imports cffi and give you a handle to the <code>ffi</code> …</p></div>
 </dd>
-<dt><code class="name"><a title="pandare.main" href="main.html">pandare.main</a></code></dt>
+<dt><code class="name"><a title="pandare.panda" href="panda.html">pandare.panda</a></code></dt>
 <dd>
-<div class="desc"><p>The main module is a container for the Panda class.</p></div>
+<div class="desc"><p>This module simply contains the Panda class</p></div>
 </dd>
 <dt><code class="name"><a title="pandare.panda_expect" href="panda_expect.html">pandare.panda_expect</a></code></dt>
 <dd>
@@ -238,10 +239,6 @@ Enables queuing up python functions from main thread and vice versa</p></div>
 <dt><code class="name"><a title="pandare.plog" href="plog.html">pandare.plog</a></code></dt>
 <dd>
 <div class="desc"><p>Functionality to interact with the PANDA Log.</p></div>
-</dd>
-<dt><code class="name"><a title="pandare.plog_pb2" href="plog_pb2.html">pandare.plog_pb2</a></code></dt>
-<dd>
-<div class="desc"></div>
 </dd>
 <dt><code class="name"><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></dt>
 <dd>
@@ -299,10 +296,9 @@ Enables queuing up python functions from main thread and vice versa</p></div>
 <li><code><a title="pandare.asyncthread" href="asyncthread.html">pandare.asyncthread</a></code></li>
 <li><code><a title="pandare.extras" href="extras/index.html">pandare.extras</a></code></li>
 <li><code><a title="pandare.ffi_importer" href="ffi_importer.html">pandare.ffi_importer</a></code></li>
-<li><code><a title="pandare.main" href="main.html">pandare.main</a></code></li>
+<li><code><a title="pandare.panda" href="panda.html">pandare.panda</a></code></li>
 <li><code><a title="pandare.panda_expect" href="panda_expect.html">pandare.panda_expect</a></code></li>
 <li><code><a title="pandare.plog" href="plog.html">pandare.plog</a></code></li>
-<li><code><a title="pandare.plog_pb2" href="plog_pb2.html">pandare.plog_pb2</a></code></li>
 <li><code><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></li>
 <li><code><a title="pandare.taint" href="taint/index.html">pandare.taint</a></code></li>
 <li><code><a title="pandare.utils" href="utils.html">pandare.utils</a></code></li>
