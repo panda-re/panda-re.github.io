@@ -769,6 +769,37 @@ class Panda():
         else: # Else it&#39;s positive
             return x
 
+    def queue_blocking(self, func, queue=True):
+        &#34;&#34;&#34;
+        Decorator to mark a function as `blocking`, and by default queue it to run asynchronously
+
+        ```
+        @panda.queue_blocking
+        def do_something():
+            panda.revert_sync(&#39;root&#39;)
+            print(panda.run_serial_cmd(&#39;whoami&#39;))
+            panda.end_analysis()
+        ```
+
+        is equivalent to
+
+        ```
+        @blocking
+        def run_whoami():
+            panda.revert_sync(&#39;root&#39;)
+            print(panda.run_serial_cmd(&#39;whoami&#39;))
+            panda.end_analysis()
+
+        panda.queue_async(run_whoami)
+        ```
+
+        &#34;&#34;&#34;
+        f = blocking(func)
+        if queue:
+            self.queue_async(f)
+        return f
+
+
     ########################## LIBPANDA FUNCTIONS ########################
     # Methods that directly pass data to/from PANDA with no extra logic beyond argument reformatting.
     def set_pandalog(self, name):
@@ -3032,6 +3063,37 @@ class Panda():
             return (x - 2**self.bits)
         else: # Else it&#39;s positive
             return x
+
+    def queue_blocking(self, func, queue=True):
+        &#34;&#34;&#34;
+        Decorator to mark a function as `blocking`, and by default queue it to run asynchronously
+
+        ```
+        @panda.queue_blocking
+        def do_something():
+            panda.revert_sync(&#39;root&#39;)
+            print(panda.run_serial_cmd(&#39;whoami&#39;))
+            panda.end_analysis()
+        ```
+
+        is equivalent to
+
+        ```
+        @blocking
+        def run_whoami():
+            panda.revert_sync(&#39;root&#39;)
+            print(panda.run_serial_cmd(&#39;whoami&#39;))
+            panda.end_analysis()
+
+        panda.queue_async(run_whoami)
+        ```
+
+        &#34;&#34;&#34;
+        f = blocking(func)
+        if queue:
+            self.queue_async(f)
+        return f
+
 
     ########################## LIBPANDA FUNCTIONS ########################
     # Methods that directly pass data to/from PANDA with no extra logic beyond argument reformatting.
@@ -6776,6 +6838,61 @@ Returns:
     self.athread.queue(f, internal=internal)</code></pre>
 </details>
 </dd>
+<dt id="pandare.panda.Panda.queue_blocking"><code class="name flex">
+<span>def <span class="ident">queue_blocking</span></span>(<span>self, func, queue=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Decorator to mark a function as <code>blocking</code>, and by default queue it to run asynchronously</p>
+<pre><code>@panda.queue_blocking
+def do_something():
+    panda.revert_sync('root')
+    print(panda.run_serial_cmd('whoami'))
+    panda.end_analysis()
+</code></pre>
+<p>is equivalent to</p>
+<pre><code>@blocking
+def run_whoami():
+    panda.revert_sync('root')
+    print(panda.run_serial_cmd('whoami'))
+    panda.end_analysis()
+
+panda.queue_async(run_whoami)
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def queue_blocking(self, func, queue=True):
+    &#34;&#34;&#34;
+    Decorator to mark a function as `blocking`, and by default queue it to run asynchronously
+
+    ```
+    @panda.queue_blocking
+    def do_something():
+        panda.revert_sync(&#39;root&#39;)
+        print(panda.run_serial_cmd(&#39;whoami&#39;))
+        panda.end_analysis()
+    ```
+
+    is equivalent to
+
+    ```
+    @blocking
+    def run_whoami():
+        panda.revert_sync(&#39;root&#39;)
+        print(panda.run_serial_cmd(&#39;whoami&#39;))
+        panda.end_analysis()
+
+    panda.queue_async(run_whoami)
+    ```
+
+    &#34;&#34;&#34;
+    f = blocking(func)
+    if queue:
+        self.queue_async(f)
+    return f</code></pre>
+</details>
+</dd>
 <dt id="pandare.panda.Panda.queue_main_loop_wait_fn"><code class="name flex">
 <span>def <span class="ident">queue_main_loop_wait_fn</span></span>(<span>self, fn, args=[])</span>
 </code></dt>
@@ -8006,6 +8123,7 @@ Returns:
 <li><code><a title="pandare.panda.Panda.pyperiph_read_cb" href="#pandare.panda.Panda.pyperiph_read_cb">pyperiph_read_cb</a></code></li>
 <li><code><a title="pandare.panda.Panda.pyperiph_write_cb" href="#pandare.panda.Panda.pyperiph_write_cb">pyperiph_write_cb</a></code></li>
 <li><code><a title="pandare.panda.Panda.queue_async" href="#pandare.panda.Panda.queue_async">queue_async</a></code></li>
+<li><code><a title="pandare.panda.Panda.queue_blocking" href="#pandare.panda.Panda.queue_blocking">queue_blocking</a></code></li>
 <li><code><a title="pandare.panda.Panda.queue_main_loop_wait_fn" href="#pandare.panda.Panda.queue_main_loop_wait_fn">queue_main_loop_wait_fn</a></code></li>
 <li><code><a title="pandare.panda.Panda.read_str" href="#pandare.panda.Panda.read_str">read_str</a></code></li>
 <li><code><a title="pandare.panda.Panda.record_cmd" href="#pandare.panda.Panda.record_cmd">record_cmd</a></code></li>
