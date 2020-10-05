@@ -31,11 +31,11 @@
 This module simply contains the Panda class
 &#34;&#34;&#34;
 
-import sys
+from sys import version_info, exit
 
-if sys.version_info[0] &lt; 3:
+if version_info[0] &lt; 3:
     print(&#34;Please run with Python 3!&#34;)
-    sys.exit(0)
+    exit(0)
 
 import socket
 import threading
@@ -149,6 +149,7 @@ class Panda():
 
         self._do_types_import()
         self.libpanda = ffi.dlopen(self.libpanda_path)
+        self.C = ffi.dlopen(None)
 
         # set OS name if we have one
         if self.os:
@@ -547,9 +548,20 @@ class Panda():
         &#39;&#39;&#39;
         Calls QEMU memsavep on your specified python file.
         &#39;&#39;&#39;
-        newfd = dup(file_out.fileno())
-        self.libpanda.panda_memsavep(newfd)
-        self.libpanda.fclose(newfd)
+        def initlib():
+            ffi.cdef(&#39;&#39;&#39;
+            FILE *fdopen(int, const char *);   // from the C &lt;stdio.h&gt;
+            int fclose(FILE *);
+            &#39;&#39;&#39;, override=True)
+        ffi.init_once(initlib, &#34;cinit&#34;)
+        
+        # this part was largely copied from https://cffi.readthedocs.io/en/latest/ref.html#support-for-file
+
+        file_out.flush()                    # make sure the file is flushed
+        newfd = dup(file_out.fileno())   # make a copy of the file descriptor
+        fileptr = self.C.fdopen(newfd, b&#34;w&#34;)
+        self.libpanda.panda_memsavep(fileptr)
+        self.C.fclose(fileptr)
 
     def physical_memory_read(self, addr, length, fmt=&#39;bytearray&#39;):
         &#39;&#39;&#39;
@@ -2444,6 +2456,7 @@ class Panda():
 
         self._do_types_import()
         self.libpanda = ffi.dlopen(self.libpanda_path)
+        self.C = ffi.dlopen(None)
 
         # set OS name if we have one
         if self.os:
@@ -2842,9 +2855,20 @@ class Panda():
         &#39;&#39;&#39;
         Calls QEMU memsavep on your specified python file.
         &#39;&#39;&#39;
-        newfd = dup(file_out.fileno())
-        self.libpanda.panda_memsavep(newfd)
-        self.libpanda.fclose(newfd)
+        def initlib():
+            ffi.cdef(&#39;&#39;&#39;
+            FILE *fdopen(int, const char *);   // from the C &lt;stdio.h&gt;
+            int fclose(FILE *);
+            &#39;&#39;&#39;, override=True)
+        ffi.init_once(initlib, &#34;cinit&#34;)
+        
+        # this part was largely copied from https://cffi.readthedocs.io/en/latest/ref.html#support-for-file
+
+        file_out.flush()                    # make sure the file is flushed
+        newfd = dup(file_out.fileno())   # make a copy of the file descriptor
+        fileptr = self.C.fdopen(newfd, b&#34;w&#34;)
+        self.libpanda.panda_memsavep(fileptr)
+        self.C.fclose(fileptr)
 
     def physical_memory_read(self, addr, length, fmt=&#39;bytearray&#39;):
         &#39;&#39;&#39;
@@ -6297,9 +6321,20 @@ Returns:
     &#39;&#39;&#39;
     Calls QEMU memsavep on your specified python file.
     &#39;&#39;&#39;
-    newfd = dup(file_out.fileno())
-    self.libpanda.panda_memsavep(newfd)
-    self.libpanda.fclose(newfd)</code></pre>
+    def initlib():
+        ffi.cdef(&#39;&#39;&#39;
+        FILE *fdopen(int, const char *);   // from the C &lt;stdio.h&gt;
+        int fclose(FILE *);
+        &#39;&#39;&#39;, override=True)
+    ffi.init_once(initlib, &#34;cinit&#34;)
+    
+    # this part was largely copied from https://cffi.readthedocs.io/en/latest/ref.html#support-for-file
+
+    file_out.flush()                    # make sure the file is flushed
+    newfd = dup(file_out.fileno())   # make a copy of the file descriptor
+    fileptr = self.C.fdopen(newfd, b&#34;w&#34;)
+    self.libpanda.panda_memsavep(fileptr)
+    self.C.fclose(fileptr)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.object_class_by_name"><code class="name flex">
