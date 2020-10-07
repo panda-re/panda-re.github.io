@@ -39,7 +39,7 @@ nearly anything you can do using PANDA's C/C++ APIs.</p>
 </ol>
 <h2 id="example-program">Example program</h2>
 <p>This program counts the number of basic blocks executed while running <code>uname -a</code> inside a 32-bit guest.</p>
-<pre><code class="py">from pandare import Panda, blocking
+<pre><code class="language-py">from pandare import Panda, blocking
 panda = Panda(generic='i386') # Create an instance of panda
 
 # Counter of the number of basic blocks
@@ -76,7 +76,7 @@ specificed qcow image. If you wish to get started quickly you may use the <code>
 to download a default image and run it.</p>
 <p>For example: <code>panda = Panda(generic='i386')</code></p>
 <h2 id="register-a-callback">Register a callback</h2>
-<pre><code class="py">@panda.cb_before_block_exec
+<pre><code class="language-py">@panda.cb_before_block_exec
 def my_before_block_fn(cpustate, translation_block):
   pc = panda.current_pc(env)
   print(&quot;About to run the block at 0x{:x}&quot;.format(pc))
@@ -90,14 +90,14 @@ in C behaves.</p>
 <h2 id="enable-and-disable-callbacks">Enable and disable callbacks</h2>
 <p>Python callbacks can be enabled and disabled using their names.
 By default, a callback is named after the function that is decorated. For example, the callback describe in</p>
-<pre><code class="py">@panda.cb_before_block_exec
+<pre><code class="language-py">@panda.cb_before_block_exec
 def my_before_block_fn(cpustate, translation_block):
   ...
 </code></pre>
 <p>is named <code>my_before_block_fn</code> and can be disabled with <code>panda.disable_callback('my_before_block_fn')</code> and later
 enabled with <code>panda.enable_callback('my_before_block_fn')</code>.</p>
 <p>Callbacks can be given custom names and disabled at initialization by passing arguments to their decorators:</p>
-<pre><code class="py">@panda.cb_before_block_exec(name='my_callback', enabled=False)
+<pre><code class="language-py">@panda.cb_before_block_exec(name='my_callback', enabled=False)
 def my_before_block_fn(cpustate, translation_block):
   ...
 panda.enable_callback('my_callback')
@@ -105,7 +105,7 @@ panda.enable_callback('my_callback')
 <p>If a callback is decorated with a <code>procname</code> argument, it will only be enabled when that process is running.
 To permanently disable such a callback, you can use <code>panda.disable_callback('name', forever=True)</code>.</p>
 <h2 id="replaying-recordings">Replaying Recordings</h2>
-<pre><code class="py">panda = Panda(...)
+<pre><code class="language-py">panda = Panda(...)
 # Register functions to run on callbacks here
 panda.begin_replay(&quot;/file/path/here&quot;)
 panda.run() # Actually run the replay
@@ -124,7 +124,7 @@ from the guest.</p>
 to do this in a callback, the guest would have no chance to respond to your commands and you'd end up in a deadlock where your callback
 code never terminates until the guest executes your command, and the guest will never execute commands until your callback terminates.</p>
 <p>Instead, in a callback (or at any time), you can queue up blocking functions to run asynchronously as follows:</p>
-<pre><code class="py"># (panda object initialization not shown)
+<pre><code class="language-py"># (panda object initialization not shown)
 
 @blocking
 def first_cmd():

@@ -37,7 +37,7 @@ from pandare.extras.file_hook import FileHook
 # TODO: Ability to fake buffers for specific commands
 
 ioctl_initialized = False
-def do_ioctl_init(arch):
+def do_ioctl_init(arch_name):
 
     &#39;&#39;&#39;
     One-time init for arch-specific bit-packed ioctl cmd struct.
@@ -51,8 +51,8 @@ def do_ioctl_init(arch):
     ioctl_initialized = True
     TYPE_BITS = 8
     CMD_BITS = 8
-    SIZE_BITS = 14 if arch != &#34;ppc&#34; else 13
-    DIR_BITS = 2 if arch != &#34;ppc&#34; else 3
+    SIZE_BITS = 14 if arch_name != &#34;ppc&#34; else 13
+    DIR_BITS = 2 if arch_name != &#34;ppc&#34; else 3
 
     ffi.cdef(&#34;&#34;&#34;
     struct IoctlCmdBits {
@@ -87,7 +87,7 @@ class Ioctl():
         Do unpacking, optionally using OSI for process and file name info.
         &#39;&#39;&#39;
 
-        do_ioctl_init(panda.arch)
+        do_ioctl_init(panda.arch_name)
         self.cmd = ffi.new(&#34;union IoctlCmdUnion*&#34;)
         self.cmd.asUnsigned32 = cmd
         self.original_ret_code = None
@@ -123,12 +123,12 @@ class Ioctl():
         Helper retrive original return code, handles arch-specifc ABI
         &#39;&#39;&#39;
 
-        if panda.arch == &#34;mipsel&#34; or panda.arch == &#34;mips&#34;:
+        if panda.arch_name == &#34;mipsel&#34; or panda.arch_name == &#34;mips&#34;:
             # Note: return values are in $v0, $v1 (regs 2 and 3 respectively), but here we only use first
             self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.active_tc.gpr[2])
-        elif panda.arch == &#34;aarch64&#34;:
+        elif panda.arch_name == &#34;aarch64&#34;:
             self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.xregs[0])
-        elif panda.arch == &#34;ppc&#34;:
+        elif panda.arch_name == &#34;ppc&#34;:
             raise RuntimeError(&#34;PPC currently unsupported!&#34;)
         else: # x86/x64/ARM
             self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.regs[0])
@@ -222,11 +222,11 @@ class IoctlFaker():
                 ioctl.original_ret_code in self.intercept_ret_vals and \
                         (ioctl.file_name, ioctl.cmd.bits.cmd_num) not in self.ignore: # Allow ignoring specific commands on specific files
 
-                if panda.arch == &#34;mipsel&#34; or panda.arch == &#34;mips&#34;:
+                if panda.arch_name == &#34;mipsel&#34; or panda.arch_name == &#34;mips&#34;:
                     cpu.env_ptr.active_tc.gpr[2] = 0
-                elif panda.arch == &#34;aarch64&#34;:
+                elif panda.arch_name == &#34;aarch64&#34;:
                     cpu.env_ptr.xregs[0] = 0
-                elif panda.arch == &#34;ppc&#34;:
+                elif panda.arch_name == &#34;ppc&#34;:
                     raise RuntimeError(&#34;PPC currently unsupported!&#34;)
                 else: # x86/x64/ARM
                     cpu.env_ptr.regs[0] = 0
@@ -324,7 +324,7 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="pandare.extras.ioctl_faker.do_ioctl_init"><code class="name flex">
-<span>def <span class="ident">do_ioctl_init</span></span>(<span>arch)</span>
+<span>def <span class="ident">do_ioctl_init</span></span>(<span>arch_name)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>One-time init for arch-specific bit-packed ioctl cmd struct.</p></div>
@@ -332,7 +332,7 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def do_ioctl_init(arch):
+<pre><code class="python">def do_ioctl_init(arch_name):
 
     &#39;&#39;&#39;
     One-time init for arch-specific bit-packed ioctl cmd struct.
@@ -346,8 +346,8 @@ if __name__ == &#34;__main__&#34;:
     ioctl_initialized = True
     TYPE_BITS = 8
     CMD_BITS = 8
-    SIZE_BITS = 14 if arch != &#34;ppc&#34; else 13
-    DIR_BITS = 2 if arch != &#34;ppc&#34; else 3
+    SIZE_BITS = 14 if arch_name != &#34;ppc&#34; else 13
+    DIR_BITS = 2 if arch_name != &#34;ppc&#34; else 3
 
     ffi.cdef(&#34;&#34;&#34;
     struct IoctlCmdBits {
@@ -399,7 +399,7 @@ if __name__ == &#34;__main__&#34;:
         Do unpacking, optionally using OSI for process and file name info.
         &#39;&#39;&#39;
 
-        do_ioctl_init(panda.arch)
+        do_ioctl_init(panda.arch_name)
         self.cmd = ffi.new(&#34;union IoctlCmdUnion*&#34;)
         self.cmd.asUnsigned32 = cmd
         self.original_ret_code = None
@@ -435,12 +435,12 @@ if __name__ == &#34;__main__&#34;:
         Helper retrive original return code, handles arch-specifc ABI
         &#39;&#39;&#39;
 
-        if panda.arch == &#34;mipsel&#34; or panda.arch == &#34;mips&#34;:
+        if panda.arch_name == &#34;mipsel&#34; or panda.arch_name == &#34;mips&#34;:
             # Note: return values are in $v0, $v1 (regs 2 and 3 respectively), but here we only use first
             self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.active_tc.gpr[2])
-        elif panda.arch == &#34;aarch64&#34;:
+        elif panda.arch_name == &#34;aarch64&#34;:
             self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.xregs[0])
-        elif panda.arch == &#34;ppc&#34;:
+        elif panda.arch_name == &#34;ppc&#34;:
             raise RuntimeError(&#34;PPC currently unsupported!&#34;)
         else: # x86/x64/ARM
             self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.regs[0])
@@ -495,12 +495,12 @@ Helper retrive original return code, handles arch-specifc ABI</p></div>
     Helper retrive original return code, handles arch-specifc ABI
     &#39;&#39;&#39;
 
-    if panda.arch == &#34;mipsel&#34; or panda.arch == &#34;mips&#34;:
+    if panda.arch_name == &#34;mipsel&#34; or panda.arch_name == &#34;mips&#34;:
         # Note: return values are in $v0, $v1 (regs 2 and 3 respectively), but here we only use first
         self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.active_tc.gpr[2])
-    elif panda.arch == &#34;aarch64&#34;:
+    elif panda.arch_name == &#34;aarch64&#34;:
         self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.xregs[0])
-    elif panda.arch == &#34;ppc&#34;:
+    elif panda.arch_name == &#34;ppc&#34;:
         raise RuntimeError(&#34;PPC currently unsupported!&#34;)
     else: # x86/x64/ARM
         self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.regs[0])</code></pre>
@@ -581,11 +581,11 @@ intercept_all_non_zero is aggressive setting that takes precedence if set - any 
                 ioctl.original_ret_code in self.intercept_ret_vals and \
                         (ioctl.file_name, ioctl.cmd.bits.cmd_num) not in self.ignore: # Allow ignoring specific commands on specific files
 
-                if panda.arch == &#34;mipsel&#34; or panda.arch == &#34;mips&#34;:
+                if panda.arch_name == &#34;mipsel&#34; or panda.arch_name == &#34;mips&#34;:
                     cpu.env_ptr.active_tc.gpr[2] = 0
-                elif panda.arch == &#34;aarch64&#34;:
+                elif panda.arch_name == &#34;aarch64&#34;:
                     cpu.env_ptr.xregs[0] = 0
-                elif panda.arch == &#34;ppc&#34;:
+                elif panda.arch_name == &#34;ppc&#34;:
                     raise RuntimeError(&#34;PPC currently unsupported!&#34;)
                 else: # x86/x64/ARM
                     cpu.env_ptr.regs[0] = 0
