@@ -90,21 +90,21 @@ class FileHook:
         # grep filename syscall_switch_enter_linux_x86.cpp | grep &#34;\[&#39;const char &#34; | grep -o sys_[a-zA-Z0-9]* | grep -o [a-z0-9]*$
         # grep filename syscall_switch_enter_linux_x86.cpp | grep -v &#34;\[&#39;const char &#34; | grep -o sys_[a-zA-Z0-9]* | grep -o [a-z0-9]*$
         to_hook = {}
-        if panda.arch == &#34;i386&#34;:
+        if panda.arch_name == &#34;i386&#34;:
             to_hook[0] = [&#34;open&#34;, &#34;execve&#34;, &#34;chdir&#34;, &#34;mknod&#34;, &#34;chmod&#34;, &#34;lchown16&#34;, &#34;stat&#34;, &#34;access&#34;, &#34;chroot&#34;,
                          &#34;lstat&#34;, &#34;newstat&#34;, &#34;newlstat&#34;, &#34;chown16&#34;, &#34;stat64&#34;, &#34;lstat64&#34;, &#34;lchown&#34;, &#34;chown&#34; ]
             to_hook[1] = [&#34;utime&#34;, &#34;utimes&#34;, &#34;openat&#34;, &#34;mknodat&#34;, &#34;fchownat&#34;, &#34;futimesat&#34;, &#34;fstatat64&#34;,
                           &#34;fchmodat&#34;, &#34;faccessat&#34;, &#34;utimensat&#34;, &#34;execveat&#34;]
 
-        elif panda.arch == &#34;x86_64&#34;:
+        elif panda.arch_name == &#34;x86_64&#34;:
             to_hook[0] = [&#34;open&#34;, &#34;newstat&#34;, &#34;newlstat&#34;, &#34;access&#34;, &#34;chdir&#34;, &#34;chmod&#34;, &#34;chown&#34;, &#34;lchown&#34;, &#34;mknod&#34;, &#34;chroot&#34;]
             to_hook[1] = [&#34;utime&#34;, &#34;utimes&#34;, &#34;openat&#34;, &#34;mknodat&#34;, &#34;fchownat&#34;, &#34;futimesat&#34;, &#34;newfstatat&#34;, &#34;fchmodat&#34;, &#34;faccessat&#34;, &#34;utimensat&#34;]
 
-        elif panda.arch == &#34;arm&#34;:
+        elif panda.arch_name == &#34;arm&#34;:
             to_hook[0] = [&#34;open&#34;, &#34;execve&#34;, &#34;chdir&#34;, &#34;mknod&#34;, &#34;chmod&#34;, &#34;lchown16&#34;, &#34;access&#34;, &#34;chroot&#34;, &#34;newstat&#34;, &#34;newlstat&#34;, &#34;chown16&#34;, &#34;stat64&#34;, &#34;lstat64&#34;, &#34;lchown&#34;, &#34;chown&#34;]
             to_hook[1] = [&#34;utime&#34;, &#34;utimes&#34;, &#34;openat&#34;, &#34;mknodat&#34;, &#34;fchownat&#34;, &#34;futimesat&#34;, &#34;fstatat64&#34;, &#34;fchmodat&#34;, &#34;faccessat&#34;, &#34;utimensat&#34;, &#34;execveat&#34;]
         else:
-            raise ValueError(f&#34;Unsupported PANDA arch: {panda.arch}&#34;)
+            raise ValueError(f&#34;Unsupported PANDA arch: {panda.arch_name}&#34;)
 
         # Register the callbacks
         for arg_offset, names in to_hook.items():
@@ -361,21 +361,21 @@ from all syscalls that have a char* filename argument.</p></div>
         # grep filename syscall_switch_enter_linux_x86.cpp | grep &#34;\[&#39;const char &#34; | grep -o sys_[a-zA-Z0-9]* | grep -o [a-z0-9]*$
         # grep filename syscall_switch_enter_linux_x86.cpp | grep -v &#34;\[&#39;const char &#34; | grep -o sys_[a-zA-Z0-9]* | grep -o [a-z0-9]*$
         to_hook = {}
-        if panda.arch == &#34;i386&#34;:
+        if panda.arch_name == &#34;i386&#34;:
             to_hook[0] = [&#34;open&#34;, &#34;execve&#34;, &#34;chdir&#34;, &#34;mknod&#34;, &#34;chmod&#34;, &#34;lchown16&#34;, &#34;stat&#34;, &#34;access&#34;, &#34;chroot&#34;,
                          &#34;lstat&#34;, &#34;newstat&#34;, &#34;newlstat&#34;, &#34;chown16&#34;, &#34;stat64&#34;, &#34;lstat64&#34;, &#34;lchown&#34;, &#34;chown&#34; ]
             to_hook[1] = [&#34;utime&#34;, &#34;utimes&#34;, &#34;openat&#34;, &#34;mknodat&#34;, &#34;fchownat&#34;, &#34;futimesat&#34;, &#34;fstatat64&#34;,
                           &#34;fchmodat&#34;, &#34;faccessat&#34;, &#34;utimensat&#34;, &#34;execveat&#34;]
 
-        elif panda.arch == &#34;x86_64&#34;:
+        elif panda.arch_name == &#34;x86_64&#34;:
             to_hook[0] = [&#34;open&#34;, &#34;newstat&#34;, &#34;newlstat&#34;, &#34;access&#34;, &#34;chdir&#34;, &#34;chmod&#34;, &#34;chown&#34;, &#34;lchown&#34;, &#34;mknod&#34;, &#34;chroot&#34;]
             to_hook[1] = [&#34;utime&#34;, &#34;utimes&#34;, &#34;openat&#34;, &#34;mknodat&#34;, &#34;fchownat&#34;, &#34;futimesat&#34;, &#34;newfstatat&#34;, &#34;fchmodat&#34;, &#34;faccessat&#34;, &#34;utimensat&#34;]
 
-        elif panda.arch == &#34;arm&#34;:
+        elif panda.arch_name == &#34;arm&#34;:
             to_hook[0] = [&#34;open&#34;, &#34;execve&#34;, &#34;chdir&#34;, &#34;mknod&#34;, &#34;chmod&#34;, &#34;lchown16&#34;, &#34;access&#34;, &#34;chroot&#34;, &#34;newstat&#34;, &#34;newlstat&#34;, &#34;chown16&#34;, &#34;stat64&#34;, &#34;lstat64&#34;, &#34;lchown&#34;, &#34;chown&#34;]
             to_hook[1] = [&#34;utime&#34;, &#34;utimes&#34;, &#34;openat&#34;, &#34;mknodat&#34;, &#34;fchownat&#34;, &#34;futimesat&#34;, &#34;fstatat64&#34;, &#34;fchmodat&#34;, &#34;faccessat&#34;, &#34;utimensat&#34;, &#34;execveat&#34;]
         else:
-            raise ValueError(f&#34;Unsupported PANDA arch: {panda.arch}&#34;)
+            raise ValueError(f&#34;Unsupported PANDA arch: {panda.arch_name}&#34;)
 
         # Register the callbacks
         for arg_offset, names in to_hook.items():
