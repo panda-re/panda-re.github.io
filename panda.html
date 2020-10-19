@@ -463,6 +463,36 @@ class Panda():
         if self.running.is_set():
             # If we were running, stop the execution and check if we crashed
             self.queue_async(self.stop_run, internal=True)
+    
+    def record(self, recording_name, snapshot_name=None):
+        &#34;&#34;&#34;Begins active recording with name provided.
+
+        Args:
+            recording_name (string): name of recording to save.
+            snapshot_name (string, optional): Before recording starts restore to this snapshot name. Defaults to None.
+
+        Raises:
+            Exception: raises exception if there was an error starting recording.
+        &#34;&#34;&#34;
+        if snapshot_name == None:
+            snapshot_name_ffi = ffi.NULL
+        recording_name_ffi = ffi.new(&#34;char[]&#34;, recording_name.encode())
+        result = self.libpanda.panda_record_begin(recording_name_ffi,snapshot_name_ffi)
+        res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
+        if res_string_enum != &#34;RRCTRL_OK&#34;:
+           raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;) 
+    
+    def end_record(self):
+        &#34;&#34;&#34;Stop active recording.
+
+        Raises:
+            Exception: raises exception if there was an error stopping recording.
+        &#34;&#34;&#34;
+        result = self.libpanda.panda_record_end()
+        res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
+        if res_string_enum != &#34;RRCTRL_OK&#34;:
+           raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;) 
+
 
     def run_replay(self, replaypfx):
         &#39;&#39;&#39;
@@ -2942,6 +2972,36 @@ class Panda():
         if self.running.is_set():
             # If we were running, stop the execution and check if we crashed
             self.queue_async(self.stop_run, internal=True)
+    
+    def record(self, recording_name, snapshot_name=None):
+        &#34;&#34;&#34;Begins active recording with name provided.
+
+        Args:
+            recording_name (string): name of recording to save.
+            snapshot_name (string, optional): Before recording starts restore to this snapshot name. Defaults to None.
+
+        Raises:
+            Exception: raises exception if there was an error starting recording.
+        &#34;&#34;&#34;
+        if snapshot_name == None:
+            snapshot_name_ffi = ffi.NULL
+        recording_name_ffi = ffi.new(&#34;char[]&#34;, recording_name.encode())
+        result = self.libpanda.panda_record_begin(recording_name_ffi,snapshot_name_ffi)
+        res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
+        if res_string_enum != &#34;RRCTRL_OK&#34;:
+           raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;) 
+    
+    def end_record(self):
+        &#34;&#34;&#34;Stop active recording.
+
+        Raises:
+            Exception: raises exception if there was an error stopping recording.
+        &#34;&#34;&#34;
+        result = self.libpanda.panda_record_end()
+        res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
+        if res_string_enum != &#34;RRCTRL_OK&#34;:
+           raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;) 
+
 
     def run_replay(self, replaypfx):
         &#39;&#39;&#39;
@@ -5879,6 +5939,32 @@ without needing to wait for tasks in the main async thread</p></div>
         self.queue_async(self.stop_run, internal=True)</code></pre>
 </details>
 </dd>
+<dt id="pandare.panda.Panda.end_record"><code class="name flex">
+<span>def <span class="ident">end_record</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Stop active recording.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>Exception</code></dt>
+<dd>raises exception if there was an error stopping recording.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def end_record(self):
+    &#34;&#34;&#34;Stop active recording.
+
+    Raises:
+        Exception: raises exception if there was an error stopping recording.
+    &#34;&#34;&#34;
+    result = self.libpanda.panda_record_end()
+    res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
+    if res_string_enum != &#34;RRCTRL_OK&#34;:
+       raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;) </code></pre>
+</details>
+</dd>
 <dt id="pandare.panda.Panda.error_report"><code class="name flex">
 <span>def <span class="ident">error_report</span></span>(<span>self, s)</span>
 </code></dt>
@@ -7403,6 +7489,46 @@ pointer to an unmapped page)</p></div>
     return r.decode(&#34;utf8&#34;, &#34;ignore&#34;)</code></pre>
 </details>
 </dd>
+<dt id="pandare.panda.Panda.record"><code class="name flex">
+<span>def <span class="ident">record</span></span>(<span>self, recording_name, snapshot_name=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Begins active recording with name provided.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>recording_name</code></strong> :&ensp;<code>string</code></dt>
+<dd>name of recording to save.</dd>
+<dt><strong><code>snapshot_name</code></strong> :&ensp;<code>string</code>, optional</dt>
+<dd>Before recording starts restore to this snapshot name. Defaults to None.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>Exception</code></dt>
+<dd>raises exception if there was an error starting recording.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def record(self, recording_name, snapshot_name=None):
+    &#34;&#34;&#34;Begins active recording with name provided.
+
+    Args:
+        recording_name (string): name of recording to save.
+        snapshot_name (string, optional): Before recording starts restore to this snapshot name. Defaults to None.
+
+    Raises:
+        Exception: raises exception if there was an error starting recording.
+    &#34;&#34;&#34;
+    if snapshot_name == None:
+        snapshot_name_ffi = ffi.NULL
+    recording_name_ffi = ffi.new(&#34;char[]&#34;, recording_name.encode())
+    result = self.libpanda.panda_record_begin(recording_name_ffi,snapshot_name_ffi)
+    res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
+    if res_string_enum != &#34;RRCTRL_OK&#34;:
+       raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;) </code></pre>
+</details>
+</dd>
 <dt id="pandare.panda.Panda.record_cmd"><code class="name flex">
 <span>def <span class="ident">record_cmd</span></span>(<span>self, guest_command, copy_directory=None, iso_name=None, setup_command=None, recording_name='recording', snap_name='root', ignore_errors=False)</span>
 </code></dt>
@@ -8598,6 +8724,7 @@ Returns:
 <li><code><a title="pandare.panda.Panda.enable_precise_pc" href="#pandare.panda.Panda.enable_precise_pc">enable_precise_pc</a></code></li>
 <li><code><a title="pandare.panda.Panda.enable_tb_chaining" href="#pandare.panda.Panda.enable_tb_chaining">enable_tb_chaining</a></code></li>
 <li><code><a title="pandare.panda.Panda.end_analysis" href="#pandare.panda.Panda.end_analysis">end_analysis</a></code></li>
+<li><code><a title="pandare.panda.Panda.end_record" href="#pandare.panda.Panda.end_record">end_record</a></code></li>
 <li><code><a title="pandare.panda.Panda.error_report" href="#pandare.panda.Panda.error_report">error_report</a></code></li>
 <li><code><a title="pandare.panda.Panda.exit_cpu_loop" href="#pandare.panda.Panda.exit_cpu_loop">exit_cpu_loop</a></code></li>
 <li><code><a title="pandare.panda.Panda.finish_serial_cmd" href="#pandare.panda.Panda.finish_serial_cmd">finish_serial_cmd</a></code></li>
@@ -8647,6 +8774,7 @@ Returns:
 <li><code><a title="pandare.panda.Panda.queue_blocking" href="#pandare.panda.Panda.queue_blocking">queue_blocking</a></code></li>
 <li><code><a title="pandare.panda.Panda.queue_main_loop_wait_fn" href="#pandare.panda.Panda.queue_main_loop_wait_fn">queue_main_loop_wait_fn</a></code></li>
 <li><code><a title="pandare.panda.Panda.read_str" href="#pandare.panda.Panda.read_str">read_str</a></code></li>
+<li><code><a title="pandare.panda.Panda.record" href="#pandare.panda.Panda.record">record</a></code></li>
 <li><code><a title="pandare.panda.Panda.record_cmd" href="#pandare.panda.Panda.record_cmd">record_cmd</a></code></li>
 <li><code><a title="pandare.panda.Panda.register_callback" href="#pandare.panda.Panda.register_callback">register_callback</a></code></li>
 <li><code><a title="pandare.panda.Panda.register_cb_decorators" href="#pandare.panda.Panda.register_cb_decorators">register_cb_decorators</a></code></li>
