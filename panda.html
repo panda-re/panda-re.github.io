@@ -477,6 +477,8 @@ class Panda():
         &#34;&#34;&#34;
         if snapshot_name == None:
             snapshot_name_ffi = ffi.NULL
+        else:
+            snapshot_name_ffi = ffi.new(&#34;char[]&#34;,snapshot_name.encode())
         recording_name_ffi = ffi.new(&#34;char[]&#34;, recording_name.encode())
         result = self.libpanda.panda_record_begin(recording_name_ffi,snapshot_name_ffi)
         res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
@@ -2987,6 +2989,8 @@ class Panda():
         &#34;&#34;&#34;
         if snapshot_name == None:
             snapshot_name_ffi = ffi.NULL
+        else:
+            snapshot_name_ffi = ffi.new(&#34;char[]&#34;,snapshot_name.encode())
         recording_name_ffi = ffi.new(&#34;char[]&#34;, recording_name.encode())
         result = self.libpanda.panda_record_begin(recording_name_ffi,snapshot_name_ffi)
         res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
@@ -7524,6 +7528,8 @@ pointer to an unmapped page)</p></div>
     &#34;&#34;&#34;
     if snapshot_name == None:
         snapshot_name_ffi = ffi.NULL
+    else:
+        snapshot_name_ffi = ffi.new(&#34;char[]&#34;,snapshot_name.encode())
     recording_name_ffi = ffi.new(&#34;char[]&#34;, recording_name.encode())
     result = self.libpanda.panda_record_begin(recording_name_ffi,snapshot_name_ffi)
     res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
