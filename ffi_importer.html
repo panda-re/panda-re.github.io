@@ -36,7 +36,12 @@ It simply imports cffi and give you a handle to the `ffi` variable.
 
 # necessary to not recreate ffi, but help along mixins
 from cffi import FFI
-ffi = FFI()</code></pre>
+
+ffi = FFI()
+
+def set_ffi(ffi_new):
+    global ffi
+    ffi = ffi_new</code></pre>
 </details>
 </section>
 <section>
@@ -44,6 +49,23 @@ ffi = FFI()</code></pre>
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pandare.ffi_importer.set_ffi"><code class="name flex">
+<span>def <span class="ident">set_ffi</span></span>(<span>ffi_new)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_ffi(ffi_new):
+    global ffi
+    ffi = ffi_new</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -57,6 +79,11 @@ ffi = FFI()</code></pre>
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="pandare" href="index.html">pandare</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pandare.ffi_importer.set_ffi" href="#pandare.ffi_importer.set_ffi">set_ffi</a></code></li>
 </ul>
 </li>
 </ul>

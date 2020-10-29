@@ -53,7 +53,7 @@ from shlex import quote as shlex_quote
 from time import sleep
 from cffi import FFI
 
-from .ffi_importer import ffi
+from .ffi_importer import ffi, set_ffi
 from .utils import progress, make_iso, debug, blocking, GArrayIterator, plugin_list, Hook
 from .taint import TaintQuery
 from .panda_expect import Expect
@@ -147,8 +147,8 @@ class Panda():
         self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
         self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
 
-        self._do_types_import()
-        self.libpanda = ffi.dlopen(self.libpanda_path)
+        self.ffi = self._do_types_import()
+        self.libpanda = self.ffi.dlopen(self.libpanda_path)
         self.C = ffi.dlopen(None)
 
         # set OS name if we have one
@@ -221,13 +221,16 @@ class Panda():
     def _do_types_import(self):
         # Import objects from panda_datatypes which are configured by the environment variables
         # Store these objects in self.callback and self.callback_dictionary
-
-        # There is almost certainly a better way to do this.
-        environ[&#34;PANDA_BITS&#34;] = str(self.bits)
-        environ[&#34;PANDA_ARCH&#34;] = self.arch_name
+        global ffi
+        from importlib import import_module
+        panda_arch_support = import_module(f&#34;.autogen.panda_{self.arch_name}_{self.bits}&#34;,package=&#39;pandare&#39;)
+        ffi = panda_arch_support.ffi
+        self.ffi = ffi
+        set_ffi(ffi)
         from .autogen.panda_datatypes import pcb, C, callback_dictionary # XXX: What is C and do we need it?
         self.callback_dictionary = callback_dictionary
         self.callback = pcb
+        return ffi
 
     def _initialize_panda(self):
         &#39;&#39;&#39;
@@ -395,7 +398,7 @@ class Panda():
             self.libpanda.panda_disable_tb_chaining()
     
     def setup_internal_signal_handler(self):
-        ffi.cdef(&#34;void panda_setup_signal_handling(void (*f) (int,void*,void*));&#34;,override=True)
+       # ffi.cdef(&#34;void panda_setup_signal_handling(void (*f) (int,void*,void*));&#34;,override=True)
         @ffi.callback(&#34;void(int,void*,void*)&#34;)
         def SigHandler(SIG,a,b):
             from signal import SIGINT, SIGHUP, SIGTERM
@@ -2297,7 +2300,7 @@ class Panda():
             # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
             self.ppp_registered_cbs[local_name] = (f, plugin_name, attr)
 
-            self.plugins[plugin_name].__getattr__(&#34;ppp_add_cb_&#34;+attr)(f) # All PPP cbs start with this string
+            eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(f) # All PPP  cbs start with this string. XXX insecure eval
             return f
         return decorator
 
@@ -2327,7 +2330,7 @@ class Panda():
         &#39;&#39;&#39;
 
         (f, plugin_name, attr) = self.ppp_registered_cbs[name]
-        self.plugins[plugin_name].__getattr__(&#34;ppp_remove_cb_&#34;+attr)(f) # All PPP cbs start with this string
+        eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_remove_cb_{attr}&#34;)(f) # All PPP cbs start with this string. XXX insecure eval
         del self.ppp_registered_cbs[name] # It&#39;s now safe to be garbage collected
 
     ########## GDB MIXINS ##############
@@ -2659,8 +2662,8 @@ class Panda():
         self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
         self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
 
-        self._do_types_import()
-        self.libpanda = ffi.dlopen(self.libpanda_path)
+        self.ffi = self._do_types_import()
+        self.libpanda = self.ffi.dlopen(self.libpanda_path)
         self.C = ffi.dlopen(None)
 
         # set OS name if we have one
@@ -2733,13 +2736,16 @@ class Panda():
     def _do_types_import(self):
         # Import objects from panda_datatypes which are configured by the environment variables
         # Store these objects in self.callback and self.callback_dictionary
-
-        # There is almost certainly a better way to do this.
-        environ[&#34;PANDA_BITS&#34;] = str(self.bits)
-        environ[&#34;PANDA_ARCH&#34;] = self.arch_name
+        global ffi
+        from importlib import import_module
+        panda_arch_support = import_module(f&#34;.autogen.panda_{self.arch_name}_{self.bits}&#34;,package=&#39;pandare&#39;)
+        ffi = panda_arch_support.ffi
+        self.ffi = ffi
+        set_ffi(ffi)
         from .autogen.panda_datatypes import pcb, C, callback_dictionary # XXX: What is C and do we need it?
         self.callback_dictionary = callback_dictionary
         self.callback = pcb
+        return ffi
 
     def _initialize_panda(self):
         &#39;&#39;&#39;
@@ -2907,7 +2913,7 @@ class Panda():
             self.libpanda.panda_disable_tb_chaining()
     
     def setup_internal_signal_handler(self):
-        ffi.cdef(&#34;void panda_setup_signal_handling(void (*f) (int,void*,void*));&#34;,override=True)
+       # ffi.cdef(&#34;void panda_setup_signal_handling(void (*f) (int,void*,void*));&#34;,override=True)
         @ffi.callback(&#34;void(int,void*,void*)&#34;)
         def SigHandler(SIG,a,b):
             from signal import SIGINT, SIGHUP, SIGTERM
@@ -4809,7 +4815,7 @@ class Panda():
             # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
             self.ppp_registered_cbs[local_name] = (f, plugin_name, attr)
 
-            self.plugins[plugin_name].__getattr__(&#34;ppp_add_cb_&#34;+attr)(f) # All PPP cbs start with this string
+            eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(f) # All PPP  cbs start with this string. XXX insecure eval
             return f
         return decorator
 
@@ -4839,7 +4845,7 @@ class Panda():
         &#39;&#39;&#39;
 
         (f, plugin_name, attr) = self.ppp_registered_cbs[name]
-        self.plugins[plugin_name].__getattr__(&#34;ppp_remove_cb_&#34;+attr)(f) # All PPP cbs start with this string
+        eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_remove_cb_{attr}&#34;)(f) # All PPP cbs start with this string. XXX insecure eval
         del self.ppp_registered_cbs[name] # It&#39;s now safe to be garbage collected
 
     ########## GDB MIXINS ##############
@@ -5586,7 +5592,7 @@ def my_fun(cpu, pc, filename, flags, mode):
     &#39;&#39;&#39;
 
     (f, plugin_name, attr) = self.ppp_registered_cbs[name]
-    self.plugins[plugin_name].__getattr__(&#34;ppp_remove_cb_&#34;+attr)(f) # All PPP cbs start with this string
+    eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_remove_cb_{attr}&#34;)(f) # All PPP cbs start with this string. XXX insecure eval
     del self.ppp_registered_cbs[name] # It&#39;s now safe to be garbage collected</code></pre>
 </details>
 </dd>
@@ -7320,7 +7326,7 @@ def my_fun(cpu, pc, filename, flags, mode):
         # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
         self.ppp_registered_cbs[local_name] = (f, plugin_name, attr)
 
-        self.plugins[plugin_name].__getattr__(&#34;ppp_add_cb_&#34;+attr)(f) # All PPP cbs start with this string
+        eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(f) # All PPP  cbs start with this string. XXX insecure eval
         return f
     return decorator</code></pre>
 </details>
@@ -8086,7 +8092,7 @@ Returns:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setup_internal_signal_handler(self):
-    ffi.cdef(&#34;void panda_setup_signal_handling(void (*f) (int,void*,void*));&#34;,override=True)
+   # ffi.cdef(&#34;void panda_setup_signal_handling(void (*f) (int,void*,void*));&#34;,override=True)
     @ffi.callback(&#34;void(int,void*,void*)&#34;)
     def SigHandler(SIG,a,b):
         from signal import SIGINT, SIGHUP, SIGTERM
