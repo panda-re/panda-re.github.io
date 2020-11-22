@@ -2164,7 +2164,8 @@ class Panda():
         # name = main_loop_wait
 
         if name in self.registered_callbacks:
-            raise ValueError(&#34;Duplicate callback name {}&#34;.format(name))
+            print(f&#34;Warning: replacing existing callback &#39;{name}&#39; since it was re-registered&#34;)
+            self.delete_callback(name)
 
         cb = self.callback_dictionary[callback]
 
@@ -2245,6 +2246,17 @@ class Panda():
         if forever:
             del self.registered_callbacks[name]
 
+    def delete_callback(self, name):
+        &#39;&#39;&#39;
+        Completely delete a registered panda callback by name
+        &#39;&#39;&#39;
+        if name not in self.registered_callbacks.keys():
+            raise ValueError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+
+        handle = self.registered_callbacks[name][&#39;handle&#39;]
+        self.libpanda.panda_unregister_callbacks(handle)
+        del self.registered_callbacks[name][&#39;handle&#39;]
+
     ###########################
     ### PPP-style callbacks ###
     ###########################
@@ -2295,6 +2307,11 @@ class Panda():
             if local_name == &#34;&lt;lambda&gt;&#34;:
                 local_name = f&#34;&lt;lambda_{self.lambda_cnt}&gt;&#34;
                 self.lambda_cnt += 1
+
+            if local_name in self.ppp_registered_cbs:
+                print(f&#34;Warning: replacing existing PPP callback &#39;{name}&#39; since it was re-registered&#34;)
+                self.disable_ppp(local_name)
+
             assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
 
             # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
@@ -2303,6 +2320,7 @@ class Panda():
             eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(f) # All PPP  cbs start with this string. XXX insecure eval
             return f
         return decorator
+
 
     def disable_ppp(self, name):
         &#39;&#39;&#39;
@@ -2356,13 +2374,18 @@ class Panda():
     ############# HOOKING MIXINS ###############
     def update_hook(self,hook_name,addr):
         &#39;&#39;&#39;
-        Update hook to point to a different addres.
+        Update hook to point to a different addres and enable it
         &#39;&#39;&#39;
         if hook_name in self.named_hooks:
             hook = self.named_hooks[hook_name]
+            #print(f&#34;Updating hook {hook_name} at 0x{hook.target_addr:x}&#34;)
             if addr != hook.target_addr:
                 hook.target_addr = addr
-                self.enable_hook(hook)
+                self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)
+            self.enable_hook(hook_name)
+
+        else:
+            raise ValueError(f&#34;Unknown hook {hook_name}&#34;)
 
     def enable_hook(self,hook_name):
         &#39;&#39;&#39;
@@ -2372,7 +2395,10 @@ class Panda():
             hook = self.named_hooks[hook_name]
             if not hook.is_enabled:
                 hook.is_enabled = True
+                #print(f&#34;Enabling hook {hook_name} at 0x{hook.target_addr:x}&#34;)
                 self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)
+        else:
+            raise ValueError(f&#34;Unknown hook {hook_name}&#34;)
 
     def disable_hook(self,hook_name):
         &#39;&#39;&#39;
@@ -2384,7 +2410,7 @@ class Panda():
                 hook.is_enabled = False
                 self.plugins[&#39;hooks&#39;].disable_hook(hook.hook_cb)
         else:
-            print(f&#34;{hook_name} not in list of hooks&#34;)
+            raise ValueError(f&#34;Unknown hook {hook_name}&#34;)
 
     def _update_hooks_new_procname(self, cpu, name):
         &#39;&#39;&#39;
@@ -2398,7 +2424,7 @@ class Panda():
             if h.program_name:
                 if (h.program_name != name):
                     if h.is_enabled:
-                        self.disable_hook(h)
+                        self.disable_hook(name)
                     continue
 
                 if h.library_name is None:
@@ -2424,7 +2450,7 @@ class Panda():
                 if lowest_matching_addr:
                     self.update_hook(h, lowest_matching_addr + h.target_library_offset)
                 else:
-                    self.disable_hook(h)
+                    self.disable_hook(name)
 
     def _register_mmap_cb(self):
         if self._registered_mmap_cb:
@@ -2446,8 +2472,8 @@ class Panda():
             self._register_mmap_cb()
 
         def decorator(fun):
-            # Ultimately, our hook resolves as a before_block_exec_invalidate_opt callback so we must match its args
-            hook_cb_type = self.callback.before_block_exec_invalidate_opt # (CPUState, TranslationBlock)
+            # Ultimately, our hook resolves as a before_block_exec so we must match its args
+            hook_cb_type = self.callback.before_block_exec # (CPUState, TranslationBlock)
 
             if &#39;hooks&#39; not in self.plugins:
                 # Enable hooks plugin on first request
@@ -2467,12 +2493,13 @@ class Panda():
             else:
                 hook_to_add.hook_cb = hook_cb_passed
             self.hook_list.append(hook_to_add)
-            if name:
-                if not hasattr(self, &#34;named_hooks&#34;):
-                    self.named_hooks = {}
-                self.named_hooks[name] = hook_to_add
-            if libraryname or procname:
-                self.disable_hook(hook_to_add)
+            if not hasattr(self, &#34;named_hooks&#34;):
+                self.named_hooks = {}
+            local_name = name if name else fun.__name__ # XXX: weird scoping
+            self.named_hooks[local_name] = hook_to_add
+
+            if libraryname or procname or not enabled:
+                self.disable_hook(local_name)
 
             @hook_cb_type # Make CFFI know it&#39;s a callback. Different from _generated_callback for some reason?
             def wrapper(*args, **kw):
@@ -4679,7 +4706,8 @@ class Panda():
         # name = main_loop_wait
 
         if name in self.registered_callbacks:
-            raise ValueError(&#34;Duplicate callback name {}&#34;.format(name))
+            print(f&#34;Warning: replacing existing callback &#39;{name}&#39; since it was re-registered&#34;)
+            self.delete_callback(name)
 
         cb = self.callback_dictionary[callback]
 
@@ -4760,6 +4788,17 @@ class Panda():
         if forever:
             del self.registered_callbacks[name]
 
+    def delete_callback(self, name):
+        &#39;&#39;&#39;
+        Completely delete a registered panda callback by name
+        &#39;&#39;&#39;
+        if name not in self.registered_callbacks.keys():
+            raise ValueError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+
+        handle = self.registered_callbacks[name][&#39;handle&#39;]
+        self.libpanda.panda_unregister_callbacks(handle)
+        del self.registered_callbacks[name][&#39;handle&#39;]
+
     ###########################
     ### PPP-style callbacks ###
     ###########################
@@ -4810,6 +4849,11 @@ class Panda():
             if local_name == &#34;&lt;lambda&gt;&#34;:
                 local_name = f&#34;&lt;lambda_{self.lambda_cnt}&gt;&#34;
                 self.lambda_cnt += 1
+
+            if local_name in self.ppp_registered_cbs:
+                print(f&#34;Warning: replacing existing PPP callback &#39;{name}&#39; since it was re-registered&#34;)
+                self.disable_ppp(local_name)
+
             assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
 
             # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
@@ -4818,6 +4862,7 @@ class Panda():
             eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(f) # All PPP  cbs start with this string. XXX insecure eval
             return f
         return decorator
+
 
     def disable_ppp(self, name):
         &#39;&#39;&#39;
@@ -4871,13 +4916,18 @@ class Panda():
     ############# HOOKING MIXINS ###############
     def update_hook(self,hook_name,addr):
         &#39;&#39;&#39;
-        Update hook to point to a different addres.
+        Update hook to point to a different addres and enable it
         &#39;&#39;&#39;
         if hook_name in self.named_hooks:
             hook = self.named_hooks[hook_name]
+            #print(f&#34;Updating hook {hook_name} at 0x{hook.target_addr:x}&#34;)
             if addr != hook.target_addr:
                 hook.target_addr = addr
-                self.enable_hook(hook)
+                self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)
+            self.enable_hook(hook_name)
+
+        else:
+            raise ValueError(f&#34;Unknown hook {hook_name}&#34;)
 
     def enable_hook(self,hook_name):
         &#39;&#39;&#39;
@@ -4887,7 +4937,10 @@ class Panda():
             hook = self.named_hooks[hook_name]
             if not hook.is_enabled:
                 hook.is_enabled = True
+                #print(f&#34;Enabling hook {hook_name} at 0x{hook.target_addr:x}&#34;)
                 self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)
+        else:
+            raise ValueError(f&#34;Unknown hook {hook_name}&#34;)
 
     def disable_hook(self,hook_name):
         &#39;&#39;&#39;
@@ -4899,7 +4952,7 @@ class Panda():
                 hook.is_enabled = False
                 self.plugins[&#39;hooks&#39;].disable_hook(hook.hook_cb)
         else:
-            print(f&#34;{hook_name} not in list of hooks&#34;)
+            raise ValueError(f&#34;Unknown hook {hook_name}&#34;)
 
     def _update_hooks_new_procname(self, cpu, name):
         &#39;&#39;&#39;
@@ -4913,7 +4966,7 @@ class Panda():
             if h.program_name:
                 if (h.program_name != name):
                     if h.is_enabled:
-                        self.disable_hook(h)
+                        self.disable_hook(name)
                     continue
 
                 if h.library_name is None:
@@ -4939,7 +4992,7 @@ class Panda():
                 if lowest_matching_addr:
                     self.update_hook(h, lowest_matching_addr + h.target_library_offset)
                 else:
-                    self.disable_hook(h)
+                    self.disable_hook(name)
 
     def _register_mmap_cb(self):
         if self._registered_mmap_cb:
@@ -4961,8 +5014,8 @@ class Panda():
             self._register_mmap_cb()
 
         def decorator(fun):
-            # Ultimately, our hook resolves as a before_block_exec_invalidate_opt callback so we must match its args
-            hook_cb_type = self.callback.before_block_exec_invalidate_opt # (CPUState, TranslationBlock)
+            # Ultimately, our hook resolves as a before_block_exec so we must match its args
+            hook_cb_type = self.callback.before_block_exec # (CPUState, TranslationBlock)
 
             if &#39;hooks&#39; not in self.plugins:
                 # Enable hooks plugin on first request
@@ -4982,12 +5035,13 @@ class Panda():
             else:
                 hook_to_add.hook_cb = hook_cb_passed
             self.hook_list.append(hook_to_add)
-            if name:
-                if not hasattr(self, &#34;named_hooks&#34;):
-                    self.named_hooks = {}
-                self.named_hooks[name] = hook_to_add
-            if libraryname or procname:
-                self.disable_hook(hook_to_add)
+            if not hasattr(self, &#34;named_hooks&#34;):
+                self.named_hooks = {}
+            local_name = name if name else fun.__name__ # XXX: weird scoping
+            self.named_hooks[local_name] = hook_to_add
+
+            if libraryname or procname or not enabled:
+                self.disable_hook(local_name)
 
             @hook_cb_type # Make CFFI know it&#39;s a callback. Different from _generated_callback for some reason?
             def wrapper(*args, **kw):
@@ -5359,6 +5413,27 @@ Return:
     return self.libpanda.panda_current_sp_external(cpustate)</code></pre>
 </details>
 </dd>
+<dt id="pandare.panda.Panda.delete_callback"><code class="name flex">
+<span>def <span class="ident">delete_callback</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Completely delete a registered panda callback by name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delete_callback(self, name):
+    &#39;&#39;&#39;
+    Completely delete a registered panda callback by name
+    &#39;&#39;&#39;
+    if name not in self.registered_callbacks.keys():
+        raise ValueError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
+
+    handle = self.registered_callbacks[name][&#39;handle&#39;]
+    self.libpanda.panda_unregister_callbacks(handle)
+    del self.registered_callbacks[name][&#39;handle&#39;]</code></pre>
+</details>
+</dd>
 <dt id="pandare.panda.Panda.delvm"><code class="name flex">
 <span>def <span class="ident">delvm</span></span>(<span>self, snapshot_name)</span>
 </code></dt>
@@ -5442,7 +5517,7 @@ you want to really turn off something with a procname filter.</p></div>
             hook.is_enabled = False
             self.plugins[&#39;hooks&#39;].disable_hook(hook.hook_cb)
     else:
-        print(f&#34;{hook_name} not in list of hooks&#34;)</code></pre>
+        raise ValueError(f&#34;Unknown hook {hook_name}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.disable_hook2"><code class="name flex">
@@ -5764,7 +5839,10 @@ Return:
         hook = self.named_hooks[hook_name]
         if not hook.is_enabled:
             hook.is_enabled = True
-            self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)</code></pre>
+            #print(f&#34;Enabling hook {hook_name} at 0x{hook.target_addr:x}&#34;)
+            self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)
+    else:
+        raise ValueError(f&#34;Unknown hook {hook_name}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.enable_hook2"><code class="name flex">
@@ -6341,8 +6419,8 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
         self._register_mmap_cb()
 
     def decorator(fun):
-        # Ultimately, our hook resolves as a before_block_exec_invalidate_opt callback so we must match its args
-        hook_cb_type = self.callback.before_block_exec_invalidate_opt # (CPUState, TranslationBlock)
+        # Ultimately, our hook resolves as a before_block_exec so we must match its args
+        hook_cb_type = self.callback.before_block_exec # (CPUState, TranslationBlock)
 
         if &#39;hooks&#39; not in self.plugins:
             # Enable hooks plugin on first request
@@ -6362,12 +6440,13 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
         else:
             hook_to_add.hook_cb = hook_cb_passed
         self.hook_list.append(hook_to_add)
-        if name:
-            if not hasattr(self, &#34;named_hooks&#34;):
-                self.named_hooks = {}
-            self.named_hooks[name] = hook_to_add
-        if libraryname or procname:
-            self.disable_hook(hook_to_add)
+        if not hasattr(self, &#34;named_hooks&#34;):
+            self.named_hooks = {}
+        local_name = name if name else fun.__name__ # XXX: weird scoping
+        self.named_hooks[local_name] = hook_to_add
+
+        if libraryname or procname or not enabled:
+            self.disable_hook(local_name)
 
         @hook_cb_type # Make CFFI know it&#39;s a callback. Different from _generated_callback for some reason?
         def wrapper(*args, **kw):
@@ -7321,6 +7400,11 @@ def my_fun(cpu, pc, filename, flags, mode):
         if local_name == &#34;&lt;lambda&gt;&#34;:
             local_name = f&#34;&lt;lambda_{self.lambda_cnt}&gt;&#34;
             self.lambda_cnt += 1
+
+        if local_name in self.ppp_registered_cbs:
+            print(f&#34;Warning: replacing existing PPP callback &#39;{name}&#39; since it was re-registered&#34;)
+            self.disable_ppp(local_name)
+
         assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
 
         # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
@@ -7628,7 +7712,8 @@ def record_cmd(self, guest_command, copy_directory=None, iso_name=None, setup_co
     # name = main_loop_wait
 
     if name in self.registered_callbacks:
-        raise ValueError(&#34;Duplicate callback name {}&#34;.format(name))
+        print(f&#34;Warning: replacing existing callback &#39;{name}&#39; since it was re-registered&#34;)
+        self.delete_callback(name)
 
     cb = self.callback_dictionary[callback]
 
@@ -8522,20 +8607,25 @@ Returns true if the pyperipheral was successfully removed, else false.</p></div>
 <span>def <span class="ident">update_hook</span></span>(<span>self, hook_name, addr)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Update hook to point to a different addres.</p></div>
+<div class="desc"><p>Update hook to point to a different addres and enable it</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def update_hook(self,hook_name,addr):
     &#39;&#39;&#39;
-    Update hook to point to a different addres.
+    Update hook to point to a different addres and enable it
     &#39;&#39;&#39;
     if hook_name in self.named_hooks:
         hook = self.named_hooks[hook_name]
+        #print(f&#34;Updating hook {hook_name} at 0x{hook.target_addr:x}&#34;)
         if addr != hook.target_addr:
             hook.target_addr = addr
-            self.enable_hook(hook)</code></pre>
+            self.plugins[&#39;hooks&#39;].enable_hook(hook.hook_cb, hook.target_addr)
+        self.enable_hook(hook_name)
+
+    else:
+        raise ValueError(f&#34;Unknown hook {hook_name}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.virt_to_phys"><code class="name flex">
@@ -8711,6 +8801,7 @@ Returns:
 <li><code><a title="pandare.panda.Panda.current_asid" href="#pandare.panda.Panda.current_asid">current_asid</a></code></li>
 <li><code><a title="pandare.panda.Panda.current_pc" href="#pandare.panda.Panda.current_pc">current_pc</a></code></li>
 <li><code><a title="pandare.panda.Panda.current_sp" href="#pandare.panda.Panda.current_sp">current_sp</a></code></li>
+<li><code><a title="pandare.panda.Panda.delete_callback" href="#pandare.panda.Panda.delete_callback">delete_callback</a></code></li>
 <li><code><a title="pandare.panda.Panda.delvm" href="#pandare.panda.Panda.delvm">delvm</a></code></li>
 <li><code><a title="pandare.panda.Panda.delvm_sync" href="#pandare.panda.Panda.delvm_sync">delvm_sync</a></code></li>
 <li><code><a title="pandare.panda.Panda.disable_callback" href="#pandare.panda.Panda.disable_callback">disable_callback</a></code></li>

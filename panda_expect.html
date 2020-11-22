@@ -84,8 +84,16 @@ class Expect(object):
         self.running = False
 
     def expect(self, expectation=None, timeout=30):
-        assert(not expectation), &#34;Deprecated interface - must set expectation in class init&#34;
-        # Wait until we get expectation back, up to timeout. Return data between last_command and expectation
+        &#39;&#39;&#39;
+        Assumptions: as you send a command, the guest may send back
+            The same command + ansi control codes.
+            The epxectation value will show up on the start of a line.
+            The command you send should not be returned
+        &#39;&#39;&#39;
+
+        if expectation:
+            raise ValueError(&#34;Deprecated interface - must set expectation in class init&#34;)
+
         sofar = bytearray()
         start_time = datetime.now()
         time_passed = 0
@@ -110,24 +118,59 @@ class Expect(object):
 
                 sofar.extend(char)
 
+                # Done parsing - make meaning from the buffer
+                # We may have our command echoed back + control characters before the result
                 if self.expectation_ends_re.match((b&#34;\n&#34;+sofar).split(b&#34;\n&#34;)[-1]) != None:
-                    if b&#34;\x1b&#34; in sofar: # Socket is echoing back when we type, try to trim it
-                        sofar = sofar.split(b&#34;\x1b&#34;)[-1][2:]
+                    #print(&#34;\nFinal line matches -- raw message &#39;{}&#39;&#34;.format(sofar))
 
-                    #print(&#34;\nRaw message &#39;{}&#39;&#34;.format(sofar))
+                    if b&#34;\x1b&#34; in sofar:
+                        # We have control chracters - assume it&#39;s a normal linux guest
+                        # Approach here is to drop the messages before and including ctrl chars
+                        results = []
+                        past_ansi = False
+                        for line in sofar.split(b&#34;\r&#34;):
+                            if b&#34;\x1b&#34; in line:
+                                past_ansi = True
+                                continue
 
-                    if b&#34;\r\n&#34; in sofar: # Serial will echo our command back, try to strip it out
-                        resp = sofar.split(b&#34;\r\n&#34;)
-                        if self.last_msg and resp[0].decode(&#39;utf8&#39;, &#39;ignore&#39;).replace(&#34; \r&#34;, &#34;&#34;).strip() == self.last_msg.decode(&#39;utf8&#39;, &#39;ignore&#39;).strip():
-                            resp[:] = resp[1:] # drop last cmd
+                            elif past_ansi:
+                                results.append(line)
+                        sofar = b&#34;\r&#34;.join(results)
+                    #print(&#34;Strip ANSI:&#34;, repr(sofar))
 
-                        # Need to match root@debian-i386:~# with root@debian-i386:/some/other dir#
-                        last_line = resp[-1]
+                    # Try joining all lines together and searching for lastmsg
+                    joined = b&#34;&#34;.join([x.strip() for x in sofar.split(b&#34;\r&#34;)])
+                    #print(&#34;RAW JOINED:&#34;, joined)
+                    if self.last_msg and joined.startswith(self.last_msg.strip()):
+                        results = []
+                        # Go through lines until we find one that ends with last_msg
+                        past_echo = False
+                        current = b&#34;&#34;
+                        end_of_echo = 0
+                        for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
+                            if self.last_msg.strip().endswith(current+line.strip()):
+                                #print(&#34;Potential ehco:&#34;, repr(current))
+                                current += line.strip()
+                                end_of_echo = idx
+                            else:
+                                break
 
-                        if self.expectation_re.match(last_line) != None:
-                            resp[:] = resp[:-1] # drop next prompt
 
+                        for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
+                            if idx &gt; end_of_echo:
+                                results.append(line)
+
+                        sofar = b&#34;\r&#34;.join(results)
+                    #print(&#34;Strip command echo:&#34;, repr(sofar))
+
+                    #if b&#34;\r\n&#34; in sofar: # Drop next prompt - We&#39;ll _always_ have a next prompt!
+                    resp = sofar.split(b&#34;\r\n&#34;)
+
+                    last_line = resp[-1]
+                    if self.expectation_re.match(last_line.strip()) != None:
+                        resp[:] = resp[:-1] # drop next prompt
                         sofar= b&#34;\r\n&#34;.join(resp)
+
                     sofar = sofar.strip()
                     self.logfile.flush()
                     if not self.quiet: sys.stdout.flush()
@@ -162,8 +205,7 @@ class Expect(object):
 
 
     def sendline(self, msg=b&#34;&#34;):
-        self.send(msg + b&#34;\n&#34;)
-        self.last_msg = msg+b&#34;\n&#34;</code></pre>
+        self.send(msg + b&#34;\n&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -228,8 +270,16 @@ class Expect(object):
         self.running = False
 
     def expect(self, expectation=None, timeout=30):
-        assert(not expectation), &#34;Deprecated interface - must set expectation in class init&#34;
-        # Wait until we get expectation back, up to timeout. Return data between last_command and expectation
+        &#39;&#39;&#39;
+        Assumptions: as you send a command, the guest may send back
+            The same command + ansi control codes.
+            The epxectation value will show up on the start of a line.
+            The command you send should not be returned
+        &#39;&#39;&#39;
+
+        if expectation:
+            raise ValueError(&#34;Deprecated interface - must set expectation in class init&#34;)
+
         sofar = bytearray()
         start_time = datetime.now()
         time_passed = 0
@@ -254,24 +304,59 @@ class Expect(object):
 
                 sofar.extend(char)
 
+                # Done parsing - make meaning from the buffer
+                # We may have our command echoed back + control characters before the result
                 if self.expectation_ends_re.match((b&#34;\n&#34;+sofar).split(b&#34;\n&#34;)[-1]) != None:
-                    if b&#34;\x1b&#34; in sofar: # Socket is echoing back when we type, try to trim it
-                        sofar = sofar.split(b&#34;\x1b&#34;)[-1][2:]
+                    #print(&#34;\nFinal line matches -- raw message &#39;{}&#39;&#34;.format(sofar))
 
-                    #print(&#34;\nRaw message &#39;{}&#39;&#34;.format(sofar))
+                    if b&#34;\x1b&#34; in sofar:
+                        # We have control chracters - assume it&#39;s a normal linux guest
+                        # Approach here is to drop the messages before and including ctrl chars
+                        results = []
+                        past_ansi = False
+                        for line in sofar.split(b&#34;\r&#34;):
+                            if b&#34;\x1b&#34; in line:
+                                past_ansi = True
+                                continue
 
-                    if b&#34;\r\n&#34; in sofar: # Serial will echo our command back, try to strip it out
-                        resp = sofar.split(b&#34;\r\n&#34;)
-                        if self.last_msg and resp[0].decode(&#39;utf8&#39;, &#39;ignore&#39;).replace(&#34; \r&#34;, &#34;&#34;).strip() == self.last_msg.decode(&#39;utf8&#39;, &#39;ignore&#39;).strip():
-                            resp[:] = resp[1:] # drop last cmd
+                            elif past_ansi:
+                                results.append(line)
+                        sofar = b&#34;\r&#34;.join(results)
+                    #print(&#34;Strip ANSI:&#34;, repr(sofar))
 
-                        # Need to match root@debian-i386:~# with root@debian-i386:/some/other dir#
-                        last_line = resp[-1]
+                    # Try joining all lines together and searching for lastmsg
+                    joined = b&#34;&#34;.join([x.strip() for x in sofar.split(b&#34;\r&#34;)])
+                    #print(&#34;RAW JOINED:&#34;, joined)
+                    if self.last_msg and joined.startswith(self.last_msg.strip()):
+                        results = []
+                        # Go through lines until we find one that ends with last_msg
+                        past_echo = False
+                        current = b&#34;&#34;
+                        end_of_echo = 0
+                        for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
+                            if self.last_msg.strip().endswith(current+line.strip()):
+                                #print(&#34;Potential ehco:&#34;, repr(current))
+                                current += line.strip()
+                                end_of_echo = idx
+                            else:
+                                break
 
-                        if self.expectation_re.match(last_line) != None:
-                            resp[:] = resp[:-1] # drop next prompt
 
+                        for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
+                            if idx &gt; end_of_echo:
+                                results.append(line)
+
+                        sofar = b&#34;\r&#34;.join(results)
+                    #print(&#34;Strip command echo:&#34;, repr(sofar))
+
+                    #if b&#34;\r\n&#34; in sofar: # Drop next prompt - We&#39;ll _always_ have a next prompt!
+                    resp = sofar.split(b&#34;\r\n&#34;)
+
+                    last_line = resp[-1]
+                    if self.expectation_re.match(last_line.strip()) != None:
+                        resp[:] = resp[:-1] # drop next prompt
                         sofar= b&#34;\r\n&#34;.join(resp)
+
                     sofar = sofar.strip()
                     self.logfile.flush()
                     if not self.quiet: sys.stdout.flush()
@@ -306,8 +391,7 @@ class Expect(object):
 
 
     def sendline(self, msg=b&#34;&#34;):
-        self.send(msg + b&#34;\n&#34;)
-        self.last_msg = msg+b&#34;\n&#34;</code></pre>
+        self.send(msg + b&#34;\n&#34;)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -346,14 +430,25 @@ class Expect(object):
 <span>def <span class="ident">expect</span></span>(<span>self, expectation=None, timeout=30)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Assumptions: as you send a command, the guest may send back
+The same command + ansi control codes.
+The epxectation value will show up on the start of a line.
+The command you send should not be returned</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def expect(self, expectation=None, timeout=30):
-    assert(not expectation), &#34;Deprecated interface - must set expectation in class init&#34;
-    # Wait until we get expectation back, up to timeout. Return data between last_command and expectation
+    &#39;&#39;&#39;
+    Assumptions: as you send a command, the guest may send back
+        The same command + ansi control codes.
+        The epxectation value will show up on the start of a line.
+        The command you send should not be returned
+    &#39;&#39;&#39;
+
+    if expectation:
+        raise ValueError(&#34;Deprecated interface - must set expectation in class init&#34;)
+
     sofar = bytearray()
     start_time = datetime.now()
     time_passed = 0
@@ -378,24 +473,59 @@ class Expect(object):
 
             sofar.extend(char)
 
+            # Done parsing - make meaning from the buffer
+            # We may have our command echoed back + control characters before the result
             if self.expectation_ends_re.match((b&#34;\n&#34;+sofar).split(b&#34;\n&#34;)[-1]) != None:
-                if b&#34;\x1b&#34; in sofar: # Socket is echoing back when we type, try to trim it
-                    sofar = sofar.split(b&#34;\x1b&#34;)[-1][2:]
+                #print(&#34;\nFinal line matches -- raw message &#39;{}&#39;&#34;.format(sofar))
 
-                #print(&#34;\nRaw message &#39;{}&#39;&#34;.format(sofar))
+                if b&#34;\x1b&#34; in sofar:
+                    # We have control chracters - assume it&#39;s a normal linux guest
+                    # Approach here is to drop the messages before and including ctrl chars
+                    results = []
+                    past_ansi = False
+                    for line in sofar.split(b&#34;\r&#34;):
+                        if b&#34;\x1b&#34; in line:
+                            past_ansi = True
+                            continue
 
-                if b&#34;\r\n&#34; in sofar: # Serial will echo our command back, try to strip it out
-                    resp = sofar.split(b&#34;\r\n&#34;)
-                    if self.last_msg and resp[0].decode(&#39;utf8&#39;, &#39;ignore&#39;).replace(&#34; \r&#34;, &#34;&#34;).strip() == self.last_msg.decode(&#39;utf8&#39;, &#39;ignore&#39;).strip():
-                        resp[:] = resp[1:] # drop last cmd
+                        elif past_ansi:
+                            results.append(line)
+                    sofar = b&#34;\r&#34;.join(results)
+                #print(&#34;Strip ANSI:&#34;, repr(sofar))
 
-                    # Need to match root@debian-i386:~# with root@debian-i386:/some/other dir#
-                    last_line = resp[-1]
+                # Try joining all lines together and searching for lastmsg
+                joined = b&#34;&#34;.join([x.strip() for x in sofar.split(b&#34;\r&#34;)])
+                #print(&#34;RAW JOINED:&#34;, joined)
+                if self.last_msg and joined.startswith(self.last_msg.strip()):
+                    results = []
+                    # Go through lines until we find one that ends with last_msg
+                    past_echo = False
+                    current = b&#34;&#34;
+                    end_of_echo = 0
+                    for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
+                        if self.last_msg.strip().endswith(current+line.strip()):
+                            #print(&#34;Potential ehco:&#34;, repr(current))
+                            current += line.strip()
+                            end_of_echo = idx
+                        else:
+                            break
 
-                    if self.expectation_re.match(last_line) != None:
-                        resp[:] = resp[:-1] # drop next prompt
 
+                    for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
+                        if idx &gt; end_of_echo:
+                            results.append(line)
+
+                    sofar = b&#34;\r&#34;.join(results)
+                #print(&#34;Strip command echo:&#34;, repr(sofar))
+
+                #if b&#34;\r\n&#34; in sofar: # Drop next prompt - We&#39;ll _always_ have a next prompt!
+                resp = sofar.split(b&#34;\r\n&#34;)
+
+                last_line = resp[-1]
+                if self.expectation_re.match(last_line.strip()) != None:
+                    resp[:] = resp[:-1] # drop next prompt
                     sofar= b&#34;\r\n&#34;.join(resp)
+
                 sofar = sofar.strip()
                 self.logfile.flush()
                 if not self.quiet: sys.stdout.flush()
@@ -472,8 +602,7 @@ class Expect(object):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def sendline(self, msg=b&#34;&#34;):
-    self.send(msg + b&#34;\n&#34;)
-    self.last_msg = msg+b&#34;\n&#34;</code></pre>
+    self.send(msg + b&#34;\n&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda_expect.Expect.update_expectation"><code class="name flex">
