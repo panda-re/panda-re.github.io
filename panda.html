@@ -447,6 +447,7 @@ class Panda():
         self.libpanda.panda_run() # Give control to panda
         self.running.clear() # Back from panda&#39;s execution (due to shutdown or monitor quit)
         self.libpanda.panda_unload_plugins() # Unload c plugins - should be safe now since exec has stopped
+        self.panda_finish() # Write PANDALOG, if any
         if hasattr(self, &#34;end_run_raise_signal&#34;):
             raise self.end_run_raise_signal
         if hasattr(self, &#34;callback_exit_exception&#34;):
@@ -2989,6 +2990,7 @@ class Panda():
         self.libpanda.panda_run() # Give control to panda
         self.running.clear() # Back from panda&#39;s execution (due to shutdown or monitor quit)
         self.libpanda.panda_unload_plugins() # Unload c plugins - should be safe now since exec has stopped
+        self.panda_finish() # Write PANDALOG, if any
         if hasattr(self, &#34;end_run_raise_signal&#34;):
             raise self.end_run_raise_signal
         if hasattr(self, &#34;callback_exit_exception&#34;):
@@ -7957,6 +7959,7 @@ It also initializes panda object, clears main_loop_wait fns, and sets up interna
     self.libpanda.panda_run() # Give control to panda
     self.running.clear() # Back from panda&#39;s execution (due to shutdown or monitor quit)
     self.libpanda.panda_unload_plugins() # Unload c plugins - should be safe now since exec has stopped
+    self.panda_finish() # Write PANDALOG, if any
     if hasattr(self, &#34;end_run_raise_signal&#34;):
         raise self.end_run_raise_signal
     if hasattr(self, &#34;callback_exit_exception&#34;):
