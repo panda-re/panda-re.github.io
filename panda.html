@@ -401,7 +401,6 @@ class Panda():
             self.libpanda.panda_disable_tb_chaining()
 
     def setup_internal_signal_handler(self, signal_handler=None):
-       # ffi.cdef(&#34;void panda_setup_signal_handling(void (*f) (int,void*,void*));&#34;,override=True)
         def SigHandler(SIG,a,b):
             from signal import SIGINT, SIGHUP, SIGTERM
             if SIG == SIGINT:
@@ -646,16 +645,9 @@ class Panda():
         &#39;&#39;&#39;
         Calls QEMU memsavep on your specified python file.
         &#39;&#39;&#39;
-        def initlib():
-            ffi.cdef(&#39;&#39;&#39;
-            FILE *fdopen(int, const char *);   // from the C &lt;stdio.h&gt;
-            int fclose(FILE *);
-            &#39;&#39;&#39;, override=True)
-        ffi.init_once(initlib, &#34;cinit&#34;)
-
         # this part was largely copied from https://cffi.readthedocs.io/en/latest/ref.html#support-for-file
 
-        file_out.flush()                    # make sure the file is flushed
+        file_out.flush()                 # make sure the file is flushed
         newfd = dup(file_out.fileno())   # make a copy of the file descriptor
         fileptr = self.C.fdopen(newfd, b&#34;w&#34;)
         self.libpanda.panda_memsavep(fileptr)
@@ -3019,7 +3011,6 @@ class Panda():
             self.libpanda.panda_disable_tb_chaining()
 
     def setup_internal_signal_handler(self, signal_handler=None):
-       # ffi.cdef(&#34;void panda_setup_signal_handling(void (*f) (int,void*,void*));&#34;,override=True)
         def SigHandler(SIG,a,b):
             from signal import SIGINT, SIGHUP, SIGTERM
             if SIG == SIGINT:
@@ -3264,16 +3255,9 @@ class Panda():
         &#39;&#39;&#39;
         Calls QEMU memsavep on your specified python file.
         &#39;&#39;&#39;
-        def initlib():
-            ffi.cdef(&#39;&#39;&#39;
-            FILE *fdopen(int, const char *);   // from the C &lt;stdio.h&gt;
-            int fclose(FILE *);
-            &#39;&#39;&#39;, override=True)
-        ffi.init_once(initlib, &#34;cinit&#34;)
-
         # this part was largely copied from https://cffi.readthedocs.io/en/latest/ref.html#support-for-file
 
-        file_out.flush()                    # make sure the file is flushed
+        file_out.flush()                 # make sure the file is flushed
         newfd = dup(file_out.fileno())   # make a copy of the file descriptor
         fileptr = self.C.fdopen(newfd, b&#34;w&#34;)
         self.libpanda.panda_memsavep(fileptr)
@@ -7140,16 +7124,9 @@ Returns:
     &#39;&#39;&#39;
     Calls QEMU memsavep on your specified python file.
     &#39;&#39;&#39;
-    def initlib():
-        ffi.cdef(&#39;&#39;&#39;
-        FILE *fdopen(int, const char *);   // from the C &lt;stdio.h&gt;
-        int fclose(FILE *);
-        &#39;&#39;&#39;, override=True)
-    ffi.init_once(initlib, &#34;cinit&#34;)
-
     # this part was largely copied from https://cffi.readthedocs.io/en/latest/ref.html#support-for-file
 
-    file_out.flush()                    # make sure the file is flushed
+    file_out.flush()                 # make sure the file is flushed
     newfd = dup(file_out.fileno())   # make a copy of the file descriptor
     fileptr = self.C.fdopen(newfd, b&#34;w&#34;)
     self.libpanda.panda_memsavep(fileptr)
@@ -8415,7 +8392,6 @@ Returns:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setup_internal_signal_handler(self, signal_handler=None):
-   # ffi.cdef(&#34;void panda_setup_signal_handling(void (*f) (int,void*,void*));&#34;,override=True)
     def SigHandler(SIG,a,b):
         from signal import SIGINT, SIGHUP, SIGTERM
         if SIG == SIGINT:
