@@ -110,7 +110,7 @@ class Ioctl():
         if self.osi:
             proc = panda.plugins[&#39;osi&#39;].get_current_process(cpu)
             proc_name_ptr = proc.name
-            file_name_ptr = panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, fd)
+            file_name_ptr = panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, panda.ffi.cast(&#34;int&#34;, fd))
             self.proc_name = ffi.string(proc_name_ptr).decode() if proc_name_ptr != ffi.NULL else &#34;unknown&#34;
             self.file_name = ffi.string(file_name_ptr).decode() if file_name_ptr != ffi.NULL else &#34;unknown&#34;
         else:
@@ -422,7 +422,7 @@ if __name__ == &#34;__main__&#34;:
         if self.osi:
             proc = panda.plugins[&#39;osi&#39;].get_current_process(cpu)
             proc_name_ptr = proc.name
-            file_name_ptr = panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, fd)
+            file_name_ptr = panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, panda.ffi.cast(&#34;int&#34;, fd))
             self.proc_name = ffi.string(proc_name_ptr).decode() if proc_name_ptr != ffi.NULL else &#34;unknown&#34;
             self.file_name = ffi.string(file_name_ptr).decode() if file_name_ptr != ffi.NULL else &#34;unknown&#34;
         else:
