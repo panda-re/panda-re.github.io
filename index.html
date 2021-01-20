@@ -28,14 +28,13 @@ The module enables driving an execution of a virtual machine while also introspe
 and plugin systems.</p>
 <p>Most of the commonly used APIs are in <code><a title="pandare.panda" href="panda.html">pandare.panda</a></code>.</p>
 <p>Example plugins are available <a href="https://github.com/panda-re/panda/tree/master/panda/python/examples">on GitHub</a>.</p>
-<h1 id="pypanda">PYPANDA</h1>
-<p>PYPANDA is a python interface to PANDA. With PYPANDA, you can quickly develop plugins
+<h1 id="pypanda">PyPANDA</h1>
+<p>PyPANDA is a python interface to PANDA. With PyPANDA, you can quickly develop plugins
 to analyze behavior of a running system, record a system and analyze replays, or do
 nearly anything you can do using PANDA's C/C++ APIs.</p>
 <h2 id="installation">Installation</h2>
 <ol>
-<li>Follow instructions to build PANDA or run <code>scripts/panda/install_ubuntu.sh</code>.</li>
-<li><code>cd</code> into <code>panda/python/core</code> and run <code>python3 setup.py install</code> (possibly in a virtual environment). This will install the <code><a title="pandare.panda" href="panda.html">pandare.panda</a></code> python package to your system.</li>
+<li>Follow instructions to build PANDA using build.sh with the <code>--python</code> flag or run <code>scripts/panda/install_ubuntu.sh</code>.</li>
 </ol>
 <h2 id="example-program">Example program</h2>
 <p>This program counts the number of basic blocks executed while running <code>uname -a</code> inside a 32-bit guest.</p>
@@ -172,11 +171,12 @@ and <code>panda.run_monitor_cmd('end_record')</code> and drive the guest using <
 </ol>
 <h1 id="here-be-dragons">Here Be Dragons</h1>
 <ul>
-<li>You can't have multiple instances of panda running at the same time. You can, however, stop an analysis and begin a new one if you don't change the machine type.</li>
-<li>PYPANDA is slower than traditional panda. To improve performance try disabling callbacks whenever possible and only enabling them when they are needed.</li>
+<li>You can't have multiple instances of panda running at the same time. Once you've created a panda object for a given architecture, you can never create another. Hoewver, you can modify the machine after it's created to run a new analysis as long as you don't change the machine type.</li>
+<li>You cannot read from stdin in a pypanda callback (i.e., you can't use <code>input()</code> or interactive debuggers)</li>
+<li>PyPANDA is slower than traditional panda. To improve performance try disabling callbacks whenever possible and only enabling them when they are needed.</li>
 </ul>
-<h1 id="extending-pypanda">Extending PYPANDA</h1>
-<p>PYPANDA currently support a handful of PANDA plugins such as <code>taint2</code> and <code>osi</code>. To extend PYPANDA to support an additional plugin, its header file
+<h1 id="extending-pypanda">Extending PyPANDA</h1>
+<p>PyPANDA currently supports interactions (e.g., ppp callbacks) with numerous PANDA plugins such as <code>taint2</code> and <code>osi</code>. If you wish to extend PyPANDA to support an new plugin, its header file
 must be cleaned up such that it can be parsed by CFFI. See <a href="https://github.com/panda-re/panda/tree/master/panda/python/utils/create_panda_datatypes.py">create_panda_datatypes.py</a>
 and the magic <code>BEGIN_PYPANDA_NEEDS_THIS</code> strings it searches for.</p>
 <details class="source">
@@ -270,7 +270,7 @@ It simply imports cffi and give you a handle to the <code>ffi</code> …</p></di
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#pypanda">PYPANDA</a><ul>
+<li><a href="#pypanda">PyPANDA</a><ul>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#example-program">Example program</a></li>
 </ul>
@@ -291,7 +291,7 @@ It simply imports cffi and give you a handle to the <code>ffi</code> …</p></di
 </ul>
 </li>
 <li><a href="#here-be-dragons">Here Be Dragons</a></li>
-<li><a href="#extending-pypanda">Extending PYPANDA</a></li>
+<li><a href="#extending-pypanda">Extending PyPANDA</a></li>
 </ul>
 </div>
 <ul id="index">
