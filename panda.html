@@ -547,6 +547,28 @@ class Panda():
         self.run()
         self._in_replay = False
 
+
+    def end_replay(self):
+        &#39;&#39;&#39;
+        Terminates a currently running replay
+
+            Returns:
+                None
+
+            Raises:
+                Exception: raises exception if no replay is active or termination failed.
+        &#39;&#39;&#39;
+
+        if self._in_replay is False:
+            raise Exception(&#34;Tried to terminate replay while not in replay mode!&#34;)
+
+        result = self.libpanda.panda_replay_end()
+
+        res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
+        if res_string_enum != &#34;RRCTRL_OK&#34;:
+           raise Exception(f&#34;ending record method failed with RTCTL_ret {res_string_enum} ({result})&#34;)
+
+
     def require(self, name):
         &#39;&#39;&#39;
         Load a C plugin with no arguments. Deprecated. Use load_plugin
@@ -3171,6 +3193,28 @@ class Panda():
         self._in_replay = True
         self.run()
         self._in_replay = False
+
+
+    def end_replay(self):
+        &#39;&#39;&#39;
+        Terminates a currently running replay
+
+            Returns:
+                None
+
+            Raises:
+                Exception: raises exception if no replay is active or termination failed.
+        &#39;&#39;&#39;
+
+        if self._in_replay is False:
+            raise Exception(&#34;Tried to terminate replay while not in replay mode!&#34;)
+
+        result = self.libpanda.panda_replay_end()
+
+        res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
+        if res_string_enum != &#34;RRCTRL_OK&#34;:
+           raise Exception(f&#34;ending record method failed with RTCTL_ret {res_string_enum} ({result})&#34;)
+
 
     def require(self, name):
         &#39;&#39;&#39;
@@ -6230,6 +6274,42 @@ without needing to wait for tasks in the main async thread</p></div>
        raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;)</code></pre>
 </details>
 </dd>
+<dt id="pandare.panda.Panda.end_replay"><code class="name flex">
+<span>def <span class="ident">end_replay</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Terminates a currently running replay</p>
+<pre><code>Returns:
+    None
+
+Raises:
+    Exception: raises exception if no replay is active or termination failed.
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def end_replay(self):
+    &#39;&#39;&#39;
+    Terminates a currently running replay
+
+        Returns:
+            None
+
+        Raises:
+            Exception: raises exception if no replay is active or termination failed.
+    &#39;&#39;&#39;
+
+    if self._in_replay is False:
+        raise Exception(&#34;Tried to terminate replay while not in replay mode!&#34;)
+
+    result = self.libpanda.panda_replay_end()
+
+    res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
+    if res_string_enum != &#34;RRCTRL_OK&#34;:
+       raise Exception(f&#34;ending record method failed with RTCTL_ret {res_string_enum} ({result})&#34;)</code></pre>
+</details>
+</dd>
 <dt id="pandare.panda.Panda.error_report"><code class="name flex">
 <span>def <span class="ident">error_report</span></span>(<span>self, s)</span>
 </code></dt>
@@ -9099,6 +9179,7 @@ Returns:
 <li><code><a title="pandare.panda.Panda.enable_tb_chaining" href="#pandare.panda.Panda.enable_tb_chaining">enable_tb_chaining</a></code></li>
 <li><code><a title="pandare.panda.Panda.end_analysis" href="#pandare.panda.Panda.end_analysis">end_analysis</a></code></li>
 <li><code><a title="pandare.panda.Panda.end_record" href="#pandare.panda.Panda.end_record">end_record</a></code></li>
+<li><code><a title="pandare.panda.Panda.end_replay" href="#pandare.panda.Panda.end_replay">end_replay</a></code></li>
 <li><code><a title="pandare.panda.Panda.error_report" href="#pandare.panda.Panda.error_report">error_report</a></code></li>
 <li><code><a title="pandare.panda.Panda.exit_cpu_loop" href="#pandare.panda.Panda.exit_cpu_loop">exit_cpu_loop</a></code></li>
 <li><code><a title="pandare.panda.Panda.finish_serial_cmd" href="#pandare.panda.Panda.finish_serial_cmd">finish_serial_cmd</a></code></li>
