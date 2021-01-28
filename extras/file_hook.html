@@ -165,7 +165,7 @@ class FileHook:
         fname_s = None
         proc = self._panda.plugins[&#39;osi&#39;].get_current_process(cpu)
         if proc != ffi.NULL:
-            fname = self._panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, fd)
+            fname = self._panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, self._panda.ffi.cast(&#34;int&#34;, fd))
             if fname != ffi.NULL:
                 fname_s = ffi.string(fname).decode(&#39;utf8&#39;, &#39;ignore&#39;)
         return fname_s
@@ -436,7 +436,7 @@ from all syscalls that have a char* filename argument.</p></div>
         fname_s = None
         proc = self._panda.plugins[&#39;osi&#39;].get_current_process(cpu)
         if proc != ffi.NULL:
-            fname = self._panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, fd)
+            fname = self._panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, self._panda.ffi.cast(&#34;int&#34;, fd))
             if fname != ffi.NULL:
                 fname_s = ffi.string(fname).decode(&#39;utf8&#39;, &#39;ignore&#39;)
         return fname_s
