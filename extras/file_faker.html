@@ -93,7 +93,7 @@ class FakeFile:
         Return how much HyperFD offset should be incremented by
         XXX what about writes past end of the file?
         &#39;&#39;&#39;
-        self.logger.info(&#34;FakeFD({self.filename}) writing {new_data} at offset {self.offset}&#34;)
+        self.logger.info(f&#34;FakeFD({self.filename}) writing {new_data} at offset {self.offset}&#34;)
         new_data  = self.contents[:offset]
         new_data += write_data
         new_data += self.contents[offset+len(new_data):]
@@ -482,7 +482,7 @@ Users can inherit and modify this to customize how data is generated</p>
         Return how much HyperFD offset should be incremented by
         XXX what about writes past end of the file?
         &#39;&#39;&#39;
-        self.logger.info(&#34;FakeFD({self.filename}) writing {new_data} at offset {self.offset}&#34;)
+        self.logger.info(f&#34;FakeFD({self.filename}) writing {new_data} at offset {self.offset}&#34;)
         new_data  = self.contents[:offset]
         new_data += write_data
         new_data += self.contents[offset+len(new_data):]
@@ -601,7 +601,7 @@ XXX what about writes past end of the file?</p></div>
     Return how much HyperFD offset should be incremented by
     XXX what about writes past end of the file?
     &#39;&#39;&#39;
-    self.logger.info(&#34;FakeFD({self.filename}) writing {new_data} at offset {self.offset}&#34;)
+    self.logger.info(f&#34;FakeFD({self.filename}) writing {new_data} at offset {self.offset}&#34;)
     new_data  = self.contents[:offset]
     new_data += write_data
     new_data += self.contents[offset+len(new_data):]
