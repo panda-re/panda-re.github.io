@@ -152,21 +152,7 @@ class plugin_list(dict):
     def __getitem__(self,plugin_name):
         if plugin_name not in self:
             self._panda.load_plugin(plugin_name)
-        return super().__getitem__(plugin_name)
-
-
-class Hook(object):
-    &#39;&#39;&#39;
-    Maintains the state of a hook as defined by a user.
-    &#39;&#39;&#39;
-    def __init__(self,is_enabled=True,is_kernel=True,hook_cb=True,target_addr=0,target_library_offset=0,library_name=None,program_name=None):
-        self.is_enabled = is_enabled
-        self.is_kernel = is_kernel
-        self.hook_cb = hook_cb
-        self.target_addr = target_addr
-        self.target_library_offset = target_library_offset
-        self.library_name = library_name
-        self.program_name = program_name</code></pre>
+        return super().__getitem__(plugin_name)</code></pre>
 </details>
 </section>
 <section>
@@ -346,30 +332,6 @@ get_one_module.</p></div>
         self.cleanup_func(self.garray)</code></pre>
 </details>
 </dd>
-<dt id="pandare.utils.Hook"><code class="flex name class">
-<span>class <span class="ident">Hook</span></span>
-<span>(</span><span>is_enabled=True, is_kernel=True, hook_cb=True, target_addr=0, target_library_offset=0, library_name=None, program_name=None)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Maintains the state of a hook as defined by a user.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Hook(object):
-    &#39;&#39;&#39;
-    Maintains the state of a hook as defined by a user.
-    &#39;&#39;&#39;
-    def __init__(self,is_enabled=True,is_kernel=True,hook_cb=True,target_addr=0,target_library_offset=0,library_name=None,program_name=None):
-        self.is_enabled = is_enabled
-        self.is_kernel = is_kernel
-        self.hook_cb = hook_cb
-        self.target_addr = target_addr
-        self.target_library_offset = target_library_offset
-        self.library_name = library_name
-        self.program_name = program_name</code></pre>
-</details>
-</dd>
 <dt id="pandare.utils.plugin_list"><code class="flex name class">
 <span>class <span class="ident">plugin_list</span></span>
 <span>(</span><span>panda)</span>
@@ -423,9 +385,6 @@ get_one_module.</p></div>
 <ul>
 <li>
 <h4><code><a title="pandare.utils.GArrayIterator" href="#pandare.utils.GArrayIterator">GArrayIterator</a></code></h4>
-</li>
-<li>
-<h4><code><a title="pandare.utils.Hook" href="#pandare.utils.Hook">Hook</a></code></h4>
 </li>
 <li>
 <h4><code><a title="pandare.utils.plugin_list" href="#pandare.utils.plugin_list">plugin_list</a></code></h4>
