@@ -2440,15 +2440,17 @@ class Panda():
 
     ############# HOOKING MIXINS ###############
 
-    def hook(self, addr, length=0, enabled=True, kernel=True, asid=None, cb_type=&#34;before_block_exec&#34;):
+    def hook(self, addr, enabled=True, kernel=True, asid=None, cb_type=&#34;before_block_exec&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
         &#39;&#39;&#39;
 
         def decorator(fun):
-            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;after_block_exec&#34;:
+            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
+            elif cb_type == &#34;after_block_exec&#34;:
+                hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
             elif cb_type == &#34;before_block_translate&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState* env, target_ptr_t pc, struct hook*)&#34;)
             elif cb_type == &#34;before_block_exec_invalidate_opt&#34;:
@@ -2468,8 +2470,7 @@ class Panda():
             hook_cb_passed = hook_cb_type(fun)
             new_hook = self.ffi.new(&#34;struct hook*&#34;)
             new_hook.type = type_num
-            new_hook.start_addr = addr
-            new_hook.end_addr = addr + length
+            new_hook.addr = addr
             if kernel or asid is None:
                 new_hook.asid = 0
             else:
@@ -2505,15 +2506,17 @@ class Panda():
         return decorator
 
     
-    def hook_symbol(self, libraryname, symbolname, kernel=False, asid=None,name=None,cb_type=&#34;before_block_exec&#34;):
+    def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_block_exec&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
         &#39;&#39;&#39;
 
         def decorator(fun):
-            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;after_block_exec&#34;:
+            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
+            elif cb_type == &#34;after_block_exec&#34;:
+                hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
             elif cb_type == &#34;before_block_translate&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState* env, target_ptr_t pc, struct hook*)&#34;)
             elif cb_type == &#34;before_block_exec_invalidate_opt&#34;:
@@ -2525,6 +2528,13 @@ class Panda():
             # Inform the plugin that it has a new breakpoint at addr
             hook_cb_passed = hook_cb_type(fun)
             new_hook = self.ffi.new(&#34;struct symbol_hook*&#34;)
+            type_num = getattr(self.libpanda, &#34;PANDA_CB_&#34;+cb_type.upper())
+            new_hook.type = type_num
+            if procname is not None:
+                procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(procname,&#34;utf-8&#34;))
+            else:
+                procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
+            self.ffi.memmove(new_hook.procname,procname_ffi,len(procname_ffi))
             if libraryname is not None:
                 libname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(libraryname,&#34;utf-8&#34;))
             else:
@@ -5084,15 +5094,17 @@ class Panda():
 
     ############# HOOKING MIXINS ###############
 
-    def hook(self, addr, length=0, enabled=True, kernel=True, asid=None, cb_type=&#34;before_block_exec&#34;):
+    def hook(self, addr, enabled=True, kernel=True, asid=None, cb_type=&#34;before_block_exec&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
         &#39;&#39;&#39;
 
         def decorator(fun):
-            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;after_block_exec&#34;:
+            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
+            elif cb_type == &#34;after_block_exec&#34;:
+                hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
             elif cb_type == &#34;before_block_translate&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState* env, target_ptr_t pc, struct hook*)&#34;)
             elif cb_type == &#34;before_block_exec_invalidate_opt&#34;:
@@ -5112,8 +5124,7 @@ class Panda():
             hook_cb_passed = hook_cb_type(fun)
             new_hook = self.ffi.new(&#34;struct hook*&#34;)
             new_hook.type = type_num
-            new_hook.start_addr = addr
-            new_hook.end_addr = addr + length
+            new_hook.addr = addr
             if kernel or asid is None:
                 new_hook.asid = 0
             else:
@@ -5149,15 +5160,17 @@ class Panda():
         return decorator
 
     
-    def hook_symbol(self, libraryname, symbolname, kernel=False, asid=None,name=None,cb_type=&#34;before_block_exec&#34;):
+    def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_block_exec&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
         &#39;&#39;&#39;
 
         def decorator(fun):
-            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;after_block_exec&#34;:
+            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
+            elif cb_type == &#34;after_block_exec&#34;:
+                hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
             elif cb_type == &#34;before_block_translate&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState* env, target_ptr_t pc, struct hook*)&#34;)
             elif cb_type == &#34;before_block_exec_invalidate_opt&#34;:
@@ -5169,6 +5182,13 @@ class Panda():
             # Inform the plugin that it has a new breakpoint at addr
             hook_cb_passed = hook_cb_type(fun)
             new_hook = self.ffi.new(&#34;struct symbol_hook*&#34;)
+            type_num = getattr(self.libpanda, &#34;PANDA_CB_&#34;+cb_type.upper())
+            new_hook.type = type_num
+            if procname is not None:
+                procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(procname,&#34;utf-8&#34;))
+            else:
+                procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
+            self.ffi.memmove(new_hook.procname,procname_ffi,len(procname_ffi))
             if libraryname is not None:
                 libname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(libraryname,&#34;utf-8&#34;))
             else:
@@ -6622,7 +6642,7 @@ Returns:
 </details>
 </dd>
 <dt id="pandare.panda.Panda.hook"><code class="name flex">
-<span>def <span class="ident">hook</span></span>(<span>self, addr, length=0, enabled=True, kernel=True, asid=None, cb_type='before_block_exec')</span>
+<span>def <span class="ident">hook</span></span>(<span>self, addr, enabled=True, kernel=True, asid=None, cb_type='before_block_exec')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
@@ -6631,15 +6651,17 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def hook(self, addr, length=0, enabled=True, kernel=True, asid=None, cb_type=&#34;before_block_exec&#34;):
+<pre><code class="python">def hook(self, addr, enabled=True, kernel=True, asid=None, cb_type=&#34;before_block_exec&#34;):
     &#39;&#39;&#39;
     Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
     the function will be called with args (CPUState, TranslationBlock)
     &#39;&#39;&#39;
 
     def decorator(fun):
-        if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;after_block_exec&#34;:
+        if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
             hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
+        elif cb_type == &#34;after_block_exec&#34;:
+            hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
         elif cb_type == &#34;before_block_translate&#34;:
             hook_cb_type = self.ffi.callback(&#34;void(CPUState* env, target_ptr_t pc, struct hook*)&#34;)
         elif cb_type == &#34;before_block_exec_invalidate_opt&#34;:
@@ -6659,8 +6681,7 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
         hook_cb_passed = hook_cb_type(fun)
         new_hook = self.ffi.new(&#34;struct hook*&#34;)
         new_hook.type = type_num
-        new_hook.start_addr = addr
-        new_hook.end_addr = addr + length
+        new_hook.addr = addr
         if kernel or asid is None:
             new_hook.asid = 0
         else:
@@ -6793,7 +6814,7 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.hook_symbol"><code class="name flex">
-<span>def <span class="ident">hook_symbol</span></span>(<span>self, libraryname, symbolname, kernel=False, asid=None, name=None, cb_type='before_block_exec')</span>
+<span>def <span class="ident">hook_symbol</span></span>(<span>self, libraryname, symbolname, kernel=False, procname=None, name=None, cb_type='before_block_exec')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
@@ -6802,15 +6823,17 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def hook_symbol(self, libraryname, symbolname, kernel=False, asid=None,name=None,cb_type=&#34;before_block_exec&#34;):
+<pre><code class="python">def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_block_exec&#34;):
     &#39;&#39;&#39;
     Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
     the function will be called with args (CPUState, TranslationBlock)
     &#39;&#39;&#39;
 
     def decorator(fun):
-        if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;after_block_exec&#34;:
+        if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
             hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
+        elif cb_type == &#34;after_block_exec&#34;:
+            hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
         elif cb_type == &#34;before_block_translate&#34;:
             hook_cb_type = self.ffi.callback(&#34;void(CPUState* env, target_ptr_t pc, struct hook*)&#34;)
         elif cb_type == &#34;before_block_exec_invalidate_opt&#34;:
@@ -6822,6 +6845,13 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
         # Inform the plugin that it has a new breakpoint at addr
         hook_cb_passed = hook_cb_type(fun)
         new_hook = self.ffi.new(&#34;struct symbol_hook*&#34;)
+        type_num = getattr(self.libpanda, &#34;PANDA_CB_&#34;+cb_type.upper())
+        new_hook.type = type_num
+        if procname is not None:
+            procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(procname,&#34;utf-8&#34;))
+        else:
+            procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
+        self.ffi.memmove(new_hook.procname,procname_ffi,len(procname_ffi))
         if libraryname is not None:
             libname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(libraryname,&#34;utf-8&#34;))
         else:
