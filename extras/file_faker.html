@@ -93,10 +93,11 @@ class FakeFile:
         Return how much HyperFD offset should be incremented by
         XXX what about writes past end of the file?
         &#39;&#39;&#39;
-        self.logger.info(f&#34;FakeFD({self.filename}) writing {new_data} at offset {self.offset}&#34;)
         new_data  = self.contents[:offset]
         new_data += write_data
         new_data += self.contents[offset+len(new_data):]
+        
+        self.logger.info(f&#34;FakeFD({self.filename}) writing {new_data} at offset {offset}&#34;)
 
         self.contents = new_data
         return len(write_data)
@@ -254,15 +255,16 @@ class FileFaker(FileHook):
             for name in names:
                 self._gen_fd_cb(name, arg_offset)
 
-    def replace_file(self, filename, faker):
+    def replace_file(self, filename, faker, disk_file=&#34;/etc/passwd&#34;):
         &#39;&#39;&#39;
         Replace all accesses to filename with accesses to the fake file instead
+        which optionally may be specified by disk_file.
         &#39;&#39;&#39;
         self.faked_files[filename] = faker
 
         # XXX: We rename the files to real files to the guest kernel can manage FDs for us.
         #      this may need to use different real files depending on permissions requested
-        self.rename_file(filename, &#34;/etc/passwd&#34;)
+        self.rename_file(filename, disk_file)
 
     def _gen_fd_cb(self, name, fd_offset):
         &#39;&#39;&#39;
@@ -482,10 +484,11 @@ Users can inherit and modify this to customize how data is generated</p>
         Return how much HyperFD offset should be incremented by
         XXX what about writes past end of the file?
         &#39;&#39;&#39;
-        self.logger.info(f&#34;FakeFD({self.filename}) writing {new_data} at offset {self.offset}&#34;)
         new_data  = self.contents[:offset]
         new_data += write_data
         new_data += self.contents[offset+len(new_data):]
+        
+        self.logger.info(f&#34;FakeFD({self.filename}) writing {new_data} at offset {offset}&#34;)
 
         self.contents = new_data
         return len(write_data)
@@ -601,10 +604,11 @@ XXX what about writes past end of the file?</p></div>
     Return how much HyperFD offset should be incremented by
     XXX what about writes past end of the file?
     &#39;&#39;&#39;
-    self.logger.info(f&#34;FakeFD({self.filename}) writing {new_data} at offset {self.offset}&#34;)
     new_data  = self.contents[:offset]
     new_data += write_data
     new_data += self.contents[offset+len(new_data):]
+    
+    self.logger.info(f&#34;FakeFD({self.filename}) writing {new_data} at offset {offset}&#34;)
 
     self.contents = new_data
     return len(write_data)</code></pre>
@@ -690,15 +694,16 @@ from fake conents and writes are logged.</p>
             for name in names:
                 self._gen_fd_cb(name, arg_offset)
 
-    def replace_file(self, filename, faker):
+    def replace_file(self, filename, faker, disk_file=&#34;/etc/passwd&#34;):
         &#39;&#39;&#39;
         Replace all accesses to filename with accesses to the fake file instead
+        which optionally may be specified by disk_file.
         &#39;&#39;&#39;
         self.faked_files[filename] = faker
 
         # XXX: We rename the files to real files to the guest kernel can manage FDs for us.
         #      this may need to use different real files depending on permissions requested
-        self.rename_file(filename, &#34;/etc/passwd&#34;)
+        self.rename_file(filename, disk_file)
 
     def _gen_fd_cb(self, name, fd_offset):
         &#39;&#39;&#39;
@@ -882,23 +887,25 @@ from fake conents and writes are logged.</p>
 </details>
 </dd>
 <dt id="pandare.extras.file_faker.FileFaker.replace_file"><code class="name flex">
-<span>def <span class="ident">replace_file</span></span>(<span>self, filename, faker)</span>
+<span>def <span class="ident">replace_file</span></span>(<span>self, filename, faker, disk_file='/etc/passwd')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Replace all accesses to filename with accesses to the fake file instead</p></div>
+<div class="desc"><p>Replace all accesses to filename with accesses to the fake file instead
+which optionally may be specified by disk_file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def replace_file(self, filename, faker):
+<pre><code class="python">def replace_file(self, filename, faker, disk_file=&#34;/etc/passwd&#34;):
     &#39;&#39;&#39;
     Replace all accesses to filename with accesses to the fake file instead
+    which optionally may be specified by disk_file.
     &#39;&#39;&#39;
     self.faked_files[filename] = faker
 
     # XXX: We rename the files to real files to the guest kernel can manage FDs for us.
     #      this may need to use different real files depending on permissions requested
-    self.rename_file(filename, &#34;/etc/passwd&#34;)</code></pre>
+    self.rename_file(filename, disk_file)</code></pre>
 </details>
 </dd>
 </dl>
