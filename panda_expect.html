@@ -42,14 +42,18 @@ from colorama import Fore, Style
 class TimeoutExpired(Exception): pass
 
 class Expect(object):
-    def __init__(self, filelike=None, expectation=None, logfile=None, quiet=False, consume_first=False):
+    def __init__(self, name, filelike=None, expectation=None, logfile=None, quiet=False, consume_first=False):
+
+        self.name = name
+
+        if logfile is None: logfile = os.devnull
+        self.logfile = open(logfile, &#34;wb&#34;)
+
         if filelike is None: # Must later use connect(filelike)
             self.fd = None
         else:
             self.connect(filelike)
 
-        if logfile is None: logfile = os.devnull
-        self.logfile = open(logfile, &#34;wb&#34;)
         self.quiet = quiet
         self.sofar = &#39;&#39;
         self.last_msg = None
@@ -63,8 +67,11 @@ class Expect(object):
             self.consumed_first = False
 
     def update_expectation(self, expectation):
+        if isinstance(expectation, bytes):
+            expectation = expectation.decode()
+        self.last_prompt = expectation # approximation
         self.expectation_re = re.compile(expectation)
-        self.expectation_ends_re = re.compile(rb&#39;.*&#39; + expectation)
+        self.expectation_ends_re = re.compile(r&#39;.*&#39; + expectation)
 
     def connect(self, filelike):
         if type(filelike) == int:
@@ -83,6 +90,224 @@ class Expect(object):
     def abort(self):
         self.running = False
 
+    def unansi(self, msg):
+        &#39;&#39;&#39;
+        Given a string with ansi control codes, emulate behavior to generate the resulting string. 
+
+        First we split input into a list of (&#39;fn&#39;, [args]) / (&#39;text&#39;, [&#39;foo&#39;]) ansi commands then
+        evaluate the commands to render real text output
+
+        See https://notes.burke.libbey.me/ansi-escape-codes/ and
+        http://ascii-table.com/ansi-escape-sequences-vt-100.php for ansi escape code details
+        &#39;&#39;&#39;
+
+        if b&#39;\x1b&#39; not in msg:
+            text = &#34;&#34;.join([chr(x) for x in msg])
+            return text
+
+        start_args = re.compile(br&#34;^(\d+);&#34;)
+        last_arg = re.compile(rb&#34;^(\d+)&#34;)
+
+        last_text = &#34;&#34;
+        reformatted = []
+        idx = 0 # XXX: mutates during loop
+        while idx &lt; len(msg):
+            if msg[idx] != 0x1b:
+                last_text += chr(msg[idx])
+            else:
+                if len(last_text):
+                    reformatted.append((&#39;text&#39;, [last_text]))
+                    last_text = &#34;&#34;
+
+                if idx+3 &lt;= len(msg) and msg[idx+1] == ord(&#39;[&#39;):
+                    args = []
+                    shift = idx+2
+                    arg_s = msg[shift:]
+                    while start_args.match(arg_s):
+                        arg = start_args.match(arg_s).groups()[0].decode()
+                        args.append(arg)
+                        shift += len(arg)+1 # for ;
+                        arg_s = msg[shift:]
+
+                    # Last arg is just #
+                    if last_arg.match(arg_s):
+                        arg = last_arg.match(arg_s).groups()[0].decode()
+                        shift += len(arg)
+                        args.append(arg)
+                        arg_s = msg[shift:]
+
+                    # Next is one char for cmd
+                    cmd = chr(msg[shift])
+                    reformatted.append((cmd, args))
+
+                    idx = shift # final char
+            idx += 1
+        if len(last_text):
+            reformatted.append((&#39;text&#39;, [last_text]))
+
+        # Now render it!
+        # Note the very first line will \r to beginning, then &#39;C&#39; forward to go past expect prompt
+
+        lines_out = [&#34; &#34;*len(self.last_prompt)] # Starting point - it&#39;s an approximation since we don&#39;t know real current prompt
+        cur_line = 0
+        line_pos = len(self.last_prompt)
+        store_ptr = (0, 0)
+
+        def _dump(lines_out, cur_line, line_pos):
+            print(&#34;-&#34;*100)
+            for idx, line in enumerate(lines_out):
+                print(&#34;&#39;&#34;, line, &#34;&#39;&#34;)
+                if cur_line == idx:
+                    print((&#34; &#34;*(line_pos-1) if line_pos &gt; 0 else &#34;&#34;) + &#34;^&#34;)
+            print(&#34;=&#34;*100)
+
+        for idx, (typ, args) in enumerate(reformatted):
+            #print(typ, args)
+            if typ == &#39;text&#39;:
+                n = args[0]
+                for idx, char in enumerate(n):
+                    if char == &#39;\n&#39;:
+                        cur_line += 1 
+                        while cur_line &gt;= len(lines_out):
+                            lines_out.append(&#34;&#34;)
+                    if char == &#39;\r&#39;:
+                        line_pos = 0
+                        continue # Don&#39;t clobber old char
+
+                    line = list(lines_out[cur_line])
+                    if (line_pos) &gt;= len(line):
+                        line.append(char)
+                    else:
+                        #if line[line_pos] != &#39; &#39;:
+                        #    print(&#34;Replace&#34;, repr(line[line_pos]) , &#34;with&#34;, repr(char))
+                        line[line_pos] = char
+                    lines_out[cur_line] = &#34;&#34;.join(line)
+
+                    if char not in [&#39;\n&#39;, &#39;\r&#39;]:
+                        line_pos += 1
+
+            else:
+                args[:] = [int(x) for x in args]
+
+                if typ == &#39;A&#39;:
+                    if not len(args):
+                        # Incomplete
+                        continue
+
+                    n = args[0]
+
+                    if cur_line - n &lt; 0: # Need to shift
+                        cur_line = 0
+                    else:
+                        cur_line -= n
+                    assert(cur_line &gt;= 0)
+
+                elif typ == &#39;B&#39;:
+                    if not len(args):
+                        # Incomplete
+                        continue
+                    n = args[0]
+                    cur_line += n
+                    while cur_line &gt;= len(lines_out):
+                        lines_out.append(&#34; &#34;*100)
+
+                elif typ == &#39;D&#39;:
+                    n = 1 # Default move left 1
+                    if len(args):
+                        n = args[0]
+
+                    line_pos -= n
+                    if line_pos &lt; 0:
+                        line_pos = 0
+                    assert(line_pos &gt;= 0)
+
+                elif typ == &#39;C&#39;: # Move right
+                    n = 1 # Default move 1
+                    if len(args):
+                        n = args[0]
+
+                    line_pos += n
+                    if line_pos &gt; len(lines_out[cur_line])-1:
+                        line_pos = len(lines_out)-1
+                    assert(line_pos &gt;= 0)
+
+                elif typ == &#39;J&#39;:
+                    # Optional arg 0, 1, 2
+                    n = 0 # default
+                    if len(args):
+                        n = args[0]
+                    if n == 0:
+                        # clear down
+                        lines_out = lines_out[:cur_line+1]
+                    elif n == 1:
+                        # clear up
+                        lines_out = lines_out[cur_line:]
+                    elif n == 2:
+                        # clear everything
+                        lines_out = [&#34;&#34;]
+                        cur_line = 0
+                        line_pos = 0
+                        store_ptr = (0, 0)
+
+                elif typ == &#39;K&#39;:
+                    # Optional arg 0, 1, 2
+                    n = 0 # default
+                    if len(args):
+                        n = args[0]
+
+                    # HURISTIC-y hack: linux loves to have a line 123456 then do K(0) 6\r\n
+                    # so if the next line is text and the text is [eol]\r\n where [eol] matches the end of this
+                    # line - align cur_pos
+                    if len(reformatted) &gt; idx+1: # Have another message
+                        (next_typ, next_args) = reformatted[idx+1]
+                        if next_typ == &#39;text&#39;:
+                            if &#39;\r\n&#39; in next_args[0]:
+                                next_lines = next_args[0].split(&#34;\r\n&#34;)
+                                if lines_out[cur_line].strip().endswith(next_lines[0]):
+                                    # Its the buggy case. Just align it such that we clear the text
+                                    # that&#39;s about to get echoed
+                                    line_pos = line_pos - len(next_lines[0])
+
+                    if n == 0:
+                        # clear right of cursor
+                        lines_out[cur_line] = lines_out[cur_line][:line_pos]
+                    elif n == 1:
+                        # clear left of cursor
+                        lines_out[cur_line] = (&#34; &#34;*line_pos)+lines_out[cur_line][line_pos:]
+                    elif n == 2:
+                        # clear whole line
+                        lines_out[cur_line] = &#34; &#34;*len(lines_out[cur_line])
+
+                elif typ == &#39;H&#39;:
+                    n = args[0]-1
+                    m = args[1]-1
+                    cur_line = n
+                    line_pos = m
+
+                    while cur_line &gt;= len(lines_out):
+                        lines_out.append(&#34;&#34;)
+
+                    while line_pos &gt; len(lines_out[cur_line]):
+                        lines_out[cur_line] += &#34; &#34;
+
+                elif typ == &#39;T&#39;:
+                    # Scroll window down
+                    pass
+                elif typ == &#39;S&#39;:
+                    # Scroll window up
+                    pass
+
+                elif typ == &#39;s&#39;:
+                    store_ptr = (cur_line, line_pos)
+                elif typ == &#39;u&#39;:
+                    (cur_line, line_pos) = store_ptr
+
+                else:
+                    raise ValueError(f&#34;Unsupporte ANSI command {typ}&#34;)
+            #_dump(lines_out, cur_line, line_pos)
+
+        return &#34;\n&#34;.join(lines_out)
+
     def expect(self, expectation=None, timeout=30):
         &#39;&#39;&#39;
         Assumptions: as you send a command, the guest may send back
@@ -93,6 +318,9 @@ class Expect(object):
 
         if expectation:
             raise ValueError(&#34;Deprecated interface - must set expectation in class init&#34;)
+
+        if self.fd is None:
+            raise RuntimeError(&#34;Must connect() prior to expect()&#34;)
 
         sofar = bytearray()
         start_time = datetime.now()
@@ -118,64 +346,31 @@ class Expect(object):
 
                 sofar.extend(char)
 
-                # Done parsing - make meaning from the buffer
-                # We may have our command echoed back + control characters before the result
-                if self.expectation_ends_re.match((b&#34;\n&#34;+sofar).split(b&#34;\n&#34;)[-1]) != None:
-                    #print(&#34;\nFinal line matches -- raw message &#39;{}&#39;&#34;.format(sofar))
+                # Translate the sofar buffer into plaintext, then determine if we&#39;re finished (bc we see new prompt)
+                # note this drops the echo&#39;d command
+                plaintext = self.unansi(sofar)
+                # Now we have command\nresults..........\nprompt
 
-                    if b&#34;\x1b&#34; in sofar:
-                        # We have control chracters - assume it&#39;s a normal linux guest
-                        # Approach here is to drop the messages before and including ctrl chars
-                        results = []
-                        past_ansi = False
-                        for line in sofar.split(b&#34;\r&#34;):
-                            if b&#34;\x1b&#34; in line:
-                                past_ansi = True
-                                continue
+                lines = [x.replace(&#34;\r&#34;, &#34;&#34;) for x in plaintext.split(&#34;\n&#34;)]
+                if len(lines):
+                    # Check last line to see if it ends with prompt (indicating we finished)
+                    if self.expectation_ends_re.match(lines[-1]) != None:
+                        self.last_prompt = lines[-1]
+                        lines = lines[:-1]
 
-                            elif past_ansi:
-                                results.append(line)
-                        sofar = b&#34;\r&#34;.join(results)
-                    #print(&#34;Strip ANSI:&#34;, repr(sofar))
+                        # Drop command we sent - note it won&#39;t be a direct match with last_cmd because of weird escape codes
+                        # which are based on guest line position when printed - i.e., it would only be an exact
+                        # match if we knew and included the prompt when the command was run. Let&#39;s just always drop it
+                        if len(lines) &gt; 1:
+                            lines = lines[1:]
+                        else:
+                            lines = []
 
-                    # Try joining all lines together and searching for lastmsg
-                    joined = b&#34;&#34;.join([x.strip() for x in sofar.split(b&#34;\r&#34;)])
-                    #print(&#34;RAW JOINED:&#34;, joined)
-                    if self.last_msg and joined.startswith(self.last_msg.strip()):
-                        results = []
-                        # Go through lines until we find one that ends with last_msg
-                        past_echo = False
-                        current = b&#34;&#34;
-                        end_of_echo = 0
-                        for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
-                            if self.last_msg.strip().endswith(current+line.strip()):
-                                #print(&#34;Potential ehco:&#34;, repr(current))
-                                current += line.strip()
-                                end_of_echo = idx
-                            else:
-                                break
+                        self.logfile.flush()
+                        if not self.quiet: sys.stdout.flush()
 
-
-                        for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
-                            if idx &gt; end_of_echo:
-                                results.append(line)
-
-                        sofar = b&#34;\r&#34;.join(results)
-                    #print(&#34;Strip command echo:&#34;, repr(sofar))
-
-                    #if b&#34;\r\n&#34; in sofar: # Drop next prompt - We&#39;ll _always_ have a next prompt!
-                    resp = sofar.split(b&#34;\r\n&#34;)
-
-                    last_line = resp[-1]
-                    if self.expectation_re.match(last_line.strip()) != None:
-                        resp[:] = resp[:-1] # drop next prompt
-                        sofar= b&#34;\r\n&#34;.join(resp)
-
-                    sofar = sofar.strip()
-                    self.logfile.flush()
-                    if not self.quiet: sys.stdout.flush()
-
-                    return sofar.decode(&#39;utf8&#39;, &#39;ignore&#39;)
+                        plaintext = &#34;\n&#34;.join(lines)
+                        return plaintext
 
         if not self.running: # Aborted
             return None
@@ -184,27 +379,32 @@ class Expect(object):
         if not self.quiet: sys.stdout.flush()
 
         self.sofar = sofar.decode(&#39;utf8&#39;)
-        raise TimeoutExpired(&#34;Read message \n{}\n&#34;.format(self.sofar))
+        raise TimeoutExpired(f&#34;{self.name} Read message \n{self.sofar}\n&#34;)
 
     def send(self, msg):
+        if not self.quiet:
+            print(f&#34;{self.name}: send {msg}&#34;)
         if not self.consumed_first: # Before we send anything, consume header
             pre = self.expect(&#34;&#34;)
             self.consumed_first = True
 
-        self.last_msg = msg
+        # Newlines will call problems
+        assert len(msg.decode().split(&#34;\n&#34;)) &lt;= 2, &#34;Multiline cmds unsupported&#34;
+        self.last_msg = msg.decode().replace(&#34;\n&#34;, &#34;&#34;)
         os.write(self.fd, msg)
         self.logfile.write(msg)
         self.logfile.flush()
 
     def send_eol(self): # Just send an EOL
         if self.last_msg:
-            self.last_msg+=b&#34;\n&#34;
+            self.last_msg+=&#34;\n&#34;
         os.write(self.fd, b&#34;\n&#34;)
         self.logfile.write(b&#34;\n&#34;)
         self.logfile.flush()
 
 
     def sendline(self, msg=b&#34;&#34;):
+        assert(self.fd is not None), &#34;Must connect before sending&#34;
         self.send(msg + b&#34;\n&#34;)</code></pre>
 </details>
 </section>
@@ -219,7 +419,7 @@ class Expect(object):
 <dl>
 <dt id="pandare.panda_expect.Expect"><code class="flex name class">
 <span>class <span class="ident">Expect</span></span>
-<span>(</span><span>filelike=None, expectation=None, logfile=None, quiet=False, consume_first=False)</span>
+<span>(</span><span>name, filelike=None, expectation=None, logfile=None, quiet=False, consume_first=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -228,14 +428,18 @@ class Expect(object):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Expect(object):
-    def __init__(self, filelike=None, expectation=None, logfile=None, quiet=False, consume_first=False):
+    def __init__(self, name, filelike=None, expectation=None, logfile=None, quiet=False, consume_first=False):
+
+        self.name = name
+
+        if logfile is None: logfile = os.devnull
+        self.logfile = open(logfile, &#34;wb&#34;)
+
         if filelike is None: # Must later use connect(filelike)
             self.fd = None
         else:
             self.connect(filelike)
 
-        if logfile is None: logfile = os.devnull
-        self.logfile = open(logfile, &#34;wb&#34;)
         self.quiet = quiet
         self.sofar = &#39;&#39;
         self.last_msg = None
@@ -249,8 +453,11 @@ class Expect(object):
             self.consumed_first = False
 
     def update_expectation(self, expectation):
+        if isinstance(expectation, bytes):
+            expectation = expectation.decode()
+        self.last_prompt = expectation # approximation
         self.expectation_re = re.compile(expectation)
-        self.expectation_ends_re = re.compile(rb&#39;.*&#39; + expectation)
+        self.expectation_ends_re = re.compile(r&#39;.*&#39; + expectation)
 
     def connect(self, filelike):
         if type(filelike) == int:
@@ -269,6 +476,224 @@ class Expect(object):
     def abort(self):
         self.running = False
 
+    def unansi(self, msg):
+        &#39;&#39;&#39;
+        Given a string with ansi control codes, emulate behavior to generate the resulting string. 
+
+        First we split input into a list of (&#39;fn&#39;, [args]) / (&#39;text&#39;, [&#39;foo&#39;]) ansi commands then
+        evaluate the commands to render real text output
+
+        See https://notes.burke.libbey.me/ansi-escape-codes/ and
+        http://ascii-table.com/ansi-escape-sequences-vt-100.php for ansi escape code details
+        &#39;&#39;&#39;
+
+        if b&#39;\x1b&#39; not in msg:
+            text = &#34;&#34;.join([chr(x) for x in msg])
+            return text
+
+        start_args = re.compile(br&#34;^(\d+);&#34;)
+        last_arg = re.compile(rb&#34;^(\d+)&#34;)
+
+        last_text = &#34;&#34;
+        reformatted = []
+        idx = 0 # XXX: mutates during loop
+        while idx &lt; len(msg):
+            if msg[idx] != 0x1b:
+                last_text += chr(msg[idx])
+            else:
+                if len(last_text):
+                    reformatted.append((&#39;text&#39;, [last_text]))
+                    last_text = &#34;&#34;
+
+                if idx+3 &lt;= len(msg) and msg[idx+1] == ord(&#39;[&#39;):
+                    args = []
+                    shift = idx+2
+                    arg_s = msg[shift:]
+                    while start_args.match(arg_s):
+                        arg = start_args.match(arg_s).groups()[0].decode()
+                        args.append(arg)
+                        shift += len(arg)+1 # for ;
+                        arg_s = msg[shift:]
+
+                    # Last arg is just #
+                    if last_arg.match(arg_s):
+                        arg = last_arg.match(arg_s).groups()[0].decode()
+                        shift += len(arg)
+                        args.append(arg)
+                        arg_s = msg[shift:]
+
+                    # Next is one char for cmd
+                    cmd = chr(msg[shift])
+                    reformatted.append((cmd, args))
+
+                    idx = shift # final char
+            idx += 1
+        if len(last_text):
+            reformatted.append((&#39;text&#39;, [last_text]))
+
+        # Now render it!
+        # Note the very first line will \r to beginning, then &#39;C&#39; forward to go past expect prompt
+
+        lines_out = [&#34; &#34;*len(self.last_prompt)] # Starting point - it&#39;s an approximation since we don&#39;t know real current prompt
+        cur_line = 0
+        line_pos = len(self.last_prompt)
+        store_ptr = (0, 0)
+
+        def _dump(lines_out, cur_line, line_pos):
+            print(&#34;-&#34;*100)
+            for idx, line in enumerate(lines_out):
+                print(&#34;&#39;&#34;, line, &#34;&#39;&#34;)
+                if cur_line == idx:
+                    print((&#34; &#34;*(line_pos-1) if line_pos &gt; 0 else &#34;&#34;) + &#34;^&#34;)
+            print(&#34;=&#34;*100)
+
+        for idx, (typ, args) in enumerate(reformatted):
+            #print(typ, args)
+            if typ == &#39;text&#39;:
+                n = args[0]
+                for idx, char in enumerate(n):
+                    if char == &#39;\n&#39;:
+                        cur_line += 1 
+                        while cur_line &gt;= len(lines_out):
+                            lines_out.append(&#34;&#34;)
+                    if char == &#39;\r&#39;:
+                        line_pos = 0
+                        continue # Don&#39;t clobber old char
+
+                    line = list(lines_out[cur_line])
+                    if (line_pos) &gt;= len(line):
+                        line.append(char)
+                    else:
+                        #if line[line_pos] != &#39; &#39;:
+                        #    print(&#34;Replace&#34;, repr(line[line_pos]) , &#34;with&#34;, repr(char))
+                        line[line_pos] = char
+                    lines_out[cur_line] = &#34;&#34;.join(line)
+
+                    if char not in [&#39;\n&#39;, &#39;\r&#39;]:
+                        line_pos += 1
+
+            else:
+                args[:] = [int(x) for x in args]
+
+                if typ == &#39;A&#39;:
+                    if not len(args):
+                        # Incomplete
+                        continue
+
+                    n = args[0]
+
+                    if cur_line - n &lt; 0: # Need to shift
+                        cur_line = 0
+                    else:
+                        cur_line -= n
+                    assert(cur_line &gt;= 0)
+
+                elif typ == &#39;B&#39;:
+                    if not len(args):
+                        # Incomplete
+                        continue
+                    n = args[0]
+                    cur_line += n
+                    while cur_line &gt;= len(lines_out):
+                        lines_out.append(&#34; &#34;*100)
+
+                elif typ == &#39;D&#39;:
+                    n = 1 # Default move left 1
+                    if len(args):
+                        n = args[0]
+
+                    line_pos -= n
+                    if line_pos &lt; 0:
+                        line_pos = 0
+                    assert(line_pos &gt;= 0)
+
+                elif typ == &#39;C&#39;: # Move right
+                    n = 1 # Default move 1
+                    if len(args):
+                        n = args[0]
+
+                    line_pos += n
+                    if line_pos &gt; len(lines_out[cur_line])-1:
+                        line_pos = len(lines_out)-1
+                    assert(line_pos &gt;= 0)
+
+                elif typ == &#39;J&#39;:
+                    # Optional arg 0, 1, 2
+                    n = 0 # default
+                    if len(args):
+                        n = args[0]
+                    if n == 0:
+                        # clear down
+                        lines_out = lines_out[:cur_line+1]
+                    elif n == 1:
+                        # clear up
+                        lines_out = lines_out[cur_line:]
+                    elif n == 2:
+                        # clear everything
+                        lines_out = [&#34;&#34;]
+                        cur_line = 0
+                        line_pos = 0
+                        store_ptr = (0, 0)
+
+                elif typ == &#39;K&#39;:
+                    # Optional arg 0, 1, 2
+                    n = 0 # default
+                    if len(args):
+                        n = args[0]
+
+                    # HURISTIC-y hack: linux loves to have a line 123456 then do K(0) 6\r\n
+                    # so if the next line is text and the text is [eol]\r\n where [eol] matches the end of this
+                    # line - align cur_pos
+                    if len(reformatted) &gt; idx+1: # Have another message
+                        (next_typ, next_args) = reformatted[idx+1]
+                        if next_typ == &#39;text&#39;:
+                            if &#39;\r\n&#39; in next_args[0]:
+                                next_lines = next_args[0].split(&#34;\r\n&#34;)
+                                if lines_out[cur_line].strip().endswith(next_lines[0]):
+                                    # Its the buggy case. Just align it such that we clear the text
+                                    # that&#39;s about to get echoed
+                                    line_pos = line_pos - len(next_lines[0])
+
+                    if n == 0:
+                        # clear right of cursor
+                        lines_out[cur_line] = lines_out[cur_line][:line_pos]
+                    elif n == 1:
+                        # clear left of cursor
+                        lines_out[cur_line] = (&#34; &#34;*line_pos)+lines_out[cur_line][line_pos:]
+                    elif n == 2:
+                        # clear whole line
+                        lines_out[cur_line] = &#34; &#34;*len(lines_out[cur_line])
+
+                elif typ == &#39;H&#39;:
+                    n = args[0]-1
+                    m = args[1]-1
+                    cur_line = n
+                    line_pos = m
+
+                    while cur_line &gt;= len(lines_out):
+                        lines_out.append(&#34;&#34;)
+
+                    while line_pos &gt; len(lines_out[cur_line]):
+                        lines_out[cur_line] += &#34; &#34;
+
+                elif typ == &#39;T&#39;:
+                    # Scroll window down
+                    pass
+                elif typ == &#39;S&#39;:
+                    # Scroll window up
+                    pass
+
+                elif typ == &#39;s&#39;:
+                    store_ptr = (cur_line, line_pos)
+                elif typ == &#39;u&#39;:
+                    (cur_line, line_pos) = store_ptr
+
+                else:
+                    raise ValueError(f&#34;Unsupporte ANSI command {typ}&#34;)
+            #_dump(lines_out, cur_line, line_pos)
+
+        return &#34;\n&#34;.join(lines_out)
+
     def expect(self, expectation=None, timeout=30):
         &#39;&#39;&#39;
         Assumptions: as you send a command, the guest may send back
@@ -279,6 +704,9 @@ class Expect(object):
 
         if expectation:
             raise ValueError(&#34;Deprecated interface - must set expectation in class init&#34;)
+
+        if self.fd is None:
+            raise RuntimeError(&#34;Must connect() prior to expect()&#34;)
 
         sofar = bytearray()
         start_time = datetime.now()
@@ -304,64 +732,31 @@ class Expect(object):
 
                 sofar.extend(char)
 
-                # Done parsing - make meaning from the buffer
-                # We may have our command echoed back + control characters before the result
-                if self.expectation_ends_re.match((b&#34;\n&#34;+sofar).split(b&#34;\n&#34;)[-1]) != None:
-                    #print(&#34;\nFinal line matches -- raw message &#39;{}&#39;&#34;.format(sofar))
+                # Translate the sofar buffer into plaintext, then determine if we&#39;re finished (bc we see new prompt)
+                # note this drops the echo&#39;d command
+                plaintext = self.unansi(sofar)
+                # Now we have command\nresults..........\nprompt
 
-                    if b&#34;\x1b&#34; in sofar:
-                        # We have control chracters - assume it&#39;s a normal linux guest
-                        # Approach here is to drop the messages before and including ctrl chars
-                        results = []
-                        past_ansi = False
-                        for line in sofar.split(b&#34;\r&#34;):
-                            if b&#34;\x1b&#34; in line:
-                                past_ansi = True
-                                continue
+                lines = [x.replace(&#34;\r&#34;, &#34;&#34;) for x in plaintext.split(&#34;\n&#34;)]
+                if len(lines):
+                    # Check last line to see if it ends with prompt (indicating we finished)
+                    if self.expectation_ends_re.match(lines[-1]) != None:
+                        self.last_prompt = lines[-1]
+                        lines = lines[:-1]
 
-                            elif past_ansi:
-                                results.append(line)
-                        sofar = b&#34;\r&#34;.join(results)
-                    #print(&#34;Strip ANSI:&#34;, repr(sofar))
+                        # Drop command we sent - note it won&#39;t be a direct match with last_cmd because of weird escape codes
+                        # which are based on guest line position when printed - i.e., it would only be an exact
+                        # match if we knew and included the prompt when the command was run. Let&#39;s just always drop it
+                        if len(lines) &gt; 1:
+                            lines = lines[1:]
+                        else:
+                            lines = []
 
-                    # Try joining all lines together and searching for lastmsg
-                    joined = b&#34;&#34;.join([x.strip() for x in sofar.split(b&#34;\r&#34;)])
-                    #print(&#34;RAW JOINED:&#34;, joined)
-                    if self.last_msg and joined.startswith(self.last_msg.strip()):
-                        results = []
-                        # Go through lines until we find one that ends with last_msg
-                        past_echo = False
-                        current = b&#34;&#34;
-                        end_of_echo = 0
-                        for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
-                            if self.last_msg.strip().endswith(current+line.strip()):
-                                #print(&#34;Potential ehco:&#34;, repr(current))
-                                current += line.strip()
-                                end_of_echo = idx
-                            else:
-                                break
+                        self.logfile.flush()
+                        if not self.quiet: sys.stdout.flush()
 
-
-                        for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
-                            if idx &gt; end_of_echo:
-                                results.append(line)
-
-                        sofar = b&#34;\r&#34;.join(results)
-                    #print(&#34;Strip command echo:&#34;, repr(sofar))
-
-                    #if b&#34;\r\n&#34; in sofar: # Drop next prompt - We&#39;ll _always_ have a next prompt!
-                    resp = sofar.split(b&#34;\r\n&#34;)
-
-                    last_line = resp[-1]
-                    if self.expectation_re.match(last_line.strip()) != None:
-                        resp[:] = resp[:-1] # drop next prompt
-                        sofar= b&#34;\r\n&#34;.join(resp)
-
-                    sofar = sofar.strip()
-                    self.logfile.flush()
-                    if not self.quiet: sys.stdout.flush()
-
-                    return sofar.decode(&#39;utf8&#39;, &#39;ignore&#39;)
+                        plaintext = &#34;\n&#34;.join(lines)
+                        return plaintext
 
         if not self.running: # Aborted
             return None
@@ -370,27 +765,32 @@ class Expect(object):
         if not self.quiet: sys.stdout.flush()
 
         self.sofar = sofar.decode(&#39;utf8&#39;)
-        raise TimeoutExpired(&#34;Read message \n{}\n&#34;.format(self.sofar))
+        raise TimeoutExpired(f&#34;{self.name} Read message \n{self.sofar}\n&#34;)
 
     def send(self, msg):
+        if not self.quiet:
+            print(f&#34;{self.name}: send {msg}&#34;)
         if not self.consumed_first: # Before we send anything, consume header
             pre = self.expect(&#34;&#34;)
             self.consumed_first = True
 
-        self.last_msg = msg
+        # Newlines will call problems
+        assert len(msg.decode().split(&#34;\n&#34;)) &lt;= 2, &#34;Multiline cmds unsupported&#34;
+        self.last_msg = msg.decode().replace(&#34;\n&#34;, &#34;&#34;)
         os.write(self.fd, msg)
         self.logfile.write(msg)
         self.logfile.flush()
 
     def send_eol(self): # Just send an EOL
         if self.last_msg:
-            self.last_msg+=b&#34;\n&#34;
+            self.last_msg+=&#34;\n&#34;
         os.write(self.fd, b&#34;\n&#34;)
         self.logfile.write(b&#34;\n&#34;)
         self.logfile.flush()
 
 
     def sendline(self, msg=b&#34;&#34;):
+        assert(self.fd is not None), &#34;Must connect before sending&#34;
         self.send(msg + b&#34;\n&#34;)</code></pre>
 </details>
 <h3>Methods</h3>
@@ -449,6 +849,9 @@ The command you send should not be returned</p></div>
     if expectation:
         raise ValueError(&#34;Deprecated interface - must set expectation in class init&#34;)
 
+    if self.fd is None:
+        raise RuntimeError(&#34;Must connect() prior to expect()&#34;)
+
     sofar = bytearray()
     start_time = datetime.now()
     time_passed = 0
@@ -473,64 +876,31 @@ The command you send should not be returned</p></div>
 
             sofar.extend(char)
 
-            # Done parsing - make meaning from the buffer
-            # We may have our command echoed back + control characters before the result
-            if self.expectation_ends_re.match((b&#34;\n&#34;+sofar).split(b&#34;\n&#34;)[-1]) != None:
-                #print(&#34;\nFinal line matches -- raw message &#39;{}&#39;&#34;.format(sofar))
+            # Translate the sofar buffer into plaintext, then determine if we&#39;re finished (bc we see new prompt)
+            # note this drops the echo&#39;d command
+            plaintext = self.unansi(sofar)
+            # Now we have command\nresults..........\nprompt
 
-                if b&#34;\x1b&#34; in sofar:
-                    # We have control chracters - assume it&#39;s a normal linux guest
-                    # Approach here is to drop the messages before and including ctrl chars
-                    results = []
-                    past_ansi = False
-                    for line in sofar.split(b&#34;\r&#34;):
-                        if b&#34;\x1b&#34; in line:
-                            past_ansi = True
-                            continue
+            lines = [x.replace(&#34;\r&#34;, &#34;&#34;) for x in plaintext.split(&#34;\n&#34;)]
+            if len(lines):
+                # Check last line to see if it ends with prompt (indicating we finished)
+                if self.expectation_ends_re.match(lines[-1]) != None:
+                    self.last_prompt = lines[-1]
+                    lines = lines[:-1]
 
-                        elif past_ansi:
-                            results.append(line)
-                    sofar = b&#34;\r&#34;.join(results)
-                #print(&#34;Strip ANSI:&#34;, repr(sofar))
+                    # Drop command we sent - note it won&#39;t be a direct match with last_cmd because of weird escape codes
+                    # which are based on guest line position when printed - i.e., it would only be an exact
+                    # match if we knew and included the prompt when the command was run. Let&#39;s just always drop it
+                    if len(lines) &gt; 1:
+                        lines = lines[1:]
+                    else:
+                        lines = []
 
-                # Try joining all lines together and searching for lastmsg
-                joined = b&#34;&#34;.join([x.strip() for x in sofar.split(b&#34;\r&#34;)])
-                #print(&#34;RAW JOINED:&#34;, joined)
-                if self.last_msg and joined.startswith(self.last_msg.strip()):
-                    results = []
-                    # Go through lines until we find one that ends with last_msg
-                    past_echo = False
-                    current = b&#34;&#34;
-                    end_of_echo = 0
-                    for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
-                        if self.last_msg.strip().endswith(current+line.strip()):
-                            #print(&#34;Potential ehco:&#34;, repr(current))
-                            current += line.strip()
-                            end_of_echo = idx
-                        else:
-                            break
+                    self.logfile.flush()
+                    if not self.quiet: sys.stdout.flush()
 
-
-                    for idx, line in enumerate(sofar.split(b&#34;\r&#34;)):
-                        if idx &gt; end_of_echo:
-                            results.append(line)
-
-                    sofar = b&#34;\r&#34;.join(results)
-                #print(&#34;Strip command echo:&#34;, repr(sofar))
-
-                #if b&#34;\r\n&#34; in sofar: # Drop next prompt - We&#39;ll _always_ have a next prompt!
-                resp = sofar.split(b&#34;\r\n&#34;)
-
-                last_line = resp[-1]
-                if self.expectation_re.match(last_line.strip()) != None:
-                    resp[:] = resp[:-1] # drop next prompt
-                    sofar= b&#34;\r\n&#34;.join(resp)
-
-                sofar = sofar.strip()
-                self.logfile.flush()
-                if not self.quiet: sys.stdout.flush()
-
-                return sofar.decode(&#39;utf8&#39;, &#39;ignore&#39;)
+                    plaintext = &#34;\n&#34;.join(lines)
+                    return plaintext
 
     if not self.running: # Aborted
         return None
@@ -539,7 +909,7 @@ The command you send should not be returned</p></div>
     if not self.quiet: sys.stdout.flush()
 
     self.sofar = sofar.decode(&#39;utf8&#39;)
-    raise TimeoutExpired(&#34;Read message \n{}\n&#34;.format(self.sofar))</code></pre>
+    raise TimeoutExpired(f&#34;{self.name} Read message \n{self.sofar}\n&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda_expect.Expect.is_connected"><code class="name flex">
@@ -565,11 +935,15 @@ The command you send should not be returned</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def send(self, msg):
+    if not self.quiet:
+        print(f&#34;{self.name}: send {msg}&#34;)
     if not self.consumed_first: # Before we send anything, consume header
         pre = self.expect(&#34;&#34;)
         self.consumed_first = True
 
-    self.last_msg = msg
+    # Newlines will call problems
+    assert len(msg.decode().split(&#34;\n&#34;)) &lt;= 2, &#34;Multiline cmds unsupported&#34;
+    self.last_msg = msg.decode().replace(&#34;\n&#34;, &#34;&#34;)
     os.write(self.fd, msg)
     self.logfile.write(msg)
     self.logfile.flush()</code></pre>
@@ -586,7 +960,7 @@ The command you send should not be returned</p></div>
 </summary>
 <pre><code class="python">def send_eol(self): # Just send an EOL
     if self.last_msg:
-        self.last_msg+=b&#34;\n&#34;
+        self.last_msg+=&#34;\n&#34;
     os.write(self.fd, b&#34;\n&#34;)
     self.logfile.write(b&#34;\n&#34;)
     self.logfile.flush()</code></pre>
@@ -602,7 +976,240 @@ The command you send should not be returned</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def sendline(self, msg=b&#34;&#34;):
+    assert(self.fd is not None), &#34;Must connect before sending&#34;
     self.send(msg + b&#34;\n&#34;)</code></pre>
+</details>
+</dd>
+<dt id="pandare.panda_expect.Expect.unansi"><code class="name flex">
+<span>def <span class="ident">unansi</span></span>(<span>self, msg)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given a string with ansi control codes, emulate behavior to generate the resulting string. </p>
+<p>First we split input into a list of ('fn', [args]) / ('text', ['foo']) ansi commands then
+evaluate the commands to render real text output</p>
+<p>See <a href="https://notes.burke.libbey.me/ansi-escape-codes/">https://notes.burke.libbey.me/ansi-escape-codes/</a> and
+<a href="http://ascii-table.com/ansi-escape-sequences-vt-100.php">http://ascii-table.com/ansi-escape-sequences-vt-100.php</a> for ansi escape code details</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unansi(self, msg):
+    &#39;&#39;&#39;
+    Given a string with ansi control codes, emulate behavior to generate the resulting string. 
+
+    First we split input into a list of (&#39;fn&#39;, [args]) / (&#39;text&#39;, [&#39;foo&#39;]) ansi commands then
+    evaluate the commands to render real text output
+
+    See https://notes.burke.libbey.me/ansi-escape-codes/ and
+    http://ascii-table.com/ansi-escape-sequences-vt-100.php for ansi escape code details
+    &#39;&#39;&#39;
+
+    if b&#39;\x1b&#39; not in msg:
+        text = &#34;&#34;.join([chr(x) for x in msg])
+        return text
+
+    start_args = re.compile(br&#34;^(\d+);&#34;)
+    last_arg = re.compile(rb&#34;^(\d+)&#34;)
+
+    last_text = &#34;&#34;
+    reformatted = []
+    idx = 0 # XXX: mutates during loop
+    while idx &lt; len(msg):
+        if msg[idx] != 0x1b:
+            last_text += chr(msg[idx])
+        else:
+            if len(last_text):
+                reformatted.append((&#39;text&#39;, [last_text]))
+                last_text = &#34;&#34;
+
+            if idx+3 &lt;= len(msg) and msg[idx+1] == ord(&#39;[&#39;):
+                args = []
+                shift = idx+2
+                arg_s = msg[shift:]
+                while start_args.match(arg_s):
+                    arg = start_args.match(arg_s).groups()[0].decode()
+                    args.append(arg)
+                    shift += len(arg)+1 # for ;
+                    arg_s = msg[shift:]
+
+                # Last arg is just #
+                if last_arg.match(arg_s):
+                    arg = last_arg.match(arg_s).groups()[0].decode()
+                    shift += len(arg)
+                    args.append(arg)
+                    arg_s = msg[shift:]
+
+                # Next is one char for cmd
+                cmd = chr(msg[shift])
+                reformatted.append((cmd, args))
+
+                idx = shift # final char
+        idx += 1
+    if len(last_text):
+        reformatted.append((&#39;text&#39;, [last_text]))
+
+    # Now render it!
+    # Note the very first line will \r to beginning, then &#39;C&#39; forward to go past expect prompt
+
+    lines_out = [&#34; &#34;*len(self.last_prompt)] # Starting point - it&#39;s an approximation since we don&#39;t know real current prompt
+    cur_line = 0
+    line_pos = len(self.last_prompt)
+    store_ptr = (0, 0)
+
+    def _dump(lines_out, cur_line, line_pos):
+        print(&#34;-&#34;*100)
+        for idx, line in enumerate(lines_out):
+            print(&#34;&#39;&#34;, line, &#34;&#39;&#34;)
+            if cur_line == idx:
+                print((&#34; &#34;*(line_pos-1) if line_pos &gt; 0 else &#34;&#34;) + &#34;^&#34;)
+        print(&#34;=&#34;*100)
+
+    for idx, (typ, args) in enumerate(reformatted):
+        #print(typ, args)
+        if typ == &#39;text&#39;:
+            n = args[0]
+            for idx, char in enumerate(n):
+                if char == &#39;\n&#39;:
+                    cur_line += 1 
+                    while cur_line &gt;= len(lines_out):
+                        lines_out.append(&#34;&#34;)
+                if char == &#39;\r&#39;:
+                    line_pos = 0
+                    continue # Don&#39;t clobber old char
+
+                line = list(lines_out[cur_line])
+                if (line_pos) &gt;= len(line):
+                    line.append(char)
+                else:
+                    #if line[line_pos] != &#39; &#39;:
+                    #    print(&#34;Replace&#34;, repr(line[line_pos]) , &#34;with&#34;, repr(char))
+                    line[line_pos] = char
+                lines_out[cur_line] = &#34;&#34;.join(line)
+
+                if char not in [&#39;\n&#39;, &#39;\r&#39;]:
+                    line_pos += 1
+
+        else:
+            args[:] = [int(x) for x in args]
+
+            if typ == &#39;A&#39;:
+                if not len(args):
+                    # Incomplete
+                    continue
+
+                n = args[0]
+
+                if cur_line - n &lt; 0: # Need to shift
+                    cur_line = 0
+                else:
+                    cur_line -= n
+                assert(cur_line &gt;= 0)
+
+            elif typ == &#39;B&#39;:
+                if not len(args):
+                    # Incomplete
+                    continue
+                n = args[0]
+                cur_line += n
+                while cur_line &gt;= len(lines_out):
+                    lines_out.append(&#34; &#34;*100)
+
+            elif typ == &#39;D&#39;:
+                n = 1 # Default move left 1
+                if len(args):
+                    n = args[0]
+
+                line_pos -= n
+                if line_pos &lt; 0:
+                    line_pos = 0
+                assert(line_pos &gt;= 0)
+
+            elif typ == &#39;C&#39;: # Move right
+                n = 1 # Default move 1
+                if len(args):
+                    n = args[0]
+
+                line_pos += n
+                if line_pos &gt; len(lines_out[cur_line])-1:
+                    line_pos = len(lines_out)-1
+                assert(line_pos &gt;= 0)
+
+            elif typ == &#39;J&#39;:
+                # Optional arg 0, 1, 2
+                n = 0 # default
+                if len(args):
+                    n = args[0]
+                if n == 0:
+                    # clear down
+                    lines_out = lines_out[:cur_line+1]
+                elif n == 1:
+                    # clear up
+                    lines_out = lines_out[cur_line:]
+                elif n == 2:
+                    # clear everything
+                    lines_out = [&#34;&#34;]
+                    cur_line = 0
+                    line_pos = 0
+                    store_ptr = (0, 0)
+
+            elif typ == &#39;K&#39;:
+                # Optional arg 0, 1, 2
+                n = 0 # default
+                if len(args):
+                    n = args[0]
+
+                # HURISTIC-y hack: linux loves to have a line 123456 then do K(0) 6\r\n
+                # so if the next line is text and the text is [eol]\r\n where [eol] matches the end of this
+                # line - align cur_pos
+                if len(reformatted) &gt; idx+1: # Have another message
+                    (next_typ, next_args) = reformatted[idx+1]
+                    if next_typ == &#39;text&#39;:
+                        if &#39;\r\n&#39; in next_args[0]:
+                            next_lines = next_args[0].split(&#34;\r\n&#34;)
+                            if lines_out[cur_line].strip().endswith(next_lines[0]):
+                                # Its the buggy case. Just align it such that we clear the text
+                                # that&#39;s about to get echoed
+                                line_pos = line_pos - len(next_lines[0])
+
+                if n == 0:
+                    # clear right of cursor
+                    lines_out[cur_line] = lines_out[cur_line][:line_pos]
+                elif n == 1:
+                    # clear left of cursor
+                    lines_out[cur_line] = (&#34; &#34;*line_pos)+lines_out[cur_line][line_pos:]
+                elif n == 2:
+                    # clear whole line
+                    lines_out[cur_line] = &#34; &#34;*len(lines_out[cur_line])
+
+            elif typ == &#39;H&#39;:
+                n = args[0]-1
+                m = args[1]-1
+                cur_line = n
+                line_pos = m
+
+                while cur_line &gt;= len(lines_out):
+                    lines_out.append(&#34;&#34;)
+
+                while line_pos &gt; len(lines_out[cur_line]):
+                    lines_out[cur_line] += &#34; &#34;
+
+            elif typ == &#39;T&#39;:
+                # Scroll window down
+                pass
+            elif typ == &#39;S&#39;:
+                # Scroll window up
+                pass
+
+            elif typ == &#39;s&#39;:
+                store_ptr = (cur_line, line_pos)
+            elif typ == &#39;u&#39;:
+                (cur_line, line_pos) = store_ptr
+
+            else:
+                raise ValueError(f&#34;Unsupporte ANSI command {typ}&#34;)
+        #_dump(lines_out, cur_line, line_pos)
+
+    return &#34;\n&#34;.join(lines_out)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda_expect.Expect.update_expectation"><code class="name flex">
@@ -615,8 +1222,11 @@ The command you send should not be returned</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def update_expectation(self, expectation):
+    if isinstance(expectation, bytes):
+        expectation = expectation.decode()
+    self.last_prompt = expectation # approximation
     self.expectation_re = re.compile(expectation)
-    self.expectation_ends_re = re.compile(rb&#39;.*&#39; + expectation)</code></pre>
+    self.expectation_ends_re = re.compile(r&#39;.*&#39; + expectation)</code></pre>
 </details>
 </dd>
 </dl>
@@ -665,6 +1275,7 @@ The command you send should not be returned</p></div>
 <li><code><a title="pandare.panda_expect.Expect.send" href="#pandare.panda_expect.Expect.send">send</a></code></li>
 <li><code><a title="pandare.panda_expect.Expect.send_eol" href="#pandare.panda_expect.Expect.send_eol">send_eol</a></code></li>
 <li><code><a title="pandare.panda_expect.Expect.sendline" href="#pandare.panda_expect.Expect.sendline">sendline</a></code></li>
+<li><code><a title="pandare.panda_expect.Expect.unansi" href="#pandare.panda_expect.Expect.unansi">unansi</a></code></li>
 <li><code><a title="pandare.panda_expect.Expect.update_expectation" href="#pandare.panda_expect.Expect.update_expectation">update_expectation</a></code></li>
 </ul>
 </li>

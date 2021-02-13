@@ -174,7 +174,7 @@ class Panda():
         if self.expect_prompt:
             self.serial_file = NamedTemporaryFile(prefix=&#34;pypanda_s&#34;).name
             self.serial_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            self.serial_console = Expect(expectation=self.expect_prompt, quiet=True, consume_first=False)
+            self.serial_console = Expect(&#39;serial&#39;, expectation=self.expect_prompt, quiet=True, consume_first=False)
             self.panda_args.extend([&#39;-serial&#39;, &#39;unix:{},server,nowait&#39;.format(self.serial_file)])
         else:
             self.serial_file = None
@@ -186,7 +186,8 @@ class Panda():
         self.monitor_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.raw_monitor = raw_monitor
         if not self.raw_monitor:
-            self.monitor_console = Expect(expectation=rb&#34;(qemu)&#34;, quiet=True, consume_first=True)
+            # XXX don&#39;t forget to escape expectation regex parens!
+            self.monitor_console = Expect(&#39;monitor&#39;, expectation=rb&#34;\(qemu\) &#34;, quiet=True, consume_first=True)
             self.panda_args.extend([&#39;-monitor&#39;, &#39;unix:{},server,nowait&#39;.format(self.monitor_file)])
 
         self.running = threading.Event()
@@ -817,7 +818,7 @@ class Panda():
         &#39;&#39;&#39;
         if not &#34;plugin_callstack_instr&#34; in self.plugins:
             progress(&#34;enabling callstack_instr plugin&#34;)
-            self.require(&#34;callstack_instr&#34;)
+            self.load_plugin(&#34;callstack_instr&#34;)
 
         callers = ffi.new(&#34;uint32_t[%d]&#34; % lim)
         n = self.plugins[&#39;callstack_instr&#39;].get_callers(callers, lim, cpu)
@@ -1696,8 +1697,8 @@ class Panda():
         if not self.taint_enabled:
             progress(&#34;taint not enabled -- enabling&#34;)
             self.vm_stop()
-            self.require(&#34;taint2&#34;)
-#            self.queue_main_loop_wait_fn(self.require, [&#34;taint2&#34;])
+            self.load_plugin(&#34;taint2&#34;)
+#            self.queue_main_loop_wait_fn(self.load_plugin, [&#34;taint2&#34;])
             self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_enable_taint, [])
             if cont:
                 self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
@@ -1923,6 +1924,8 @@ class Panda():
 
     @blocking
     def run_serial_cmd(self, cmd, no_timeout=False, timeout=30):
+        if self.serial_console is None:
+            raise RuntimeError(&#34;Cannot run serial commands without providing PANDA an expect_prompt&#34;)
         self.running.wait() # Can only run serial when guest is running
         self.serial_console.sendline(cmd.encode(&#34;utf8&#34;))
         if no_timeout:
@@ -2828,7 +2831,7 @@ class Panda():
         if self.expect_prompt:
             self.serial_file = NamedTemporaryFile(prefix=&#34;pypanda_s&#34;).name
             self.serial_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            self.serial_console = Expect(expectation=self.expect_prompt, quiet=True, consume_first=False)
+            self.serial_console = Expect(&#39;serial&#39;, expectation=self.expect_prompt, quiet=True, consume_first=False)
             self.panda_args.extend([&#39;-serial&#39;, &#39;unix:{},server,nowait&#39;.format(self.serial_file)])
         else:
             self.serial_file = None
@@ -2840,7 +2843,8 @@ class Panda():
         self.monitor_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.raw_monitor = raw_monitor
         if not self.raw_monitor:
-            self.monitor_console = Expect(expectation=rb&#34;(qemu)&#34;, quiet=True, consume_first=True)
+            # XXX don&#39;t forget to escape expectation regex parens!
+            self.monitor_console = Expect(&#39;monitor&#39;, expectation=rb&#34;\(qemu\) &#34;, quiet=True, consume_first=True)
             self.panda_args.extend([&#39;-monitor&#39;, &#39;unix:{},server,nowait&#39;.format(self.monitor_file)])
 
         self.running = threading.Event()
@@ -3471,7 +3475,7 @@ class Panda():
         &#39;&#39;&#39;
         if not &#34;plugin_callstack_instr&#34; in self.plugins:
             progress(&#34;enabling callstack_instr plugin&#34;)
-            self.require(&#34;callstack_instr&#34;)
+            self.load_plugin(&#34;callstack_instr&#34;)
 
         callers = ffi.new(&#34;uint32_t[%d]&#34; % lim)
         n = self.plugins[&#39;callstack_instr&#39;].get_callers(callers, lim, cpu)
@@ -4350,8 +4354,8 @@ class Panda():
         if not self.taint_enabled:
             progress(&#34;taint not enabled -- enabling&#34;)
             self.vm_stop()
-            self.require(&#34;taint2&#34;)
-#            self.queue_main_loop_wait_fn(self.require, [&#34;taint2&#34;])
+            self.load_plugin(&#34;taint2&#34;)
+#            self.queue_main_loop_wait_fn(self.load_plugin, [&#34;taint2&#34;])
             self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_enable_taint, [])
             if cont:
                 self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
@@ -4577,6 +4581,8 @@ class Panda():
 
     @blocking
     def run_serial_cmd(self, cmd, no_timeout=False, timeout=30):
+        if self.serial_console is None:
+            raise RuntimeError(&#34;Cannot run serial commands without providing PANDA an expect_prompt&#34;)
         self.running.wait() # Can only run serial when guest is running
         self.serial_console.sendline(cmd.encode(&#34;utf8&#34;))
         if no_timeout:
@@ -5365,7 +5371,7 @@ class Panda():
     &#39;&#39;&#39;
     if not &#34;plugin_callstack_instr&#34; in self.plugins:
         progress(&#34;enabling callstack_instr plugin&#34;)
-        self.require(&#34;callstack_instr&#34;)
+        self.load_plugin(&#34;callstack_instr&#34;)
 
     callers = ffi.new(&#34;uint32_t[%d]&#34; % lim)
     n = self.plugins[&#39;callstack_instr&#39;].get_callers(callers, lim, cpu)
@@ -8450,6 +8456,8 @@ Returns:
 </summary>
 <pre><code class="python">@blocking
 def run_serial_cmd(self, cmd, no_timeout=False, timeout=30):
+    if self.serial_console is None:
+        raise RuntimeError(&#34;Cannot run serial commands without providing PANDA an expect_prompt&#34;)
     self.running.wait() # Can only run serial when guest is running
     self.serial_console.sendline(cmd.encode(&#34;utf8&#34;))
     if no_timeout:
@@ -8773,8 +8781,8 @@ Return:
         if not self.taint_enabled:
             progress(&#34;taint not enabled -- enabling&#34;)
             self.vm_stop()
-            self.require(&#34;taint2&#34;)
-#            self.queue_main_loop_wait_fn(self.require, [&#34;taint2&#34;])
+            self.load_plugin(&#34;taint2&#34;)
+#            self.queue_main_loop_wait_fn(self.load_plugin, [&#34;taint2&#34;])
             self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_enable_taint, [])
             if cont:
                 self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
