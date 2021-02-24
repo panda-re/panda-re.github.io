@@ -75,7 +75,7 @@ class PandaArch():
             endianness = &#34;little&#34; # XXX add support for arm BE?
             bits = 32
         elif self.panda.arch_name == &#34;aarch64&#34;:
-            bit = 64
+            bits = 64
             endianness = &#34;little&#34; # XXX add support for arm BE?
         elif self.panda.arch_name == &#34;ppc&#34;:
             bits = 32
@@ -87,8 +87,8 @@ class PandaArch():
             bits = 32
             endianness = &#34;little&#34;
 
-        assert (bits is not None), &#34;Missing num_bits logic for {self.panda.arch_name}&#34;
-        assert (endianness is not None), &#34;Missing endianness logic for {self.panda.arch_name}&#34;
+        assert (bits is not None), f&#34;Missing num_bits logic for {self.panda.arch_name}&#34;
+        assert (endianness is not None), f&#34;Missing endianness logic for {self.panda.arch_name}&#34;
         register_size = int(bits/8)
         return bits, endianness, register_size
 
@@ -844,7 +844,7 @@ class X86_64Arch(PandaArch):
             endianness = &#34;little&#34; # XXX add support for arm BE?
             bits = 32
         elif self.panda.arch_name == &#34;aarch64&#34;:
-            bit = 64
+            bits = 64
             endianness = &#34;little&#34; # XXX add support for arm BE?
         elif self.panda.arch_name == &#34;ppc&#34;:
             bits = 32
@@ -856,8 +856,8 @@ class X86_64Arch(PandaArch):
             bits = 32
             endianness = &#34;little&#34;
 
-        assert (bits is not None), &#34;Missing num_bits logic for {self.panda.arch_name}&#34;
-        assert (endianness is not None), &#34;Missing endianness logic for {self.panda.arch_name}&#34;
+        assert (bits is not None), f&#34;Missing num_bits logic for {self.panda.arch_name}&#34;
+        assert (endianness is not None), f&#34;Missing endianness logic for {self.panda.arch_name}&#34;
         register_size = int(bits/8)
         return bits, endianness, register_size
 

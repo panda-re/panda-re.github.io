@@ -135,8 +135,8 @@ class Panda():
             self.arch = X86Arch(self)
         elif self.arch_name == &#34;x86_64&#34;:
             self.arch = X86_64Arch(self)
-        elif self.arch_name == &#34;arm&#34;:
-            self.arch = ArmArch(self)
+        elif self.arch_name in [&#34;arm&#34;, &#34;aarch64&#34;]:
+            self.arch = ArmArch(self) # Not sure if this needs to be different for 64
         elif self.arch_name in [&#34;mips&#34;, &#34;mipsel&#34;]:
             self.arch = MipsArch(self)
         else:
@@ -495,6 +495,7 @@ class Panda():
         without needing to wait for tasks in the main async thread
         &#39;&#39;&#39;
         self.unload_plugins()
+
         if self.running.is_set():
             # If we were running, stop the execution and check if we crashed
             self.queue_async(self.stop_run, internal=True)
@@ -2379,7 +2380,7 @@ class Panda():
                 self.lambda_cnt += 1
 
             if local_name in self.ppp_registered_cbs:
-                print(f&#34;Warning: replacing existing PPP callback &#39;{name}&#39; since it was re-registered&#34;)
+                print(f&#34;Warning: replacing existing PPP callback &#39;{local_name}&#39; since it was re-registered&#34;)
                 self.disable_ppp(local_name)
 
             assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
@@ -2792,8 +2793,8 @@ class Panda():
             self.arch = X86Arch(self)
         elif self.arch_name == &#34;x86_64&#34;:
             self.arch = X86_64Arch(self)
-        elif self.arch_name == &#34;arm&#34;:
-            self.arch = ArmArch(self)
+        elif self.arch_name in [&#34;arm&#34;, &#34;aarch64&#34;]:
+            self.arch = ArmArch(self) # Not sure if this needs to be different for 64
         elif self.arch_name in [&#34;mips&#34;, &#34;mipsel&#34;]:
             self.arch = MipsArch(self)
         else:
@@ -3152,6 +3153,7 @@ class Panda():
         without needing to wait for tasks in the main async thread
         &#39;&#39;&#39;
         self.unload_plugins()
+
         if self.running.is_set():
             # If we were running, stop the execution and check if we crashed
             self.queue_async(self.stop_run, internal=True)
@@ -5036,7 +5038,7 @@ class Panda():
                 self.lambda_cnt += 1
 
             if local_name in self.ppp_registered_cbs:
-                print(f&#34;Warning: replacing existing PPP callback &#39;{name}&#39; since it was re-registered&#34;)
+                print(f&#34;Warning: replacing existing PPP callback &#39;{local_name}&#39; since it was re-registered&#34;)
                 self.disable_ppp(local_name)
 
             assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
@@ -6221,6 +6223,7 @@ without needing to wait for tasks in the main async thread</p></div>
     without needing to wait for tasks in the main async thread
     &#39;&#39;&#39;
     self.unload_plugins()
+
     if self.running.is_set():
         # If we were running, stop the execution and check if we crashed
         self.queue_async(self.stop_run, internal=True)</code></pre>
@@ -7801,7 +7804,7 @@ def my_fun(cpu, pc, filename, flags, mode):
             self.lambda_cnt += 1
 
         if local_name in self.ppp_registered_cbs:
-            print(f&#34;Warning: replacing existing PPP callback &#39;{name}&#39; since it was re-registered&#34;)
+            print(f&#34;Warning: replacing existing PPP callback &#39;{local_name}&#39; since it was re-registered&#34;)
             self.disable_ppp(local_name)
 
         assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
