@@ -181,6 +181,9 @@ class PandaArch():
         self.dump_regs(cpu)
         print(&#34;Stack:&#34;)
         self.dump_stack(cpu)
+    
+    def get_args(self, cpu, num):
+        return [self.get_arg(cpu,i) for i in range(num)]
 
 class ArmArch(PandaArch):
     &#39;&#39;&#39;
@@ -949,7 +952,10 @@ class X86_64Arch(PandaArch):
         print(len(self.registers))
         self.dump_regs(cpu)
         print(&#34;Stack:&#34;)
-        self.dump_stack(cpu)</code></pre>
+        self.dump_stack(cpu)
+    
+    def get_args(self, cpu, num):
+        return [self.get_arg(cpu,i) for i in range(num)]</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -1029,6 +1035,19 @@ class X86_64Arch(PandaArch):
     self.dump_regs(cpu)
     print(&#34;Stack:&#34;)
     self.dump_stack(cpu)</code></pre>
+</details>
+</dd>
+<dt id="pandare.arch.PandaArch.get_args"><code class="name flex">
+<span>def <span class="ident">get_args</span></span>(<span>self, cpu, num)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_args(self, cpu, num):
+    return [self.get_arg(cpu,i) for i in range(num)]</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.PandaArch.get_pc"><code class="name flex">
@@ -1523,6 +1542,7 @@ class X86_64Arch(PandaArch):
 <li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_args" href="#pandare.arch.PandaArch.get_args">get_args</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_pc" href="#pandare.arch.PandaArch.get_pc">get_pc</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
