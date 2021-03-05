@@ -205,6 +205,7 @@ class Panda():
         self._initialized_panda = False
         self.disabled_tb_chaining = False
         self.taint_enabled = False
+        self.taint_sym_enabled = False
         self.named_hooks = {}
         self.hook_list = []
         self.hook_list2 = {}
@@ -1791,7 +1792,48 @@ class Panda():
             return tq
         else:
             return None
+        
+    def taint_sym_enable(self, cont=True):
+        &#34;&#34;&#34;
+        Inform python that taint is enabled.
+        &#34;&#34;&#34;
+        if not self.taint_enabled:
+            progress(&#34;taint symbolic not enabled -- enabling&#34;)
+            self.vm_stop()
+            self.load_plugin(&#34;taint2&#34;)
+#            self.queue_main_loop_wait_fn(self.load_plugin, [&#34;taint2&#34;])
+        if not self.taint_sym_enabled:
+            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_enable_sym, [])
+            if cont:
+                self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
+            self.taint_enabled = True
 
+    def taint_sym_label_ram(self, addr, label):
+        self.taint_sym_enable(cont=False)
+        #if debug:
+            #progress(&#34;taint_ram addr=0x%x label=%d&#34; % (addr, label))
+
+        # XXX must ensure labeling is done in a before_block_invalidate that rets 1
+        #     or some other safe way where the main_loop_wait code will always be run
+        #self.stop()
+        self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_ram, [addr, label])
+        self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
+
+    # label all bytes in this register.
+    # or at least four of them
+    def taint_sym_label_reg(self, reg_num, label):
+        self.taint_sym_enable(cont=False)
+        #if debug:
+        #    progress(&#34;taint_reg reg=%d label=%d&#34; % (reg_num, label))
+
+        # XXX must ensure labeling is done in a before_block_invalidate that rets 1
+        #     or some other safe way where the main_loop_wait code will always be run
+        #self.stop()
+        for i in range(self.register_size):
+            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_reg, [reg_num, i, label])
+        self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
+
+    
     ############ Volatility mixins
     &#34;&#34;&#34;
     Utilities to integrate Volatility with PANDA. Highly experimental.
@@ -2861,6 +2903,7 @@ class Panda():
         self._initialized_panda = False
         self.disabled_tb_chaining = False
         self.taint_enabled = False
+        self.taint_sym_enabled = False
         self.named_hooks = {}
         self.hook_list = []
         self.hook_list2 = {}
@@ -4447,7 +4490,48 @@ class Panda():
             return tq
         else:
             return None
+        
+    def taint_sym_enable(self, cont=True):
+        &#34;&#34;&#34;
+        Inform python that taint is enabled.
+        &#34;&#34;&#34;
+        if not self.taint_enabled:
+            progress(&#34;taint symbolic not enabled -- enabling&#34;)
+            self.vm_stop()
+            self.load_plugin(&#34;taint2&#34;)
+#            self.queue_main_loop_wait_fn(self.load_plugin, [&#34;taint2&#34;])
+        if not self.taint_sym_enabled:
+            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_enable_sym, [])
+            if cont:
+                self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
+            self.taint_enabled = True
 
+    def taint_sym_label_ram(self, addr, label):
+        self.taint_sym_enable(cont=False)
+        #if debug:
+            #progress(&#34;taint_ram addr=0x%x label=%d&#34; % (addr, label))
+
+        # XXX must ensure labeling is done in a before_block_invalidate that rets 1
+        #     or some other safe way where the main_loop_wait code will always be run
+        #self.stop()
+        self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_ram, [addr, label])
+        self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
+
+    # label all bytes in this register.
+    # or at least four of them
+    def taint_sym_label_reg(self, reg_num, label):
+        self.taint_sym_enable(cont=False)
+        #if debug:
+        #    progress(&#34;taint_reg reg=%d label=%d&#34; % (reg_num, label))
+
+        # XXX must ensure labeling is done in a before_block_invalidate that rets 1
+        #     or some other safe way where the main_loop_wait code will always be run
+        #self.stop()
+        for i in range(self.register_size):
+            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_reg, [reg_num, i, label])
+        self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
+
+    
     ############ Volatility mixins
     &#34;&#34;&#34;
     Utilities to integrate Volatility with PANDA. Highly experimental.
@@ -8902,6 +8986,74 @@ QueryResult struct otherwise</p></div>
     self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
 </details>
 </dd>
+<dt id="pandare.panda.Panda.taint_sym_enable"><code class="name flex">
+<span>def <span class="ident">taint_sym_enable</span></span>(<span>self, cont=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Inform python that taint is enabled.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">    def taint_sym_enable(self, cont=True):
+        &#34;&#34;&#34;
+        Inform python that taint is enabled.
+        &#34;&#34;&#34;
+        if not self.taint_enabled:
+            progress(&#34;taint symbolic not enabled -- enabling&#34;)
+            self.vm_stop()
+            self.load_plugin(&#34;taint2&#34;)
+#            self.queue_main_loop_wait_fn(self.load_plugin, [&#34;taint2&#34;])
+        if not self.taint_sym_enabled:
+            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_enable_sym, [])
+            if cont:
+                self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
+            self.taint_enabled = True</code></pre>
+</details>
+</dd>
+<dt id="pandare.panda.Panda.taint_sym_label_ram"><code class="name flex">
+<span>def <span class="ident">taint_sym_label_ram</span></span>(<span>self, addr, label)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def taint_sym_label_ram(self, addr, label):
+    self.taint_sym_enable(cont=False)
+    #if debug:
+        #progress(&#34;taint_ram addr=0x%x label=%d&#34; % (addr, label))
+
+    # XXX must ensure labeling is done in a before_block_invalidate that rets 1
+    #     or some other safe way where the main_loop_wait code will always be run
+    #self.stop()
+    self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_ram, [addr, label])
+    self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
+</details>
+</dd>
+<dt id="pandare.panda.Panda.taint_sym_label_reg"><code class="name flex">
+<span>def <span class="ident">taint_sym_label_reg</span></span>(<span>self, reg_num, label)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def taint_sym_label_reg(self, reg_num, label):
+    self.taint_sym_enable(cont=False)
+    #if debug:
+    #    progress(&#34;taint_reg reg=%d label=%d&#34; % (reg_num, label))
+
+    # XXX must ensure labeling is done in a before_block_invalidate that rets 1
+    #     or some other safe way where the main_loop_wait code will always be run
+    #self.stop()
+    for i in range(self.register_size):
+        self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_reg, [reg_num, i, label])
+    self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
+</details>
+</dd>
 <dt id="pandare.panda.Panda.to_unsigned_guest"><code class="name flex">
 <span>def <span class="ident">to_unsigned_guest</span></span>(<span>self, x)</span>
 </code></dt>
@@ -9333,6 +9485,9 @@ Returns:
 <li><code><a title="pandare.panda.Panda.taint_get_reg" href="#pandare.panda.Panda.taint_get_reg">taint_get_reg</a></code></li>
 <li><code><a title="pandare.panda.Panda.taint_label_ram" href="#pandare.panda.Panda.taint_label_ram">taint_label_ram</a></code></li>
 <li><code><a title="pandare.panda.Panda.taint_label_reg" href="#pandare.panda.Panda.taint_label_reg">taint_label_reg</a></code></li>
+<li><code><a title="pandare.panda.Panda.taint_sym_enable" href="#pandare.panda.Panda.taint_sym_enable">taint_sym_enable</a></code></li>
+<li><code><a title="pandare.panda.Panda.taint_sym_label_ram" href="#pandare.panda.Panda.taint_sym_label_ram">taint_sym_label_ram</a></code></li>
+<li><code><a title="pandare.panda.Panda.taint_sym_label_reg" href="#pandare.panda.Panda.taint_sym_label_reg">taint_sym_label_reg</a></code></li>
 <li><code><a title="pandare.panda.Panda.to_unsigned_guest" href="#pandare.panda.Panda.to_unsigned_guest">to_unsigned_guest</a></code></li>
 <li><code><a title="pandare.panda.Panda.type_serial_cmd" href="#pandare.panda.Panda.type_serial_cmd">type_serial_cmd</a></code></li>
 <li><code><a title="pandare.panda.Panda.unload_plugin" href="#pandare.panda.Panda.unload_plugin">unload_plugin</a></code></li>
