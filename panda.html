@@ -2552,7 +2552,7 @@ class Panda():
         return decorator
 
     
-    def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_block_exec&#34;):
+    def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_tcg_codegen&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
@@ -5252,7 +5252,7 @@ class Panda():
         return decorator
 
     
-    def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_block_exec&#34;):
+    def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_tcg_codegen&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
@@ -6906,7 +6906,7 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.hook_symbol"><code class="name flex">
-<span>def <span class="ident">hook_symbol</span></span>(<span>self, libraryname, symbolname, kernel=False, procname=None, name=None, cb_type='before_block_exec')</span>
+<span>def <span class="ident">hook_symbol</span></span>(<span>self, libraryname, symbolname, kernel=False, procname=None, name=None, cb_type='before_tcg_codegen')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
@@ -6915,7 +6915,7 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_block_exec&#34;):
+<pre><code class="python">def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_tcg_codegen&#34;):
     &#39;&#39;&#39;
     Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
     the function will be called with args (CPUState, TranslationBlock)
