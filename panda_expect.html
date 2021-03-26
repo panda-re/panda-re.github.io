@@ -42,20 +42,21 @@ from colorama import Fore, Style
 class TimeoutExpired(Exception): pass
 
 class Expect(object):
-    def __init__(self, name, filelike=None, expectation=None, logfile=None, quiet=False, consume_first=False):
+    def __init__(self, name, filelike=None, expectation=None, logfile_base=None, consume_first=False):
+        &#39;&#39;&#39;
+        To debug, set logfile_base to something like &#39;/tmp/log&#39; and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt
+        &#39;&#39;&#39;
 
         self.name = name
-
         self.logfile = None
-        if logfile:
-            self.logfile = open(logfile, &#34;wb&#34;)
+        if logfile_base:
+            self.logfile = open(f&#34;{logfile_base}_{name}.txt&#34;, &#34;wb&#34;)
 
         if filelike is None: # Must later use connect(filelike)
             self.fd = None
         else:
             self.connect(filelike)
 
-        self.quiet = quiet
         self.prior_lines = []
         self.current_line = bytearray()
         self.last_msg = None
@@ -339,8 +340,12 @@ class Expect(object):
                 elif typ == &#39;u&#39;:
                     (cur_line, line_pos) = store_ptr
 
+                elif typ == &#39;m&#39;:
+                    # alter character attributes - just ignore
+                    pass
+
                 else:
-                    raise ValueError(f&#34;Unsupporte ANSI command {typ}&#34;)
+                    raise ValueError(f&#34;Unsupported ANSI command {typ}&#34;)
             #_dump(lines_out, cur_line, line_pos)
 
         # Done processing - update variables
@@ -379,6 +384,10 @@ class Expect(object):
                 time_left = float(&#34;inf&#34;)
             ready = self.poller.poll(min(time_left, 1))
 
+            # Debug - flush debug logs
+            if self.logfile:
+                self.logfile.flush()
+
             if self.fd in [fd for (fd, _) in ready]:
                 try:
                     char = os.read(self.fd, 1)
@@ -387,14 +396,11 @@ class Expect(object):
                         continue
                     else: raise
 
-                # Debugging - log on each input char - to file and/or to stdout
-                if self.logfile:
-                    self.logfile.write(char)
-                if not self.quiet:
-                    sys.stdout.write(char.decode(&#34;utf-8&#34;,&#34;ignore&#34;))
-
                 self.current_line.extend(char)
-                #print(&#34;Current line:&#34;, repr(self.current_line))
+
+                # Debugging - log current line to file
+                if self.logfile:
+                    self.logfile.write(b&#34;\n\n&#34;+repr(self.prior_lines + [self.current_line]).encode())
 
                 # Translate the current_line buffer into plaintext, then determine if we&#39;re finished (bc we see new prompt)
                 # note this drops the echo&#39;d command
@@ -403,49 +409,39 @@ class Expect(object):
                     self.unansi()
 
                     # Now we have command\nresults..........\nprompt
-                    #print(f&#34;After unansi: prior: {repr(self.prior_lines)}&#34;)
-                    #print(f&#34;After unansi: current: {repr(self.current_line)}&#34;)
+                    #self.logfile.write(b&#34;\n UNANSIs to: &#34; + repr(self.prior_lines).encode()+b&#34;\n&#34;)
+
 
                 #lines = [x.replace(&#34;\r&#34;, &#34;&#34;) for x in plaintext.split(&#34;\n&#34;)]
-                if len(self.prior_lines):
-                    # Check current line to see if it ends with prompt (indicating we finished)
-                    # current_line is a bytearray. Need it as a string
-                    current_line_s = str(self.current_line)
-                    if self.expectation_ends_re.match(current_line_s) != None:
-                        self.last_prompt = current_line_s
+                # Check current line to see if it ends with prompt (indicating we finished)
+                # current_line is a bytearray. Need it as a string
+                current_line_s = str(self.current_line)
 
-                        # Drop command we sent - note it won&#39;t be a direct match with last_cmd because of weird escape codes
-                        # which are based on guest line position when printed - i.e., it would only be an exact
-                        # match if we knew and included the prompt when the command was run. Let&#39;s just always drop it
-                        if len(self.prior_lines) &gt; 1:
-                            self.prior_lines = self.prior_lines[1:]
-                        else:
-                            self.prior_lines = []
+                if self.expectation_ends_re.match(current_line_s) != None:
+                    self.last_prompt = current_line_s
 
-                        # Debug - flush debug logs
-                        if self.logfile:
-                            self.logfile.flush()
-                        if not self.quiet:
-                            sys.stdout.flush()
-
-                        plaintext = &#34;\n&#34;.join(self.prior_lines)
+                    # Drop command we sent - note it won&#39;t be a direct match with last_cmd because of weird escape codes
+                    # which are based on guest line position when printed - i.e., it would only be an exact
+                    # match if we knew and included the prompt when the command was run. Let&#39;s just always drop it
+                    if len(self.prior_lines) &gt; 1:
+                        self.prior_lines = self.prior_lines[1:]
+                    else:
                         self.prior_lines = []
-                        return plaintext
+
+                    plaintext = &#34;\n&#34;.join(self.prior_lines)
+                    self.prior_lines = []
+                    return plaintext
 
         if not self.running: # Aborted
             return None
 
         if self.logfile:
             self.logfile.flush()
-        if not self.quiet:
-            sys.stdout.flush()
 
-        self.current_line = current_line.decode(&#39;utf8&#39;)
-        raise TimeoutExpired(f&#34;{self.name} Read message \n{self.current_line}\n&#34;)
+        full_buffer = self.prior_lines + [self.current_line]
+        raise TimeoutExpired(f&#34;{self.name} Read message \n{full_buffer}\n&#34;)
 
     def send(self, msg):
-        if not self.quiet:
-            print(f&#34;{self.name}: send {msg}&#34;)
         if not self.consumed_first: # Before we send anything, consume header
             pre = self.expect(&#34;&#34;)
             self.consumed_first = True
@@ -483,29 +479,30 @@ class Expect(object):
 <dl>
 <dt id="pandare.panda_expect.Expect"><code class="flex name class">
 <span>class <span class="ident">Expect</span></span>
-<span>(</span><span>name, filelike=None, expectation=None, logfile=None, quiet=False, consume_first=False)</span>
+<span>(</span><span>name, filelike=None, expectation=None, logfile_base=None, consume_first=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>To debug, set logfile_base to something like '/tmp/log' and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Expect(object):
-    def __init__(self, name, filelike=None, expectation=None, logfile=None, quiet=False, consume_first=False):
+    def __init__(self, name, filelike=None, expectation=None, logfile_base=None, consume_first=False):
+        &#39;&#39;&#39;
+        To debug, set logfile_base to something like &#39;/tmp/log&#39; and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt
+        &#39;&#39;&#39;
 
         self.name = name
-
         self.logfile = None
-        if logfile:
-            self.logfile = open(logfile, &#34;wb&#34;)
+        if logfile_base:
+            self.logfile = open(f&#34;{logfile_base}_{name}.txt&#34;, &#34;wb&#34;)
 
         if filelike is None: # Must later use connect(filelike)
             self.fd = None
         else:
             self.connect(filelike)
 
-        self.quiet = quiet
         self.prior_lines = []
         self.current_line = bytearray()
         self.last_msg = None
@@ -789,8 +786,12 @@ class Expect(object):
                 elif typ == &#39;u&#39;:
                     (cur_line, line_pos) = store_ptr
 
+                elif typ == &#39;m&#39;:
+                    # alter character attributes - just ignore
+                    pass
+
                 else:
-                    raise ValueError(f&#34;Unsupporte ANSI command {typ}&#34;)
+                    raise ValueError(f&#34;Unsupported ANSI command {typ}&#34;)
             #_dump(lines_out, cur_line, line_pos)
 
         # Done processing - update variables
@@ -829,6 +830,10 @@ class Expect(object):
                 time_left = float(&#34;inf&#34;)
             ready = self.poller.poll(min(time_left, 1))
 
+            # Debug - flush debug logs
+            if self.logfile:
+                self.logfile.flush()
+
             if self.fd in [fd for (fd, _) in ready]:
                 try:
                     char = os.read(self.fd, 1)
@@ -837,14 +842,11 @@ class Expect(object):
                         continue
                     else: raise
 
-                # Debugging - log on each input char - to file and/or to stdout
-                if self.logfile:
-                    self.logfile.write(char)
-                if not self.quiet:
-                    sys.stdout.write(char.decode(&#34;utf-8&#34;,&#34;ignore&#34;))
-
                 self.current_line.extend(char)
-                #print(&#34;Current line:&#34;, repr(self.current_line))
+
+                # Debugging - log current line to file
+                if self.logfile:
+                    self.logfile.write(b&#34;\n\n&#34;+repr(self.prior_lines + [self.current_line]).encode())
 
                 # Translate the current_line buffer into plaintext, then determine if we&#39;re finished (bc we see new prompt)
                 # note this drops the echo&#39;d command
@@ -853,49 +855,39 @@ class Expect(object):
                     self.unansi()
 
                     # Now we have command\nresults..........\nprompt
-                    #print(f&#34;After unansi: prior: {repr(self.prior_lines)}&#34;)
-                    #print(f&#34;After unansi: current: {repr(self.current_line)}&#34;)
+                    #self.logfile.write(b&#34;\n UNANSIs to: &#34; + repr(self.prior_lines).encode()+b&#34;\n&#34;)
+
 
                 #lines = [x.replace(&#34;\r&#34;, &#34;&#34;) for x in plaintext.split(&#34;\n&#34;)]
-                if len(self.prior_lines):
-                    # Check current line to see if it ends with prompt (indicating we finished)
-                    # current_line is a bytearray. Need it as a string
-                    current_line_s = str(self.current_line)
-                    if self.expectation_ends_re.match(current_line_s) != None:
-                        self.last_prompt = current_line_s
+                # Check current line to see if it ends with prompt (indicating we finished)
+                # current_line is a bytearray. Need it as a string
+                current_line_s = str(self.current_line)
 
-                        # Drop command we sent - note it won&#39;t be a direct match with last_cmd because of weird escape codes
-                        # which are based on guest line position when printed - i.e., it would only be an exact
-                        # match if we knew and included the prompt when the command was run. Let&#39;s just always drop it
-                        if len(self.prior_lines) &gt; 1:
-                            self.prior_lines = self.prior_lines[1:]
-                        else:
-                            self.prior_lines = []
+                if self.expectation_ends_re.match(current_line_s) != None:
+                    self.last_prompt = current_line_s
 
-                        # Debug - flush debug logs
-                        if self.logfile:
-                            self.logfile.flush()
-                        if not self.quiet:
-                            sys.stdout.flush()
-
-                        plaintext = &#34;\n&#34;.join(self.prior_lines)
+                    # Drop command we sent - note it won&#39;t be a direct match with last_cmd because of weird escape codes
+                    # which are based on guest line position when printed - i.e., it would only be an exact
+                    # match if we knew and included the prompt when the command was run. Let&#39;s just always drop it
+                    if len(self.prior_lines) &gt; 1:
+                        self.prior_lines = self.prior_lines[1:]
+                    else:
                         self.prior_lines = []
-                        return plaintext
+
+                    plaintext = &#34;\n&#34;.join(self.prior_lines)
+                    self.prior_lines = []
+                    return plaintext
 
         if not self.running: # Aborted
             return None
 
         if self.logfile:
             self.logfile.flush()
-        if not self.quiet:
-            sys.stdout.flush()
 
-        self.current_line = current_line.decode(&#39;utf8&#39;)
-        raise TimeoutExpired(f&#34;{self.name} Read message \n{self.current_line}\n&#34;)
+        full_buffer = self.prior_lines + [self.current_line]
+        raise TimeoutExpired(f&#34;{self.name} Read message \n{full_buffer}\n&#34;)
 
     def send(self, msg):
-        if not self.quiet:
-            print(f&#34;{self.name}: send {msg}&#34;)
         if not self.consumed_first: # Before we send anything, consume header
             pre = self.expect(&#34;&#34;)
             self.consumed_first = True
@@ -1019,6 +1011,10 @@ The epxectation value will show up on the start of a line.</p>
             time_left = float(&#34;inf&#34;)
         ready = self.poller.poll(min(time_left, 1))
 
+        # Debug - flush debug logs
+        if self.logfile:
+            self.logfile.flush()
+
         if self.fd in [fd for (fd, _) in ready]:
             try:
                 char = os.read(self.fd, 1)
@@ -1027,14 +1023,11 @@ The epxectation value will show up on the start of a line.</p>
                     continue
                 else: raise
 
-            # Debugging - log on each input char - to file and/or to stdout
-            if self.logfile:
-                self.logfile.write(char)
-            if not self.quiet:
-                sys.stdout.write(char.decode(&#34;utf-8&#34;,&#34;ignore&#34;))
-
             self.current_line.extend(char)
-            #print(&#34;Current line:&#34;, repr(self.current_line))
+
+            # Debugging - log current line to file
+            if self.logfile:
+                self.logfile.write(b&#34;\n\n&#34;+repr(self.prior_lines + [self.current_line]).encode())
 
             # Translate the current_line buffer into plaintext, then determine if we&#39;re finished (bc we see new prompt)
             # note this drops the echo&#39;d command
@@ -1043,45 +1036,37 @@ The epxectation value will show up on the start of a line.</p>
                 self.unansi()
 
                 # Now we have command\nresults..........\nprompt
-                #print(f&#34;After unansi: prior: {repr(self.prior_lines)}&#34;)
-                #print(f&#34;After unansi: current: {repr(self.current_line)}&#34;)
+                #self.logfile.write(b&#34;\n UNANSIs to: &#34; + repr(self.prior_lines).encode()+b&#34;\n&#34;)
+
 
             #lines = [x.replace(&#34;\r&#34;, &#34;&#34;) for x in plaintext.split(&#34;\n&#34;)]
-            if len(self.prior_lines):
-                # Check current line to see if it ends with prompt (indicating we finished)
-                # current_line is a bytearray. Need it as a string
-                current_line_s = str(self.current_line)
-                if self.expectation_ends_re.match(current_line_s) != None:
-                    self.last_prompt = current_line_s
+            # Check current line to see if it ends with prompt (indicating we finished)
+            # current_line is a bytearray. Need it as a string
+            current_line_s = str(self.current_line)
 
-                    # Drop command we sent - note it won&#39;t be a direct match with last_cmd because of weird escape codes
-                    # which are based on guest line position when printed - i.e., it would only be an exact
-                    # match if we knew and included the prompt when the command was run. Let&#39;s just always drop it
-                    if len(self.prior_lines) &gt; 1:
-                        self.prior_lines = self.prior_lines[1:]
-                    else:
-                        self.prior_lines = []
+            if self.expectation_ends_re.match(current_line_s) != None:
+                self.last_prompt = current_line_s
 
-                    # Debug - flush debug logs
-                    if self.logfile:
-                        self.logfile.flush()
-                    if not self.quiet:
-                        sys.stdout.flush()
-
-                    plaintext = &#34;\n&#34;.join(self.prior_lines)
+                # Drop command we sent - note it won&#39;t be a direct match with last_cmd because of weird escape codes
+                # which are based on guest line position when printed - i.e., it would only be an exact
+                # match if we knew and included the prompt when the command was run. Let&#39;s just always drop it
+                if len(self.prior_lines) &gt; 1:
+                    self.prior_lines = self.prior_lines[1:]
+                else:
                     self.prior_lines = []
-                    return plaintext
+
+                plaintext = &#34;\n&#34;.join(self.prior_lines)
+                self.prior_lines = []
+                return plaintext
 
     if not self.running: # Aborted
         return None
 
     if self.logfile:
         self.logfile.flush()
-    if not self.quiet:
-        sys.stdout.flush()
 
-    self.current_line = current_line.decode(&#39;utf8&#39;)
-    raise TimeoutExpired(f&#34;{self.name} Read message \n{self.current_line}\n&#34;)</code></pre>
+    full_buffer = self.prior_lines + [self.current_line]
+    raise TimeoutExpired(f&#34;{self.name} Read message \n{full_buffer}\n&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda_expect.Expect.get_partial"><code class="name flex">
@@ -1125,8 +1110,6 @@ The epxectation value will show up on the start of a line.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def send(self, msg):
-    if not self.quiet:
-        print(f&#34;{self.name}: send {msg}&#34;)
     if not self.consumed_first: # Before we send anything, consume header
         pre = self.expect(&#34;&#34;)
         self.consumed_first = True
@@ -1415,8 +1398,12 @@ evaluate the commands to render real text output</p>
             elif typ == &#39;u&#39;:
                 (cur_line, line_pos) = store_ptr
 
+            elif typ == &#39;m&#39;:
+                # alter character attributes - just ignore
+                pass
+
             else:
-                raise ValueError(f&#34;Unsupporte ANSI command {typ}&#34;)
+                raise ValueError(f&#34;Unsupported ANSI command {typ}&#34;)
         #_dump(lines_out, cur_line, line_pos)
 
     # Done processing - update variables

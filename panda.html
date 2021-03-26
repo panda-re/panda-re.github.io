@@ -174,7 +174,7 @@ class Panda():
         if self.expect_prompt:
             self.serial_file = NamedTemporaryFile(prefix=&#34;pypanda_s&#34;).name
             self.serial_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            self.serial_console = Expect(&#39;serial&#39;, expectation=self.expect_prompt, quiet=True, consume_first=False)
+            self.serial_console = Expect(&#39;serial&#39;, expectation=self.expect_prompt, consume_first=False)
             self.panda_args.extend([&#39;-serial&#39;, &#39;unix:{},server,nowait&#39;.format(self.serial_file)])
         else:
             self.serial_file = None
@@ -187,7 +187,7 @@ class Panda():
         self.raw_monitor = raw_monitor
         if not self.raw_monitor:
             # XXX don&#39;t forget to escape expectation regex parens!
-            self.monitor_console = Expect(&#39;monitor&#39;, expectation=rb&#34;\(qemu\) &#34;, quiet=True, consume_first=True)
+            self.monitor_console = Expect(&#39;monitor&#39;, expectation=rb&#34;\(qemu\) &#34;, consume_first=True)
             self.panda_args.extend([&#39;-monitor&#39;, &#39;unix:{},server,nowait&#39;.format(self.monitor_file)])
 
         self.running = threading.Event()
@@ -2874,7 +2874,7 @@ class Panda():
         if self.expect_prompt:
             self.serial_file = NamedTemporaryFile(prefix=&#34;pypanda_s&#34;).name
             self.serial_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            self.serial_console = Expect(&#39;serial&#39;, expectation=self.expect_prompt, quiet=True, consume_first=False)
+            self.serial_console = Expect(&#39;serial&#39;, expectation=self.expect_prompt, consume_first=False)
             self.panda_args.extend([&#39;-serial&#39;, &#39;unix:{},server,nowait&#39;.format(self.serial_file)])
         else:
             self.serial_file = None
@@ -2887,7 +2887,7 @@ class Panda():
         self.raw_monitor = raw_monitor
         if not self.raw_monitor:
             # XXX don&#39;t forget to escape expectation regex parens!
-            self.monitor_console = Expect(&#39;monitor&#39;, expectation=rb&#34;\(qemu\) &#34;, quiet=True, consume_first=True)
+            self.monitor_console = Expect(&#39;monitor&#39;, expectation=rb&#34;\(qemu\) &#34;, consume_first=True)
             self.panda_args.extend([&#39;-monitor&#39;, &#39;unix:{},server,nowait&#39;.format(self.monitor_file)])
 
         self.running = threading.Event()
