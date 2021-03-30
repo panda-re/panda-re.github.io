@@ -51,9 +51,11 @@ class PandaArch():
         &#39;&#39;&#39;
         self.panda = panda
 
-        self.reg_sp = None # Stack pointer register ID if stored in a register
-        self.reg_pc = None # PC register ID if stored in a register
-        self.reg_retaddr = None # Return address register ID if stored in a register
+        self.reg_sp      = None # Stack pointer register ID if stored in a register
+        self.reg_pc      = None # PC register ID if stored in a register
+        self.reg_retaddr = None # Register ID that contains return address
+        self.reg_retval  = None # convention: register name that contains return val
+        self.call_conventions = None # convention: [&#39;reg_for_arg0&#39;, &#39;reg_for_arg1&#39;,...]
         self.registers = {}
         &#39;&#39;&#39;
         Mapping of register names to indices into the appropriate CPUState array
@@ -121,6 +123,8 @@ class PandaArch():
                 raise ValueError(f&#34;Invalid register name {reg}&#34;)
             else:
                 reg = self.registers[reg]
+        elif not isinstance(reg, int):
+            raise ValueError(f&#34;Can&#39;t set register {reg}&#34;)
 
         return self._set_reg_val(cpu, reg, val)
 
@@ -138,6 +142,62 @@ class PandaArch():
             return self.get_reg(cpu, self.reg_pc)
         else:
             raise RuntimeError(f&#34;get_pc unsupported for {self.panda.arch_name}&#34;)
+
+    def _get_arg_reg(self, idx, convention):
+        &#39;&#39;&#39;
+        return the name of the argument [idx] for the given arch with calling [convention]
+        &#39;&#39;&#39;
+
+        if self.call_conventions and convention in self.call_conventions:
+            if idx &lt; len(self.call_conventions[convention]):
+                return self.call_conventions[convention][idx]
+            raise NotImplementedError(f&#34;Unsupported argument number {idx}&#34;)
+        raise NotImplementedError(f&#34;Unsupported convention {convention} for {type(self)}&#34;)
+
+    def _get_ret_val_reg(self, cpu, convention):
+        if self.reg_retval and convention in self.reg_retval:
+            return self.reg_retval[convention]
+        raise NotImplementedError(f&#34;Unsupported get_retval for architecture {type(self)} {convention}&#34;)
+
+
+    def set_arg(self, cpu, idx, val, convention=&#39;default&#39;):
+        &#39;&#39;&#39;
+        Set arg [idx] to [val] for given calling convention.
+
+        Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
+        &#39;&#39;&#39;
+        reg = self._get_arg_reg(idx, convention)
+        return self.set_reg(cpu, reg, val)
+
+    def get_arg(self, cpu, idx, convention=&#39;default&#39;):
+        &#39;&#39;&#39;
+        Return arg [idx] for given calling convention. This only works right as the guest
+        is calling or has called a function before register values are clobbered.
+
+        Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
+        &#39;&#39;&#39;
+        reg = self._get_arg_reg(idx, convention)
+        return self.get_reg(cpu, reg)
+
+
+    def set_retval(self, cpu, val, convention=&#39;default&#39;):
+        &#39;&#39;&#39;
+        Set return val to [val] for given calling convention. This only works
+        right after a function call has returned, otherwise the register will contain
+        a different value.
+        &#39;&#39;&#39;
+        reg = self._get_ret_val_reg(cpu, convention)
+        return self.set_reg(cpu, reg, val)
+
+    def get_retval(self, cpu, convention=&#39;default&#39;):
+        &#39;&#39;&#39;
+        Set return val to [val] for given calling convention. This only works
+        right after a function call has returned, otherwise the register will contain
+        a different value.
+        &#39;&#39;&#39;
+        reg = self._get_ret_val_reg(cpu, convention)
+        return self.get_reg(cpu, reg)
+
 
     def set_pc(self, cpu, val):
         &#39;&#39;&#39;
@@ -181,7 +241,7 @@ class PandaArch():
         self.dump_regs(cpu)
         print(&#34;Stack:&#34;)
         self.dump_stack(cpu)
-    
+
     def get_args(self, cpu, num):
         return [self.get_arg(cpu,i) for i in range(num)]
 
@@ -191,17 +251,24 @@ class ArmArch(PandaArch):
     &#39;&#39;&#39;
     def __init__(self, panda):
         PandaArch.__init__(self, panda)
-        self.reg_sp = 13 # SP
-        self.reg_retaddr = 14 # LR
-        self.reg_pc = 15 # IP
-
         regnames = [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;, &#34;R4&#34;, &#34;R5&#34;, &#34;R6&#34;, &#34;R7&#34;,
                     &#34;R8&#34;, &#34;R9&#34;, &#34;R10&#34;, &#34;R11&#34;, &#34;R12&#34;, &#34;SP&#34;, &#34;LR&#34;, &#34;IP&#34;]
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
         &#34;&#34;&#34;Register array for ARM&#34;&#34;&#34;
 
+        self.reg_sp      = regnames.index(&#34;SP&#34;)
+        self.reg_pc      = regnames.index(&#34;IP&#34;)
+        self.reg_retaddr = regnames.index(&#34;LR&#34;)
+
         self.reg_sp = regnames.index(&#34;SP&#34;)
         self.reg_retaddr = regnames.index(&#34;LR&#34;)
+        self.call_conventions = {&#34;arm32&#34;:         [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;],
+                                 &#34;syscall&#34;: [&#34;R7&#34;, &#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;], # EABI
+                                 }
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;arm32&#39;]
+
+        self.reg_retval = {&#34;default&#34;:    &#34;R0&#34;,
+                           &#34;syscall&#34;:    &#34;R0&#34;}
         self.reg_pc = regnames.index(&#34;IP&#34;)
 
     def _get_reg_val(self, cpu, reg):
@@ -215,7 +282,7 @@ class ArmArch(PandaArch):
         Set an arm register
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
-    
+
     def get_return_value(self, env):
         &#39;&#39;&#39;
         returns register value used to return results
@@ -228,17 +295,70 @@ class ArmArch(PandaArch):
         &#39;&#39;&#39;
         return self.get_reg(env, &#34;LR&#34;)
 
-    def get_arg(self, env, num, kernel=False):
+class Aarch64Arch(PandaArch):
+    &#39;&#39;&#39;
+    Register names and accessors for ARM64 (Aarch64)
+    &#39;&#39;&#39;
+    def __init__(self, panda):
+        PandaArch.__init__(self, panda)
+
+        regnames = [&#34;X0&#34;,  &#34;X1&#34;,  &#34;X2&#34;,  &#34;X3&#34;,  &#34;X4&#34;,  &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;,
+                    &#34;XR&#34;,  &#34;X9&#34;,  &#34;X10&#34;, &#34;X11&#34;, &#34;X12&#34;, &#34;X13&#34;, &#34;X14&#34;,
+                    &#34;X15&#34;, &#34;IP0&#34;, &#34;IP1&#34;, &#34;PR&#34;, &#34;X19&#34;, &#34;X20&#34;, &#34;X21&#34;,
+                    &#34;X22&#34;, &#34;X23&#34;, &#34;X24&#34;, &#34;X25&#34;, &#34;X26&#34;, &#34;X27&#34;, &#34;X27&#34;,
+                    &#34;X28&#34;, &#34;FP&#34;, &#34;LR&#34;, &#34;SP&#34;]
+
+        self.reg_sp = regnames.index(&#34;SP&#34;)
+
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+        &#34;&#34;&#34;Register array for ARM&#34;&#34;&#34;
+
+        self.reg_sp = regnames.index(&#34;SP&#34;)
+        self.reg_retaddr = regnames.index(&#34;LR&#34;)
+
+        self.call_conventions = {&#34;arm64&#34;:         [&#34;X0&#34;, &#34;X1&#34;, &#34;X2&#34;, &#34;X3&#34;, &#34;X4&#34;, &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;],
+                                 &#34;syscall&#34;: [&#34;XR&#34;, &#34;X0&#34;, &#34;X1&#34;, &#34;X2&#34;, &#34;X3&#34;, &#34;X4&#34;, &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;]}
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;arm64&#39;]
+
+        self.reg_retval = {&#34;default&#34;:    &#34;X0&#34;,
+                           &#34;syscall&#34;:    &#34;X0&#34;}
+
+    def get_pc(self, cpu):
         &#39;&#39;&#39;
-        Gets arguments based on the number. Supports kernel and usermode.
+        Overloaded function to get aarch64 program counter.
+        Note the PC is not stored in a general purpose reg
         &#39;&#39;&#39;
-        if kernel:
-            # adjusts for the syscall num
-            num += 1
-        arglist = [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;]
-        if num &gt;= len(arglist):
-            raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-        return self.get_reg(env, arglist[num])
+        return cpu.env_ptr.pc
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Overloaded function set AArch64 program counter
+        &#39;&#39;&#39;
+        cpu.env_ptr.pc = val
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return an aarch64 register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.xregs[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set an aarch64 register
+        &#39;&#39;&#39;
+        cpu.env_ptr.xregs[reg] = val
+
+    def get_return_value(self, env):
+        &#39;&#39;&#39;
+        returns register value used to return results
+        &#39;&#39;&#39;
+        return self.get_reg(env, &#34;R0&#34;)
+
+    def get_return_address(self,env):
+        &#39;&#39;&#39;
+        looks up where ret will go
+        &#39;&#39;&#39;
+        return self.get_reg(env, &#34;LR&#34;)
 
 class MipsArch(PandaArch):
     &#39;&#39;&#39;
@@ -270,7 +390,15 @@ class MipsArch(PandaArch):
                     &#39;t8&#39;, &#39;t9&#39;, &#39;k0&#39;, &#39;k1&#39;, &#39;gp&#39;, &#39;sp&#39;, &#39;fp&#39;, &#39;ra&#39;]
 
         self.reg_sp = regnames.index(&#39;sp&#39;)
-        self.reg_retaddr = regnames.index(&#39;ra&#39;)
+        self.reg_retaddr = regnames.index(&#34;ra&#34;)
+        self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;],
+                                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;]}
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
+
+        self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
+                            &#34;syscall&#34;:    &#39;V0&#39;}
+
+
         # note names must be stored uppercase for get/set reg to work case-insensitively
         self.registers = {regnames[idx].upper(): idx for idx in range(len(regnames)) }
 
@@ -297,7 +425,7 @@ class MipsArch(PandaArch):
         Set a mips register
         &#39;&#39;&#39;
         cpu.env_ptr.active_tc.gpr[reg] = val
-    
+
     def get_return_value(self, env):
         &#39;&#39;&#39;
         returns register value used to return results
@@ -310,18 +438,6 @@ class MipsArch(PandaArch):
         &#39;&#39;&#39;
         return self.get_reg(env, &#34;RA&#34;)
 
-    def get_arg(self, env, num, kernel=False):
-        &#39;&#39;&#39;
-        Gets arguments based on the number. Supports kernel and usermode.
-        &#39;&#39;&#39;
-        if kernel:
-            # this adjusts for the syscall argument
-            num += 1
-        arglist = [&#34;A0&#34;,&#34;A1&#34;,&#34;A2&#34;,&#34;A3&#34;]
-        if num &gt;= len(arglist):
-            raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-        return self.get_reg(env, arglist[num])
-
 class X86Arch(PandaArch):
     &#39;&#39;&#39;
     Register names and accessors for x86
@@ -331,6 +447,11 @@ class X86Arch(PandaArch):
         super().__init__(panda)
         regnames = [&#39;EAX&#39;, &#39;ECX&#39;, &#39;EDX&#39;, &#39;EBX&#39;, &#39;ESP&#39;, &#39;EBP&#39;, &#39;ESI&#39;, &#39;EDI&#39;]
         # XXX Note order is A C D B, because that&#39;s how qemu does it . See target/i386/cpu.h
+
+        # Note we don&#39;t set self.call_conventions because stack-based arg get/set is
+        # not yet supported
+        self.reg_retval = {&#34;default&#34;:    &#34;EAX&#34;,
+                           &#34;syscall&#34;:    &#34;EAX&#34;}
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
@@ -358,7 +479,7 @@ class X86Arch(PandaArch):
         Set an x86 register
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
-    
+
     def get_return_value(self, env):
         &#39;&#39;&#39;
         returns register value used to return results
@@ -372,19 +493,6 @@ class X86Arch(PandaArch):
         esp = self.get_reg(env,&#34;ESP&#34;)
         return self.panda.virtual_memory_read(env,esp,4,fmt=&#39;int&#39;)
 
-    def get_arg(self, env, num, kernel=False):
-        &#39;&#39;&#39;
-        Gets arguments based on the number. Supports kernel and usermode.
-        &#39;&#39;&#39;
-        if kernel:
-            arglist = [&#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;]
-            if num &gt;= len(arglist):
-                raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-            return self.get_reg(env, arglist[num])
-        else:
-            esp = self.get_reg(env, &#34;ESP&#34;)
-            return self.panda.virtual_memory_read(env, esp+(4*(num+1)),4,fmt=&#39;int&#39;)
-
 class X86_64Arch(PandaArch):
     &#39;&#39;&#39;
     Register names and accessors for x86_64
@@ -397,7 +505,16 @@ class X86_64Arch(PandaArch):
                     &#39;R8&#39;, &#39;R9&#39;, &#39;R10&#39;, &#39;R11&#39;, &#39;R12&#39;, &#39;R13&#39;, &#39;R14&#39;, &#39;R15&#39;]
         # XXX Note order is A C D B, because that&#39;s how qemu does it
 
+        self.call_conventions = {&#39;sysv&#39;:           [&#39;RDI&#39;, &#39;RSI&#39;, &#39;RDX&#39;, &#39;RCX&#39;, &#39;R8&#39;, &#39;R9&#39;],
+                                 &#39;syscall&#39;: [&#39;RAX&#39;, &#39;RDI&#39;, &#39;RSI&#39;, &#39;RDX&#39;, &#39;R10&#39;, &#39;R8&#39;, &#39;R9&#39;]}
+
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;sysv&#39;]
+
         self.reg_sp = regnames.index(&#39;RSP&#39;)
+        self.reg_retval = {&#39;sysv&#39;: &#39;RAX&#39;,
+                           &#39;syscall&#39;: &#39;RAX&#39;}
+        self.reg_retval[&#39;default&#39;] = self.reg_retval[&#39;sysv&#39;]
+
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
 
     def get_pc(self, cpu):
@@ -423,7 +540,7 @@ class X86_64Arch(PandaArch):
         Set an x86_64 register
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
-    
+
     def get_return_value(self, env):
         &#39;&#39;&#39;
         returns register value used to return results
@@ -435,19 +552,7 @@ class X86_64Arch(PandaArch):
         looks up where ret will go
         &#39;&#39;&#39;
         esp = self.get_reg(env,&#34;RSP&#34;)
-        return self.panda.virtual_memory_read(env,esp,8,fmt=&#39;int&#39;)
-
-    def get_arg(self, env, num, kernel=False):
-        &#39;&#39;&#39;
-        Gets arguments based on the number. Supports kernel and usermode.
-        &#39;&#39;&#39;
-        if kernel:
-            num += 1
-
-        arglist = [&#34;RDI&#34;, &#34;RSI&#34;, &#34;RDX&#34;, &#34;R10&#34;, &#34;R8&#34;, &#34;R9&#34;]
-        if num &gt;= len(arglist):
-            raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-        return self.get_reg(env, arglist[num])</code></pre>
+        return self.panda.virtual_memory_read(env,esp,8,fmt=&#39;int&#39;)</code></pre>
 </details>
 </section>
 <section>
@@ -459,6 +564,173 @@ class X86_64Arch(PandaArch):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="pandare.arch.Aarch64Arch"><code class="flex name class">
+<span>class <span class="ident">Aarch64Arch</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register names and accessors for ARM64 (Aarch64)</p>
+<p>Initialize a PANDA-supported architecture and hold a handle on the PANDA object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Aarch64Arch(PandaArch):
+    &#39;&#39;&#39;
+    Register names and accessors for ARM64 (Aarch64)
+    &#39;&#39;&#39;
+    def __init__(self, panda):
+        PandaArch.__init__(self, panda)
+
+        regnames = [&#34;X0&#34;,  &#34;X1&#34;,  &#34;X2&#34;,  &#34;X3&#34;,  &#34;X4&#34;,  &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;,
+                    &#34;XR&#34;,  &#34;X9&#34;,  &#34;X10&#34;, &#34;X11&#34;, &#34;X12&#34;, &#34;X13&#34;, &#34;X14&#34;,
+                    &#34;X15&#34;, &#34;IP0&#34;, &#34;IP1&#34;, &#34;PR&#34;, &#34;X19&#34;, &#34;X20&#34;, &#34;X21&#34;,
+                    &#34;X22&#34;, &#34;X23&#34;, &#34;X24&#34;, &#34;X25&#34;, &#34;X26&#34;, &#34;X27&#34;, &#34;X27&#34;,
+                    &#34;X28&#34;, &#34;FP&#34;, &#34;LR&#34;, &#34;SP&#34;]
+
+        self.reg_sp = regnames.index(&#34;SP&#34;)
+
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+        &#34;&#34;&#34;Register array for ARM&#34;&#34;&#34;
+
+        self.reg_sp = regnames.index(&#34;SP&#34;)
+        self.reg_retaddr = regnames.index(&#34;LR&#34;)
+
+        self.call_conventions = {&#34;arm64&#34;:         [&#34;X0&#34;, &#34;X1&#34;, &#34;X2&#34;, &#34;X3&#34;, &#34;X4&#34;, &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;],
+                                 &#34;syscall&#34;: [&#34;XR&#34;, &#34;X0&#34;, &#34;X1&#34;, &#34;X2&#34;, &#34;X3&#34;, &#34;X4&#34;, &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;]}
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;arm64&#39;]
+
+        self.reg_retval = {&#34;default&#34;:    &#34;X0&#34;,
+                           &#34;syscall&#34;:    &#34;X0&#34;}
+
+    def get_pc(self, cpu):
+        &#39;&#39;&#39;
+        Overloaded function to get aarch64 program counter.
+        Note the PC is not stored in a general purpose reg
+        &#39;&#39;&#39;
+        return cpu.env_ptr.pc
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Overloaded function set AArch64 program counter
+        &#39;&#39;&#39;
+        cpu.env_ptr.pc = val
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return an aarch64 register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.xregs[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set an aarch64 register
+        &#39;&#39;&#39;
+        cpu.env_ptr.xregs[reg] = val
+
+    def get_return_value(self, env):
+        &#39;&#39;&#39;
+        returns register value used to return results
+        &#39;&#39;&#39;
+        return self.get_reg(env, &#34;R0&#34;)
+
+    def get_return_address(self,env):
+        &#39;&#39;&#39;
+        looks up where ret will go
+        &#39;&#39;&#39;
+        return self.get_reg(env, &#34;LR&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.arch.Aarch64Arch.get_pc"><code class="name flex">
+<span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function to get aarch64 program counter.
+Note the PC is not stored in a general purpose reg</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_pc(self, cpu):
+    &#39;&#39;&#39;
+    Overloaded function to get aarch64 program counter.
+    Note the PC is not stored in a general purpose reg
+    &#39;&#39;&#39;
+    return cpu.env_ptr.pc</code></pre>
+</details>
+</dd>
+<dt id="pandare.arch.Aarch64Arch.get_return_address"><code class="name flex">
+<span>def <span class="ident">get_return_address</span></span>(<span>self, env)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>looks up where ret will go</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_return_address(self,env):
+    &#39;&#39;&#39;
+    looks up where ret will go
+    &#39;&#39;&#39;
+    return self.get_reg(env, &#34;LR&#34;)</code></pre>
+</details>
+</dd>
+<dt id="pandare.arch.Aarch64Arch.get_return_value"><code class="name flex">
+<span>def <span class="ident">get_return_value</span></span>(<span>self, env)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns register value used to return results</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_return_value(self, env):
+    &#39;&#39;&#39;
+    returns register value used to return results
+    &#39;&#39;&#39;
+    return self.get_reg(env, &#34;R0&#34;)</code></pre>
+</details>
+</dd>
+<dt id="pandare.arch.Aarch64Arch.set_pc"><code class="name flex">
+<span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function set AArch64 program counter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_pc(self, cpu, val):
+    &#39;&#39;&#39;
+    Overloaded function set AArch64 program counter
+    &#39;&#39;&#39;
+    cpu.env_ptr.pc = val</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></b></code>:
+<ul class="hlist">
+<li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_retval" href="#pandare.arch.PandaArch.get_retval">get_retval</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_retval" href="#pandare.arch.PandaArch.set_retval">set_retval</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
 <dt id="pandare.arch.ArmArch"><code class="flex name class">
 <span>class <span class="ident">ArmArch</span></span>
 <span>(</span><span>panda)</span>
@@ -476,17 +748,24 @@ class X86_64Arch(PandaArch):
     &#39;&#39;&#39;
     def __init__(self, panda):
         PandaArch.__init__(self, panda)
-        self.reg_sp = 13 # SP
-        self.reg_retaddr = 14 # LR
-        self.reg_pc = 15 # IP
-
         regnames = [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;, &#34;R4&#34;, &#34;R5&#34;, &#34;R6&#34;, &#34;R7&#34;,
                     &#34;R8&#34;, &#34;R9&#34;, &#34;R10&#34;, &#34;R11&#34;, &#34;R12&#34;, &#34;SP&#34;, &#34;LR&#34;, &#34;IP&#34;]
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
         &#34;&#34;&#34;Register array for ARM&#34;&#34;&#34;
 
+        self.reg_sp      = regnames.index(&#34;SP&#34;)
+        self.reg_pc      = regnames.index(&#34;IP&#34;)
+        self.reg_retaddr = regnames.index(&#34;LR&#34;)
+
         self.reg_sp = regnames.index(&#34;SP&#34;)
         self.reg_retaddr = regnames.index(&#34;LR&#34;)
+        self.call_conventions = {&#34;arm32&#34;:         [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;],
+                                 &#34;syscall&#34;: [&#34;R7&#34;, &#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;], # EABI
+                                 }
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;arm32&#39;]
+
+        self.reg_retval = {&#34;default&#34;:    &#34;R0&#34;,
+                           &#34;syscall&#34;:    &#34;R0&#34;}
         self.reg_pc = regnames.index(&#34;IP&#34;)
 
     def _get_reg_val(self, cpu, reg):
@@ -500,7 +779,7 @@ class X86_64Arch(PandaArch):
         Set an arm register
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
-    
+
     def get_return_value(self, env):
         &#39;&#39;&#39;
         returns register value used to return results
@@ -511,19 +790,7 @@ class X86_64Arch(PandaArch):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;LR&#34;)
-
-    def get_arg(self, env, num, kernel=False):
-        &#39;&#39;&#39;
-        Gets arguments based on the number. Supports kernel and usermode.
-        &#39;&#39;&#39;
-        if kernel:
-            # adjusts for the syscall num
-            num += 1
-        arglist = [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;]
-        if num &gt;= len(arglist):
-            raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-        return self.get_reg(env, arglist[num])</code></pre>
+        return self.get_reg(env, &#34;LR&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -531,28 +798,6 @@ class X86_64Arch(PandaArch):
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="pandare.arch.ArmArch.get_arg"><code class="name flex">
-<span>def <span class="ident">get_arg</span></span>(<span>self, env, num, kernel=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets arguments based on the number. Supports kernel and usermode.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_arg(self, env, num, kernel=False):
-    &#39;&#39;&#39;
-    Gets arguments based on the number. Supports kernel and usermode.
-    &#39;&#39;&#39;
-    if kernel:
-        # adjusts for the syscall num
-        num += 1
-    arglist = [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;]
-    if num &gt;= len(arglist):
-        raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-    return self.get_reg(env, arglist[num])</code></pre>
-</details>
-</dd>
 <dt id="pandare.arch.ArmArch.get_return_address"><code class="name flex">
 <span>def <span class="ident">get_return_address</span></span>(<span>self, env)</span>
 </code></dt>
@@ -593,11 +838,15 @@ class X86_64Arch(PandaArch):
 <li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_pc" href="#pandare.arch.PandaArch.get_pc">get_pc</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_retval" href="#pandare.arch.PandaArch.get_retval">get_retval</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_pc" href="#pandare.arch.PandaArch.set_pc">set_pc</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_retval" href="#pandare.arch.PandaArch.set_retval">set_retval</a></code></li>
 </ul>
 </li>
 </ul>
@@ -643,7 +892,15 @@ class X86_64Arch(PandaArch):
                     &#39;t8&#39;, &#39;t9&#39;, &#39;k0&#39;, &#39;k1&#39;, &#39;gp&#39;, &#39;sp&#39;, &#39;fp&#39;, &#39;ra&#39;]
 
         self.reg_sp = regnames.index(&#39;sp&#39;)
-        self.reg_retaddr = regnames.index(&#39;ra&#39;)
+        self.reg_retaddr = regnames.index(&#34;ra&#34;)
+        self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;],
+                                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;]}
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
+
+        self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
+                            &#34;syscall&#34;:    &#39;V0&#39;}
+
+
         # note names must be stored uppercase for get/set reg to work case-insensitively
         self.registers = {regnames[idx].upper(): idx for idx in range(len(regnames)) }
 
@@ -670,7 +927,7 @@ class X86_64Arch(PandaArch):
         Set a mips register
         &#39;&#39;&#39;
         cpu.env_ptr.active_tc.gpr[reg] = val
-    
+
     def get_return_value(self, env):
         &#39;&#39;&#39;
         returns register value used to return results
@@ -681,19 +938,7 @@ class X86_64Arch(PandaArch):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;RA&#34;)
-
-    def get_arg(self, env, num, kernel=False):
-        &#39;&#39;&#39;
-        Gets arguments based on the number. Supports kernel and usermode.
-        &#39;&#39;&#39;
-        if kernel:
-            # this adjusts for the syscall argument
-            num += 1
-        arglist = [&#34;A0&#34;,&#34;A1&#34;,&#34;A2&#34;,&#34;A3&#34;]
-        if num &gt;= len(arglist):
-            raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-        return self.get_reg(env, arglist[num])</code></pre>
+        return self.get_reg(env, &#34;RA&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -701,28 +946,6 @@ class X86_64Arch(PandaArch):
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="pandare.arch.MipsArch.get_arg"><code class="name flex">
-<span>def <span class="ident">get_arg</span></span>(<span>self, env, num, kernel=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets arguments based on the number. Supports kernel and usermode.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_arg(self, env, num, kernel=False):
-    &#39;&#39;&#39;
-    Gets arguments based on the number. Supports kernel and usermode.
-    &#39;&#39;&#39;
-    if kernel:
-        # this adjusts for the syscall argument
-        num += 1
-    arglist = [&#34;A0&#34;,&#34;A1&#34;,&#34;A2&#34;,&#34;A3&#34;]
-    if num &gt;= len(arglist):
-        raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-    return self.get_reg(env, arglist[num])</code></pre>
-</details>
-</dd>
 <dt id="pandare.arch.MipsArch.get_call_return"><code class="name flex">
 <span>def <span class="ident">get_call_return</span></span>(<span>self, env)</span>
 </code></dt>
@@ -795,9 +1018,13 @@ class X86_64Arch(PandaArch):
 <li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_retval" href="#pandare.arch.PandaArch.get_retval">get_retval</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_retval" href="#pandare.arch.PandaArch.set_retval">set_retval</a></code></li>
 </ul>
 </li>
 </ul>
@@ -823,9 +1050,11 @@ class X86_64Arch(PandaArch):
         &#39;&#39;&#39;
         self.panda = panda
 
-        self.reg_sp = None # Stack pointer register ID if stored in a register
-        self.reg_pc = None # PC register ID if stored in a register
-        self.reg_retaddr = None # Return address register ID if stored in a register
+        self.reg_sp      = None # Stack pointer register ID if stored in a register
+        self.reg_pc      = None # PC register ID if stored in a register
+        self.reg_retaddr = None # Register ID that contains return address
+        self.reg_retval  = None # convention: register name that contains return val
+        self.call_conventions = None # convention: [&#39;reg_for_arg0&#39;, &#39;reg_for_arg1&#39;,...]
         self.registers = {}
         &#39;&#39;&#39;
         Mapping of register names to indices into the appropriate CPUState array
@@ -893,6 +1122,8 @@ class X86_64Arch(PandaArch):
                 raise ValueError(f&#34;Invalid register name {reg}&#34;)
             else:
                 reg = self.registers[reg]
+        elif not isinstance(reg, int):
+            raise ValueError(f&#34;Can&#39;t set register {reg}&#34;)
 
         return self._set_reg_val(cpu, reg, val)
 
@@ -910,6 +1141,62 @@ class X86_64Arch(PandaArch):
             return self.get_reg(cpu, self.reg_pc)
         else:
             raise RuntimeError(f&#34;get_pc unsupported for {self.panda.arch_name}&#34;)
+
+    def _get_arg_reg(self, idx, convention):
+        &#39;&#39;&#39;
+        return the name of the argument [idx] for the given arch with calling [convention]
+        &#39;&#39;&#39;
+
+        if self.call_conventions and convention in self.call_conventions:
+            if idx &lt; len(self.call_conventions[convention]):
+                return self.call_conventions[convention][idx]
+            raise NotImplementedError(f&#34;Unsupported argument number {idx}&#34;)
+        raise NotImplementedError(f&#34;Unsupported convention {convention} for {type(self)}&#34;)
+
+    def _get_ret_val_reg(self, cpu, convention):
+        if self.reg_retval and convention in self.reg_retval:
+            return self.reg_retval[convention]
+        raise NotImplementedError(f&#34;Unsupported get_retval for architecture {type(self)} {convention}&#34;)
+
+
+    def set_arg(self, cpu, idx, val, convention=&#39;default&#39;):
+        &#39;&#39;&#39;
+        Set arg [idx] to [val] for given calling convention.
+
+        Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
+        &#39;&#39;&#39;
+        reg = self._get_arg_reg(idx, convention)
+        return self.set_reg(cpu, reg, val)
+
+    def get_arg(self, cpu, idx, convention=&#39;default&#39;):
+        &#39;&#39;&#39;
+        Return arg [idx] for given calling convention. This only works right as the guest
+        is calling or has called a function before register values are clobbered.
+
+        Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
+        &#39;&#39;&#39;
+        reg = self._get_arg_reg(idx, convention)
+        return self.get_reg(cpu, reg)
+
+
+    def set_retval(self, cpu, val, convention=&#39;default&#39;):
+        &#39;&#39;&#39;
+        Set return val to [val] for given calling convention. This only works
+        right after a function call has returned, otherwise the register will contain
+        a different value.
+        &#39;&#39;&#39;
+        reg = self._get_ret_val_reg(cpu, convention)
+        return self.set_reg(cpu, reg, val)
+
+    def get_retval(self, cpu, convention=&#39;default&#39;):
+        &#39;&#39;&#39;
+        Set return val to [val] for given calling convention. This only works
+        right after a function call has returned, otherwise the register will contain
+        a different value.
+        &#39;&#39;&#39;
+        reg = self._get_ret_val_reg(cpu, convention)
+        return self.get_reg(cpu, reg)
+
 
     def set_pc(self, cpu, val):
         &#39;&#39;&#39;
@@ -953,12 +1240,13 @@ class X86_64Arch(PandaArch):
         self.dump_regs(cpu)
         print(&#34;Stack:&#34;)
         self.dump_stack(cpu)
-    
+
     def get_args(self, cpu, num):
         return [self.get_arg(cpu,i) for i in range(num)]</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
+<li><a title="pandare.arch.Aarch64Arch" href="#pandare.arch.Aarch64Arch">Aarch64Arch</a></li>
 <li><a title="pandare.arch.ArmArch" href="#pandare.arch.ArmArch">ArmArch</a></li>
 <li><a title="pandare.arch.MipsArch" href="#pandare.arch.MipsArch">MipsArch</a></li>
 <li><a title="pandare.arch.X86Arch" href="#pandare.arch.X86Arch">X86Arch</a></li>
@@ -1037,6 +1325,28 @@ class X86_64Arch(PandaArch):
     self.dump_stack(cpu)</code></pre>
 </details>
 </dd>
+<dt id="pandare.arch.PandaArch.get_arg"><code class="name flex">
+<span>def <span class="ident">get_arg</span></span>(<span>self, cpu, idx, convention='default')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return arg [idx] for given calling convention. This only works right as the guest
+is calling or has called a function before register values are clobbered.</p>
+<p>Note for syscalls we define arg[0] as syscall number and then 1-index the actual args</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_arg(self, cpu, idx, convention=&#39;default&#39;):
+    &#39;&#39;&#39;
+    Return arg [idx] for given calling convention. This only works right as the guest
+    is calling or has called a function before register values are clobbered.
+
+    Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
+    &#39;&#39;&#39;
+    reg = self._get_arg_reg(idx, convention)
+    return self.get_reg(cpu, reg)</code></pre>
+</details>
+</dd>
 <dt id="pandare.arch.PandaArch.get_args"><code class="name flex">
 <span>def <span class="ident">get_args</span></span>(<span>self, cpu, num)</span>
 </code></dt>
@@ -1092,6 +1402,47 @@ class X86_64Arch(PandaArch):
     return self._get_reg_val(cpu, reg)</code></pre>
 </details>
 </dd>
+<dt id="pandare.arch.PandaArch.get_retval"><code class="name flex">
+<span>def <span class="ident">get_retval</span></span>(<span>self, cpu, convention='default')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set return val to [val] for given calling convention. This only works
+right after a function call has returned, otherwise the register will contain
+a different value.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_retval(self, cpu, convention=&#39;default&#39;):
+    &#39;&#39;&#39;
+    Set return val to [val] for given calling convention. This only works
+    right after a function call has returned, otherwise the register will contain
+    a different value.
+    &#39;&#39;&#39;
+    reg = self._get_ret_val_reg(cpu, convention)
+    return self.get_reg(cpu, reg)</code></pre>
+</details>
+</dd>
+<dt id="pandare.arch.PandaArch.set_arg"><code class="name flex">
+<span>def <span class="ident">set_arg</span></span>(<span>self, cpu, idx, val, convention='default')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set arg [idx] to [val] for given calling convention.</p>
+<p>Note for syscalls we define arg[0] as syscall number and then 1-index the actual args</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_arg(self, cpu, idx, val, convention=&#39;default&#39;):
+    &#39;&#39;&#39;
+    Set arg [idx] to [val] for given calling convention.
+
+    Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
+    &#39;&#39;&#39;
+    reg = self._get_arg_reg(idx, convention)
+    return self.set_reg(cpu, reg, val)</code></pre>
+</details>
+</dd>
 <dt id="pandare.arch.PandaArch.set_pc"><code class="name flex">
 <span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
 </code></dt>
@@ -1130,8 +1481,31 @@ class X86_64Arch(PandaArch):
             raise ValueError(f&#34;Invalid register name {reg}&#34;)
         else:
             reg = self.registers[reg]
+    elif not isinstance(reg, int):
+        raise ValueError(f&#34;Can&#39;t set register {reg}&#34;)
 
     return self._set_reg_val(cpu, reg, val)</code></pre>
+</details>
+</dd>
+<dt id="pandare.arch.PandaArch.set_retval"><code class="name flex">
+<span>def <span class="ident">set_retval</span></span>(<span>self, cpu, val, convention='default')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set return val to [val] for given calling convention. This only works
+right after a function call has returned, otherwise the register will contain
+a different value.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_retval(self, cpu, val, convention=&#39;default&#39;):
+    &#39;&#39;&#39;
+    Set return val to [val] for given calling convention. This only works
+    right after a function call has returned, otherwise the register will contain
+    a different value.
+    &#39;&#39;&#39;
+    reg = self._get_ret_val_reg(cpu, convention)
+    return self.set_reg(cpu, reg, val)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1156,6 +1530,11 @@ class X86_64Arch(PandaArch):
         super().__init__(panda)
         regnames = [&#39;EAX&#39;, &#39;ECX&#39;, &#39;EDX&#39;, &#39;EBX&#39;, &#39;ESP&#39;, &#39;EBP&#39;, &#39;ESI&#39;, &#39;EDI&#39;]
         # XXX Note order is A C D B, because that&#39;s how qemu does it . See target/i386/cpu.h
+
+        # Note we don&#39;t set self.call_conventions because stack-based arg get/set is
+        # not yet supported
+        self.reg_retval = {&#34;default&#34;:    &#34;EAX&#34;,
+                           &#34;syscall&#34;:    &#34;EAX&#34;}
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
@@ -1183,7 +1562,7 @@ class X86_64Arch(PandaArch):
         Set an x86 register
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
-    
+
     def get_return_value(self, env):
         &#39;&#39;&#39;
         returns register value used to return results
@@ -1195,20 +1574,7 @@ class X86_64Arch(PandaArch):
         looks up where ret will go
         &#39;&#39;&#39;
         esp = self.get_reg(env,&#34;ESP&#34;)
-        return self.panda.virtual_memory_read(env,esp,4,fmt=&#39;int&#39;)
-
-    def get_arg(self, env, num, kernel=False):
-        &#39;&#39;&#39;
-        Gets arguments based on the number. Supports kernel and usermode.
-        &#39;&#39;&#39;
-        if kernel:
-            arglist = [&#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;]
-            if num &gt;= len(arglist):
-                raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-            return self.get_reg(env, arglist[num])
-        else:
-            esp = self.get_reg(env, &#34;ESP&#34;)
-            return self.panda.virtual_memory_read(env, esp+(4*(num+1)),4,fmt=&#39;int&#39;)</code></pre>
+        return self.panda.virtual_memory_read(env,esp,4,fmt=&#39;int&#39;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1216,29 +1582,6 @@ class X86_64Arch(PandaArch):
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="pandare.arch.X86Arch.get_arg"><code class="name flex">
-<span>def <span class="ident">get_arg</span></span>(<span>self, env, num, kernel=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets arguments based on the number. Supports kernel and usermode.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_arg(self, env, num, kernel=False):
-    &#39;&#39;&#39;
-    Gets arguments based on the number. Supports kernel and usermode.
-    &#39;&#39;&#39;
-    if kernel:
-        arglist = [&#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;]
-        if num &gt;= len(arglist):
-            raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-        return self.get_reg(env, arglist[num])
-    else:
-        esp = self.get_reg(env, &#34;ESP&#34;)
-        return self.panda.virtual_memory_read(env, esp+(4*(num+1)),4,fmt=&#39;int&#39;)</code></pre>
-</details>
-</dd>
 <dt id="pandare.arch.X86Arch.get_pc"><code class="name flex">
 <span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
 </code></dt>
@@ -1312,9 +1655,13 @@ class X86_64Arch(PandaArch):
 <li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_retval" href="#pandare.arch.PandaArch.get_retval">get_retval</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_retval" href="#pandare.arch.PandaArch.set_retval">set_retval</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1342,7 +1689,16 @@ class X86_64Arch(PandaArch):
                     &#39;R8&#39;, &#39;R9&#39;, &#39;R10&#39;, &#39;R11&#39;, &#39;R12&#39;, &#39;R13&#39;, &#39;R14&#39;, &#39;R15&#39;]
         # XXX Note order is A C D B, because that&#39;s how qemu does it
 
+        self.call_conventions = {&#39;sysv&#39;:           [&#39;RDI&#39;, &#39;RSI&#39;, &#39;RDX&#39;, &#39;RCX&#39;, &#39;R8&#39;, &#39;R9&#39;],
+                                 &#39;syscall&#39;: [&#39;RAX&#39;, &#39;RDI&#39;, &#39;RSI&#39;, &#39;RDX&#39;, &#39;R10&#39;, &#39;R8&#39;, &#39;R9&#39;]}
+
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;sysv&#39;]
+
         self.reg_sp = regnames.index(&#39;RSP&#39;)
+        self.reg_retval = {&#39;sysv&#39;: &#39;RAX&#39;,
+                           &#39;syscall&#39;: &#39;RAX&#39;}
+        self.reg_retval[&#39;default&#39;] = self.reg_retval[&#39;sysv&#39;]
+
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
 
     def get_pc(self, cpu):
@@ -1368,7 +1724,7 @@ class X86_64Arch(PandaArch):
         Set an x86_64 register
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
-    
+
     def get_return_value(self, env):
         &#39;&#39;&#39;
         returns register value used to return results
@@ -1380,19 +1736,7 @@ class X86_64Arch(PandaArch):
         looks up where ret will go
         &#39;&#39;&#39;
         esp = self.get_reg(env,&#34;RSP&#34;)
-        return self.panda.virtual_memory_read(env,esp,8,fmt=&#39;int&#39;)
-
-    def get_arg(self, env, num, kernel=False):
-        &#39;&#39;&#39;
-        Gets arguments based on the number. Supports kernel and usermode.
-        &#39;&#39;&#39;
-        if kernel:
-            num += 1
-
-        arglist = [&#34;RDI&#34;, &#34;RSI&#34;, &#34;RDX&#34;, &#34;R10&#34;, &#34;R8&#34;, &#34;R9&#34;]
-        if num &gt;= len(arglist):
-            raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-        return self.get_reg(env, arglist[num])</code></pre>
+        return self.panda.virtual_memory_read(env,esp,8,fmt=&#39;int&#39;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1400,28 +1744,6 @@ class X86_64Arch(PandaArch):
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="pandare.arch.X86_64Arch.get_arg"><code class="name flex">
-<span>def <span class="ident">get_arg</span></span>(<span>self, env, num, kernel=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets arguments based on the number. Supports kernel and usermode.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_arg(self, env, num, kernel=False):
-    &#39;&#39;&#39;
-    Gets arguments based on the number. Supports kernel and usermode.
-    &#39;&#39;&#39;
-    if kernel:
-        num += 1
-
-    arglist = [&#34;RDI&#34;, &#34;RSI&#34;, &#34;RDX&#34;, &#34;R10&#34;, &#34;R8&#34;, &#34;R9&#34;]
-    if num &gt;= len(arglist):
-        raise ValueError(f&#34;We only support the first {len(arglist)} arguments.&#34;)
-    return self.get_reg(env, arglist[num])</code></pre>
-</details>
-</dd>
 <dt id="pandare.arch.X86_64Arch.get_pc"><code class="name flex">
 <span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
 </code></dt>
@@ -1495,9 +1817,13 @@ class X86_64Arch(PandaArch):
 <li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_retval" href="#pandare.arch.PandaArch.get_retval">get_retval</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_retval" href="#pandare.arch.PandaArch.set_retval">set_retval</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1519,9 +1845,17 @@ class X86_64Arch(PandaArch):
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
+<h4><code><a title="pandare.arch.Aarch64Arch" href="#pandare.arch.Aarch64Arch">Aarch64Arch</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.arch.Aarch64Arch.get_pc" href="#pandare.arch.Aarch64Arch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.Aarch64Arch.get_return_address" href="#pandare.arch.Aarch64Arch.get_return_address">get_return_address</a></code></li>
+<li><code><a title="pandare.arch.Aarch64Arch.get_return_value" href="#pandare.arch.Aarch64Arch.get_return_value">get_return_value</a></code></li>
+<li><code><a title="pandare.arch.Aarch64Arch.set_pc" href="#pandare.arch.Aarch64Arch.set_pc">set_pc</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="pandare.arch.ArmArch" href="#pandare.arch.ArmArch">ArmArch</a></code></h4>
 <ul class="">
-<li><code><a title="pandare.arch.ArmArch.get_arg" href="#pandare.arch.ArmArch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.ArmArch.get_return_address" href="#pandare.arch.ArmArch.get_return_address">get_return_address</a></code></li>
 <li><code><a title="pandare.arch.ArmArch.get_return_value" href="#pandare.arch.ArmArch.get_return_value">get_return_value</a></code></li>
 </ul>
@@ -1529,7 +1863,6 @@ class X86_64Arch(PandaArch):
 <li>
 <h4><code><a title="pandare.arch.MipsArch" href="#pandare.arch.MipsArch">MipsArch</a></code></h4>
 <ul class="">
-<li><code><a title="pandare.arch.MipsArch.get_arg" href="#pandare.arch.MipsArch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_call_return" href="#pandare.arch.MipsArch.get_call_return">get_call_return</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_pc" href="#pandare.arch.MipsArch.get_pc">get_pc</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_return_value" href="#pandare.arch.MipsArch.get_return_value">get_return_value</a></code></li>
@@ -1542,18 +1875,21 @@ class X86_64Arch(PandaArch):
 <li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_args" href="#pandare.arch.PandaArch.get_args">get_args</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_pc" href="#pandare.arch.PandaArch.get_pc">get_pc</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_retval" href="#pandare.arch.PandaArch.get_retval">get_retval</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_pc" href="#pandare.arch.PandaArch.set_pc">set_pc</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_retval" href="#pandare.arch.PandaArch.set_retval">set_retval</a></code></li>
 </ul>
 </li>
 <li>
 <h4><code><a title="pandare.arch.X86Arch" href="#pandare.arch.X86Arch">X86Arch</a></code></h4>
 <ul class="">
-<li><code><a title="pandare.arch.X86Arch.get_arg" href="#pandare.arch.X86Arch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.X86Arch.get_pc" href="#pandare.arch.X86Arch.get_pc">get_pc</a></code></li>
 <li><code><a title="pandare.arch.X86Arch.get_return_address" href="#pandare.arch.X86Arch.get_return_address">get_return_address</a></code></li>
 <li><code><a title="pandare.arch.X86Arch.get_return_value" href="#pandare.arch.X86Arch.get_return_value">get_return_value</a></code></li>
@@ -1563,7 +1899,6 @@ class X86_64Arch(PandaArch):
 <li>
 <h4><code><a title="pandare.arch.X86_64Arch" href="#pandare.arch.X86_64Arch">X86_64Arch</a></code></h4>
 <ul class="">
-<li><code><a title="pandare.arch.X86_64Arch.get_arg" href="#pandare.arch.X86_64Arch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.X86_64Arch.get_pc" href="#pandare.arch.X86_64Arch.get_pc">get_pc</a></code></li>
 <li><code><a title="pandare.arch.X86_64Arch.get_return_address" href="#pandare.arch.X86_64Arch.get_return_address">get_return_address</a></code></li>
 <li><code><a title="pandare.arch.X86_64Arch.get_return_value" href="#pandare.arch.X86_64Arch.get_return_value">get_return_value</a></code></li>

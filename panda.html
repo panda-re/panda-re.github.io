@@ -40,6 +40,13 @@ if version_info[0] &lt; 3:
 import socket
 import threading
 
+
+import readline
+# XXX: readline is unused but necessary. We need to load python
+# readline, to preempt PANDA loading another version. PANDA
+# seems to work with python&#39;s but not vice-versa. This allows for
+# stdio interactions later (e.g., pdb, input())  without segfaults
+
 from os.path import realpath, exists, abspath, isfile, dirname, join as pjoin
 from os import dup, getenv, environ, path
 from random import randint
@@ -59,7 +66,7 @@ from .taint import TaintQuery
 from .panda_expect import Expect
 from .asyncthread import AsyncThread
 from .qcows import Qcows
-from .arch import ArmArch, MipsArch, X86Arch, X86_64Arch
+from .arch import ArmArch, Aarch64Arch, MipsArch, X86Arch, X86_64Arch
 
 # Might be worth importing and auto-initilizing a PLogReader
 # object within Panda for the current architecture?
@@ -106,6 +113,7 @@ class Panda():
         self.lambda_cnt = 0
         self.arch = None
         self.__sighandler = None
+        self.ending = False # True during end_analysis
         &#34;&#34;&#34;
         A reference to an auto-instantiated `pandare.arch.PandaArch` subclass (e.g., `pandare.arch.X86Arch`)
         &#34;&#34;&#34;
@@ -135,8 +143,10 @@ class Panda():
             self.arch = X86Arch(self)
         elif self.arch_name == &#34;x86_64&#34;:
             self.arch = X86_64Arch(self)
-        elif self.arch_name in [&#34;arm&#34;, &#34;aarch64&#34;]:
-            self.arch = ArmArch(self) # Not sure if this needs to be different for 64
+        elif self.arch_name in [&#34;arm&#34;]:
+            self.arch = ArmArch(self)
+        elif self.arch_name in [&#34;aarch64&#34;]:
+            self.arch = Aarch64Arch(self)
         elif self.arch_name in [&#34;mips&#34;, &#34;mipsel&#34;]:
             self.arch = MipsArch(self)
         else:
@@ -446,6 +456,8 @@ class Panda():
                 print(&#34;Clearing prior main_loop_wait fns:&#34;, self.main_loop_wait_fnargs)
             self.main_loop_wait_fnargs = [] # [(fn, args), ...]
 
+        self.ending = False
+
         if debug:
             progress (&#34;Running&#34;)
 
@@ -501,6 +513,7 @@ class Panda():
         without needing to wait for tasks in the main async thread
         &#39;&#39;&#39;
         self.athread.ending = True
+        self.ending = True
         self.unload_plugins()
         if self.running.is_set() or self.initializing.is_set():
 
@@ -551,6 +564,8 @@ class Panda():
         &#39;&#39;&#39;
         if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
             raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
+
+        self.ending = False
 
         if debug:
             progress (&#34;Replaying %s&#34; % replaypfx)
@@ -673,7 +688,10 @@ class Panda():
         # First unload python plugins, should be safe to do anytime
         #for name in self.registered_callbacks.keys():
         while len(list(self.registered_callbacks)) &gt; 0:
-            self.delete_callback(list(self.registered_callbacks.keys())[0])
+            try:
+                self.delete_callback(list(self.registered_callbacks.keys())[0])
+            except IndexError:
+                continue
             #self.disable_callback(name)
 
         # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
@@ -728,6 +746,7 @@ class Panda():
                         Memory Access with error value.
                         Format string is incorrect.
         &#39;&#39;&#39;
+
         return self._memory_read(env, addr, length, physical=False, fmt=fmt)
 
     def _memory_read(self, env, addr, length, physical=False, fmt=&#39;bytearray&#39;):
@@ -736,6 +755,9 @@ class Panda():
         Supports physical or virtual addresses
         Raises ValueError if read fails
         &#39;&#39;&#39;
+        if not isinstance(addr, int):
+            raise ValueError(f&#34;Unsupported read from address {repr(addr)}&#34;)
+
         buf = ffi.new(&#34;char[]&#34;, length)
 
         # Force CFFI to parse addr as an unsigned value. Otherwise we get OverflowErrors
@@ -882,19 +904,21 @@ class Panda():
         size = ceil(size/1024)*1024 # Must be page-aligned
         return self.libpanda.map_memory(name_c, size, address)
 
-    def read_str(self, cpu, ptr):
+    def read_str(self, cpu, ptr, max_length=None):
         &#39;&#39;&#39;
         Helper to read a null-terminated string from guest memory given a pointer and CPU state
         May return an exception if the call to panda.virtual_memory_read fails (e.g., if you pass a
         pointer to an unmapped page)
         &#39;&#39;&#39;
         r = b&#34;&#34;
-        while True:
+        idx = 0
+        while (max_length is None or idx &lt; max_length):
             next_char = self.virtual_memory_read(cpu, ptr, 1) # If this raises an exn, don&#39;t mask it
             if next_char == b&#34;\x00&#34;:
                 break
             r += next_char
             ptr += 1
+            idx += 1
         return r.decode(&#34;utf8&#34;, &#34;ignore&#34;)
 
     def to_unsigned_guest(self, x):
@@ -2187,6 +2211,7 @@ class Panda():
                     r = fun(*args, **kwargs)
                     #print(pandatype, type(r)) # XXX Can we use pandatype to determine requried return and assert if incorrect
                     #assert(isinstance(r, int)), &#34;Invalid return type?&#34;
+                    #print(fun, r) # Stuck with TypeError in _run_and_catch? Enable this to find where the bug is.
                     return r
                 except Exception as e:
                     # exceptions wont work in our thread. Therefore we print it here and then throw it after the
@@ -2328,6 +2353,11 @@ class Panda():
         &#39;&#39;&#39;
         Enable a panda plugin using its handle and cb.number as a unique ID
         &#39;&#39;&#39;
+
+        # During shutdown callback may be deleted before a request to enable comes through
+        if self.ending:
+            return
+
         if name not in self.registered_callbacks.keys():
             raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
 
@@ -2344,6 +2374,10 @@ class Panda():
         If forever is specified, we&#39;ll never reenable the call- useful when
         you want to really turn off something with a procname filter.
         &#39;&#39;&#39;
+        # During shutdown callback may be deleted before a request to enable comes through
+        if self.ending:
+            return
+
         if name not in self.registered_callbacks.keys():
             raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
         self.registered_callbacks[name][&#39;enabled&#39;] = False
@@ -2380,7 +2414,7 @@ class Panda():
     ### PPP-style callbacks ###
     ###########################
 
-    def ppp(self, plugin_name, attr, name=None):
+    def ppp(self, plugin_name, attr, name=None, autoload=True):
         &#39;&#39;&#39;
         Decorator for plugin-to-plugin interface. Note this isn&#39;t in decorators.py
         becuase it uses the panda object.
@@ -2391,7 +2425,7 @@ class Panda():
             ...
         &#39;&#39;&#39;
 
-        if plugin_name not in self.plugins: # Could automatically load it?
+        if plugin_name not in self.plugins and autoload: # Could automatically load it?
             print(f&#34;PPP automatically loaded plugin {plugin_name}&#34;)
 
         if not hasattr(self, &#34;ppp_registered_cbs&#34;):
@@ -2572,7 +2606,7 @@ class Panda():
             elif cb_type == &#34;before_block_translate&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState* env, target_ptr_t pc, struct hook*)&#34;)
             elif cb_type == &#34;before_block_exec_invalidate_opt&#34;:
-                hook_cb_type = &#34;bool(CPUState* env, TranslationBlock*, struct hook*)&#34;
+                hook_cb_type = self.ffi.callback(&#34;bool(CPUState* env, TranslationBlock*, struct hook*)&#34;)
             else:
                 print(&#34;function type not supported&#34;)
                 return
@@ -2812,6 +2846,7 @@ class Panda():
         self.lambda_cnt = 0
         self.arch = None
         self.__sighandler = None
+        self.ending = False # True during end_analysis
         &#34;&#34;&#34;
         A reference to an auto-instantiated `pandare.arch.PandaArch` subclass (e.g., `pandare.arch.X86Arch`)
         &#34;&#34;&#34;
@@ -2841,8 +2876,10 @@ class Panda():
             self.arch = X86Arch(self)
         elif self.arch_name == &#34;x86_64&#34;:
             self.arch = X86_64Arch(self)
-        elif self.arch_name in [&#34;arm&#34;, &#34;aarch64&#34;]:
-            self.arch = ArmArch(self) # Not sure if this needs to be different for 64
+        elif self.arch_name in [&#34;arm&#34;]:
+            self.arch = ArmArch(self)
+        elif self.arch_name in [&#34;aarch64&#34;]:
+            self.arch = Aarch64Arch(self)
         elif self.arch_name in [&#34;mips&#34;, &#34;mipsel&#34;]:
             self.arch = MipsArch(self)
         else:
@@ -3152,6 +3189,8 @@ class Panda():
                 print(&#34;Clearing prior main_loop_wait fns:&#34;, self.main_loop_wait_fnargs)
             self.main_loop_wait_fnargs = [] # [(fn, args), ...]
 
+        self.ending = False
+
         if debug:
             progress (&#34;Running&#34;)
 
@@ -3207,6 +3246,7 @@ class Panda():
         without needing to wait for tasks in the main async thread
         &#39;&#39;&#39;
         self.athread.ending = True
+        self.ending = True
         self.unload_plugins()
         if self.running.is_set() or self.initializing.is_set():
 
@@ -3257,6 +3297,8 @@ class Panda():
         &#39;&#39;&#39;
         if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
             raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
+
+        self.ending = False
 
         if debug:
             progress (&#34;Replaying %s&#34; % replaypfx)
@@ -3379,7 +3421,10 @@ class Panda():
         # First unload python plugins, should be safe to do anytime
         #for name in self.registered_callbacks.keys():
         while len(list(self.registered_callbacks)) &gt; 0:
-            self.delete_callback(list(self.registered_callbacks.keys())[0])
+            try:
+                self.delete_callback(list(self.registered_callbacks.keys())[0])
+            except IndexError:
+                continue
             #self.disable_callback(name)
 
         # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
@@ -3434,6 +3479,7 @@ class Panda():
                         Memory Access with error value.
                         Format string is incorrect.
         &#39;&#39;&#39;
+
         return self._memory_read(env, addr, length, physical=False, fmt=fmt)
 
     def _memory_read(self, env, addr, length, physical=False, fmt=&#39;bytearray&#39;):
@@ -3442,6 +3488,9 @@ class Panda():
         Supports physical or virtual addresses
         Raises ValueError if read fails
         &#39;&#39;&#39;
+        if not isinstance(addr, int):
+            raise ValueError(f&#34;Unsupported read from address {repr(addr)}&#34;)
+
         buf = ffi.new(&#34;char[]&#34;, length)
 
         # Force CFFI to parse addr as an unsigned value. Otherwise we get OverflowErrors
@@ -3588,19 +3637,21 @@ class Panda():
         size = ceil(size/1024)*1024 # Must be page-aligned
         return self.libpanda.map_memory(name_c, size, address)
 
-    def read_str(self, cpu, ptr):
+    def read_str(self, cpu, ptr, max_length=None):
         &#39;&#39;&#39;
         Helper to read a null-terminated string from guest memory given a pointer and CPU state
         May return an exception if the call to panda.virtual_memory_read fails (e.g., if you pass a
         pointer to an unmapped page)
         &#39;&#39;&#39;
         r = b&#34;&#34;
-        while True:
+        idx = 0
+        while (max_length is None or idx &lt; max_length):
             next_char = self.virtual_memory_read(cpu, ptr, 1) # If this raises an exn, don&#39;t mask it
             if next_char == b&#34;\x00&#34;:
                 break
             r += next_char
             ptr += 1
+            idx += 1
         return r.decode(&#34;utf8&#34;, &#34;ignore&#34;)
 
     def to_unsigned_guest(self, x):
@@ -4893,6 +4944,7 @@ class Panda():
                     r = fun(*args, **kwargs)
                     #print(pandatype, type(r)) # XXX Can we use pandatype to determine requried return and assert if incorrect
                     #assert(isinstance(r, int)), &#34;Invalid return type?&#34;
+                    #print(fun, r) # Stuck with TypeError in _run_and_catch? Enable this to find where the bug is.
                     return r
                 except Exception as e:
                     # exceptions wont work in our thread. Therefore we print it here and then throw it after the
@@ -5034,6 +5086,11 @@ class Panda():
         &#39;&#39;&#39;
         Enable a panda plugin using its handle and cb.number as a unique ID
         &#39;&#39;&#39;
+
+        # During shutdown callback may be deleted before a request to enable comes through
+        if self.ending:
+            return
+
         if name not in self.registered_callbacks.keys():
             raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
 
@@ -5050,6 +5107,10 @@ class Panda():
         If forever is specified, we&#39;ll never reenable the call- useful when
         you want to really turn off something with a procname filter.
         &#39;&#39;&#39;
+        # During shutdown callback may be deleted before a request to enable comes through
+        if self.ending:
+            return
+
         if name not in self.registered_callbacks.keys():
             raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
         self.registered_callbacks[name][&#39;enabled&#39;] = False
@@ -5086,7 +5147,7 @@ class Panda():
     ### PPP-style callbacks ###
     ###########################
 
-    def ppp(self, plugin_name, attr, name=None):
+    def ppp(self, plugin_name, attr, name=None, autoload=True):
         &#39;&#39;&#39;
         Decorator for plugin-to-plugin interface. Note this isn&#39;t in decorators.py
         becuase it uses the panda object.
@@ -5097,7 +5158,7 @@ class Panda():
             ...
         &#39;&#39;&#39;
 
-        if plugin_name not in self.plugins: # Could automatically load it?
+        if plugin_name not in self.plugins and autoload: # Could automatically load it?
             print(f&#34;PPP automatically loaded plugin {plugin_name}&#34;)
 
         if not hasattr(self, &#34;ppp_registered_cbs&#34;):
@@ -5278,7 +5339,7 @@ class Panda():
             elif cb_type == &#34;before_block_translate&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState* env, target_ptr_t pc, struct hook*)&#34;)
             elif cb_type == &#34;before_block_exec_invalidate_opt&#34;:
-                hook_cb_type = &#34;bool(CPUState* env, TranslationBlock*, struct hook*)&#34;
+                hook_cb_type = self.ffi.callback(&#34;bool(CPUState* env, TranslationBlock*, struct hook*)&#34;)
             else:
                 print(&#34;function type not supported&#34;)
                 return
@@ -5439,6 +5500,13 @@ class Panda():
     def hook_virt_mem_write(self, start_address, end_address, on_before=True, on_after=False):
         return self._hook_mem(start_address,end_address,on_before,on_after, False, True, True, False, True)</code></pre>
 </details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.panda.Panda.ending"><code class="name">var <span class="ident">ending</span></code></dt>
+<dd>
+<div class="desc"><p>A reference to an auto-instantiated <code><a title="pandare.arch.PandaArch" href="arch.html#pandare.arch.PandaArch">PandaArch</a></code> subclass (e.g., <code><a title="pandare.arch.X86Arch" href="arch.html#pandare.arch.X86Arch">X86Arch</a></code>)</p></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="pandare.panda.Panda.arm_load_kernel"><code class="name flex">
@@ -5825,6 +5893,10 @@ you want to really turn off something with a procname filter.</p></div>
     If forever is specified, we&#39;ll never reenable the call- useful when
     you want to really turn off something with a procname filter.
     &#39;&#39;&#39;
+    # During shutdown callback may be deleted before a request to enable comes through
+    if self.ending:
+        return
+
     if name not in self.registered_callbacks.keys():
         raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
     self.registered_callbacks[name][&#39;enabled&#39;] = False
@@ -6129,6 +6201,11 @@ Return:
     &#39;&#39;&#39;
     Enable a panda plugin using its handle and cb.number as a unique ID
     &#39;&#39;&#39;
+
+    # During shutdown callback may be deleted before a request to enable comes through
+    if self.ending:
+        return
+
     if name not in self.registered_callbacks.keys():
         raise RuntimeError(&#34;No callback has been registered with name &#39;{}&#39;&#34;.format(name))
 
@@ -6319,6 +6396,7 @@ without needing to wait for tasks in the main async thread</p></div>
     without needing to wait for tasks in the main async thread
     &#39;&#39;&#39;
     self.athread.ending = True
+    self.ending = True
     self.unload_plugins()
     if self.running.is_set() or self.initializing.is_set():
 
@@ -6943,7 +7021,7 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
         elif cb_type == &#34;before_block_translate&#34;:
             hook_cb_type = self.ffi.callback(&#34;void(CPUState* env, target_ptr_t pc, struct hook*)&#34;)
         elif cb_type == &#34;before_block_exec_invalidate_opt&#34;:
-            hook_cb_type = &#34;bool(CPUState* env, TranslationBlock*, struct hook*)&#34;
+            hook_cb_type = self.ffi.callback(&#34;bool(CPUState* env, TranslationBlock*, struct hook*)&#34;)
         else:
             print(&#34;function type not supported&#34;)
             return
@@ -7840,7 +7918,7 @@ Raises:
 </details>
 </dd>
 <dt id="pandare.panda.Panda.ppp"><code class="name flex">
-<span>def <span class="ident">ppp</span></span>(<span>self, plugin_name, attr, name=None)</span>
+<span>def <span class="ident">ppp</span></span>(<span>self, plugin_name, attr, name=None, autoload=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Decorator for plugin-to-plugin interface. Note this isn't in decorators.py
@@ -7853,7 +7931,7 @@ def my_fun(cpu, pc, filename, flags, mode):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def ppp(self, plugin_name, attr, name=None):
+<pre><code class="python">def ppp(self, plugin_name, attr, name=None, autoload=True):
     &#39;&#39;&#39;
     Decorator for plugin-to-plugin interface. Note this isn&#39;t in decorators.py
     becuase it uses the panda object.
@@ -7864,7 +7942,7 @@ def my_fun(cpu, pc, filename, flags, mode):
         ...
     &#39;&#39;&#39;
 
-    if plugin_name not in self.plugins: # Could automatically load it?
+    if plugin_name not in self.plugins and autoload: # Could automatically load it?
         print(f&#34;PPP automatically loaded plugin {plugin_name}&#34;)
 
     if not hasattr(self, &#34;ppp_registered_cbs&#34;):
@@ -8071,7 +8149,7 @@ fn is a function we want to run, args are arguments to apss to it</p></div>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.read_str"><code class="name flex">
-<span>def <span class="ident">read_str</span></span>(<span>self, cpu, ptr)</span>
+<span>def <span class="ident">read_str</span></span>(<span>self, cpu, ptr, max_length=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Helper to read a null-terminated string from guest memory given a pointer and CPU state
@@ -8081,19 +8159,21 @@ pointer to an unmapped page)</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def read_str(self, cpu, ptr):
+<pre><code class="python">def read_str(self, cpu, ptr, max_length=None):
     &#39;&#39;&#39;
     Helper to read a null-terminated string from guest memory given a pointer and CPU state
     May return an exception if the call to panda.virtual_memory_read fails (e.g., if you pass a
     pointer to an unmapped page)
     &#39;&#39;&#39;
     r = b&#34;&#34;
-    while True:
+    idx = 0
+    while (max_length is None or idx &lt; max_length):
         next_char = self.virtual_memory_read(cpu, ptr, 1) # If this raises an exn, don&#39;t mask it
         if next_char == b&#34;\x00&#34;:
             break
         r += next_char
         ptr += 1
+        idx += 1
     return r.decode(&#34;utf8&#34;, &#34;ignore&#34;)</code></pre>
 </details>
 </dd>
@@ -8453,6 +8533,8 @@ It also initializes panda object, clears main_loop_wait fns, and sets up interna
             print(&#34;Clearing prior main_loop_wait fns:&#34;, self.main_loop_wait_fnargs)
         self.main_loop_wait_fnargs = [] # [(fn, args), ...]
 
+    self.ending = False
+
     if debug:
         progress (&#34;Running&#34;)
 
@@ -8540,6 +8622,8 @@ Returns:
     &#39;&#39;&#39;
     if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
         raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
+
+    self.ending = False
 
     if debug:
         progress (&#34;Replaying %s&#34; % replaypfx)
@@ -9175,7 +9259,10 @@ panda.panda_finish directly (which is done at the end of panda.run())</p></div>
     # First unload python plugins, should be safe to do anytime
     #for name in self.registered_callbacks.keys():
     while len(list(self.registered_callbacks)) &gt; 0:
-        self.delete_callback(list(self.registered_callbacks.keys())[0])
+        try:
+            self.delete_callback(list(self.registered_callbacks.keys())[0])
+        except IndexError:
+            continue
         #self.disable_callback(name)
 
     # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
@@ -9290,6 +9377,7 @@ Raises:
                     Memory Access with error value.
                     Format string is incorrect.
     &#39;&#39;&#39;
+
     return self._memory_read(env, addr, length, physical=False, fmt=fmt)</code></pre>
 </details>
 </dd>
@@ -9420,6 +9508,7 @@ Returns:
 <li><code><a title="pandare.panda.Panda.end_analysis" href="#pandare.panda.Panda.end_analysis">end_analysis</a></code></li>
 <li><code><a title="pandare.panda.Panda.end_record" href="#pandare.panda.Panda.end_record">end_record</a></code></li>
 <li><code><a title="pandare.panda.Panda.end_replay" href="#pandare.panda.Panda.end_replay">end_replay</a></code></li>
+<li><code><a title="pandare.panda.Panda.ending" href="#pandare.panda.Panda.ending">ending</a></code></li>
 <li><code><a title="pandare.panda.Panda.error_report" href="#pandare.panda.Panda.error_report">error_report</a></code></li>
 <li><code><a title="pandare.panda.Panda.exit_cpu_loop" href="#pandare.panda.Panda.exit_cpu_loop">exit_cpu_loop</a></code></li>
 <li><code><a title="pandare.panda.Panda.finish_serial_cmd" href="#pandare.panda.Panda.finish_serial_cmd">finish_serial_cmd</a></code></li>

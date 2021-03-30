@@ -75,7 +75,7 @@ class FileHook:
         self.use_osi = use_osi
 
         self.logger = logging.getLogger(&#39;panda.hooking&#39;)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.ERROR)
 
         self.pending_virt_read = None
 
@@ -346,7 +346,7 @@ from all syscalls that have a char* filename argument.</p></div>
         self.use_osi = use_osi
 
         self.logger = logging.getLogger(&#39;panda.hooking&#39;)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.ERROR)
 
         self.pending_virt_read = None
 
