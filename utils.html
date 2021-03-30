@@ -44,6 +44,12 @@ def progress(msg):
     &#34;&#34;&#34;
     print(Fore.GREEN + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
 
+def warn(msg):
+    &#34;&#34;&#34;
+    Print a message with a red &#34;[PYPANDA]&#34; prefix
+    &#34;&#34;&#34;
+    print(Fore.RED + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
+
 def make_iso(directory, iso_path):
     &#39;&#39;&#39;
     Generate an iso from a directory
@@ -284,6 +290,22 @@ to until
     print(&#34;-&gt; ...&#34;)</code></pre>
 </details>
 </dd>
+<dt id="pandare.utils.warn"><code class="name flex">
+<span>def <span class="ident">warn</span></span>(<span>msg)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print a message with a red "[PYPANDA]" prefix</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def warn(msg):
+    &#34;&#34;&#34;
+    Print a message with a red &#34;[PYPANDA]&#34; prefix
+    &#34;&#34;&#34;
+    print(Fore.RED + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -379,6 +401,7 @@ get_one_module.</p></div>
 <li><code><a title="pandare.utils.make_iso" href="#pandare.utils.make_iso">make_iso</a></code></li>
 <li><code><a title="pandare.utils.progress" href="#pandare.utils.progress">progress</a></code></li>
 <li><code><a title="pandare.utils.telescope" href="#pandare.utils.telescope">telescope</a></code></li>
+<li><code><a title="pandare.utils.warn" href="#pandare.utils.warn">warn</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
