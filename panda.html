@@ -550,7 +550,19 @@ class Panda():
         res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
         if res_string_enum != &#34;RRCTRL_OK&#34;:
            raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;)
+    
+    def recording_exists(self, name):
+        &#39;&#39;&#39;
+        Checks if a recording file exists on disk.
 
+        Parameters:
+            name: name of the recording to check for
+        
+        Returns:
+            boolean true if file exists, false otherwise
+        &#39;&#39;&#39;
+        if exists(name + &#34;-rr-snp&#34;):
+            return True
 
     def run_replay(self, replaypfx):
         &#39;&#39;&#39;
@@ -1072,7 +1084,7 @@ class Panda():
         This function requests that the translation block cache be flushed as soon as possible. If running with translation block chaining turned off (e.g. when in LLVM mode or replay mode), this will happen when the current translation block is done executing.
         Flushing the translation block cache is additionally necessary if the plugin makes changes to the way code is translated. For example, by using panda_enable_precise_pc.
         &#39;&#39;&#39;
-        return self.libpanda.panda_flush_tb()
+        return self.libpanda.panda_do_flush_tb()
 
     def enable_precise_pc(self):
         &#39;&#39;&#39;
@@ -3296,7 +3308,19 @@ class Panda():
         res_string_enum = ffi.string(ffi.cast(&#34;RRCTRL_ret&#34;,result))
         if res_string_enum != &#34;RRCTRL_OK&#34;:
            raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;)
+    
+    def recording_exists(self, name):
+        &#39;&#39;&#39;
+        Checks if a recording file exists on disk.
 
+        Parameters:
+            name: name of the recording to check for
+        
+        Returns:
+            boolean true if file exists, false otherwise
+        &#39;&#39;&#39;
+        if exists(name + &#34;-rr-snp&#34;):
+            return True
 
     def run_replay(self, replaypfx):
         &#39;&#39;&#39;
@@ -3818,7 +3842,7 @@ class Panda():
         This function requests that the translation block cache be flushed as soon as possible. If running with translation block chaining turned off (e.g. when in LLVM mode or replay mode), this will happen when the current translation block is done executing.
         Flushing the translation block cache is additionally necessary if the plugin makes changes to the way code is translated. For example, by using panda_enable_precise_pc.
         &#39;&#39;&#39;
-        return self.libpanda.panda_flush_tb()
+        return self.libpanda.panda_do_flush_tb()
 
     def enable_precise_pc(self):
         &#39;&#39;&#39;
@@ -6566,7 +6590,7 @@ Flushing the translation block cache is additionally necessary if the plugin mak
     This function requests that the translation block cache be flushed as soon as possible. If running with translation block chaining turned off (e.g. when in LLVM mode or replay mode), this will happen when the current translation block is done executing.
     Flushing the translation block cache is additionally necessary if the plugin makes changes to the way code is translated. For example, by using panda_enable_precise_pc.
     &#39;&#39;&#39;
-    return self.libpanda.panda_flush_tb()</code></pre>
+    return self.libpanda.panda_do_flush_tb()</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.from_unsigned_guest"><code class="name flex">
@@ -8349,6 +8373,33 @@ def record_cmd(self, guest_command, copy_directory=None, iso_name=None, setup_co
     print(&#34;Finished recording&#34;)</code></pre>
 </details>
 </dd>
+<dt id="pandare.panda.Panda.recording_exists"><code class="name flex">
+<span>def <span class="ident">recording_exists</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Checks if a recording file exists on disk.</p>
+<h2 id="parameters">Parameters</h2>
+<p>name: name of the recording to check for</p>
+<h2 id="returns">Returns</h2>
+<p>boolean true if file exists, false otherwise</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def recording_exists(self, name):
+    &#39;&#39;&#39;
+    Checks if a recording file exists on disk.
+
+    Parameters:
+        name: name of the recording to check for
+    
+    Returns:
+        boolean true if file exists, false otherwise
+    &#39;&#39;&#39;
+    if exists(name + &#34;-rr-snp&#34;):
+        return True</code></pre>
+</details>
+</dd>
 <dt id="pandare.panda.Panda.register_callback"><code class="name flex">
 <span>def <span class="ident">register_callback</span></span>(<span>self, callback, function, name, enabled=True, procname=None)</span>
 </code></dt>
@@ -9629,6 +9680,7 @@ Returns:
 <li><code><a title="pandare.panda.Panda.read_str" href="#pandare.panda.Panda.read_str">read_str</a></code></li>
 <li><code><a title="pandare.panda.Panda.record" href="#pandare.panda.Panda.record">record</a></code></li>
 <li><code><a title="pandare.panda.Panda.record_cmd" href="#pandare.panda.Panda.record_cmd">record_cmd</a></code></li>
+<li><code><a title="pandare.panda.Panda.recording_exists" href="#pandare.panda.Panda.recording_exists">recording_exists</a></code></li>
 <li><code><a title="pandare.panda.Panda.register_callback" href="#pandare.panda.Panda.register_callback">register_callback</a></code></li>
 <li><code><a title="pandare.panda.Panda.register_cb_decorators" href="#pandare.panda.Panda.register_cb_decorators">register_cb_decorators</a></code></li>
 <li><code><a title="pandare.panda.Panda.register_pyperipheral" href="#pandare.panda.Panda.register_pyperipheral">register_pyperipheral</a></code></li>
