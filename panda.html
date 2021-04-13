@@ -2089,8 +2089,8 @@ class Panda():
         #   if there is a setup.sh script in the directory,
         #   then run that setup.sh script first (good for scripts that need to
         #   prep guest environment before script runs)
-        setup_sh = &#34;mkdir -p {mount_dir}; while ! mount /dev/cdrom {mount_dir}; do sleep 0.3; &#34; \
-               &#34; umount /dev/cdrom; done; {mount_dir}/setup.sh &amp;&gt; /dev/null || true &#34; \
+        setup_sh = &#34;mkdir -p {mount_dir} {mount_dir}.ro; while ! mount /dev/cdrom {mount_dir}.ro; do sleep 0.3; &#34; \
+               &#34; umount /dev/cdrom; done; cp -r {mount_dir}.ro/* {mount_dir}/; {mount_dir}/setup.sh &amp;&gt; /dev/null || true &#34; \
                .format(mount_dir = (shlex_quote(copy_directory)))
         progress(&#34;setup_sh = [%s] &#34; % setup_sh)
         progress(self.run_serial_cmd(setup_sh))
@@ -4847,8 +4847,8 @@ class Panda():
         #   if there is a setup.sh script in the directory,
         #   then run that setup.sh script first (good for scripts that need to
         #   prep guest environment before script runs)
-        setup_sh = &#34;mkdir -p {mount_dir}; while ! mount /dev/cdrom {mount_dir}; do sleep 0.3; &#34; \
-               &#34; umount /dev/cdrom; done; {mount_dir}/setup.sh &amp;&gt; /dev/null || true &#34; \
+        setup_sh = &#34;mkdir -p {mount_dir} {mount_dir}.ro; while ! mount /dev/cdrom {mount_dir}.ro; do sleep 0.3; &#34; \
+               &#34; umount /dev/cdrom; done; cp -r {mount_dir}.ro/* {mount_dir}/; {mount_dir}/setup.sh &amp;&gt; /dev/null || true &#34; \
                .format(mount_dir = (shlex_quote(copy_directory)))
         progress(&#34;setup_sh = [%s] &#34; % setup_sh)
         progress(self.run_serial_cmd(setup_sh))
@@ -5673,8 +5673,8 @@ def copy_to_guest(self, copy_directory, iso_name=None):
     #   if there is a setup.sh script in the directory,
     #   then run that setup.sh script first (good for scripts that need to
     #   prep guest environment before script runs)
-    setup_sh = &#34;mkdir -p {mount_dir}; while ! mount /dev/cdrom {mount_dir}; do sleep 0.3; &#34; \
-           &#34; umount /dev/cdrom; done; {mount_dir}/setup.sh &amp;&gt; /dev/null || true &#34; \
+    setup_sh = &#34;mkdir -p {mount_dir} {mount_dir}.ro; while ! mount /dev/cdrom {mount_dir}.ro; do sleep 0.3; &#34; \
+           &#34; umount /dev/cdrom; done; cp -r {mount_dir}.ro/* {mount_dir}/; {mount_dir}/setup.sh &amp;&gt; /dev/null || true &#34; \
            .format(mount_dir = (shlex_quote(copy_directory)))
     progress(&#34;setup_sh = [%s] &#34; % setup_sh)
     progress(self.run_serial_cmd(setup_sh))</code></pre>
