@@ -2617,7 +2617,7 @@ class Panda():
         return decorator
 
 
-    def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_tcg_codegen&#34;):
+    def hook_symbol(self, libraryname, symbol, kernel=False, name=None,cb_type=&#34;before_tcg_codegen&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
@@ -2641,19 +2641,20 @@ class Panda():
             new_hook = self.ffi.new(&#34;struct symbol_hook*&#34;)
             type_num = getattr(self.libpanda, &#34;PANDA_CB_&#34;+cb_type.upper())
             new_hook.type = type_num
-            if procname is not None:
-                procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(procname,&#34;utf-8&#34;))
-            else:
-                procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
-            self.ffi.memmove(new_hook.procname,procname_ffi,len(procname_ffi))
             if libraryname is not None:
                 libname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(libraryname,&#34;utf-8&#34;))
             else:
                 libname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
             self.ffi.memmove(new_hook.section,libname_ffi,len(libname_ffi))
 
-            if symbolname is not None:
-                symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(symbolname,&#34;utf-8&#34;))
+            new_hook.hook_offset = False
+            if symbol is not None:
+                if isinstance(symbol, int):
+                    new_hook.offset = symbol
+                    new_hook.hook_offset = True
+                    symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
+                else:
+                    symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(symbol,&#34;utf-8&#34;))
             else:
                 symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
             self.ffi.memmove(new_hook.name,symbolname_ffi,len(symbolname_ffi))
@@ -5375,7 +5376,7 @@ class Panda():
         return decorator
 
 
-    def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_tcg_codegen&#34;):
+    def hook_symbol(self, libraryname, symbol, kernel=False, name=None,cb_type=&#34;before_tcg_codegen&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
@@ -5399,19 +5400,20 @@ class Panda():
             new_hook = self.ffi.new(&#34;struct symbol_hook*&#34;)
             type_num = getattr(self.libpanda, &#34;PANDA_CB_&#34;+cb_type.upper())
             new_hook.type = type_num
-            if procname is not None:
-                procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(procname,&#34;utf-8&#34;))
-            else:
-                procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
-            self.ffi.memmove(new_hook.procname,procname_ffi,len(procname_ffi))
             if libraryname is not None:
                 libname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(libraryname,&#34;utf-8&#34;))
             else:
                 libname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
             self.ffi.memmove(new_hook.section,libname_ffi,len(libname_ffi))
 
-            if symbolname is not None:
-                symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(symbolname,&#34;utf-8&#34;))
+            new_hook.hook_offset = False
+            if symbol is not None:
+                if isinstance(symbol, int):
+                    new_hook.offset = symbol
+                    new_hook.hook_offset = True
+                    symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
+                else:
+                    symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(symbol,&#34;utf-8&#34;))
             else:
                 symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
             self.ffi.memmove(new_hook.name,symbolname_ffi,len(symbolname_ffi))
@@ -7048,7 +7050,7 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.hook_symbol"><code class="name flex">
-<span>def <span class="ident">hook_symbol</span></span>(<span>self, libraryname, symbolname, kernel=False, procname=None, name=None, cb_type='before_tcg_codegen')</span>
+<span>def <span class="ident">hook_symbol</span></span>(<span>self, libraryname, symbol, kernel=False, name=None, cb_type='before_tcg_codegen')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
@@ -7057,7 +7059,7 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def hook_symbol(self, libraryname, symbolname, kernel=False, procname=None,name=None,cb_type=&#34;before_tcg_codegen&#34;):
+<pre><code class="python">def hook_symbol(self, libraryname, symbol, kernel=False, name=None,cb_type=&#34;before_tcg_codegen&#34;):
     &#39;&#39;&#39;
     Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
     the function will be called with args (CPUState, TranslationBlock)
@@ -7081,19 +7083,20 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
         new_hook = self.ffi.new(&#34;struct symbol_hook*&#34;)
         type_num = getattr(self.libpanda, &#34;PANDA_CB_&#34;+cb_type.upper())
         new_hook.type = type_num
-        if procname is not None:
-            procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(procname,&#34;utf-8&#34;))
-        else:
-            procname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
-        self.ffi.memmove(new_hook.procname,procname_ffi,len(procname_ffi))
         if libraryname is not None:
             libname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(libraryname,&#34;utf-8&#34;))
         else:
             libname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
         self.ffi.memmove(new_hook.section,libname_ffi,len(libname_ffi))
 
-        if symbolname is not None:
-            symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(symbolname,&#34;utf-8&#34;))
+        new_hook.hook_offset = False
+        if symbol is not None:
+            if isinstance(symbol, int):
+                new_hook.offset = symbol
+                new_hook.hook_offset = True
+                symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
+            else:
+                symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(symbol,&#34;utf-8&#34;))
         else:
             symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
         self.ffi.memmove(new_hook.name,symbolname_ffi,len(symbolname_ffi))
