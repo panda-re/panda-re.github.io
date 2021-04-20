@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>pandare.extras.ioctlFaker API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pandare.extras.ioctlFaker</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#!/usr/bin/env python3
+
+import sys
+import logging
+
+from pandare import ffi
+
+# TODO: only for logger, should probably move it to a separate file
+if __name__ == &#39;__main__&#39;: # Script run directly
+    from pandare.extras import FileHook
+else:
+    from .fileHook import FileHook
+
+# TODO: Ability to fake buffers for specific commands
+
+ioctl_initialized = False
+def do_ioctl_init(panda):
+
+    &#39;&#39;&#39;
+    One-time init for arch-specific bit-packed ioctl cmd struct.
+    &#39;&#39;&#39;
+
+    # Default config (x86, x86-64, ARM, AArch 64) with options for PPC
+    global ioctl_initialized
+    if ioctl_initialized:
+        return
+
+    ioctl_initialized = True
+    TYPE_BITS = 8
+    CMD_BITS = 8
+    SIZE_BITS = 14 if panda.arch_name != &#34;ppc&#34; else 13
+    DIR_BITS = 2 if panda.arch_name != &#34;ppc&#34; else 3
+
+    ffi.cdef(&#34;&#34;&#34;
+    struct IoctlCmdBits {
+        uint8_t type_num:%d;
+        uint8_t cmd_num:%d;
+        uint16_t arg_size:%d;
+        uint8_t direction:%d;
+    };
+
+    union IoctlCmdUnion {
+        struct IoctlCmdBits bits;
+        uint32_t asUnsigned32;
+    };
+
+    enum ioctl_direction {
+        IO = 0,
+        IOW = 1,
+        IOR = 2,
+        IOWR = 3
+    };
+    &#34;&#34;&#34; % (TYPE_BITS, CMD_BITS, SIZE_BITS, DIR_BITS), packed=True)
+
+class Ioctl():
+
+    &#39;&#39;&#39;
+    Unpacked ioctl command with optional buffer.
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, cpu, fd, cmd, guest_ptr, use_osi_linux = False):
+
+        &#39;&#39;&#39;
+        Do unpacking, optionally using OSI for process and file name info.
+        &#39;&#39;&#39;
+
+        do_ioctl_init(panda)
+        self.cmd = ffi.new(&#34;union IoctlCmdUnion*&#34;)
+        self.cmd.asUnsigned32 = cmd
+        self.original_ret_code = None
+        self.osi = use_osi_linux
+
+        # Optional syscall argument: pointer to buffer
+        if (self.cmd.bits.arg_size &gt; 0):
+            try:
+                self.has_buf = True
+                self.guest_ptr = guest_ptr
+                self.guest_buf = panda.virtual_memory_read(cpu, self.guest_ptr, self.cmd.bits.arg_size)
+            except ValueError:
+                self.guest_buf = None
+                #raise RuntimeError(&#34;Failed to read guest buffer: ioctl({})&#34;.format(str(self.cmd)))
+        else:
+            self.has_buf = False
+            self.guest_ptr = None
+            self.guest_buf = None
+
+        # Optional OSI usage: process and file name
+        if self.osi:
+            proc = panda.plugins[&#39;osi&#39;].get_current_process(cpu)
+            proc_name_ptr = proc.name
+            file_name_ptr = panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, panda.ffi.cast(&#34;int&#34;, fd))
+            self.proc_name = panda.ffi.string(proc_name_ptr).decode(errors=&#34;ignore&#34;) if proc_name_ptr != panda.ffi.NULL else &#34;unknown&#34;
+            self.file_name = panda.ffi.string(file_name_ptr).decode(errors=&#34;ignore&#34;) if file_name_ptr != panda.ffi.NULL else &#34;unknown&#34;
+        else:
+            self.proc_name = None
+            self.file_name = None
+
+    def get_ret_code(self, panda, cpu):
+
+        &#39;&#39;&#39;&#39;
+        Helper retrive original return code, handles arch-specifc ABI
+        &#39;&#39;&#39;
+
+        if panda.arch_name == &#34;mipsel&#34; or panda.arch_name == &#34;mips&#34;:
+            # Note: return values are in $v0, $v1 (regs 2 and 3 respectively), but here we only use first
+            self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.active_tc.gpr[2])
+        elif panda.arch_name == &#34;aarch64&#34;:
+            self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.xregs[0])
+        elif panda.arch_name == &#34;ppc&#34;:
+            raise RuntimeError(&#34;PPC currently unsupported!&#34;)
+        else: # x86/x64/ARM
+            self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.regs[0])
+
+    def __str__(self):
+
+        if self.osi:
+            self_str = &#34;\&#39;{}\&#39; using \&#39;{}\&#39; - &#34;.format(self.proc_name, self.file_name)
+        else:
+            self_str = &#34;&#34;
+
+        bits = self.cmd.bits
+        direction = panda.ffi.string(panda.ffi.cast(&#34;enum ioctl_direction&#34;, bits.direction))
+        ioctl_desc = f&#34;dir={direction},arg_size={bits.arg_size:x},cmd=0x{bits.cmd_num:x},type=0x{bits.type_num:x}&#34;
+        if (self.guest_ptr == None):
+            self_str += f&#34;ioctl({ioctl_desc}) -&gt; {self.original_ret_code}&#34;
+        else:
+            self_str += f&#34;ioctl({ioctl_desc},ptr={self.guest_ptr:08x},buf={self.guest_buf}) -&gt; {self.original_ret_code}&#34;
+        return self_str
+
+    def __eq__(self, other):
+
+        return (
+            self.__class__ == other.__class__ and
+            self.cmd.asUnsigned32 == other.cmd.asUnsigned32 and
+            self.has_buf == other.has_buf and
+            self.guest_ptr == other.guest_ptr and
+            self.guest_buf == other.guest_buf and
+            self.proc_name == self.proc_name and
+            self.file_name == self.file_name
+        )
+
+    def __hash__(self):
+
+        return hash((self.cmd.asUnsigned32, self.has_buf, self.guest_ptr, self.guest_buf, self.proc_name, self.file_name))
+
+class IoctlFaker():
+
+    &#39;&#39;&#39;
+    Interpose ioctl() syscall returns, forcing successes for specific error codes to simulate missing drivers/peripherals.
+    Bin all returns into failures (needed forcing) and successes, store for later retrival/analysis.
+    &#39;&#39;&#39;
+
+    def __init__(
+            self,
+            panda,
+            use_osi_linux = False,
+            log = False,
+            ignore = [],
+            intercept_ret_vals = [-25],
+            intercept_all_non_zero = False
+        ):
+
+        &#39;&#39;&#39;
+        Log enables/disables logging.
+        ignore contains a list of tuples (filename, cmd#) to be ignored.
+        intercept_ret_vals is a list of ioctl return values that should be intercepted. By default
+          we just intercept just -25 which indicates that a driver is not present to handle the ioctl.
+        intercept_all_non_zero is aggressive setting that takes precedence if set - any non-zero return code id changed to zero.
+        &#39;&#39;&#39;
+
+        self.osi = use_osi_linux
+        self._panda = panda
+        self._panda.load_plugin(&#34;syscalls2&#34;)
+        self._log = log
+        self.ignore = ignore
+        self.intercept_ret_vals = intercept_ret_vals
+        self.intercept_all_non_zero = intercept_all_non_zero
+
+        if self.osi:
+            self._panda.load_plugin(&#34;osi&#34;)
+            self._panda.load_plugin(&#34;osi_linux&#34;)
+
+        if self._log:
+            self._logger = logging.getLogger(&#39;panda.ioctls&#39;)
+            self._logger.setLevel(logging.DEBUG)
+
+        # Track ioctls in two sets: modified (forced_returns) and unmodified
+        self._forced_returns = set()
+        self._unmodified_returns = set()
+
+        # Force success returns for missing drivers/peripherals
+        @self._panda.ppp(&#34;syscalls2&#34;, &#34;on_sys_ioctl_return&#34;)
+        def ioctl_faker_on_sys_ioctl_return(cpu, pc, fd, cmd, arg):
+
+            ioctl = Ioctl(self._panda, cpu, fd, cmd, arg, self.osi)
+            ioctl.get_ret_code(self._panda, cpu)
+
+            # Modify
+            if (self.intercept_all_non_zero and ioctl.original_ret_code != 0) or \
+                ioctl.original_ret_code in self.intercept_ret_vals and \
+                        (ioctl.file_name, ioctl.cmd.bits.cmd_num) not in self.ignore: # Allow ignoring specific commands on specific files
+
+                if panda.arch_name == &#34;mipsel&#34; or panda.arch_name == &#34;mips&#34;:
+                    cpu.env_ptr.active_tc.gpr[2] = 0
+                elif panda.arch_name == &#34;aarch64&#34;:
+                    cpu.env_ptr.xregs[0] = 0
+                elif panda.arch_name == &#34;ppc&#34;:
+                    raise RuntimeError(&#34;PPC currently unsupported!&#34;)
+                else: # x86/x64/ARM
+                    cpu.env_ptr.regs[0] = 0
+
+                self._forced_returns.add(ioctl)
+
+                if ioctl.has_buf and self._log:
+                    self._logger.warning(&#34;Forcing success return for data-containing {}&#34;.format(ioctl))
+                elif self._log:
+                    self._logger.info(&#34;Forcing success return for data-less {}&#34;.format(ioctl))
+
+            # Don&#39;t modify
+            else:
+                self._unmodified_returns.add(ioctl)
+
+    def _get_returns(self, source, with_buf_only):
+
+        if with_buf_only:
+            return list(filter(lambda i: (i.has_buf == True), source))
+        else:
+            return source
+
+    def get_forced_returns(self, with_buf_only = False):
+
+        &#39;&#39;&#39;
+        Retrieve ioctls whose error codes where overwritten
+        &#39;&#39;&#39;
+
+        return self._get_returns(self._forced_returns, with_buf_only)
+
+    def get_unmodified_returns(self, with_buf_only = False):
+
+        &#39;&#39;&#39;
+        Retrieve ioctl that completed normally
+        &#39;&#39;&#39;
+
+        return self._get_returns(self._unmodified_returns, with_buf_only)
+
+if __name__ == &#34;__main__&#34;:
+
+    &#39;&#39;&#39;
+    Bash will issue ioctls on /dev/ttys0 - this is just a simple test to make sure they&#39;re being captured
+    &#39;&#39;&#39;
+
+    from pandare import blocking, Panda
+
+    # No arguments, x86_64. Otherwise argument should be guest arch
+    generic_type = sys.argv[1] if len(sys.argv) &gt; 1 else &#34;x86_64&#34;
+    panda = Panda(generic=generic_type)
+
+    @blocking
+    def run_cmd():
+
+        # Setup faker
+        ioctl_faker = IoctlFaker(panda, use_osi_linux=True)
+
+        # First revert to root snapshot, then issue an IOCTL directly through perl - which is junk
+        # so the faker should fake it
+        panda.revert_sync(&#34;root&#34;)
+        panda.run_serial_cmd(&#34;&#34;&#34;perl -e &#39;require &#34;sys/ioctl.ph&#34;; ioctl(1, 0, 1);&#39;&#34;&#34;&#34;)
+
+        # Check faker&#39;s results
+        faked_rets = ioctl_faker.get_forced_returns()
+        normal_rets = ioctl_faker.get_unmodified_returns()
+        assert(len(faked_rets)), &#34;No returns faked&#34;
+        assert(len(normal_rets)), &#34;No normal returns&#34;
+        panda.end_analysis()
+
+    panda.queue_async(run_cmd)
+    panda.run()
+    print(&#34;Success&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pandare.extras.ioctlFaker.do_ioctl_init"><code class="name flex">
+<span>def <span class="ident">do_ioctl_init</span></span>(<span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>One-time init for arch-specific bit-packed ioctl cmd struct.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def do_ioctl_init(panda):
+
+    &#39;&#39;&#39;
+    One-time init for arch-specific bit-packed ioctl cmd struct.
+    &#39;&#39;&#39;
+
+    # Default config (x86, x86-64, ARM, AArch 64) with options for PPC
+    global ioctl_initialized
+    if ioctl_initialized:
+        return
+
+    ioctl_initialized = True
+    TYPE_BITS = 8
+    CMD_BITS = 8
+    SIZE_BITS = 14 if panda.arch_name != &#34;ppc&#34; else 13
+    DIR_BITS = 2 if panda.arch_name != &#34;ppc&#34; else 3
+
+    ffi.cdef(&#34;&#34;&#34;
+    struct IoctlCmdBits {
+        uint8_t type_num:%d;
+        uint8_t cmd_num:%d;
+        uint16_t arg_size:%d;
+        uint8_t direction:%d;
+    };
+
+    union IoctlCmdUnion {
+        struct IoctlCmdBits bits;
+        uint32_t asUnsigned32;
+    };
+
+    enum ioctl_direction {
+        IO = 0,
+        IOW = 1,
+        IOR = 2,
+        IOWR = 3
+    };
+    &#34;&#34;&#34; % (TYPE_BITS, CMD_BITS, SIZE_BITS, DIR_BITS), packed=True)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pandare.extras.ioctlFaker.Ioctl"><code class="flex name class">
+<span>class <span class="ident">Ioctl</span></span>
+<span>(</span><span>panda, cpu, fd, cmd, guest_ptr, use_osi_linux=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Unpacked ioctl command with optional buffer.</p>
+<p>Do unpacking, optionally using OSI for process and file name info.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Ioctl():
+
+    &#39;&#39;&#39;
+    Unpacked ioctl command with optional buffer.
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, cpu, fd, cmd, guest_ptr, use_osi_linux = False):
+
+        &#39;&#39;&#39;
+        Do unpacking, optionally using OSI for process and file name info.
+        &#39;&#39;&#39;
+
+        do_ioctl_init(panda)
+        self.cmd = ffi.new(&#34;union IoctlCmdUnion*&#34;)
+        self.cmd.asUnsigned32 = cmd
+        self.original_ret_code = None
+        self.osi = use_osi_linux
+
+        # Optional syscall argument: pointer to buffer
+        if (self.cmd.bits.arg_size &gt; 0):
+            try:
+                self.has_buf = True
+                self.guest_ptr = guest_ptr
+                self.guest_buf = panda.virtual_memory_read(cpu, self.guest_ptr, self.cmd.bits.arg_size)
+            except ValueError:
+                self.guest_buf = None
+                #raise RuntimeError(&#34;Failed to read guest buffer: ioctl({})&#34;.format(str(self.cmd)))
+        else:
+            self.has_buf = False
+            self.guest_ptr = None
+            self.guest_buf = None
+
+        # Optional OSI usage: process and file name
+        if self.osi:
+            proc = panda.plugins[&#39;osi&#39;].get_current_process(cpu)
+            proc_name_ptr = proc.name
+            file_name_ptr = panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, panda.ffi.cast(&#34;int&#34;, fd))
+            self.proc_name = panda.ffi.string(proc_name_ptr).decode(errors=&#34;ignore&#34;) if proc_name_ptr != panda.ffi.NULL else &#34;unknown&#34;
+            self.file_name = panda.ffi.string(file_name_ptr).decode(errors=&#34;ignore&#34;) if file_name_ptr != panda.ffi.NULL else &#34;unknown&#34;
+        else:
+            self.proc_name = None
+            self.file_name = None
+
+    def get_ret_code(self, panda, cpu):
+
+        &#39;&#39;&#39;&#39;
+        Helper retrive original return code, handles arch-specifc ABI
+        &#39;&#39;&#39;
+
+        if panda.arch_name == &#34;mipsel&#34; or panda.arch_name == &#34;mips&#34;:
+            # Note: return values are in $v0, $v1 (regs 2 and 3 respectively), but here we only use first
+            self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.active_tc.gpr[2])
+        elif panda.arch_name == &#34;aarch64&#34;:
+            self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.xregs[0])
+        elif panda.arch_name == &#34;ppc&#34;:
+            raise RuntimeError(&#34;PPC currently unsupported!&#34;)
+        else: # x86/x64/ARM
+            self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.regs[0])
+
+    def __str__(self):
+
+        if self.osi:
+            self_str = &#34;\&#39;{}\&#39; using \&#39;{}\&#39; - &#34;.format(self.proc_name, self.file_name)
+        else:
+            self_str = &#34;&#34;
+
+        bits = self.cmd.bits
+        direction = panda.ffi.string(panda.ffi.cast(&#34;enum ioctl_direction&#34;, bits.direction))
+        ioctl_desc = f&#34;dir={direction},arg_size={bits.arg_size:x},cmd=0x{bits.cmd_num:x},type=0x{bits.type_num:x}&#34;
+        if (self.guest_ptr == None):
+            self_str += f&#34;ioctl({ioctl_desc}) -&gt; {self.original_ret_code}&#34;
+        else:
+            self_str += f&#34;ioctl({ioctl_desc},ptr={self.guest_ptr:08x},buf={self.guest_buf}) -&gt; {self.original_ret_code}&#34;
+        return self_str
+
+    def __eq__(self, other):
+
+        return (
+            self.__class__ == other.__class__ and
+            self.cmd.asUnsigned32 == other.cmd.asUnsigned32 and
+            self.has_buf == other.has_buf and
+            self.guest_ptr == other.guest_ptr and
+            self.guest_buf == other.guest_buf and
+            self.proc_name == self.proc_name and
+            self.file_name == self.file_name
+        )
+
+    def __hash__(self):
+
+        return hash((self.cmd.asUnsigned32, self.has_buf, self.guest_ptr, self.guest_buf, self.proc_name, self.file_name))</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.extras.ioctlFaker.Ioctl.get_ret_code"><code class="name flex">
+<span>def <span class="ident">get_ret_code</span></span>(<span>self, panda, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>'
+Helper retrive original return code, handles arch-specifc ABI</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_ret_code(self, panda, cpu):
+
+    &#39;&#39;&#39;&#39;
+    Helper retrive original return code, handles arch-specifc ABI
+    &#39;&#39;&#39;
+
+    if panda.arch_name == &#34;mipsel&#34; or panda.arch_name == &#34;mips&#34;:
+        # Note: return values are in $v0, $v1 (regs 2 and 3 respectively), but here we only use first
+        self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.active_tc.gpr[2])
+    elif panda.arch_name == &#34;aarch64&#34;:
+        self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.xregs[0])
+    elif panda.arch_name == &#34;ppc&#34;:
+        raise RuntimeError(&#34;PPC currently unsupported!&#34;)
+    else: # x86/x64/ARM
+        self.original_ret_code = panda.from_unsigned_guest(cpu.env_ptr.regs[0])</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.extras.ioctlFaker.IoctlFaker"><code class="flex name class">
+<span>class <span class="ident">IoctlFaker</span></span>
+<span>(</span><span>panda, use_osi_linux=False, log=False, ignore=[], intercept_ret_vals=[-25], intercept_all_non_zero=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Interpose ioctl() syscall returns, forcing successes for specific error codes to simulate missing drivers/peripherals.
+Bin all returns into failures (needed forcing) and successes, store for later retrival/analysis.</p>
+<p>Log enables/disables logging.
+ignore contains a list of tuples (filename, cmd#) to be ignored.
+intercept_ret_vals is a list of ioctl return values that should be intercepted. By default
+we just intercept just -25 which indicates that a driver is not present to handle the ioctl.
+intercept_all_non_zero is aggressive setting that takes precedence if set - any non-zero return code id changed to zero.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IoctlFaker():
+
+    &#39;&#39;&#39;
+    Interpose ioctl() syscall returns, forcing successes for specific error codes to simulate missing drivers/peripherals.
+    Bin all returns into failures (needed forcing) and successes, store for later retrival/analysis.
+    &#39;&#39;&#39;
+
+    def __init__(
+            self,
+            panda,
+            use_osi_linux = False,
+            log = False,
+            ignore = [],
+            intercept_ret_vals = [-25],
+            intercept_all_non_zero = False
+        ):
+
+        &#39;&#39;&#39;
+        Log enables/disables logging.
+        ignore contains a list of tuples (filename, cmd#) to be ignored.
+        intercept_ret_vals is a list of ioctl return values that should be intercepted. By default
+          we just intercept just -25 which indicates that a driver is not present to handle the ioctl.
+        intercept_all_non_zero is aggressive setting that takes precedence if set - any non-zero return code id changed to zero.
+        &#39;&#39;&#39;
+
+        self.osi = use_osi_linux
+        self._panda = panda
+        self._panda.load_plugin(&#34;syscalls2&#34;)
+        self._log = log
+        self.ignore = ignore
+        self.intercept_ret_vals = intercept_ret_vals
+        self.intercept_all_non_zero = intercept_all_non_zero
+
+        if self.osi:
+            self._panda.load_plugin(&#34;osi&#34;)
+            self._panda.load_plugin(&#34;osi_linux&#34;)
+
+        if self._log:
+            self._logger = logging.getLogger(&#39;panda.ioctls&#39;)
+            self._logger.setLevel(logging.DEBUG)
+
+        # Track ioctls in two sets: modified (forced_returns) and unmodified
+        self._forced_returns = set()
+        self._unmodified_returns = set()
+
+        # Force success returns for missing drivers/peripherals
+        @self._panda.ppp(&#34;syscalls2&#34;, &#34;on_sys_ioctl_return&#34;)
+        def ioctl_faker_on_sys_ioctl_return(cpu, pc, fd, cmd, arg):
+
+            ioctl = Ioctl(self._panda, cpu, fd, cmd, arg, self.osi)
+            ioctl.get_ret_code(self._panda, cpu)
+
+            # Modify
+            if (self.intercept_all_non_zero and ioctl.original_ret_code != 0) or \
+                ioctl.original_ret_code in self.intercept_ret_vals and \
+                        (ioctl.file_name, ioctl.cmd.bits.cmd_num) not in self.ignore: # Allow ignoring specific commands on specific files
+
+                if panda.arch_name == &#34;mipsel&#34; or panda.arch_name == &#34;mips&#34;:
+                    cpu.env_ptr.active_tc.gpr[2] = 0
+                elif panda.arch_name == &#34;aarch64&#34;:
+                    cpu.env_ptr.xregs[0] = 0
+                elif panda.arch_name == &#34;ppc&#34;:
+                    raise RuntimeError(&#34;PPC currently unsupported!&#34;)
+                else: # x86/x64/ARM
+                    cpu.env_ptr.regs[0] = 0
+
+                self._forced_returns.add(ioctl)
+
+                if ioctl.has_buf and self._log:
+                    self._logger.warning(&#34;Forcing success return for data-containing {}&#34;.format(ioctl))
+                elif self._log:
+                    self._logger.info(&#34;Forcing success return for data-less {}&#34;.format(ioctl))
+
+            # Don&#39;t modify
+            else:
+                self._unmodified_returns.add(ioctl)
+
+    def _get_returns(self, source, with_buf_only):
+
+        if with_buf_only:
+            return list(filter(lambda i: (i.has_buf == True), source))
+        else:
+            return source
+
+    def get_forced_returns(self, with_buf_only = False):
+
+        &#39;&#39;&#39;
+        Retrieve ioctls whose error codes where overwritten
+        &#39;&#39;&#39;
+
+        return self._get_returns(self._forced_returns, with_buf_only)
+
+    def get_unmodified_returns(self, with_buf_only = False):
+
+        &#39;&#39;&#39;
+        Retrieve ioctl that completed normally
+        &#39;&#39;&#39;
+
+        return self._get_returns(self._unmodified_returns, with_buf_only)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.extras.ioctlFaker.IoctlFaker.get_forced_returns"><code class="name flex">
+<span>def <span class="ident">get_forced_returns</span></span>(<span>self, with_buf_only=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieve ioctls whose error codes where overwritten</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_forced_returns(self, with_buf_only = False):
+
+    &#39;&#39;&#39;
+    Retrieve ioctls whose error codes where overwritten
+    &#39;&#39;&#39;
+
+    return self._get_returns(self._forced_returns, with_buf_only)</code></pre>
+</details>
+</dd>
+<dt id="pandare.extras.ioctlFaker.IoctlFaker.get_unmodified_returns"><code class="name flex">
+<span>def <span class="ident">get_unmodified_returns</span></span>(<span>self, with_buf_only=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieve ioctl that completed normally</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_unmodified_returns(self, with_buf_only = False):
+
+    &#39;&#39;&#39;
+    Retrieve ioctl that completed normally
+    &#39;&#39;&#39;
+
+    return self._get_returns(self._unmodified_returns, with_buf_only)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pandare.extras" href="index.html">pandare.extras</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pandare.extras.ioctlFaker.do_ioctl_init" href="#pandare.extras.ioctlFaker.do_ioctl_init">do_ioctl_init</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pandare.extras.ioctlFaker.Ioctl" href="#pandare.extras.ioctlFaker.Ioctl">Ioctl</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.extras.ioctlFaker.Ioctl.get_ret_code" href="#pandare.extras.ioctlFaker.Ioctl.get_ret_code">get_ret_code</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.extras.ioctlFaker.IoctlFaker" href="#pandare.extras.ioctlFaker.IoctlFaker">IoctlFaker</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.extras.ioctlFaker.IoctlFaker.get_forced_returns" href="#pandare.extras.ioctlFaker.IoctlFaker.get_forced_returns">get_forced_returns</a></code></li>
+<li><code><a title="pandare.extras.ioctlFaker.IoctlFaker.get_unmodified_returns" href="#pandare.extras.ioctlFaker.IoctlFaker.get_unmodified_returns">get_unmodified_returns</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

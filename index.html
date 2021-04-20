@@ -197,13 +197,14 @@ Example plugins are available [on GitHub](https://github.com/panda-re/panda/tree
 
 from .panda import Panda, blocking
 from .ffi_importer import ffi
-from .extras import *
 from .plog_reader import PLogReader
 
 __pdoc__ = {}
 
 __pdoc__[&#39;volatility_cli_classes&#39;] = False
 __pdoc__[&#39;data&#39;] = False
+__pdoc__[&#39;async_thread&#39;] = False
+__pdoc__[&#39;ffi_importer&#39;] = False
 __pdoc__[&#39;autogen&#39;] = False
 __pdoc__[&#39;plog_pb2&#39;] = False</code></pre>
 </details>
@@ -222,12 +223,8 @@ Enables queuing up python functions from main thread and vice versa</p></div>
 </dd>
 <dt><code class="name"><a title="pandare.extras" href="extras/index.html">pandare.extras</a></code></dt>
 <dd>
-<div class="desc"><p>Extras are a bit like python-based plugins. You can import them, instantiate them as classes, and use their functionality …</p></div>
-</dd>
-<dt><code class="name"><a title="pandare.ffi_importer" href="ffi_importer.html">pandare.ffi_importer</a></code></dt>
-<dd>
-<div class="desc"><p>This internal module is a workaround to maintain state of cffi objects between submodules.
-It simply imports cffi and give you a handle to the <code>ffi</code> …</p></div>
+<div class="desc"><p>Extras are PyPANDA plugins which you can import into other python analyses. Typically
+this is done by passing a handle from your script's PANDA object …</p></div>
 </dd>
 <dt><code class="name"><a title="pandare.panda" href="panda.html">pandare.panda</a></code></dt>
 <dd>
@@ -296,7 +293,6 @@ It simply imports cffi and give you a handle to the <code>ffi</code> …</p></di
 <li><code><a title="pandare.arch" href="arch.html">pandare.arch</a></code></li>
 <li><code><a title="pandare.asyncthread" href="asyncthread.html">pandare.asyncthread</a></code></li>
 <li><code><a title="pandare.extras" href="extras/index.html">pandare.extras</a></code></li>
-<li><code><a title="pandare.ffi_importer" href="ffi_importer.html">pandare.ffi_importer</a></code></li>
 <li><code><a title="pandare.panda" href="panda.html">pandare.panda</a></code></li>
 <li><code><a title="pandare.panda_expect" href="panda_expect.html">pandare.panda_expect</a></code></li>
 <li><code><a title="pandare.plog_reader" href="plog_reader.html">pandare.plog_reader</a></code></li>
