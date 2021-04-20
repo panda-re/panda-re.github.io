@@ -415,7 +415,7 @@ class Expect(object):
                 #lines = [x.replace(&#34;\r&#34;, &#34;&#34;) for x in plaintext.split(&#34;\n&#34;)]
                 # Check current line to see if it ends with prompt (indicating we finished)
                 # current_line is a bytearray. Need it as a string
-                current_line_s = self.current_line.decode()
+                current_line_s = self.current_line.decode(errors=&#39;ignore&#39;)
 
                 end_match = self.expectation_ends_re.match(current_line_s)
                 if end_match is not None:
@@ -870,7 +870,7 @@ class Expect(object):
                 #lines = [x.replace(&#34;\r&#34;, &#34;&#34;) for x in plaintext.split(&#34;\n&#34;)]
                 # Check current line to see if it ends with prompt (indicating we finished)
                 # current_line is a bytearray. Need it as a string
-                current_line_s = self.current_line.decode()
+                current_line_s = self.current_line.decode(errors=&#39;ignore&#39;)
 
                 end_match = self.expectation_ends_re.match(current_line_s)
                 if end_match is not None:
@@ -1060,7 +1060,7 @@ The epxectation value will show up on the start of a line.</p>
             #lines = [x.replace(&#34;\r&#34;, &#34;&#34;) for x in plaintext.split(&#34;\n&#34;)]
             # Check current line to see if it ends with prompt (indicating we finished)
             # current_line is a bytearray. Need it as a string
-            current_line_s = self.current_line.decode()
+            current_line_s = self.current_line.decode(errors=&#39;ignore&#39;)
 
             end_match = self.expectation_ends_re.match(current_line_s)
             if end_match is not None:
