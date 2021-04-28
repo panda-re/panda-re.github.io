@@ -269,7 +269,7 @@ class Ioctl():
             self_str = &#34;&#34;
 
         bits = self.cmd.bits
-        direction = panda.ffi.string(panda.ffi.cast(&#34;enum ioctl_direction&#34;, bits.direction))
+        direction = ffi.string(ffi.cast(&#34;enum ioctl_direction&#34;, bits.direction))
         ioctl_desc = f&#34;dir={direction},arg_size={bits.arg_size:x},cmd=0x{bits.cmd_num:x},type=0x{bits.type_num:x}&#34;
         if (self.guest_ptr == None):
             self_str += f&#34;ioctl({ioctl_desc}) -&gt; {self.original_ret_code}&#34;
@@ -566,7 +566,7 @@ if __name__ == &#34;__main__&#34;:
             self_str = &#34;&#34;
 
         bits = self.cmd.bits
-        direction = panda.ffi.string(panda.ffi.cast(&#34;enum ioctl_direction&#34;, bits.direction))
+        direction = ffi.string(ffi.cast(&#34;enum ioctl_direction&#34;, bits.direction))
         ioctl_desc = f&#34;dir={direction},arg_size={bits.arg_size:x},cmd=0x{bits.cmd_num:x},type=0x{bits.type_num:x}&#34;
         if (self.guest_ptr == None):
             self_str += f&#34;ioctl({ioctl_desc}) -&gt; {self.original_ret_code}&#34;
