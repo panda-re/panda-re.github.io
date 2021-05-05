@@ -2345,10 +2345,8 @@ class Panda():
         if not absolute_paths:
             copy_directory = path.split(copy_directory)[-1] # Copy directory relative, not absolutely
 
-        # 1) we insert the CD drive TODO: the cd-drive name should be a config option, see the values in qcow.py
-        self.run_monitor_cmd(&#34;change ide1-cd0 \&#34;{}\&#34;&#34;.format(iso_name))
 
-        # 2) Drive the guest to mount the drive
+        # Drive the guest to mount the drive
         # setup_sh:
         #   Make sure cdrom didn&#39;t automount
         #   Make sure guest path mirrors host path
@@ -2362,20 +2360,35 @@ class Panda():
         if &#39;mkdir_ok&#39; not in mkdir_result:
             raise RuntimeError(f&#34;Failed to create mount directories inside guest: {mkdir_result}&#34;)
 
-        mount_status = &#34;bad&#34;
-        for _ in range(10):
-            if &#39;mount_ok&#39; in mount_status:
-                break
-            mount_status = self.run_serial_cmd(f&#34;mount /dev/cdrom {mount_dir}.ro &amp;&amp; echo &#39;mount_ok&#39; || (umount /dev/cdrom; echo &#39;bad&#39;)&#34;, timeout=timeout)
-            sleep(1)
-        else:
-            # Didn&#39;t ever break
-            raise RuntimeError(f&#34;Failed to mount media inside guest: {mount_status}&#34;)
+        # Tell panda to we insert the CD drive
+        # TODO: the cd-drive name should be a config option, see the values in qcow.py
+        errs = self.run_monitor_cmd(&#34;change ide1-cd0 \&#34;{}\&#34;&#34;.format(iso_name))
+        if len(errs):
+            warn(f&#34;Warning encountered when connecting media to guest: {errs}&#34;)
 
-        # Note the . after our src/. directory - that&#39;s special syntax for cp -a
-        copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;ok&#39;&#34;, timeout=timeout)
-        if copy_result != &#39;ok&#39;:
-            raise RuntimeError(f&#34;Copy to rw directory failed: {copy_result}&#34;)
+        try:
+            mount_status = &#34;bad&#34;
+            for _ in range(10):
+                if &#39;mount_ok&#39; in mount_status:
+                    break
+                mount_status = self.run_serial_cmd(f&#34;mount /dev/cdrom {mount_dir}.ro &amp;&amp; echo &#39;mount_ok&#39; || (umount /dev/cdrom; echo &#39;bad&#39;)&#34;, timeout=timeout)
+                sleep(1)
+            else:
+                # Didn&#39;t ever break
+                raise RuntimeError(f&#34;Failed to mount media inside guest: {mount_status}&#34;)
+
+            # Note the . after our src/. directory - that&#39;s special syntax for cp -a
+            copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;ok&#39;&#34;, timeout=timeout)
+            if copy_result != &#39;ok&#39;:
+                raise RuntimeError(f&#34;Copy to rw directory failed: {copy_result}&#34;)
+
+        finally:
+            # Ensure we disconnect the CD drive after the mount + copy, even if it fails
+            self.run_serial_cmd(&#34;umount /dev/cdrom&#34;) # This can fail and that&#39;s okay, we&#39;ll forece eject
+            sleep(1)
+            errs = self.run_monitor_cmd(&#34;eject -f ide1-cd0&#34;)
+            if len(errs):
+                warn(f&#34;Warning encountered when disconnecting media from guest: {errs}&#34;)
 
         if isfile(pjoin(copy_directory, setup_script)):
             setup_result = self.run_serial_cmd(f&#34;{mount_dir}/{setup_script}&#34;, timeout=timeout)
@@ -5332,10 +5345,8 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         if not absolute_paths:
             copy_directory = path.split(copy_directory)[-1] # Copy directory relative, not absolutely
 
-        # 1) we insert the CD drive TODO: the cd-drive name should be a config option, see the values in qcow.py
-        self.run_monitor_cmd(&#34;change ide1-cd0 \&#34;{}\&#34;&#34;.format(iso_name))
 
-        # 2) Drive the guest to mount the drive
+        # Drive the guest to mount the drive
         # setup_sh:
         #   Make sure cdrom didn&#39;t automount
         #   Make sure guest path mirrors host path
@@ -5349,20 +5360,35 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         if &#39;mkdir_ok&#39; not in mkdir_result:
             raise RuntimeError(f&#34;Failed to create mount directories inside guest: {mkdir_result}&#34;)
 
-        mount_status = &#34;bad&#34;
-        for _ in range(10):
-            if &#39;mount_ok&#39; in mount_status:
-                break
-            mount_status = self.run_serial_cmd(f&#34;mount /dev/cdrom {mount_dir}.ro &amp;&amp; echo &#39;mount_ok&#39; || (umount /dev/cdrom; echo &#39;bad&#39;)&#34;, timeout=timeout)
-            sleep(1)
-        else:
-            # Didn&#39;t ever break
-            raise RuntimeError(f&#34;Failed to mount media inside guest: {mount_status}&#34;)
+        # Tell panda to we insert the CD drive
+        # TODO: the cd-drive name should be a config option, see the values in qcow.py
+        errs = self.run_monitor_cmd(&#34;change ide1-cd0 \&#34;{}\&#34;&#34;.format(iso_name))
+        if len(errs):
+            warn(f&#34;Warning encountered when connecting media to guest: {errs}&#34;)
 
-        # Note the . after our src/. directory - that&#39;s special syntax for cp -a
-        copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;ok&#39;&#34;, timeout=timeout)
-        if copy_result != &#39;ok&#39;:
-            raise RuntimeError(f&#34;Copy to rw directory failed: {copy_result}&#34;)
+        try:
+            mount_status = &#34;bad&#34;
+            for _ in range(10):
+                if &#39;mount_ok&#39; in mount_status:
+                    break
+                mount_status = self.run_serial_cmd(f&#34;mount /dev/cdrom {mount_dir}.ro &amp;&amp; echo &#39;mount_ok&#39; || (umount /dev/cdrom; echo &#39;bad&#39;)&#34;, timeout=timeout)
+                sleep(1)
+            else:
+                # Didn&#39;t ever break
+                raise RuntimeError(f&#34;Failed to mount media inside guest: {mount_status}&#34;)
+
+            # Note the . after our src/. directory - that&#39;s special syntax for cp -a
+            copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;ok&#39;&#34;, timeout=timeout)
+            if copy_result != &#39;ok&#39;:
+                raise RuntimeError(f&#34;Copy to rw directory failed: {copy_result}&#34;)
+
+        finally:
+            # Ensure we disconnect the CD drive after the mount + copy, even if it fails
+            self.run_serial_cmd(&#34;umount /dev/cdrom&#34;) # This can fail and that&#39;s okay, we&#39;ll forece eject
+            sleep(1)
+            errs = self.run_monitor_cmd(&#34;eject -f ide1-cd0&#34;)
+            if len(errs):
+                warn(f&#34;Warning encountered when disconnecting media from guest: {errs}&#34;)
 
         if isfile(pjoin(copy_directory, setup_script)):
             setup_result = self.run_serial_cmd(f&#34;{mount_dir}/{setup_script}&#34;, timeout=timeout)
@@ -6271,10 +6297,8 @@ def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, set
     if not absolute_paths:
         copy_directory = path.split(copy_directory)[-1] # Copy directory relative, not absolutely
 
-    # 1) we insert the CD drive TODO: the cd-drive name should be a config option, see the values in qcow.py
-    self.run_monitor_cmd(&#34;change ide1-cd0 \&#34;{}\&#34;&#34;.format(iso_name))
 
-    # 2) Drive the guest to mount the drive
+    # Drive the guest to mount the drive
     # setup_sh:
     #   Make sure cdrom didn&#39;t automount
     #   Make sure guest path mirrors host path
@@ -6288,20 +6312,35 @@ def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, set
     if &#39;mkdir_ok&#39; not in mkdir_result:
         raise RuntimeError(f&#34;Failed to create mount directories inside guest: {mkdir_result}&#34;)
 
-    mount_status = &#34;bad&#34;
-    for _ in range(10):
-        if &#39;mount_ok&#39; in mount_status:
-            break
-        mount_status = self.run_serial_cmd(f&#34;mount /dev/cdrom {mount_dir}.ro &amp;&amp; echo &#39;mount_ok&#39; || (umount /dev/cdrom; echo &#39;bad&#39;)&#34;, timeout=timeout)
-        sleep(1)
-    else:
-        # Didn&#39;t ever break
-        raise RuntimeError(f&#34;Failed to mount media inside guest: {mount_status}&#34;)
+    # Tell panda to we insert the CD drive
+    # TODO: the cd-drive name should be a config option, see the values in qcow.py
+    errs = self.run_monitor_cmd(&#34;change ide1-cd0 \&#34;{}\&#34;&#34;.format(iso_name))
+    if len(errs):
+        warn(f&#34;Warning encountered when connecting media to guest: {errs}&#34;)
 
-    # Note the . after our src/. directory - that&#39;s special syntax for cp -a
-    copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;ok&#39;&#34;, timeout=timeout)
-    if copy_result != &#39;ok&#39;:
-        raise RuntimeError(f&#34;Copy to rw directory failed: {copy_result}&#34;)
+    try:
+        mount_status = &#34;bad&#34;
+        for _ in range(10):
+            if &#39;mount_ok&#39; in mount_status:
+                break
+            mount_status = self.run_serial_cmd(f&#34;mount /dev/cdrom {mount_dir}.ro &amp;&amp; echo &#39;mount_ok&#39; || (umount /dev/cdrom; echo &#39;bad&#39;)&#34;, timeout=timeout)
+            sleep(1)
+        else:
+            # Didn&#39;t ever break
+            raise RuntimeError(f&#34;Failed to mount media inside guest: {mount_status}&#34;)
+
+        # Note the . after our src/. directory - that&#39;s special syntax for cp -a
+        copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;ok&#39;&#34;, timeout=timeout)
+        if copy_result != &#39;ok&#39;:
+            raise RuntimeError(f&#34;Copy to rw directory failed: {copy_result}&#34;)
+
+    finally:
+        # Ensure we disconnect the CD drive after the mount + copy, even if it fails
+        self.run_serial_cmd(&#34;umount /dev/cdrom&#34;) # This can fail and that&#39;s okay, we&#39;ll forece eject
+        sleep(1)
+        errs = self.run_monitor_cmd(&#34;eject -f ide1-cd0&#34;)
+        if len(errs):
+            warn(f&#34;Warning encountered when disconnecting media from guest: {errs}&#34;)
 
     if isfile(pjoin(copy_directory, setup_script)):
         setup_result = self.run_serial_cmd(f&#34;{mount_dir}/{setup_script}&#34;, timeout=timeout)

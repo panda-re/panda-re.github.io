@@ -179,7 +179,7 @@ class Expect(object):
         self.logfile = None
 
         if logfile_base:
-            self.enable_logger(f&#34;{logfile_base}_{name}.txt&#34;)
+            self.set_logging(f&#34;{logfile_base}_{name}.txt&#34;)
 
         if filelike is None: # Must later use connect(filelike)
             self.fd = None
@@ -646,7 +646,7 @@ class Expect(object):
         self.logfile = None
 
         if logfile_base:
-            self.enable_logger(f&#34;{logfile_base}_{name}.txt&#34;)
+            self.set_logging(f&#34;{logfile_base}_{name}.txt&#34;)
 
         if filelike is None: # Must later use connect(filelike)
             self.fd = None
