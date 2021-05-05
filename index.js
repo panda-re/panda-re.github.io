@@ -1270,7 +1270,7 @@ INDEX=[
 {
 "ref":"pandare.panda.Panda.run_serial_cmd",
 "url":4,
-"doc":"",
+"doc":"Run a command inside the guest through a terminal exposed over a serial port. Can only be used if your guest is configured in this way Guest output will be analyzed until we see the expect_prompt regex printed (i.e., the PS1 prompt) Args: cmd: command to run. timeout: maximum time to wait for the command to finish no_timeout: if set, don't ever timeout Returns: String: all the output (stdout + stderr) printed after typing your command and pressing enter until the next prompt was printed.",
 "func":1
 },
 {
@@ -1300,7 +1300,7 @@ INDEX=[
 {
 "ref":"pandare.panda.Panda.revert_sync",
 "url":4,
-"doc":"",
+"doc":"Args: snapshot_name: name of snapshot in the current qcow to load Returns: String: error message. Empty on success.",
 "func":1
 },
 {
@@ -1312,7 +1312,7 @@ INDEX=[
 {
 "ref":"pandare.panda.Panda.copy_to_guest",
 "url":4,
-"doc":"Copy a directory from the host into the guest by 1) Creating an .iso image of the directory on the host 2) Run a bash command to mount it at the exact same path + .ro and then copy the files to the provided path 3) If the directory contains setup.sh, run it Args: copy_directory: Local directory to copy into guest Returns: None",
+"doc":"Copy a directory from the host into the guest by 1) Creating an .iso image of the directory on the host 2) Run a bash command to mount it at the exact same path + .ro and then copy the files to the provided path 3) If the directory contains setup.sh, run it Args: copy_directory: Local directory to copy into guest iso_name: Name of iso file that will be generated. Defaults to [copy_directory].iso absolute_paths: is copy_directory an absolute or relative path seutp_script: name of a script which, if present inside copy_directory, will be automatically run after the copy timeout: maximum time each copy command will be allowed to run for, will use the  run_serial_cmd default value unless another is provided Returns: None",
 "func":1
 },
 {
@@ -1566,10 +1566,16 @@ INDEX=[
 {
 "ref":"pandare.panda_expect.Expect",
 "url":8,
-"doc":"To debug, set logfile_base to something like '/tmp/log' and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt"
+"doc":"Class to manage typing commands into consoles and waiting for responses. Designed to be used with the qemu monitor and serial consoles for Linux guests. To debug, set logfile_base to something like '/tmp/log' and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt. Or directyl access"
 },
 {
 "ref":"pandare.panda_expect.Expect.update_expectation",
+"url":8,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.panda_expect.Expect.set_logging",
 "url":8,
 "doc":"",
 "func":1

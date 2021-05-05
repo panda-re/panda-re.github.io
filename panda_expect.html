@@ -164,15 +164,22 @@ from colorama import Fore, Style
 class TimeoutExpired(Exception): pass
 
 class Expect(object):
+    &#39;&#39;&#39;
+    Class to manage typing commands into consoles and waiting for responses.
+
+    Designed to be used with the qemu monitor and serial consoles for Linux guests.
+
+    &#39;&#39;&#39;
     def __init__(self, name, filelike=None, expectation=None, logfile_base=None, consume_first=False):
         &#39;&#39;&#39;
-        To debug, set logfile_base to something like &#39;/tmp/log&#39; and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt
+        To debug, set logfile_base to something like &#39;/tmp/log&#39; and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt. Or directyl access
         &#39;&#39;&#39;
 
         self.name = name
         self.logfile = None
+
         if logfile_base:
-            self.logfile = open(f&#34;{logfile_base}_{name}.txt&#34;, &#34;wb&#34;)
+            self.enable_logger(f&#34;{logfile_base}_{name}.txt&#34;)
 
         if filelike is None: # Must later use connect(filelike)
             self.fd = None
@@ -197,6 +204,9 @@ class Expect(object):
         self.last_prompt = expectation # approximation
         self.expectation_re = re.compile(expectation)
         self.expectation_ends_re = re.compile(r&#39;(.*)&#39; + expectation)
+
+    def set_logging(self, name):
+        self.logfile = open(name, &#34;wb&#34;)
 
     def connect(self, filelike):
         if type(filelike) == int:
@@ -613,21 +623,30 @@ class Expect(object):
 <span>(</span><span>name, filelike=None, expectation=None, logfile_base=None, consume_first=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>To debug, set logfile_base to something like '/tmp/log' and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt</p></div>
+<div class="desc"><p>Class to manage typing commands into consoles and waiting for responses.</p>
+<p>Designed to be used with the qemu monitor and serial consoles for Linux guests.</p>
+<p>To debug, set logfile_base to something like '/tmp/log' and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt. Or directyl access</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Expect(object):
+    &#39;&#39;&#39;
+    Class to manage typing commands into consoles and waiting for responses.
+
+    Designed to be used with the qemu monitor and serial consoles for Linux guests.
+
+    &#39;&#39;&#39;
     def __init__(self, name, filelike=None, expectation=None, logfile_base=None, consume_first=False):
         &#39;&#39;&#39;
-        To debug, set logfile_base to something like &#39;/tmp/log&#39; and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt
+        To debug, set logfile_base to something like &#39;/tmp/log&#39; and then look at logs written to /tmp/log_monitor.txt and /tmp/log_serial.txt. Or directyl access
         &#39;&#39;&#39;
 
         self.name = name
         self.logfile = None
+
         if logfile_base:
-            self.logfile = open(f&#34;{logfile_base}_{name}.txt&#34;, &#34;wb&#34;)
+            self.enable_logger(f&#34;{logfile_base}_{name}.txt&#34;)
 
         if filelike is None: # Must later use connect(filelike)
             self.fd = None
@@ -652,6 +671,9 @@ class Expect(object):
         self.last_prompt = expectation # approximation
         self.expectation_re = re.compile(expectation)
         self.expectation_ends_re = re.compile(r&#39;(.*)&#39; + expectation)
+
+    def set_logging(self, name):
+        self.logfile = open(name, &#34;wb&#34;)
 
     def connect(self, filelike):
         if type(filelike) == int:
@@ -1304,6 +1326,19 @@ The epxectation value will show up on the start of a line.</p>
     self.send(msg + b&#34;\n&#34;)</code></pre>
 </details>
 </dd>
+<dt id="pandare.panda_expect.Expect.set_logging"><code class="name flex">
+<span>def <span class="ident">set_logging</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_logging(self, name):
+    self.logfile = open(name, &#34;wb&#34;)</code></pre>
+</details>
+</dd>
 <dt id="pandare.panda_expect.Expect.unansi"><code class="name flex">
 <span>def <span class="ident">unansi</span></span>(<span>self)</span>
 </code></dt>
@@ -1678,6 +1713,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.panda_expect.Expect.send" href="#pandare.panda_expect.Expect.send">send</a></code></li>
 <li><code><a title="pandare.panda_expect.Expect.send_eol" href="#pandare.panda_expect.Expect.send_eol">send_eol</a></code></li>
 <li><code><a title="pandare.panda_expect.Expect.sendline" href="#pandare.panda_expect.Expect.sendline">sendline</a></code></li>
+<li><code><a title="pandare.panda_expect.Expect.set_logging" href="#pandare.panda_expect.Expect.set_logging">set_logging</a></code></li>
 <li><code><a title="pandare.panda_expect.Expect.unansi" href="#pandare.panda_expect.Expect.unansi">unansi</a></code></li>
 <li><code><a title="pandare.panda_expect.Expect.update_expectation" href="#pandare.panda_expect.Expect.update_expectation">update_expectation</a></code></li>
 </ul>

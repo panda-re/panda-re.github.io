@@ -346,6 +346,9 @@ class PandaArch():
 
         base_reg_s = &#34;SP&#34;
         base_reg_val = self.get_reg(cpu, self.reg_sp)
+        if base_reg_val == 0:
+            print(&#34;[WARNING: no stack pointer]&#34;)
+            return
         word_size = int(self.panda.bits/4)
 
         for word_idx in range(words):
@@ -462,7 +465,12 @@ class Aarch64Arch(PandaArch):
         &#39;&#39;&#39;
         Return an aarch64 register
         &#39;&#39;&#39;
-        return cpu.env_ptr.xregs[reg]
+
+        if reg == 32:
+            print(&#34;WARNING: unsupported get sp for aarch64&#34;)
+            return 0
+        else:
+            return cpu.env_ptr.xregs[reg]
 
     def _set_reg_val(self, cpu, reg, val):
         &#39;&#39;&#39;
@@ -742,7 +750,12 @@ class X86_64Arch(PandaArch):
         &#39;&#39;&#39;
         Return an aarch64 register
         &#39;&#39;&#39;
-        return cpu.env_ptr.xregs[reg]
+
+        if reg == 32:
+            print(&#34;WARNING: unsupported get sp for aarch64&#34;)
+            return 0
+        else:
+            return cpu.env_ptr.xregs[reg]
 
     def _set_reg_val(self, cpu, reg, val):
         &#39;&#39;&#39;
@@ -1345,6 +1358,9 @@ Note the PC is not stored in a general purpose reg</p></div>
 
         base_reg_s = &#34;SP&#34;
         base_reg_val = self.get_reg(cpu, self.reg_sp)
+        if base_reg_val == 0:
+            print(&#34;[WARNING: no stack pointer]&#34;)
+            return
         word_size = int(self.panda.bits/4)
 
         for word_idx in range(words):
@@ -1418,6 +1434,9 @@ Note the PC is not stored in a general purpose reg</p></div>
 
     base_reg_s = &#34;SP&#34;
     base_reg_val = self.get_reg(cpu, self.reg_sp)
+    if base_reg_val == 0:
+        print(&#34;[WARNING: no stack pointer]&#34;)
+        return
     word_size = int(self.panda.bits/4)
 
     for word_idx in range(words):
