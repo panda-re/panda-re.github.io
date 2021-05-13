@@ -457,6 +457,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.arch.X86Arch.get_arg_stack",
+"url":3,
+"doc":"Gets arguments based on the number. Supports kernel and usermode.",
+"func":1
+},
+{
 "ref":"pandare.arch.X86Arch.get_reg",
 "url":3,
 "doc":"Return value in a  reg which is either a register name or index (e.g., \"R0\" or 0)",

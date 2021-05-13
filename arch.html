@@ -298,6 +298,10 @@ class PandaArch():
 
         Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
         &#39;&#39;&#39;
+        
+        # i386 is stack based and so the convention wont work
+        if self.call_conventions[convention] == &#34;stack&#34;:
+            return self.get_arg_stack(cpu, idx)
         reg = self._get_arg_reg(idx, convention)
         return self.get_reg(cpu, reg)
 
@@ -367,8 +371,8 @@ class PandaArch():
         print(&#34;Stack:&#34;)
         self.dump_stack(cpu)
 
-    def get_args(self, cpu, num):
-        return [self.get_arg(cpu,i) for i in range(num)]
+    def get_args(self, cpu, num, convention=&#39;default&#39;):
+        return [self.get_arg(cpu,i, convention) for i in range(num)]
 
 class ArmArch(PandaArch):
     &#39;&#39;&#39;
@@ -582,9 +586,14 @@ class X86Arch(PandaArch):
         # not yet supported
         self.reg_retval = {&#34;default&#34;:    &#34;EAX&#34;,
                            &#34;syscall&#34;:    &#34;EAX&#34;}
+        
+        self.call_conventions = {&#34;stack&#34;: &#34;stack&#34;,
+                                 &#34;syscall&#34;: [&#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EBP&#34;]}
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;stack&#39;]
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+
 
     def get_pc(self, cpu):
         &#39;&#39;&#39;
@@ -622,6 +631,14 @@ class X86Arch(PandaArch):
         &#39;&#39;&#39;
         esp = self.get_reg(env,&#34;ESP&#34;)
         return self.panda.virtual_memory_read(env,esp,4,fmt=&#39;int&#39;)
+    
+    # we need this because X86 is stack based
+    def get_arg_stack(self, env, num, kernel=False):
+        &#39;&#39;&#39;
+        Gets arguments based on the number. Supports kernel and usermode.
+        &#39;&#39;&#39;
+        esp = self.get_reg(env, &#34;ESP&#34;)
+        return self.panda.virtual_memory_read(env, esp+(4*(num+1)),4,fmt=&#39;int&#39;)
 
 class X86_64Arch(PandaArch):
     &#39;&#39;&#39;
@@ -1310,6 +1327,10 @@ Note the PC is not stored in a general purpose reg</p></div>
 
         Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
         &#39;&#39;&#39;
+        
+        # i386 is stack based and so the convention wont work
+        if self.call_conventions[convention] == &#34;stack&#34;:
+            return self.get_arg_stack(cpu, idx)
         reg = self._get_arg_reg(idx, convention)
         return self.get_reg(cpu, reg)
 
@@ -1379,8 +1400,8 @@ Note the PC is not stored in a general purpose reg</p></div>
         print(&#34;Stack:&#34;)
         self.dump_stack(cpu)
 
-    def get_args(self, cpu, num):
-        return [self.get_arg(cpu,i) for i in range(num)]</code></pre>
+    def get_args(self, cpu, num, convention=&#39;default&#39;):
+        return [self.get_arg(cpu,i, convention) for i in range(num)]</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -1484,12 +1505,16 @@ is calling or has called a function before register values are clobbered.</p>
 
     Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
     &#39;&#39;&#39;
+    
+    # i386 is stack based and so the convention wont work
+    if self.call_conventions[convention] == &#34;stack&#34;:
+        return self.get_arg_stack(cpu, idx)
     reg = self._get_arg_reg(idx, convention)
     return self.get_reg(cpu, reg)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.PandaArch.get_args"><code class="name flex">
-<span>def <span class="ident">get_args</span></span>(<span>self, cpu, num)</span>
+<span>def <span class="ident">get_args</span></span>(<span>self, cpu, num, convention='default')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1497,8 +1522,8 @@ is calling or has called a function before register values are clobbered.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_args(self, cpu, num):
-    return [self.get_arg(cpu,i) for i in range(num)]</code></pre>
+<pre><code class="python">def get_args(self, cpu, num, convention=&#39;default&#39;):
+    return [self.get_arg(cpu,i, convention) for i in range(num)]</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.PandaArch.get_pc"><code class="name flex">
@@ -1676,9 +1701,14 @@ a different value.</p></div>
         # not yet supported
         self.reg_retval = {&#34;default&#34;:    &#34;EAX&#34;,
                            &#34;syscall&#34;:    &#34;EAX&#34;}
+        
+        self.call_conventions = {&#34;stack&#34;: &#34;stack&#34;,
+                                 &#34;syscall&#34;: [&#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EBP&#34;]}
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;stack&#39;]
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
+
 
     def get_pc(self, cpu):
         &#39;&#39;&#39;
@@ -1715,7 +1745,15 @@ a different value.</p></div>
         looks up where ret will go
         &#39;&#39;&#39;
         esp = self.get_reg(env,&#34;ESP&#34;)
-        return self.panda.virtual_memory_read(env,esp,4,fmt=&#39;int&#39;)</code></pre>
+        return self.panda.virtual_memory_read(env,esp,4,fmt=&#39;int&#39;)
+    
+    # we need this because X86 is stack based
+    def get_arg_stack(self, env, num, kernel=False):
+        &#39;&#39;&#39;
+        Gets arguments based on the number. Supports kernel and usermode.
+        &#39;&#39;&#39;
+        esp = self.get_reg(env, &#34;ESP&#34;)
+        return self.panda.virtual_memory_read(env, esp+(4*(num+1)),4,fmt=&#39;int&#39;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1723,6 +1761,23 @@ a different value.</p></div>
 </ul>
 <h3>Methods</h3>
 <dl>
+<dt id="pandare.arch.X86Arch.get_arg_stack"><code class="name flex">
+<span>def <span class="ident">get_arg_stack</span></span>(<span>self, env, num, kernel=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets arguments based on the number. Supports kernel and usermode.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_arg_stack(self, env, num, kernel=False):
+    &#39;&#39;&#39;
+    Gets arguments based on the number. Supports kernel and usermode.
+    &#39;&#39;&#39;
+    esp = self.get_reg(env, &#34;ESP&#34;)
+    return self.panda.virtual_memory_read(env, esp+(4*(num+1)),4,fmt=&#39;int&#39;)</code></pre>
+</details>
+</dd>
 <dt id="pandare.arch.X86Arch.get_pc"><code class="name flex">
 <span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
 </code></dt>
@@ -2082,6 +2137,7 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="pandare.arch.X86Arch" href="#pandare.arch.X86Arch">X86Arch</a></code></h4>
 <ul class="">
+<li><code><a title="pandare.arch.X86Arch.get_arg_stack" href="#pandare.arch.X86Arch.get_arg_stack">get_arg_stack</a></code></li>
 <li><code><a title="pandare.arch.X86Arch.get_pc" href="#pandare.arch.X86Arch.get_pc">get_pc</a></code></li>
 <li><code><a title="pandare.arch.X86Arch.get_return_address" href="#pandare.arch.X86Arch.get_return_address">get_return_address</a></code></li>
 <li><code><a title="pandare.arch.X86Arch.get_return_value" href="#pandare.arch.X86Arch.get_return_value">get_return_value</a></code></li>
