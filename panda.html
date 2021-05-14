@@ -2645,7 +2645,7 @@ class Panda():
         if not enabled: # Note the registered_callbacks dict starts with enabled true and then we update it to false as necessary here
             self.disable_callback(name)
 
-        if &#34;block&#34; in cb.name:
+        if &#34;block&#34; in cb.name and &#34;start&#34; not in cb.name and &#34;end&#34; not in cb.name:
             if not self.disabled_tb_chaining:
                 print(&#34;Warning: disabling TB chaining to support {} callback&#34;.format(cb.name))
                 self.disable_tb_chaining()
@@ -5645,7 +5645,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         if not enabled: # Note the registered_callbacks dict starts with enabled true and then we update it to false as necessary here
             self.disable_callback(name)
 
-        if &#34;block&#34; in cb.name:
+        if &#34;block&#34; in cb.name and &#34;start&#34; not in cb.name and &#34;end&#34; not in cb.name:
             if not self.disabled_tb_chaining:
                 print(&#34;Warning: disabling TB chaining to support {} callback&#34;.format(cb.name))
                 self.disable_tb_chaining()
@@ -9401,7 +9401,7 @@ def record_cmd(self, guest_command, copy_directory=None, iso_name=None, setup_co
     if not enabled: # Note the registered_callbacks dict starts with enabled true and then we update it to false as necessary here
         self.disable_callback(name)
 
-    if &#34;block&#34; in cb.name:
+    if &#34;block&#34; in cb.name and &#34;start&#34; not in cb.name and &#34;end&#34; not in cb.name:
         if not self.disabled_tb_chaining:
             print(&#34;Warning: disabling TB chaining to support {} callback&#34;.format(cb.name))
             self.disable_tb_chaining()</code></pre>
