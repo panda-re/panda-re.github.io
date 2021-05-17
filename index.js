@@ -119,7 +119,7 @@ INDEX=[
 {
 "ref":"pandare.arch.PandaArch.set_retval",
 "url":3,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. If the given architecture returns failure/success in a second register (i.e., the A3 register for mips), set that according to the failure flag. Note the failure argument only used by subclasses that overload this function. It's provided in the signature here so it can be set by a caller without regard for the guest architecture.",
 "func":1
 },
 {
@@ -218,7 +218,7 @@ INDEX=[
 {
 "ref":"pandare.arch.ArmArch.set_retval",
 "url":3,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. If the given architecture returns failure/success in a second register (i.e., the A3 register for mips), set that according to the failure flag. Note the failure argument only used by subclasses that overload this function. It's provided in the signature here so it can be set by a caller without regard for the guest architecture.",
 "func":1
 },
 {
@@ -312,7 +312,7 @@ INDEX=[
 {
 "ref":"pandare.arch.Aarch64Arch.set_retval",
 "url":3,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. If the given architecture returns failure/success in a second register (i.e., the A3 register for mips), set that according to the failure flag. Note the failure argument only used by subclasses that overload this function. It's provided in the signature here so it can be set by a caller without regard for the guest architecture.",
 "func":1
 },
 {
@@ -369,6 +369,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.arch.MipsArch.set_retval",
+"url":3,
+"doc":"Overloaded function so when convention is syscall, user can control the A3 register (which indicates syscall success/failure) in addition to syscall return value. When convention  'syscall', failure = False means A3 will bet set to 0, otherwise it will be set to 1",
+"func":1
+},
+{
 "ref":"pandare.arch.MipsArch.get_reg",
 "url":3,
 "doc":"Return value in a  reg which is either a register name or index (e.g., \"R0\" or 0)",
@@ -390,12 +396,6 @@ INDEX=[
 "ref":"pandare.arch.MipsArch.get_arg",
 "url":3,
 "doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
-"func":1
-},
-{
-"ref":"pandare.arch.MipsArch.set_retval",
-"url":3,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
 "func":1
 },
 {
@@ -489,7 +489,7 @@ INDEX=[
 {
 "ref":"pandare.arch.X86Arch.set_retval",
 "url":3,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. If the given architecture returns failure/success in a second register (i.e., the A3 register for mips), set that according to the failure flag. Note the failure argument only used by subclasses that overload this function. It's provided in the signature here so it can be set by a caller without regard for the guest architecture.",
 "func":1
 },
 {
@@ -577,7 +577,7 @@ INDEX=[
 {
 "ref":"pandare.arch.X86_64Arch.set_retval",
 "url":3,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. If the given architecture returns failure/success in a second register (i.e., the A3 register for mips), set that according to the failure flag. Note the failure argument only used by subclasses that overload this function. It's provided in the signature here so it can be set by a caller without regard for the guest architecture.",
 "func":1
 },
 {

@@ -306,11 +306,17 @@ class PandaArch():
         return self.get_reg(cpu, reg)
 
 
-    def set_retval(self, cpu, val, convention=&#39;default&#39;):
+    def set_retval(self, cpu, val, convention=&#39;default&#39;, failure=False):
         &#39;&#39;&#39;
         Set return val to [val] for given calling convention. This only works
         right after a function call has returned, otherwise the register will contain
         a different value.
+
+        If the given architecture returns failure/success in a second register (i.e., the A3
+        register for mips), set that according to the failure flag.
+
+        Note the failure argument only used by subclasses that overload this function. It&#39;s provided
+        in the signature here so it can be set by a caller without regard for the guest architecture.
         &#39;&#39;&#39;
         reg = self._get_ret_val_reg(cpu, convention)
         return self.set_reg(cpu, reg, val)
@@ -356,10 +362,13 @@ class PandaArch():
         word_size = int(self.panda.bits/8)
 
         for word_idx in range(words):
-            val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
-            val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
-            print(&#34;[{}+0x{:0&gt;2x} == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
-            telescope(self.panda, cpu, val)
+            try:
+                val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
+                val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
+                print(&#34;[{}+0x{:0&gt;2x}] == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
+                telescope(self.panda, cpu, val)
+            except ValueError:
+                print(&#34;[{}+0x{:0&gt;2x}] == [memory read error]&#34;.format(base_reg_s, word_idx*word_size))
 
     def dump_state(self, cpu):
         &#34;&#34;&#34;
@@ -571,6 +580,22 @@ class MipsArch(PandaArch):
         looks up where ret will go
         &#39;&#39;&#39;
         return self.get_reg(env, &#34;RA&#34;)
+
+    def set_retval(self, cpu, val, convention=&#39;default&#39;, failure=False):
+        &#39;&#39;&#39;
+        Overloaded function so when convention is syscall, user can control
+        the A3 register (which indicates syscall success/failure) in addition
+        to syscall return value.
+
+        When convention == &#39;syscall&#39;, failure = False means A3 will bet set to 0,
+        otherwise it will be set to 1
+
+        &#39;&#39;&#39;
+        if convention == &#39;syscall&#39;:
+            # Set A3 register to indicate syscall success/failure
+            self.set_reg(cpu, &#39;a3&#39;, failure)
+
+        return super().set_retval(cpu, val, convention)
 
 class X86Arch(PandaArch):
     &#39;&#39;&#39;
@@ -1090,7 +1115,23 @@ Note the PC is not stored in a general purpose reg</p></div>
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;RA&#34;)</code></pre>
+        return self.get_reg(env, &#34;RA&#34;)
+
+    def set_retval(self, cpu, val, convention=&#39;default&#39;, failure=False):
+        &#39;&#39;&#39;
+        Overloaded function so when convention is syscall, user can control
+        the A3 register (which indicates syscall success/failure) in addition
+        to syscall return value.
+
+        When convention == &#39;syscall&#39;, failure = False means A3 will bet set to 0,
+        otherwise it will be set to 1
+
+        &#39;&#39;&#39;
+        if convention == &#39;syscall&#39;:
+            # Set A3 register to indicate syscall success/failure
+            self.set_reg(cpu, &#39;a3&#39;, failure)
+
+        return super().set_retval(cpu, val, convention)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1162,6 +1203,36 @@ Note the PC is not stored in a general purpose reg</p></div>
     cpu.env_ptr.active_tc.PC = val</code></pre>
 </details>
 </dd>
+<dt id="pandare.arch.MipsArch.set_retval"><code class="name flex">
+<span>def <span class="ident">set_retval</span></span>(<span>self, cpu, val, convention='default', failure=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function so when convention is syscall, user can control
+the A3 register (which indicates syscall success/failure) in addition
+to syscall return value.</p>
+<p>When convention == 'syscall', failure = False means A3 will bet set to 0,
+otherwise it will be set to 1</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_retval(self, cpu, val, convention=&#39;default&#39;, failure=False):
+    &#39;&#39;&#39;
+    Overloaded function so when convention is syscall, user can control
+    the A3 register (which indicates syscall success/failure) in addition
+    to syscall return value.
+
+    When convention == &#39;syscall&#39;, failure = False means A3 will bet set to 0,
+    otherwise it will be set to 1
+
+    &#39;&#39;&#39;
+    if convention == &#39;syscall&#39;:
+        # Set A3 register to indicate syscall success/failure
+        self.set_reg(cpu, &#39;a3&#39;, failure)
+
+    return super().set_retval(cpu, val, convention)</code></pre>
+</details>
+</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -1176,7 +1247,6 @@ Note the PC is not stored in a general purpose reg</p></div>
 <li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.set_retval" href="#pandare.arch.PandaArch.set_retval">set_retval</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1335,11 +1405,17 @@ Note the PC is not stored in a general purpose reg</p></div>
         return self.get_reg(cpu, reg)
 
 
-    def set_retval(self, cpu, val, convention=&#39;default&#39;):
+    def set_retval(self, cpu, val, convention=&#39;default&#39;, failure=False):
         &#39;&#39;&#39;
         Set return val to [val] for given calling convention. This only works
         right after a function call has returned, otherwise the register will contain
         a different value.
+
+        If the given architecture returns failure/success in a second register (i.e., the A3
+        register for mips), set that according to the failure flag.
+
+        Note the failure argument only used by subclasses that overload this function. It&#39;s provided
+        in the signature here so it can be set by a caller without regard for the guest architecture.
         &#39;&#39;&#39;
         reg = self._get_ret_val_reg(cpu, convention)
         return self.set_reg(cpu, reg, val)
@@ -1385,10 +1461,13 @@ Note the PC is not stored in a general purpose reg</p></div>
         word_size = int(self.panda.bits/8)
 
         for word_idx in range(words):
-            val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
-            val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
-            print(&#34;[{}+0x{:0&gt;2x} == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
-            telescope(self.panda, cpu, val)
+            try:
+                val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
+                val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
+                print(&#34;[{}+0x{:0&gt;2x}] == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
+                telescope(self.panda, cpu, val)
+            except ValueError:
+                print(&#34;[{}+0x{:0&gt;2x}] == [memory read error]&#34;.format(base_reg_s, word_idx*word_size))
 
     def dump_state(self, cpu):
         &#34;&#34;&#34;
@@ -1461,10 +1540,13 @@ Note the PC is not stored in a general purpose reg</p></div>
     word_size = int(self.panda.bits/8)
 
     for word_idx in range(words):
-        val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
-        val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
-        print(&#34;[{}+0x{:0&gt;2x} == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
-        telescope(self.panda, cpu, val)</code></pre>
+        try:
+            val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
+            val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
+            print(&#34;[{}+0x{:0&gt;2x}] == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
+            telescope(self.panda, cpu, val)
+        except ValueError:
+            print(&#34;[{}+0x{:0&gt;2x}] == [memory read error]&#34;.format(base_reg_s, word_idx*word_size))</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.PandaArch.dump_state"><code class="name flex">
@@ -1654,21 +1736,31 @@ a different value.</p></div>
 </details>
 </dd>
 <dt id="pandare.arch.PandaArch.set_retval"><code class="name flex">
-<span>def <span class="ident">set_retval</span></span>(<span>self, cpu, val, convention='default')</span>
+<span>def <span class="ident">set_retval</span></span>(<span>self, cpu, val, convention='default', failure=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set return val to [val] for given calling convention. This only works
 right after a function call has returned, otherwise the register will contain
-a different value.</p></div>
+a different value.</p>
+<p>If the given architecture returns failure/success in a second register (i.e., the A3
+register for mips), set that according to the failure flag.</p>
+<p>Note the failure argument only used by subclasses that overload this function. It's provided
+in the signature here so it can be set by a caller without regard for the guest architecture.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_retval(self, cpu, val, convention=&#39;default&#39;):
+<pre><code class="python">def set_retval(self, cpu, val, convention=&#39;default&#39;, failure=False):
     &#39;&#39;&#39;
     Set return val to [val] for given calling convention. This only works
     right after a function call has returned, otherwise the register will contain
     a different value.
+
+    If the given architecture returns failure/success in a second register (i.e., the A3
+    register for mips), set that according to the failure flag.
+
+    Note the failure argument only used by subclasses that overload this function. It&#39;s provided
+    in the signature here so it can be set by a caller without regard for the guest architecture.
     &#39;&#39;&#39;
     reg = self._get_ret_val_reg(cpu, convention)
     return self.set_reg(cpu, reg, val)</code></pre>
@@ -2114,6 +2206,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.arch.MipsArch.get_pc" href="#pandare.arch.MipsArch.get_pc">get_pc</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_return_value" href="#pandare.arch.MipsArch.get_return_value">get_return_value</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.set_pc" href="#pandare.arch.MipsArch.set_pc">set_pc</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.set_retval" href="#pandare.arch.MipsArch.set_retval">set_retval</a></code></li>
 </ul>
 </li>
 <li>
