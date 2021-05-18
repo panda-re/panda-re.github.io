@@ -2870,9 +2870,6 @@ class Panda():
                 return
             type_num = getattr(self.libpanda, &#34;PANDA_CB_&#34;+cb_type.upper())
 
-            # Inform the plugin that it has a new breakpoint at addr
-            hook_cb_passed = hook_cb_type(fun)
-
             if debug:
                 print(&#34;Registering breakpoint at 0x{:x} -&gt; {} == {}&#34;.format(addr, fun, &#39;cdata_cb&#39;))
 
@@ -5870,9 +5867,6 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                 return
             type_num = getattr(self.libpanda, &#34;PANDA_CB_&#34;+cb_type.upper())
 
-            # Inform the plugin that it has a new breakpoint at addr
-            hook_cb_passed = hook_cb_type(fun)
-
             if debug:
                 print(&#34;Registering breakpoint at 0x{:x} -&gt; {} == {}&#34;.format(addr, fun, &#39;cdata_cb&#39;))
 
@@ -7666,9 +7660,6 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
             print(&#34;function type not supported&#34;)
             return
         type_num = getattr(self.libpanda, &#34;PANDA_CB_&#34;+cb_type.upper())
-
-        # Inform the plugin that it has a new breakpoint at addr
-        hook_cb_passed = hook_cb_type(fun)
 
         if debug:
             print(&#34;Registering breakpoint at 0x{:x} -&gt; {} == {}&#34;.format(addr, fun, &#39;cdata_cb&#39;))
