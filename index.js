@@ -1426,7 +1426,7 @@ INDEX=[
 {
 "ref":"pandare.panda.Panda.hook_symbol",
 "url":4,
-"doc":"Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr, the function will be called with args (CPUState, TranslationBlock) Args: libraryname (string): Name of library containing symbol to be hooked. May be None to match any. symbol (string, int): Name of symbol or offset into library to hook kernel (bool): if hook should be applied exclusively in kernel mode name (string): name of hook, defaults to function name cb_type (string): callback-type, defaults to before_tcg_codegen Returns: None: Decorated function is called when (before/after is determined by cb_type) guest goes to call the specified symbol in the specified library.",
+"doc":"Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr, the function will be called with args (CPUState, TranslationBlock) Args: libraryname (string): Name of library containing symbol to be hooked. May be None to match any. symbol (string, int): Name of symbol or offset into library to hook kernel (bool): if hook should be applied exclusively in kernel mode name (string): name of hook, defaults to function name cb_type (string): callback-type, defaults to start_block_exec Returns: None: Decorated function is called when (before/after is determined by cb_type) guest goes to call the specified symbol in the specified library.",
 "func":1
 },
 {

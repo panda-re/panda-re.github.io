@@ -2850,14 +2850,14 @@ class Panda():
 
     ############# HOOKING MIXINS ###############
 
-    def hook(self, addr, enabled=True, kernel=None, asid=None, cb_type=&#34;before_tcg_codegen&#34;):
+    def hook(self, addr, enabled=True, kernel=None, asid=None, cb_type=&#34;start_block_exec&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
         &#39;&#39;&#39;
 
         def decorator(fun):
-            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
+            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;start_block_exec&#34; or cb_type == &#34;end_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
             elif cb_type == &#34;after_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
@@ -2913,7 +2913,7 @@ class Panda():
         return decorator
 
 
-    def hook_symbol(self, libraryname, symbol, kernel=False, name=None, cb_type=&#34;before_tcg_codegen&#34;):
+    def hook_symbol(self, libraryname, symbol, kernel=False, name=None, cb_type=&#34;start_block_exec&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
@@ -2923,7 +2923,7 @@ class Panda():
             symbol (string, int): Name of symbol or offset into library to hook
             kernel (bool): if hook should be applied exclusively in kernel mode
             name (string): name of hook, defaults to function name
-            cb_type (string): callback-type, defaults to before_tcg_codegen
+            cb_type (string): callback-type, defaults to start_block_exec
 
         Returns:
             None: Decorated function is called when (before/after is determined by cb_type) guest goes to call
@@ -2931,7 +2931,7 @@ class Panda():
         &#39;&#39;&#39;
 
         def decorator(fun):
-            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
+            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;start_block_exec&#34; or cb_type == &#34;end_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
             elif cb_type == &#34;after_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
@@ -2962,6 +2962,7 @@ class Panda():
                     symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
                 else:
                     symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(symbol,&#34;utf-8&#34;))
+                    new_hook.hook_offset = False
             else:
                 symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
             self.ffi.memmove(new_hook.name,symbolname_ffi,len(symbolname_ffi))
@@ -5847,14 +5848,14 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
     ############# HOOKING MIXINS ###############
 
-    def hook(self, addr, enabled=True, kernel=None, asid=None, cb_type=&#34;before_tcg_codegen&#34;):
+    def hook(self, addr, enabled=True, kernel=None, asid=None, cb_type=&#34;start_block_exec&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
         &#39;&#39;&#39;
 
         def decorator(fun):
-            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
+            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;start_block_exec&#34; or cb_type == &#34;end_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
             elif cb_type == &#34;after_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
@@ -5910,7 +5911,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         return decorator
 
 
-    def hook_symbol(self, libraryname, symbol, kernel=False, name=None, cb_type=&#34;before_tcg_codegen&#34;):
+    def hook_symbol(self, libraryname, symbol, kernel=False, name=None, cb_type=&#34;start_block_exec&#34;):
         &#39;&#39;&#39;
         Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
         the function will be called with args (CPUState, TranslationBlock)
@@ -5920,7 +5921,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             symbol (string, int): Name of symbol or offset into library to hook
             kernel (bool): if hook should be applied exclusively in kernel mode
             name (string): name of hook, defaults to function name
-            cb_type (string): callback-type, defaults to before_tcg_codegen
+            cb_type (string): callback-type, defaults to start_block_exec
 
         Returns:
             None: Decorated function is called when (before/after is determined by cb_type) guest goes to call
@@ -5928,7 +5929,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         &#39;&#39;&#39;
 
         def decorator(fun):
-            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
+            if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;start_block_exec&#34; or cb_type == &#34;end_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
             elif cb_type == &#34;after_block_exec&#34;:
                 hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
@@ -5959,6 +5960,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                     symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
                 else:
                     symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(symbol,&#34;utf-8&#34;))
+                    new_hook.hook_offset = False
             else:
                 symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
             self.ffi.memmove(new_hook.name,symbolname_ffi,len(symbolname_ffi))
@@ -7632,7 +7634,7 @@ and its parent pid (ppid).</p>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.hook"><code class="name flex">
-<span>def <span class="ident">hook</span></span>(<span>self, addr, enabled=True, kernel=None, asid=None, cb_type='before_tcg_codegen')</span>
+<span>def <span class="ident">hook</span></span>(<span>self, addr, enabled=True, kernel=None, asid=None, cb_type='start_block_exec')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
@@ -7641,14 +7643,14 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def hook(self, addr, enabled=True, kernel=None, asid=None, cb_type=&#34;before_tcg_codegen&#34;):
+<pre><code class="python">def hook(self, addr, enabled=True, kernel=None, asid=None, cb_type=&#34;start_block_exec&#34;):
     &#39;&#39;&#39;
     Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
     the function will be called with args (CPUState, TranslationBlock)
     &#39;&#39;&#39;
 
     def decorator(fun):
-        if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
+        if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;start_block_exec&#34; or cb_type == &#34;end_block_exec&#34;:
             hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
         elif cb_type == &#34;after_block_exec&#34;:
             hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
@@ -7832,7 +7834,7 @@ the function will be called with args (CPUState, TranslationBlock)</p></div>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.hook_symbol"><code class="name flex">
-<span>def <span class="ident">hook_symbol</span></span>(<span>self, libraryname, symbol, kernel=False, name=None, cb_type='before_tcg_codegen')</span>
+<span>def <span class="ident">hook_symbol</span></span>(<span>self, libraryname, symbol, kernel=False, name=None, cb_type='start_block_exec')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
@@ -7848,7 +7850,7 @@ the function will be called with args (CPUState, TranslationBlock)</p>
 <dt><strong><code>name</code></strong> :&ensp;<code>string</code></dt>
 <dd>name of hook, defaults to function name</dd>
 <dt><strong><code>cb_type</code></strong> :&ensp;<code>string</code></dt>
-<dd>callback-type, defaults to before_tcg_codegen</dd>
+<dd>callback-type, defaults to start_block_exec</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -7860,7 +7862,7 @@ the specified symbol in the specified library.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def hook_symbol(self, libraryname, symbol, kernel=False, name=None, cb_type=&#34;before_tcg_codegen&#34;):
+<pre><code class="python">def hook_symbol(self, libraryname, symbol, kernel=False, name=None, cb_type=&#34;start_block_exec&#34;):
     &#39;&#39;&#39;
     Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr,
     the function will be called with args (CPUState, TranslationBlock)
@@ -7870,7 +7872,7 @@ the specified symbol in the specified library.</dd>
         symbol (string, int): Name of symbol or offset into library to hook
         kernel (bool): if hook should be applied exclusively in kernel mode
         name (string): name of hook, defaults to function name
-        cb_type (string): callback-type, defaults to before_tcg_codegen
+        cb_type (string): callback-type, defaults to start_block_exec
 
     Returns:
         None: Decorated function is called when (before/after is determined by cb_type) guest goes to call
@@ -7878,7 +7880,7 @@ the specified symbol in the specified library.</dd>
     &#39;&#39;&#39;
 
     def decorator(fun):
-        if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34;:
+        if cb_type == &#34;before_tcg_codegen&#34; or cb_type == &#34;after_block_translate&#34; or cb_type == &#34;before_block_exec&#34; or cb_type == &#34;start_block_exec&#34; or cb_type == &#34;end_block_exec&#34;:
             hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , struct hook *)&#34;)
         elif cb_type == &#34;after_block_exec&#34;:
             hook_cb_type = self.ffi.callback(&#34;void(CPUState*, TranslationBlock* , uint8_t, struct hook *)&#34;)
@@ -7909,6 +7911,7 @@ the specified symbol in the specified library.</dd>
                 symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
             else:
                 symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(symbol,&#34;utf-8&#34;))
+                new_hook.hook_offset = False
         else:
             symbolname_ffi = self.ffi.new(&#34;char[]&#34;,bytes(&#34;\x00\x00\x00\x00&#34;,&#34;utf-8&#34;))
         self.ffi.memmove(new_hook.name,symbolname_ffi,len(symbolname_ffi))
