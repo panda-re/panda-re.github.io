@@ -19,7 +19,312 @@ INDEX=[
 {
 "ref":"pandare",
 "url":0,
-"doc":" pandare (also called PyPANDA) is a Python 3 module built for interacting with the PANDA project. The module enables driving an execution of a virtual machine while also introspecting on its execution using PANDA's callback and plugin systems. Most of the commonly used APIs are in  pandare.panda . Example plugins are available in the [examples directory](https: github.com/panda-re/panda/tree/master/panda/python/examples).  PyPANDA PyPANDA is a python interface to PANDA. With PyPANDA, you can quickly develop plugins to analyze behavior of a running system, record a system and analyze replays, or do nearly anything you can do using PANDA's C/C APIs.  Installation Follow PANDA's build instructions. The  panda docker container includes the  pandare package. If you setup panda with the  install_ubuntu.sh script, it will install PyPANDA for you. Otherwise, when your install instructions tell you to run  build.sh be sure to include the   python flag.  Example program This program counts the number of basic blocks executed while running  uname -a inside a 32-bit guest.   from pandare import Panda panda = Panda(generic='i386')  Create an instance of panda  Counter of the number of basic blocks blocks = 0  Register a callback to run before_block_exec and increment blocks @panda.cb_before_block_exec def before_block_execute(cpustate, transblock): global blocks blocks += 1  This 'blocking' function is queued to run in a seperate thread from the main CPU loop  which allows for it to wait for the guest to complete commands @panda.queue_blocking def run_cmd():  First revert to the qcow's root snapshot (synchronously) panda.revert_sync(\"root\")  Then type a command via the serial port and print its results print(panda.run_serial_cmd(\"uname -a\"  When the command finishes, terminate the panda.run() call panda.end_analysis()  Start the guest panda.run() print(\"Finished. Saw a total of {} basic blocks during execution\".format(blocks    Usage  Create an instance of Panda The  Panda class takes many arguments, but the only crucial argument is a specificed qcow image. If you wish to get started quickly you may use the  pandare.qcows.Qcows module to automatically download a pre-configured virtual machine for you to use. For example:  panda = Panda(generic='i386')  Register a callback   @panda.cb_before_block_exec def my_before_block_fn(cpustate, translation_block): pc = panda.current_pc(cpustate) print(\"About to run the block at 0x{:x}\".format(pc   The panda object creates decorators named  cb_[CALLBACK_NAME] for each PANDA callback. The decorated functions must take the same number of arguments, and return the same type as expected by the original C callback, see [Callback List](https: github.com/panda-re/panda/tree/master/panda/docs/manual.md appendix-a-callback-list) for more information. The decorated functions are called at the appropriate times, similarly to how a PANDA plugin written in C behaves.  Enable and disable callbacks Python callbacks can be enabled and disabled using their names. By default, a callback is named after the function that is decorated. For example, the callback describe in   @panda.cb_before_block_exec def my_before_block_fn(cpustate, translation_block):  .   is named  my_before_block_fn and can be disabled with  panda.disable_callback('my_before_block_fn') and later enabled with  panda.enable_callback('my_before_block_fn') . Callbacks can be given custom names and disabled at initialization by passing arguments to their decorators:   @panda.cb_before_block_exec(name='my_callback', enabled=False) def my_before_block_fn(cpustate, translation_block):  . panda.enable_callback('my_callback')   If a callback is decorated with a  procname argument, it will only be enabled when that process is running. To permanently disable such a callback, you can use  panda.disable_callback('name', forever=True) . Note that if you wish to define a function multiple times (e.g., inside a loop), you'll need to give it multiple names or it will be overwritten.   for x in range(10): @panda.cb_before_block_exec(name=f\"bbe_{x}\") def bbe_loop(cpu, tb): print(f\"Before block exec function  {x}\")    Replaying Recordings   panda = Panda( .)  Register functions to run on callbacks here panda.run_replay(\"/file/path/here\")  Runs the replay    Load and unload a C plugin A C plugin can be loaded from pypanda easily:  panda.load_plugin(\"stringsearch\") C plugins can be passed named arguments using a dictionary:  panda.load_plugin(\"stringsearch\", {\"name\": \"jpeg\"}) Or unnamed arguments using a list:  panda.load_plugin(\"my_plugin\", [\"arg1\", \"arg2\"])  Asynchronous Activity When a callback is executing, the guest is suspended until the callback finishes. However, we often want to interact with guests during our analyses. In these situations, we run code asynchronously to send data into and wait for results from the guest. PyPANDA is designed to easily support such analyses with the  @panda.queue_blocking decorator. Consider if you with to run the commands  uname -a , then  whoami in a guest. If your guest exposes a console over a serial port (as all the 'generic' qcows we use do), you could run these commands by simply typing them and waiting for a response. But if you were to do this in a callback, the guest would have no chance to respond to your commands and you'd end up in a deadlock where your callback code never terminates until the guest executes your command, and the guest will never execute commands until your callback terminates. Instead, you can queue up blocking functions to run asynchronously as follows:   panda =  . @panda.queue_blocking def first_cmd(): print(panda.run_serial_cmd(\"uname -a\" @panda.queue_blocking def second_cmd(): print(panda.run_serial_cmd(\"whoami\" panda.end_analysis() panda.run()   Note that the  panda.queue_blocking decorator both marks a function as being a blocking function (which allows it to use functions such as  panda.run_serial_cmd ) and queues it up to run after the call to  panda.run()  Recordings See [take_recording.py](https: github.com/panda-re/panda/tree/master/panda/python/examples/take_recording.py) A replay can be taken with the function  panda.record_cmd('cmd_to_run', recording_name='replay_name') which will revert the guest to a  root snapshot, type a command, begin a recording, press enter, wait for the command to finish, and then end the replay. Once a replay is created on disk, it can be analyzed by using  panda.run_replay('replay_name') . Alternatively, you can begin/end the recording through the monitor with  panda.run_monitor_cmd('begin_record myname') and  panda.run_monitor_cmd('end_record') and drive the guest using  panda.run_serial_cmd in the middle.  Typical Use Patterns  Live system Example: [asid.py](https: github.com/panda-re/panda/tree/master/panda/python/examples/asid.py). 1. Initialize a panda object based off a generic machine or a qcow you have. 2. Register functions to run at various PANDA callbacks. 3. Register and queue up a blocking function to revert the guest to a snapshot, run commands with  panda.run_serial_cmd() , and stop the execution with  panda.end_analysis() 5. Start the execution with  panda.run()  Record/Replay Example: [tests/record_then_replay.py](https: github.com/panda-re/panda/tree/master/panda/python/tests/record_then_replay.py). 1. Initialize a panda object based off a generic machine or a qcow you have. 2. Register and queue up a blocking function to drive guest execution while recording or with  panda.record_cmd then call  panda.end_analysis() 3. Register functions to run at various PANDA callbacks. 5. Analyze the replay with  panda.run_replay(filename)  Additional Information  Here be dragons  You can't have multiple instances of panda running at the same time. Once you've created a panda object for a given architecture, you can never create another. Hoewver, you can modify the machine after it's created to run a new analysis as long as you don't change the machine type.  PyPANDA is slower than traditional PANDA. Well-engineered plugins typically have a runtime overhead of ~10% compared to regular PANDA plugins (for up to 10M instructions). To improve performance try disabling callbacks when possible and only enabling them when they are needed.  Extending PyPANDA PyPANDA currently supports interactions (e.g., ppp callbacks) with many PANDA plugins such as  taint2 and  osi . If you wish to extend PyPANDA to support an new plugin, its header file must be cleaned up such that it can be parsed by CFFI. See [create_panda_datatypes.py](https: github.com/panda-re/panda/tree/master/panda/python/utils/create_panda_datatypes.py) and the magic  BEGIN_PYPANDA_NEEDS_THIS strings it searches for.  Learn more The [PyPANDA paper](https: moyix.net/~moyix/papers/pypanda.pdf) was published at the NDSS Binary Analysis Research Workshop in 2021 and includes details on the project's design goals as well as an evaluation of it's usability and performance."
+"doc":" pandare (also called PyPANDA) is a Python 3 module built for interacting with the PANDA project. The module enables driving an execution of a virtual machine while also introspecting on its execution using PANDA's callback and plugin systems. Most of the commonly used APIs are in  pandare.panda . Example plugins are available in the [examples directory](https: github.com/panda-re/panda/tree/master/panda/python/examples).  PyPANDA PyPANDA is a python interface to PANDA. With PyPANDA, you can quickly develop plugins to analyze behavior of a running system, record a system and analyze replays, or do nearly anything you can do using PANDA's C/C APIs.  Installation Follow PANDA's build instructions. The  panda docker container includes the  pandare package. If you setup panda with the  install_ubuntu.sh script, it will install PyPANDA for you. Otherwise, when your install instructions tell you to run  build.sh be sure to include the   python flag.  Example program This program counts the number of basic blocks executed while running  uname -a inside a 32-bit guest.   from pandare import Panda panda = Panda(generic='i386')  Create an instance of panda  Counter of the number of basic blocks blocks = 0  Register a callback to run before_block_exec and increment blocks @panda.cb_before_block_exec def before_block_execute(cpustate, transblock): global blocks blocks += 1  This 'blocking' function is queued to run in a seperate thread from the main CPU loop  which allows for it to wait for the guest to complete commands @panda.queue_blocking def run_cmd():  First revert to the qcow's root snapshot (synchronously) panda.revert_sync(\"root\")  Then type a command via the serial port and print its results print(panda.run_serial_cmd(\"uname -a\"  When the command finishes, terminate the panda.run() call panda.end_analysis()  Start the guest panda.run() print(\"Finished. Saw a total of {} basic blocks during execution\".format(blocks    Usage  Create an instance of Panda The  Panda class takes many arguments, but the only crucial argument is a specificed qcow image. If you wish to get started quickly you may use the  pandare.qcows.Qcows module to automatically download a pre-configured virtual machine for you to use. For example:  panda = Panda(generic='i386')  Register a callback   @panda.cb_before_block_exec def my_before_block_fn(cpustate, translation_block): pc = panda.current_pc(cpustate) print(\"About to run the block at 0x{:x}\".format(pc   The panda object creates decorators named  cb_[CALLBACK_NAME] for each PANDA callback. The decorated functions must take the same number of arguments, and return the same type as expected by the original C callback. The  [list of callbacks]( pandare.Callbacks) is available below. The decorated functions are called at the appropriate times, similarly to how a PANDA plugin written in C behaves.  Enable and disable callbacks Python callbacks can be enabled and disabled using their names. By default, a callback is named after the function that is decorated. For example, the callback describe in   @panda.cb_before_block_exec def my_before_block_fn(cpustate, translation_block):  .   is named  my_before_block_fn and can be disabled with  panda.disable_callback('my_before_block_fn') and later enabled with  panda.enable_callback('my_before_block_fn') . Callbacks can be given custom names and disabled at initialization by passing arguments to their decorators:   @panda.cb_before_block_exec(name='my_callback', enabled=False) def my_before_block_fn(cpustate, translation_block):  . panda.enable_callback('my_callback')   If a callback is decorated with a  procname argument, it will only be enabled when that process is running. To permanently disable such a callback, you can use  panda.disable_callback('name', forever=True) . Note that if you wish to define a function multiple times (e.g., inside a loop), you'll need to give it multiple names or it will be overwritten.   for x in range(10): @panda.cb_before_block_exec(name=f\"bbe_{x}\") def bbe_loop(cpu, tb): print(f\"Before block exec function  {x}\")    Replaying Recordings   panda = Panda( .)  Register functions to run on callbacks here panda.run_replay(\"/file/path/here\")  Runs the replay    Load and unload a C plugin A C plugin can be loaded from pypanda easily:  panda.load_plugin(\"stringsearch\") C plugins can be passed named arguments using a dictionary:  panda.load_plugin(\"stringsearch\", {\"name\": \"jpeg\"}) Or unnamed arguments using a list:  panda.load_plugin(\"my_plugin\", [\"arg1\", \"arg2\"])  Asynchronous Activity When a callback is executing, the guest is suspended until the callback finishes. However, we often want to interact with guests during our analyses. In these situations, we run code asynchronously to send data into and wait for results from the guest. PyPANDA is designed to easily support such analyses with the  @panda.queue_blocking decorator. Consider if you with to run the commands  uname -a , then  whoami in a guest. If your guest exposes a console over a serial port (as all the 'generic' qcows we use do), you could run these commands by simply typing them and waiting for a response. But if you were to do this in a callback, the guest would have no chance to respond to your commands and you'd end up in a deadlock where your callback code never terminates until the guest executes your command, and the guest will never execute commands until your callback terminates. Instead, you can queue up blocking functions to run asynchronously as follows:   panda =  . @panda.queue_blocking def first_cmd(): print(panda.run_serial_cmd(\"uname -a\" @panda.queue_blocking def second_cmd(): print(panda.run_serial_cmd(\"whoami\" panda.end_analysis() panda.run()   Note that the  panda.queue_blocking decorator both marks a function as being a blocking function (which allows it to use functions such as  panda.run_serial_cmd ) and queues it up to run after the call to  panda.run()  Recordings See [take_recording.py](https: github.com/panda-re/panda/tree/master/panda/python/examples/take_recording.py) A replay can be taken with the function  panda.record_cmd('cmd_to_run', recording_name='replay_name') which will revert the guest to a  root snapshot, type a command, begin a recording, press enter, wait for the command to finish, and then end the replay. Once a replay is created on disk, it can be analyzed by using  panda.run_replay('replay_name') . Alternatively, you can begin/end the recording through the monitor with  panda.run_monitor_cmd('begin_record myname') and  panda.run_monitor_cmd('end_record') and drive the guest using  panda.run_serial_cmd in the middle.  Typical Use Patterns  Live system Example: [asid.py](https: github.com/panda-re/panda/tree/master/panda/python/examples/asid.py). 1. Initialize a panda object based off a generic machine or a qcow you have. 2. Register functions to run at various PANDA callbacks. 3. Register and queue up a blocking function to revert the guest to a snapshot, run commands with  panda.run_serial_cmd() , and stop the execution with  panda.end_analysis() 5. Start the execution with  panda.run()  Record/Replay Example: [tests/record_then_replay.py](https: github.com/panda-re/panda/tree/master/panda/python/tests/record_then_replay.py). 1. Initialize a panda object based off a generic machine or a qcow you have. 2. Register and queue up a blocking function to drive guest execution while recording or with  panda.record_cmd then call  panda.end_analysis() 3. Register functions to run at various PANDA callbacks. 5. Analyze the replay with  panda.run_replay(filename)  Additional Information  Here be dragons  You can't have multiple instances of panda running at the same time. Once you've created a panda object for a given architecture, you can never create another. Hoewver, you can modify the machine after it's created to run a new analysis as long as you don't change the machine type.  PyPANDA is slower than traditional PANDA. Well-engineered plugins typically have a runtime overhead of ~10% compared to regular PANDA plugins (for up to 10M instructions). To improve performance try disabling callbacks when possible and only enabling them when they are needed.  Extending PyPANDA PyPANDA currently supports interactions (e.g., ppp callbacks) with many PANDA plugins such as  taint2 and  osi . If you wish to extend PyPANDA to support an new plugin, its header file must be cleaned up such that it can be parsed by CFFI. See [create_panda_datatypes.py](https: github.com/panda-re/panda/tree/master/panda/python/utils/create_panda_datatypes.py) and the magic  BEGIN_PYPANDA_NEEDS_THIS strings it searches for.  Learn more The [PyPANDA paper](https: moyix.net/~moyix/papers/pypanda.pdf) was published at the NDSS Binary Analysis Research Workshop in 2021 and includes details on the project's design goals as well as an evaluation of it's usability and performance."
+},
+{
+"ref":"pandare.Callbacks",
+"url":0,
+"doc":"The core callbacks provided by PANDA. Note this is a pseudo class just for documentation. Note  the arguments listed are the arguments your callback function will receive and  the return value is what your callback must return . These decorators should be accessed through a handle to a panda object, for example: panda = Panda(generic='x86_64') @panda.cb_before_block_exec def my_bbe_callback(cpu, tb): print(\"Before block exec!\")  ."
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_before_block_translate",
+"url":0,
+"doc":"Called before translation of each basic block. Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC we are about to translate Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_after_block_translate",
+"url":0,
+"doc":"Called after the translation of each basic block. Notes: This is a good place to perform extra passes over the generated code (particularly by manipulating the LLVM code). FIXME: How would this actually work? By this point the out ASM has already been generated. Modify the IR and then regenerate? Args: CPUState : env: the current CPU state TranslationBlock : tb: the TB we just translated Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_before_block_exec_invalidate_opt",
+"url":0,
+"doc":"Called before execution of every basic block, with the option to invalidate the TB. Args: CPUState : env: the current CPU state TranslationBlock : tb: the TB we are about to execute Returns: bool: true if we should invalidate the current translation block and retranslate, false otherwise. ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_before_tcg_codegen",
+"url":0,
+"doc":"Called before host code generation for every basic block. Enables inspection and modification of the TCG block after lifting from guest code. Args: CPUState : env: the current CPU state TranslationBlock : tb: the TB about to be compiled Returns: void: None ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_before_block_exec",
+"url":0,
+"doc":"Called before execution of every basic block. Args: CPUState : env: the current CPU state TranslationBlock : tb: the TB we are about to execute Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_after_block_exec",
+"url":0,
+"doc":"Called after execution of every basic block. If exitCode > TB_EXIT_IDX1, then the block exited early. Args: CPUState : env: the current CPU state TranslationBlock : tb: the TB we just executed uint8_t: exitCode: why the block execution exited Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_insn_translate",
+"url":0,
+"doc":"Called before the translation of each instruction. Notes: This allows a plugin writer to instrument only a small number of instructions, avoiding the performance hit of instrumenting everything. If you do want to instrument every single instruction, just return true. See the documentation for PANDA_CB_INSN_EXEC for more detail. Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC we are about to translate Returns: bool: true if PANDA should insert instrumentation into the generated code, false otherwise ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_insn_exec",
+"url":0,
+"doc":"Called before execution of any instruction identified by the PANDA_CB_INSN_TRANSLATE callback. Notes: This instrumentation is implemented by generating a call to a helper function just before the instruction itself is generated. This is fairly expensive, which is why it's only enabled via the PANDA_CB_INSN_TRANSLATE callback. Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC we are about to execute Returns: int: unused ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_after_insn_translate",
+"url":0,
+"doc":"Called after the translation of each instruction. Notes: See  insn_translate , callbacks are registered via PANDA_CB_AFTER_INSN_EXEC Args: CPUState : env: the current CPU state target_ptr_t: pc: the next guest PC we've translated Returns: bool: true if PANDA should insert instrumentation into the generated code, false otherwise ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_after_insn_exec",
+"url":0,
+"doc":"Called after execution of an instruction identified by the PANDA_CB_AFTER_INSN_TRANSLATE callback Notes: See  insn_exec . Enabled via the PANDA_CB_AFTER_INSN_TRANSLATE callback. Args: CPUState : env: the current CPU state target_ptr_t: pc: the next guest PC already executed Returns: int: unused ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_virt_mem_before_read",
+"url":0,
+"doc":"Called before memory is read. Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC doing the read target_ptr_t: addr: the (virtual) address being read size_t: size: the size of the read Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_virt_mem_before_write",
+"url":0,
+"doc":"Called before memory is written. Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC doing the write target_ptr_t: addr: the (virtual) address being written size_t: size: the size of the write uint8_t : buf: pointer to the data that is to be written Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_phys_mem_before_read",
+"url":0,
+"doc":"Called after memory is read. Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC doing the read target_ptr_t: addr: the (physical) address being read size_t: size: the size of the read Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_phys_mem_before_write",
+"url":0,
+"doc":"Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC doing the write target_ptr_t: addr: the (physical) address being written size_t: size: the size of the write uint8_t : buf: pointer to the data that is to be written Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_virt_mem_after_read",
+"url":0,
+"doc":"Called after memory is read. Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC doing the read target_ptr_t: addr: the (virtual) address being read size_t: size: the size of the read uint8_t : buf: pointer to data just read Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_virt_mem_after_write",
+"url":0,
+"doc":"Called after memory is written. Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC doing the write target_ptr_t: addr: the (virtual) address being written size_t: size: the size of the write uint8_t : buf: pointer to the data that was written Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_phys_mem_after_read",
+"url":0,
+"doc":"Called after memory is read. Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC doing the read target_ptr_t: addr: the (physical) address being read size_t: size: the size of the read uint8_t : buf: pointer to data just read Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_phys_mem_after_write",
+"url":0,
+"doc":"Args: CPUState : env: the current CPU state target_ptr_t: pc: the guest PC doing the write target_ptr_t: addr: the (physical) address being written size_t: size: the size of the write uint8_t : buf: pointer to the data that was written Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_mmio_after_read",
+"url":0,
+"doc":"Called after MMIO memory is read. Args: CPUState : env: the current CPU state target_ptr_t: physaddr: the physical address being read from target_ptr_t: vaddr: the virtual address being read from size_t: size: the size of the read uint64_t : val: the value being read Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_mmio_before_write",
+"url":0,
+"doc":"Called after MMIO memory is written to. Args: CPUState : env: the current CPU state target_ptr_t: physaddr: the physical address being written to target_ptr_t: vaddr: the virtual address being written to size_t: size: the size of the write uint64_t : val: the value being written Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_hd_read",
+"url":0,
+"doc":"Args: CPUState : env: Returns: void: the type your callback must return",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_hd_write",
+"url":0,
+"doc":"Args: CPUState : env: Returns: void: the type your callback must return",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_guest_hypercall",
+"url":0,
+"doc":"Called when a program inside the guest makes a hypercall to pass information from inside the guest to a plugin Notes: On x86, this is called whenever CPUID is executed. On ARM, the MCR instructions is used. Plugins should check for magic values in the registers to determine if it really is a guest hypercall. Parameters can be passed in other registers. If the plugin processes the hypercall, it should return true so the execution of the normal instruction is skipped. Args: CPUState : env: the current CPU state Returns: bool: true if the callback has processed the hypercall, false if the hypercall has been ignored. ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_monitor",
+"url":0,
+"doc":"Called when someone uses the plugin_cmd monitor command. Notes: The command is passed as a single string. No parsing is performed on the string before it is passed to the plugin, so each plugin must parse the string as it deems appropriate (e.g. by using strtok and getopt) to do more complex option processing. It is recommended that each plugin implementing this callback respond to the \"help\" message by listing the commands supported by the plugin. Note that every loaded plugin will have the opportunity to respond to each plugin_cmd; thus it is a good idea to ensure that your plugin's monitor commands are uniquely named, e.g. by using the plugin name as a prefix (\"sample_do_foo\" rather than \"do_foo\"). Args: Monitor : mon: a pointer to the Monitor const: char cmd: Returns: int: unused ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_cpu_restore_state",
+"url":0,
+"doc":"Called inside of cpu_restore_state(), when there is a CPU fault/exception. Args: CPUState : env: the current CPU state TranslationBlock : tb: the current translation block Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_before_loadvm",
+"url":0,
+"doc":"Called at start of replay, before loadvm is called. This allows us to hook devices' loadvm handlers. Remember to unregister the existing handler for the device first. See the example in the sample plugin. Args: void: : Returns: int: unused ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_asid_changed",
+"url":0,
+"doc":"Called when asid changes. Notes: The callback is only invoked implemented for x86 and ARM. This should break plugins which rely on it to detect context switches in any other architecture. Args: CPUState : env: pointer to CPUState target_ptr_t: oldval: old asid value target_ptr_t: newval: new asid value Returns: bool: true if the asid should be prevented from being changed false otherwise ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_replay_hd_transfer",
+"url":0,
+"doc":"In replay only. Some kind of data transfer involving hard drive. Notes: Unlike most callbacks, this is neither a \"before\" or \"after\" callback. In replay the transfer doesn't really happen. We are  at the point at which it happened, really. Args: CPUState : env: pointer to CPUState uint32_t: type: type of transfer (Hd_transfer_type) target_ptr_t: src_addr: address for src target_ptr_t: dest_addr: address for dest size_t: num_bytes: size of transfer in bytes Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_replay_net_transfer",
+"url":0,
+"doc":"In replay only, some kind of data transfer within the network card (currently, only the E1000 is supported). Notes: Unlike most callbacks, this is neither a \"before\" or \"after\" callback. In replay the transfer doesn't really happen. We are  at the point at which it happened, really. Also, the src_addr and dest_addr may be for either host (ie. a location in the emulated network device) or guest, depending upon the type. Args: CPUState : env: pointer to CPUState uint32_t: type: type of transfer (Net_transfer_type) uint64_t: src_addr: address for src uint64_t: dest_addr: address for dest size_t: num_bytes: size of transfer in bytes Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_replay_serial_receive",
+"url":0,
+"doc":"In replay only, called when a byte is received on the serial port. Args: CPUState : env: pointer to CPUState target_ptr_t: fifo_addr: address of the data within the fifo uint8_t: value: Returns: void: unused ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_replay_serial_read",
+"url":0,
+"doc":"In replay only, called when a byte read from the serial RX FIFO Args: CPUState : env: pointer to CPUState target_ptr_t: fifo_addr: address of the data within the fifo (source) uint32_t: port_addr: address of the IO port where data is being read (destination) uint8_t: value: Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_replay_serial_send",
+"url":0,
+"doc":"In replay only, called when a byte is sent on the serial port. Args: CPUState : env: pointer to CPUState target_ptr_t: fifo_addr: address of the data within the fifo uint8_t: value: Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_replay_serial_write",
+"url":0,
+"doc":"Args: CPUState : env: pointer to CPUState target_ptr_t: fifo_addr: address of the data within the fifo (source) uint32_t: port_addr: address of the IO port where data is being read (destination) uint8_t: value: Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_replay_before_dma",
+"url":0,
+"doc":"In replay only. We are about to dma between qemu buffer and guest memory. Args: CPUState : env: pointer to CPUState const: uint8_t buf: hwaddr: addr: address written to in the guest RAM size_t: size: size of transfer bool: is_write: indicates whether the DMA transfer writes to memory Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_replay_after_dma",
+"url":0,
+"doc":"Args: CPUState : env: pointer to CPUState const: uint8_t buf: hwaddr: addr: address written to in the guest RAM size_t: size: size of transfer bool: is_write: indicates whether the DMA transfer writes to memory Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_replay_handle_packet",
+"url":0,
+"doc":"Notes:  buf_addr_rec corresponds to the address of the device buffer of the emulated NIC. I.e. it is the address of a VM-host-side buffer. It is useful for implementing network tainting in an OS-agnostic way, in conjunction with taint2_label_io(). FIXME: The  buf_addr_rec maps to the  uint8_t  buf field of the internal  RR_handle_packet_args struct. The field is dumped/loaded to/from the trace without proper serialization/deserialization. As a result, a 64bit build of PANDA will not be able to process traces produced by a 32bit of PANDA, and vice-versa. There are more internal structs that suffer from the same issue. This is an oversight that will eventually be fixed. But as the real impact is minimal (virtually nobody uses 32bit builds), the fix has a very low priority in the bugfix list. Args: CPUState : env: pointer to CPUState uint8_t : buf: buffer containing packet data size_t: size: num bytes in buffer uint8_t: direction: either  PANDA_NET_RX or  PANDA_NET_TX uint64_t: buf_addr_rec: the address of  buf at the time of recording Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_after_cpu_exec_enter",
+"url":0,
+"doc":"Called after cpu_exec calls cpu_exec_enter function. Args: CPUState : env: the current CPU state Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_before_cpu_exec_exit",
+"url":0,
+"doc":"Called before cpu_exec calls cpu_exec_exit function. Args: CPUState : env: the current CPU state bool: ranBlock: true if ran a block since previous cpu_exec_enter Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_after_machine_init",
+"url":0,
+"doc":"Called right after the machine has been initialized, but before any guest code runs. Notes: This callback allows initialization of components that need access to the RAM, CPU object, etc. E.g. for the taint2 plugin, this is the appropriate place to call taint2_enable_taint(). Args: CPUState : env: pointer to CPUState Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_after_loadvm",
+"url":0,
+"doc":"Called right after a snapshot has been loaded (either with loadvm or replay initialization), but before any guest code runs. Args: CPUState : env: pointer to CPUState Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_top_loop",
+"url":0,
+"doc":"Called at the top of the loop that manages emulation. Args: CPUState : env: pointer to CPUState Returns: void: unused ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_during_machine_init",
+"url":0,
+"doc":"Called in the middle of machine initialization Args: MachineState : machine: pointer to the machine state Returns: void: None ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_main_loop_wait",
+"url":0,
+"doc":"Called in IO thread in place where monitor cmds are processed Args: void: : Returns: void: None ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_pre_shutdown",
+"url":0,
+"doc":"Called just before qemu shuts down Args: void: : Returns: void: None ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_unassigned_io_read",
+"url":0,
+"doc":"Called when the guest attempts to read from an unmapped peripheral via MMIO Args: CPUState : env: target_ptr_t: pc: Guest program counter at time of write hwaddr: addr: Physical address written to size_t: size: Size of write uint64_t : val: Pointer to a buffer that will be passed to the guest as the result of the read Returns: bool: True if value read was changed by a PANDA plugin and should be returned False if error-logic (invalid write) should be run ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_unassigned_io_write",
+"url":0,
+"doc":"Called when the guest attempts to write to an unmapped peripheral via MMIO Args: CPUState : env: target_ptr_t: pc: Guest program counter at time of write hwaddr: addr: Physical address written to size_t: size: Size of write uint64_t: val: Data being written, up to 8 bytes Returns: bool: True if the write should be allowed without error False if normal behavior should be used (error-logic) ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_before_handle_exception",
+"url":0,
+"doc":"Called just before we are about to handle an exception. Note: only called for cpu->exception_index > 0 Args: CPUState : cpu: int32_t: exception_index: Returns: int32_t: a new exception_index. ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_before_handle_interrupt",
+"url":0,
+"doc":"Called just before we are about to handle an interrupt. Args: CPUState : cpu: int32_t: interrupt_request: Returns: int32_t: new interrupt_rquest ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_start_block_exec",
+"url":0,
+"doc":"This is like before_block_exec except its part of the TCG stream. Args: CPUState : cpu: TranslationBlock : tb: the TB we are executing Returns: void: none ",
+"func":1
+},
+{
+"ref":"pandare.Callbacks.@panda.cb_end_block_exec",
+"url":0,
+"doc":"This is like after_block_exec except its part of the TCG stream. Args: CPUState : cpu: TranslationBlock : tb: the TB we are executing Returns: void: none ",
+"func":1
 },
 {
 "ref":"pandare.plog_reader",
@@ -364,6 +669,12 @@ INDEX=[
 },
 {
 "ref":"pandare.arch.MipsArch.get_call_return",
+"url":3,
+"doc":" Deprecated use get_return_address",
+"func":1
+},
+{
+"ref":"pandare.arch.MipsArch.get_return_address",
 "url":3,
 "doc":"looks up where ret will go",
 "func":1

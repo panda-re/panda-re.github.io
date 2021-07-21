@@ -361,10 +361,12 @@ class PandaArch():
             return
         word_size = int(self.panda.bits/8)
 
+        _, endianness, _ = self._determine_bits()
+
         for word_idx in range(words):
             try:
                 val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
-                val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
+                val = int.from_bytes(val_b, byteorder=endianness)
                 print(&#34;[{}+0x{:0&gt;2x}] == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
                 telescope(self.panda, cpu, val)
             except ValueError:
@@ -421,17 +423,17 @@ class ArmArch(PandaArch):
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
 
-    def get_return_value(self, env):
+    def get_return_value(self, cpu):
         &#39;&#39;&#39;
         returns register value used to return results
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;R0&#34;)
+        return self.get_reg(cpu, &#34;R0&#34;)
 
-    def get_return_address(self,env):
+    def get_return_address(self, cpu):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;LR&#34;)
+        return self.get_reg(cpu, &#34;LR&#34;)
 
 class Aarch64Arch(PandaArch):
     &#39;&#39;&#39;
@@ -491,17 +493,17 @@ class Aarch64Arch(PandaArch):
         &#39;&#39;&#39;
         cpu.env_ptr.xregs[reg] = val
 
-    def get_return_value(self, env):
+    def get_return_value(self, cpu):
         &#39;&#39;&#39;
         returns register value used to return results
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;R0&#34;)
+        return self.get_reg(cpu, &#34;R0&#34;)
 
-    def get_return_address(self,env):
+    def get_return_address(self, cpu):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;LR&#34;)
+        return self.get_reg(cpu, &#34;LR&#34;)
 
 class MipsArch(PandaArch):
     &#39;&#39;&#39;
@@ -569,17 +571,23 @@ class MipsArch(PandaArch):
         &#39;&#39;&#39;
         cpu.env_ptr.active_tc.gpr[reg] = val
 
-    def get_return_value(self, env):
+    def get_return_value(self, cpu):
         &#39;&#39;&#39;
         returns register value used to return results
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;V0&#34;)
+        return self.get_reg(cpu, &#34;V0&#34;)
 
-    def get_call_return(self,env):
+    def get_call_return(self, cpu):
+        &#39;&#39;&#39;
+        .. Deprecated:: use get_return_address
+        &#39;&#39;&#39;
+        return self.get_return_addess(cpu)
+
+    def get_return_address(self,cpu):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;RA&#34;)
+        return self.get_reg(cpu, &#34;RA&#34;)
 
     def set_retval(self, cpu, val, convention=&#39;default&#39;, failure=False):
         &#39;&#39;&#39;
@@ -644,26 +652,26 @@ class X86Arch(PandaArch):
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
 
-    def get_return_value(self, env):
+    def get_return_value(self, cpu):
         &#39;&#39;&#39;
         returns register value used to return results
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;EAX&#34;)
+        return self.get_reg(cpu, &#34;EAX&#34;)
 
-    def get_return_address(self,env):
+    def get_return_address(self,cpu):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        esp = self.get_reg(env,&#34;ESP&#34;)
-        return self.panda.virtual_memory_read(env,esp,4,fmt=&#39;int&#39;)
+        esp = self.get_reg(cpu,&#34;ESP&#34;)
+        return self.panda.virtual_memory_read(cpu,esp,4,fmt=&#39;int&#39;)
     
     # we need this because X86 is stack based
-    def get_arg_stack(self, env, num, kernel=False):
+    def get_arg_stack(self, cpu, num, kernel=False):
         &#39;&#39;&#39;
         Gets arguments based on the number. Supports kernel and usermode.
         &#39;&#39;&#39;
-        esp = self.get_reg(env, &#34;ESP&#34;)
-        return self.panda.virtual_memory_read(env, esp+(4*(num+1)),4,fmt=&#39;int&#39;)
+        esp = self.get_reg(cpu, &#34;ESP&#34;)
+        return self.panda.virtual_memory_read(cpu, esp+(4*(num+1)),4,fmt=&#39;int&#39;)
 
 class X86_64Arch(PandaArch):
     &#39;&#39;&#39;
@@ -713,18 +721,18 @@ class X86_64Arch(PandaArch):
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
 
-    def get_return_value(self, env):
+    def get_return_value(self, cpu):
         &#39;&#39;&#39;
         returns register value used to return results
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;RAX&#34;)
+        return self.get_reg(cpu, &#34;RAX&#34;)
 
-    def get_return_address(self,env):
+    def get_return_address(self, cpu):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        esp = self.get_reg(env,&#34;RSP&#34;)
-        return self.panda.virtual_memory_read(env,esp,8,fmt=&#39;int&#39;)</code></pre>
+        esp = self.get_reg(cpu, &#34;RSP&#34;)
+        return self.panda.virtual_memory_read(cpu, esp, 8, fmt=&#39;int&#39;)</code></pre>
 </details>
 </section>
 <section>
@@ -805,17 +813,17 @@ class X86_64Arch(PandaArch):
         &#39;&#39;&#39;
         cpu.env_ptr.xregs[reg] = val
 
-    def get_return_value(self, env):
+    def get_return_value(self, cpu):
         &#39;&#39;&#39;
         returns register value used to return results
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;R0&#34;)
+        return self.get_reg(cpu, &#34;R0&#34;)
 
-    def get_return_address(self,env):
+    def get_return_address(self, cpu):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;LR&#34;)</code></pre>
+        return self.get_reg(cpu, &#34;LR&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -842,7 +850,7 @@ Note the PC is not stored in a general purpose reg</p></div>
 </details>
 </dd>
 <dt id="pandare.arch.Aarch64Arch.get_return_address"><code class="name flex">
-<span>def <span class="ident">get_return_address</span></span>(<span>self, env)</span>
+<span>def <span class="ident">get_return_address</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>looks up where ret will go</p></div>
@@ -850,15 +858,15 @@ Note the PC is not stored in a general purpose reg</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_return_address(self,env):
+<pre><code class="python">def get_return_address(self, cpu):
     &#39;&#39;&#39;
     looks up where ret will go
     &#39;&#39;&#39;
-    return self.get_reg(env, &#34;LR&#34;)</code></pre>
+    return self.get_reg(cpu, &#34;LR&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.Aarch64Arch.get_return_value"><code class="name flex">
-<span>def <span class="ident">get_return_value</span></span>(<span>self, env)</span>
+<span>def <span class="ident">get_return_value</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>returns register value used to return results</p></div>
@@ -866,11 +874,11 @@ Note the PC is not stored in a general purpose reg</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_return_value(self, env):
+<pre><code class="python">def get_return_value(self, cpu):
     &#39;&#39;&#39;
     returns register value used to return results
     &#39;&#39;&#39;
-    return self.get_reg(env, &#34;R0&#34;)</code></pre>
+    return self.get_reg(cpu, &#34;R0&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.Aarch64Arch.set_pc"><code class="name flex">
@@ -957,17 +965,17 @@ Note the PC is not stored in a general purpose reg</p></div>
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
 
-    def get_return_value(self, env):
+    def get_return_value(self, cpu):
         &#39;&#39;&#39;
         returns register value used to return results
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;R0&#34;)
+        return self.get_reg(cpu, &#34;R0&#34;)
 
-    def get_return_address(self,env):
+    def get_return_address(self, cpu):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;LR&#34;)</code></pre>
+        return self.get_reg(cpu, &#34;LR&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -976,7 +984,7 @@ Note the PC is not stored in a general purpose reg</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="pandare.arch.ArmArch.get_return_address"><code class="name flex">
-<span>def <span class="ident">get_return_address</span></span>(<span>self, env)</span>
+<span>def <span class="ident">get_return_address</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>looks up where ret will go</p></div>
@@ -984,15 +992,15 @@ Note the PC is not stored in a general purpose reg</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_return_address(self,env):
+<pre><code class="python">def get_return_address(self, cpu):
     &#39;&#39;&#39;
     looks up where ret will go
     &#39;&#39;&#39;
-    return self.get_reg(env, &#34;LR&#34;)</code></pre>
+    return self.get_reg(cpu, &#34;LR&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.ArmArch.get_return_value"><code class="name flex">
-<span>def <span class="ident">get_return_value</span></span>(<span>self, env)</span>
+<span>def <span class="ident">get_return_value</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>returns register value used to return results</p></div>
@@ -1000,11 +1008,11 @@ Note the PC is not stored in a general purpose reg</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_return_value(self, env):
+<pre><code class="python">def get_return_value(self, cpu):
     &#39;&#39;&#39;
     returns register value used to return results
     &#39;&#39;&#39;
-    return self.get_reg(env, &#34;R0&#34;)</code></pre>
+    return self.get_reg(cpu, &#34;R0&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1105,17 +1113,23 @@ Note the PC is not stored in a general purpose reg</p></div>
         &#39;&#39;&#39;
         cpu.env_ptr.active_tc.gpr[reg] = val
 
-    def get_return_value(self, env):
+    def get_return_value(self, cpu):
         &#39;&#39;&#39;
         returns register value used to return results
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;V0&#34;)
+        return self.get_reg(cpu, &#34;V0&#34;)
 
-    def get_call_return(self,env):
+    def get_call_return(self, cpu):
+        &#39;&#39;&#39;
+        .. Deprecated:: use get_return_address
+        &#39;&#39;&#39;
+        return self.get_return_addess(cpu)
+
+    def get_return_address(self,cpu):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;RA&#34;)
+        return self.get_reg(cpu, &#34;RA&#34;)
 
     def set_retval(self, cpu, val, convention=&#39;default&#39;, failure=False):
         &#39;&#39;&#39;
@@ -1140,19 +1154,21 @@ Note the PC is not stored in a general purpose reg</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="pandare.arch.MipsArch.get_call_return"><code class="name flex">
-<span>def <span class="ident">get_call_return</span></span>(<span>self, env)</span>
+<span>def <span class="ident">get_call_return</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>looks up where ret will go</p></div>
+<div class="desc"><div class="admonition deprecated">
+<p class="admonition-title">Deprecated:&ensp;use get_return_address</p>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_call_return(self,env):
+<pre><code class="python">def get_call_return(self, cpu):
     &#39;&#39;&#39;
-    looks up where ret will go
+    .. Deprecated:: use get_return_address
     &#39;&#39;&#39;
-    return self.get_reg(env, &#34;RA&#34;)</code></pre>
+    return self.get_return_addess(cpu)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.MipsArch.get_pc"><code class="name flex">
@@ -1171,8 +1187,24 @@ Note the PC is not stored in a general purpose reg</p></div>
     return cpu.env_ptr.active_tc.PC</code></pre>
 </details>
 </dd>
+<dt id="pandare.arch.MipsArch.get_return_address"><code class="name flex">
+<span>def <span class="ident">get_return_address</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>looks up where ret will go</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_return_address(self,cpu):
+    &#39;&#39;&#39;
+    looks up where ret will go
+    &#39;&#39;&#39;
+    return self.get_reg(cpu, &#34;RA&#34;)</code></pre>
+</details>
+</dd>
 <dt id="pandare.arch.MipsArch.get_return_value"><code class="name flex">
-<span>def <span class="ident">get_return_value</span></span>(<span>self, env)</span>
+<span>def <span class="ident">get_return_value</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>returns register value used to return results</p></div>
@@ -1180,11 +1212,11 @@ Note the PC is not stored in a general purpose reg</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_return_value(self, env):
+<pre><code class="python">def get_return_value(self, cpu):
     &#39;&#39;&#39;
     returns register value used to return results
     &#39;&#39;&#39;
-    return self.get_reg(env, &#34;V0&#34;)</code></pre>
+    return self.get_reg(cpu, &#34;V0&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.MipsArch.set_pc"><code class="name flex">
@@ -1460,10 +1492,12 @@ otherwise it will be set to 1</p></div>
             return
         word_size = int(self.panda.bits/8)
 
+        _, endianness, _ = self._determine_bits()
+
         for word_idx in range(words):
             try:
                 val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
-                val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
+                val = int.from_bytes(val_b, byteorder=endianness)
                 print(&#34;[{}+0x{:0&gt;2x}] == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
                 telescope(self.panda, cpu, val)
             except ValueError:
@@ -1539,10 +1573,12 @@ otherwise it will be set to 1</p></div>
         return
     word_size = int(self.panda.bits/8)
 
+    _, endianness, _ = self._determine_bits()
+
     for word_idx in range(words):
         try:
             val_b = self.panda.virtual_memory_read(cpu, base_reg_val+word_idx*word_size, word_size)
-            val = int.from_bytes(val_b, byteorder=&#39;little&#39;)
+            val = int.from_bytes(val_b, byteorder=endianness)
             print(&#34;[{}+0x{:0&gt;2x}] == 0x{:0&lt;8x}]: 0x{:0&lt;8x}&#34;.format(base_reg_s, word_idx*word_size, base_reg_val+word_idx*word_size, val), end=&#34;\t&#34;)
             telescope(self.panda, cpu, val)
         except ValueError:
@@ -1826,26 +1862,26 @@ in the signature here so it can be set by a caller without regard for the guest 
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
 
-    def get_return_value(self, env):
+    def get_return_value(self, cpu):
         &#39;&#39;&#39;
         returns register value used to return results
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;EAX&#34;)
+        return self.get_reg(cpu, &#34;EAX&#34;)
 
-    def get_return_address(self,env):
+    def get_return_address(self,cpu):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        esp = self.get_reg(env,&#34;ESP&#34;)
-        return self.panda.virtual_memory_read(env,esp,4,fmt=&#39;int&#39;)
+        esp = self.get_reg(cpu,&#34;ESP&#34;)
+        return self.panda.virtual_memory_read(cpu,esp,4,fmt=&#39;int&#39;)
     
     # we need this because X86 is stack based
-    def get_arg_stack(self, env, num, kernel=False):
+    def get_arg_stack(self, cpu, num, kernel=False):
         &#39;&#39;&#39;
         Gets arguments based on the number. Supports kernel and usermode.
         &#39;&#39;&#39;
-        esp = self.get_reg(env, &#34;ESP&#34;)
-        return self.panda.virtual_memory_read(env, esp+(4*(num+1)),4,fmt=&#39;int&#39;)</code></pre>
+        esp = self.get_reg(cpu, &#34;ESP&#34;)
+        return self.panda.virtual_memory_read(cpu, esp+(4*(num+1)),4,fmt=&#39;int&#39;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1854,7 +1890,7 @@ in the signature here so it can be set by a caller without regard for the guest 
 <h3>Methods</h3>
 <dl>
 <dt id="pandare.arch.X86Arch.get_arg_stack"><code class="name flex">
-<span>def <span class="ident">get_arg_stack</span></span>(<span>self, env, num, kernel=False)</span>
+<span>def <span class="ident">get_arg_stack</span></span>(<span>self, cpu, num, kernel=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets arguments based on the number. Supports kernel and usermode.</p></div>
@@ -1862,12 +1898,12 @@ in the signature here so it can be set by a caller without regard for the guest 
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_arg_stack(self, env, num, kernel=False):
+<pre><code class="python">def get_arg_stack(self, cpu, num, kernel=False):
     &#39;&#39;&#39;
     Gets arguments based on the number. Supports kernel and usermode.
     &#39;&#39;&#39;
-    esp = self.get_reg(env, &#34;ESP&#34;)
-    return self.panda.virtual_memory_read(env, esp+(4*(num+1)),4,fmt=&#39;int&#39;)</code></pre>
+    esp = self.get_reg(cpu, &#34;ESP&#34;)
+    return self.panda.virtual_memory_read(cpu, esp+(4*(num+1)),4,fmt=&#39;int&#39;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.X86Arch.get_pc"><code class="name flex">
@@ -1887,7 +1923,7 @@ in the signature here so it can be set by a caller without regard for the guest 
 </details>
 </dd>
 <dt id="pandare.arch.X86Arch.get_return_address"><code class="name flex">
-<span>def <span class="ident">get_return_address</span></span>(<span>self, env)</span>
+<span>def <span class="ident">get_return_address</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>looks up where ret will go</p></div>
@@ -1895,16 +1931,16 @@ in the signature here so it can be set by a caller without regard for the guest 
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_return_address(self,env):
+<pre><code class="python">def get_return_address(self,cpu):
     &#39;&#39;&#39;
     looks up where ret will go
     &#39;&#39;&#39;
-    esp = self.get_reg(env,&#34;ESP&#34;)
-    return self.panda.virtual_memory_read(env,esp,4,fmt=&#39;int&#39;)</code></pre>
+    esp = self.get_reg(cpu,&#34;ESP&#34;)
+    return self.panda.virtual_memory_read(cpu,esp,4,fmt=&#39;int&#39;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.X86Arch.get_return_value"><code class="name flex">
-<span>def <span class="ident">get_return_value</span></span>(<span>self, env)</span>
+<span>def <span class="ident">get_return_value</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>returns register value used to return results</p></div>
@@ -1912,11 +1948,11 @@ in the signature here so it can be set by a caller without regard for the guest 
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_return_value(self, env):
+<pre><code class="python">def get_return_value(self, cpu):
     &#39;&#39;&#39;
     returns register value used to return results
     &#39;&#39;&#39;
-    return self.get_reg(env, &#34;EAX&#34;)</code></pre>
+    return self.get_reg(cpu, &#34;EAX&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.X86Arch.set_pc"><code class="name flex">
@@ -2013,18 +2049,18 @@ in the signature here so it can be set by a caller without regard for the guest 
         &#39;&#39;&#39;
         cpu.env_ptr.regs[reg] = val
 
-    def get_return_value(self, env):
+    def get_return_value(self, cpu):
         &#39;&#39;&#39;
         returns register value used to return results
         &#39;&#39;&#39;
-        return self.get_reg(env, &#34;RAX&#34;)
+        return self.get_reg(cpu, &#34;RAX&#34;)
 
-    def get_return_address(self,env):
+    def get_return_address(self, cpu):
         &#39;&#39;&#39;
         looks up where ret will go
         &#39;&#39;&#39;
-        esp = self.get_reg(env,&#34;RSP&#34;)
-        return self.panda.virtual_memory_read(env,esp,8,fmt=&#39;int&#39;)</code></pre>
+        esp = self.get_reg(cpu, &#34;RSP&#34;)
+        return self.panda.virtual_memory_read(cpu, esp, 8, fmt=&#39;int&#39;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -2049,7 +2085,7 @@ in the signature here so it can be set by a caller without regard for the guest 
 </details>
 </dd>
 <dt id="pandare.arch.X86_64Arch.get_return_address"><code class="name flex">
-<span>def <span class="ident">get_return_address</span></span>(<span>self, env)</span>
+<span>def <span class="ident">get_return_address</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>looks up where ret will go</p></div>
@@ -2057,16 +2093,16 @@ in the signature here so it can be set by a caller without regard for the guest 
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_return_address(self,env):
+<pre><code class="python">def get_return_address(self, cpu):
     &#39;&#39;&#39;
     looks up where ret will go
     &#39;&#39;&#39;
-    esp = self.get_reg(env,&#34;RSP&#34;)
-    return self.panda.virtual_memory_read(env,esp,8,fmt=&#39;int&#39;)</code></pre>
+    esp = self.get_reg(cpu, &#34;RSP&#34;)
+    return self.panda.virtual_memory_read(cpu, esp, 8, fmt=&#39;int&#39;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.X86_64Arch.get_return_value"><code class="name flex">
-<span>def <span class="ident">get_return_value</span></span>(<span>self, env)</span>
+<span>def <span class="ident">get_return_value</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>returns register value used to return results</p></div>
@@ -2074,11 +2110,11 @@ in the signature here so it can be set by a caller without regard for the guest 
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_return_value(self, env):
+<pre><code class="python">def get_return_value(self, cpu):
     &#39;&#39;&#39;
     returns register value used to return results
     &#39;&#39;&#39;
-    return self.get_reg(env, &#34;RAX&#34;)</code></pre>
+    return self.get_reg(cpu, &#34;RAX&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.X86_64Arch.set_pc"><code class="name flex">
@@ -2201,9 +2237,10 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li>
 <h4><code><a title="pandare.arch.MipsArch" href="#pandare.arch.MipsArch">MipsArch</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="pandare.arch.MipsArch.get_call_return" href="#pandare.arch.MipsArch.get_call_return">get_call_return</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_pc" href="#pandare.arch.MipsArch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_return_address" href="#pandare.arch.MipsArch.get_return_address">get_return_address</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_return_value" href="#pandare.arch.MipsArch.get_return_value">get_return_value</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.set_pc" href="#pandare.arch.MipsArch.set_pc">set_pc</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.set_retval" href="#pandare.arch.MipsArch.set_retval">set_retval</a></code></li>

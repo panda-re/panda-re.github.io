@@ -199,8 +199,7 @@ def my_before_block_fn(cpustate, translation_block):
 </code></pre>
 <p>The panda object creates decorators named <code>cb_[CALLBACK_NAME]</code> for each PANDA callback.
 The decorated functions must take the same number of arguments, and return the same type
-as expected by the original C callback, see <a href="https://github.com/panda-re/panda/tree/master/panda/docs/manual.md#appendix-a-callback-list">Callback List</a>
-for more information.
+as expected by the original C callback. The <strong><a href="#pandare.Callbacks">list of callbacks</a></strong> is available below.
 The decorated functions are called at the appropriate times, similarly to how a PANDA plugin written
 in C behaves.</p>
 <h2 id="enable-and-disable-callbacks">Enable and disable callbacks</h2>
@@ -312,7 +311,6 @@ Example plugins are available in the [examples directory](https://github.com/pan
 &#34;&#34;&#34;
 
 from .panda import Panda, blocking
-from .ffi_importer import ffi
 from .plog_reader import PLogReader
 
 __pdoc__ = {}
@@ -321,7 +319,116 @@ __pdoc__[&#39;asyncthread&#39;] = False
 __pdoc__[&#39;autogen&#39;] = False
 __pdoc__[&#39;ffi_importer&#39;] = False
 __pdoc__[&#39;plog_pb2&#39;] = False
-__pdoc__[&#39;volatility_cli_classes&#39;] = False</code></pre>
+__pdoc__[&#39;volatility_cli_classes&#39;] = False
+
+# The following code is soley here to allow pdoc to document callbacks
+from .autogen.panda_datatypes import get_cb_docs
+class Callbacks:
+    &#39;&#39;&#39;
+    The core callbacks provided by PANDA. Note this is a pseudo class just for documentation.
+    Note **the arguments listed are the arguments your callback function will receive** and
+    **the return value is what your callback must return**.
+
+    These decorators should be accessed through a handle to a panda object, for example:
+
+        panda = Panda(generic=&#39;x86_64&#39;)
+
+        @panda.cb_before_block_exec
+        def my_bbe_callback(cpu, tb):
+            print(&#34;Before block exec!&#34;)
+        ...
+    &#39;&#39;&#39;
+
+cb_docs = get_cb_docs()
+for cb_name, (rv, args, docstring) in cb_docs._asdict().items():
+    # Add fake functions to our callbacks class with dynamic docstrings
+
+    if cb_name == &#34;init&#34;:
+        continue
+    fakename = &#34;@panda.cb_&#34; + cb_name
+
+    # Add no-op function to the class
+    setattr(Callbacks, fakename, lambda Your_Function: None)
+
+    # Build argument list and reformat for pdoc from function signature
+    args = args.replace(&#34; *&#34;, &#34;* &#34;) # CPUState *env -&gt; CPUState* env
+    arglist = []
+    for arg in args.split(&#34;,&#34;):
+        arg = arg.strip()
+        if &#34; &#34; in arg:
+            typ = arg.split(&#34; &#34;)[0]
+            name = arg[len(typ)+1:]
+            arglist.append((typ, name))
+        else:
+            arglist.append((arg, &#34;&#34;))
+
+    # Try to build argument descriptions too from text by finding lines like &#34;argname: something\n&#34;
+    arg_desc = {}
+    rv_desc = &#34;&#34;
+    next_rv = False
+
+    type_signature = f&#34;{rv} (*&#34; # To identify when we&#39;re done with useful docs
+
+    for line in docstring.split(&#34;\n&#34;):
+        # Get arg descriptions
+        for (arg_type, arg_name) in arglist:
+            if f&#34;{arg_name}:&#34; in line:
+                arg_desc[arg_name] = line.split(f&#34;{arg_name}:&#34;)[1].strip()
+
+        # Get return value description
+        if line.startswith(&#34;Return value:&#34;):
+            next_rv = True
+        elif next_rv and &#34;:&#34; in line or type_signature in line:
+            # End when we hit something like &#34;Notes: &#34; or &#34;void (*this_callback)...&#34;
+            next_rv = False
+        elif next_rv:
+            rv_desc += line.strip() + &#34; &#34;
+
+    argnames = &#34;\n        &#34;.join(f&#34;{argtype}: {argname}: {arg_desc[argname] if argname in arg_desc else &#39;&#39;}&#34; for (argtype, argname) in arglist)
+
+    # Build docstring
+    full_ds = &#34;&#34;
+
+    # Now we want to add the comments from the C header, but we have to avoid
+    # including &#34;Arguments:&#34; or pdoc will stop special-formatting our above
+    # arguments we worked so hard to get.
+    # For now let&#39;s just grab from [name]: up until a line ending with Arguments
+    # and also Notes:
+
+    record = False
+    for line in docstring.split(&#34;\n&#34;):
+        if line.strip().replace(&#34;:&#34;, &#34;&#34;).endswith(&#34;Arguments&#34;):
+            record = False
+
+        if &#39;Notes:&#39; in line: # Include Notes: in our ouptut
+            record = True
+            #full_ds += &#34;\n\n&#34;
+
+        if cb_name+&#34;:&#34; in line:
+            start = line.split(cb_name+&#34;:&#34;)[1]
+            if len(start):
+                start+= &#34; &#34;
+            full_ds += start
+            record = True
+            continue
+
+        if type_signature in line:
+            record = False
+
+        if record:
+            full_ds += line + &#34; &#34;
+
+    # Now add args and retval
+    full_ds += f&#34;&#34;&#34;
+    Args:
+        {argnames}
+
+    Returns:
+        {rv}: {rv_desc if len(rv_desc) else &#39;the type your callback must return&#39;}
+
+    &#34;&#34;&#34;
+
+    __pdoc__[f&#34;Callbacks.{fakename}&#34;] = full_ds</code></pre>
 </details>
 </section>
 <section>
@@ -367,6 +474,1441 @@ this is done by passing a handle from your script's PANDA object …</p></div>
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pandare.Callbacks"><code class="flex name class">
+<span>class <span class="ident">Callbacks</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>The core callbacks provided by PANDA. Note this is a pseudo class just for documentation.
+Note <strong>the arguments listed are the arguments your callback function will receive</strong> and
+<strong>the return value is what your callback must return</strong>.</p>
+<p>These decorators should be accessed through a handle to a panda object, for example:</p>
+<pre><code>panda = Panda(generic='x86_64')
+
+@panda.cb_before_block_exec
+def my_bbe_callback(cpu, tb):
+    print("Before block exec!")
+...
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Callbacks:
+    &#39;&#39;&#39;
+    The core callbacks provided by PANDA. Note this is a pseudo class just for documentation.
+    Note **the arguments listed are the arguments your callback function will receive** and
+    **the return value is what your callback must return**.
+
+    These decorators should be accessed through a handle to a panda object, for example:
+
+        panda = Panda(generic=&#39;x86_64&#39;)
+
+        @panda.cb_before_block_exec
+        def my_bbe_callback(cpu, tb):
+            print(&#34;Before block exec!&#34;)
+        ...
+    &#39;&#39;&#39;</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.Callbacks.@panda.cb_after_block_exec"><code class="name flex">
+<span>def <span class="ident">@panda.cb_after_block_exec</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after execution of every basic block. If exitCode &gt; TB_EXIT_IDX1, then the block exited early.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>TranslationBlock*</code></strong></dt>
+<dd>tb: the TB we just executed</dd>
+<dt><strong><code>uint8_t</code></strong></dt>
+<dd>exitCode: why the block execution exited</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_after_block_translate"><code class="name flex">
+<span>def <span class="ident">@panda.cb_after_block_translate</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after the translation of each basic block.
+Notes: This is a good place to perform extra passes over the generated code (particularly by manipulating the LLVM code). FIXME: How would this actually work? By this point the out ASM has already been generated. Modify the IR and then regenerate?
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>TranslationBlock*</code></strong></dt>
+<dd>tb: the TB we just translated</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_after_cpu_exec_enter"><code class="name flex">
+<span>def <span class="ident">@panda.cb_after_cpu_exec_enter</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after cpu_exec calls cpu_exec_enter function.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_after_insn_exec"><code class="name flex">
+<span>def <span class="ident">@panda.cb_after_insn_exec</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after execution of an instruction identified by the PANDA_CB_AFTER_INSN_TRANSLATE callback
+Notes: See <code>insn_exec</code>. Enabled via the PANDA_CB_AFTER_INSN_TRANSLATE callback.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the next guest PC already executed</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>unused
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_after_insn_translate"><code class="name flex">
+<span>def <span class="ident">@panda.cb_after_insn_translate</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after the translation of each instruction.
+Notes: See <code>insn_translate</code>, callbacks are registered via PANDA_CB_AFTER_INSN_EXEC
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the next guest PC we've translated</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>true if PANDA should insert instrumentation into the generated code, false otherwise
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_after_loadvm"><code class="name flex">
+<span>def <span class="ident">@panda.cb_after_loadvm</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called right after a snapshot has been loaded (either with loadvm or replay initialization), but before any guest code runs.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_after_machine_init"><code class="name flex">
+<span>def <span class="ident">@panda.cb_after_machine_init</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called right after the machine has been initialized, but before any guest code runs.
+Notes: This callback allows initialization of components that need access to the RAM, CPU object, etc. E.g. for the taint2 plugin, this is the appropriate place to call taint2_enable_taint().
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_asid_changed"><code class="name flex">
+<span>def <span class="ident">@panda.cb_asid_changed</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when asid changes.
+Notes: The callback is only invoked implemented for x86 and ARM. This should break plugins which rely on it to detect context switches in any other architecture.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>oldval: old asid value</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>newval: new asid value</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>true if the asid should be prevented from being changed false otherwise
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_before_block_exec"><code class="name flex">
+<span>def <span class="ident">@panda.cb_before_block_exec</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called before execution of every basic block.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>TranslationBlock*</code></strong></dt>
+<dd>tb: the TB we are about to execute</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_before_block_exec_invalidate_opt"><code class="name flex">
+<span>def <span class="ident">@panda.cb_before_block_exec_invalidate_opt</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called before execution of every basic block, with the option to invalidate the TB.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>TranslationBlock*</code></strong></dt>
+<dd>tb: the TB we are about to execute</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>true if we should invalidate the current translation block and retranslate, false otherwise.
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_before_block_translate"><code class="name flex">
+<span>def <span class="ident">@panda.cb_before_block_translate</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called before translation of each basic block.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC we are about to translate</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_before_cpu_exec_exit"><code class="name flex">
+<span>def <span class="ident">@panda.cb_before_cpu_exec_exit</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called before cpu_exec calls cpu_exec_exit function.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>bool</code></strong></dt>
+<dd>ranBlock: true if ran a block since previous cpu_exec_enter</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_before_handle_exception"><code class="name flex">
+<span>def <span class="ident">@panda.cb_before_handle_exception</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called just before we are about to handle an exception.
+Note: only called for cpu-&gt;exception_index &gt; 0
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>cpu: </dd>
+<dt><strong><code>int32_t</code></strong></dt>
+<dd>exception_index: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int32_t</code></dt>
+<dd>a new exception_index.
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_before_handle_interrupt"><code class="name flex">
+<span>def <span class="ident">@panda.cb_before_handle_interrupt</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called just before we are about to handle an interrupt.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>cpu: </dd>
+<dt><strong><code>int32_t</code></strong></dt>
+<dd>interrupt_request: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int32_t</code></dt>
+<dd>new interrupt_rquest
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_before_loadvm"><code class="name flex">
+<span>def <span class="ident">@panda.cb_before_loadvm</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called at start of replay, before loadvm is called. This allows us to hook devices' loadvm handlers. Remember to unregister the existing handler for the device first. See the example in the sample plugin.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>void</code></strong></dt>
+<dd>: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>unused
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_before_tcg_codegen"><code class="name flex">
+<span>def <span class="ident">@panda.cb_before_tcg_codegen</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called before host code generation for every basic block. Enables inspection and modification of the TCG block after lifting from guest code.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>TranslationBlock*</code></strong></dt>
+<dd>tb: the TB about to be compiled</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>None
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_cpu_restore_state"><code class="name flex">
+<span>def <span class="ident">@panda.cb_cpu_restore_state</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called inside of cpu_restore_state(), when there is a CPU fault/exception.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>TranslationBlock*</code></strong></dt>
+<dd>tb: the current translation block</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_during_machine_init"><code class="name flex">
+<span>def <span class="ident">@panda.cb_during_machine_init</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called in the middle of machine initialization
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>MachineState*</code></strong></dt>
+<dd>machine: pointer to the machine state</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>None
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_end_block_exec"><code class="name flex">
+<span>def <span class="ident">@panda.cb_end_block_exec</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This is like after_block_exec except its part of the TCG stream.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>cpu: </dd>
+<dt><strong><code>TranslationBlock*</code></strong></dt>
+<dd>tb: the TB we are executing</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_guest_hypercall"><code class="name flex">
+<span>def <span class="ident">@panda.cb_guest_hypercall</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when a program inside the guest makes a hypercall to pass information from inside the guest to a plugin
+Notes: On x86, this is called whenever CPUID is executed. On ARM, the MCR instructions is used. Plugins should check for magic values in the registers to determine if it really is a guest hypercall. Parameters can be passed in other registers. If the plugin processes the hypercall, it should return true so the execution of the normal instruction is skipped.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>true if the callback has processed the hypercall, false if the hypercall has been ignored.
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_hd_read"><code class="name flex">
+<span>def <span class="ident">@panda.cb_hd_read</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>the type your callback must return</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_hd_write"><code class="name flex">
+<span>def <span class="ident">@panda.cb_hd_write</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>the type your callback must return</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_insn_exec"><code class="name flex">
+<span>def <span class="ident">@panda.cb_insn_exec</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called before execution of any instruction identified by the PANDA_CB_INSN_TRANSLATE callback.
+Notes: This instrumentation is implemented by generating a call to a helper function just before the instruction itself is generated. This is fairly expensive, which is why it's only enabled via the PANDA_CB_INSN_TRANSLATE callback.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC we are about to execute</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>unused
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_insn_translate"><code class="name flex">
+<span>def <span class="ident">@panda.cb_insn_translate</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called before the translation of each instruction.
+Notes: This allows a plugin writer to instrument only a small number of instructions, avoiding the performance hit of instrumenting everything. If you do want to instrument every single instruction, just return true. See the documentation for PANDA_CB_INSN_EXEC for more detail.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC we are about to translate</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>true if PANDA should insert instrumentation into the generated code, false otherwise
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_main_loop_wait"><code class="name flex">
+<span>def <span class="ident">@panda.cb_main_loop_wait</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called in IO thread in place where monitor cmds are processed
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>void</code></strong></dt>
+<dd>: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>None
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_mmio_after_read"><code class="name flex">
+<span>def <span class="ident">@panda.cb_mmio_after_read</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after MMIO memory is read.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>physaddr: the physical address being read from</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>vaddr: the virtual address being read from</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: the size of the read</dd>
+<dt><strong><code>uint64_t*</code></strong></dt>
+<dd>val: the value being read</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_mmio_before_write"><code class="name flex">
+<span>def <span class="ident">@panda.cb_mmio_before_write</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after MMIO memory is written to.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>physaddr: the physical address being written to</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>vaddr: the virtual address being written to</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: the size of the write</dd>
+<dt><strong><code>uint64_t*</code></strong></dt>
+<dd>val: the value being written</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_monitor"><code class="name flex">
+<span>def <span class="ident">@panda.cb_monitor</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when someone uses the plugin_cmd monitor command.
+Notes: The command is passed as a single string. No parsing is performed on the string before it is passed to the plugin, so each plugin must parse the string as it deems appropriate (e.g. by using strtok and getopt) to do more complex option processing. It is recommended that each plugin implementing this callback respond to the "help" message by listing the commands supported by the plugin. Note that every loaded plugin will have the opportunity to respond to each plugin_cmd; thus it is a good idea to ensure that your plugin's monitor commands are uniquely named, e.g. by using the plugin name as a prefix ("sample_do_foo" rather than "do_foo").
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>Monitor*</code></strong></dt>
+<dd>mon: a pointer to the Monitor</dd>
+<dt><strong><code>const</code></strong></dt>
+<dd>char* cmd: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>unused
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_phys_mem_after_read"><code class="name flex">
+<span>def <span class="ident">@panda.cb_phys_mem_after_read</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after memory is read.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC doing the read</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>addr: the (physical) address being read</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: the size of the read</dd>
+<dt><strong><code>uint8_t*</code></strong></dt>
+<dd>buf: pointer to data just read</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_phys_mem_after_write"><code class="name flex">
+<span>def <span class="ident">@panda.cb_phys_mem_after_write</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC doing the write</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>addr: the (physical) address being written</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: the size of the write</dd>
+<dt><strong><code>uint8_t*</code></strong></dt>
+<dd>buf: pointer to the data that was written</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_phys_mem_before_read"><code class="name flex">
+<span>def <span class="ident">@panda.cb_phys_mem_before_read</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after memory is read.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC doing the read</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>addr: the (physical) address being read</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: the size of the read</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_phys_mem_before_write"><code class="name flex">
+<span>def <span class="ident">@panda.cb_phys_mem_before_write</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC doing the write</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>addr: the (physical) address being written</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: the size of the write</dd>
+<dt><strong><code>uint8_t*</code></strong></dt>
+<dd>buf: pointer to the data that is to be written</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_pre_shutdown"><code class="name flex">
+<span>def <span class="ident">@panda.cb_pre_shutdown</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called just before qemu shuts down
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>void</code></strong></dt>
+<dd>: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>None
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_replay_after_dma"><code class="name flex">
+<span>def <span class="ident">@panda.cb_replay_after_dma</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+<dt><strong><code>const</code></strong></dt>
+<dd>uint8_t* buf: </dd>
+<dt><strong><code>hwaddr</code></strong></dt>
+<dd>addr: address written to in the guest RAM</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: size of transfer</dd>
+<dt><strong><code>bool</code></strong></dt>
+<dd>is_write: indicates whether the DMA transfer writes to memory</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_replay_before_dma"><code class="name flex">
+<span>def <span class="ident">@panda.cb_replay_before_dma</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>In replay only. We are about to dma between qemu buffer and guest memory.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+<dt><strong><code>const</code></strong></dt>
+<dd>uint8_t* buf: </dd>
+<dt><strong><code>hwaddr</code></strong></dt>
+<dd>addr: address written to in the guest RAM</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: size of transfer</dd>
+<dt><strong><code>bool</code></strong></dt>
+<dd>is_write: indicates whether the DMA transfer writes to memory</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_replay_handle_packet"><code class="name flex">
+<span>def <span class="ident">@panda.cb_replay_handle_packet</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Notes: <code>buf_addr_rec</code> corresponds to the address of the device buffer of the emulated NIC. I.e. it is the address of a VM-host-side buffer. It is useful for implementing network tainting in an OS-agnostic way, in conjunction with taint2_label_io().
+FIXME: The <code>buf_addr_rec</code> maps to the <code>uint8_t *buf</code> field of the internal <code>RR_handle_packet_args</code> struct. The field is dumped/loaded to/from the trace without proper serialization/deserialization. As a result, a 64bit build of PANDA will not be able to process traces produced by a 32bit of PANDA, and vice-versa. There are more internal structs that suffer from the same issue. This is an oversight that will eventually be fixed. But as the real impact is minimal (virtually nobody uses 32bit builds), the fix has a very low priority in the bugfix list.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+<dt><strong><code>uint8_t*</code></strong></dt>
+<dd>buf: buffer containing packet data</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: num bytes in buffer</dd>
+<dt><strong><code>uint8_t</code></strong></dt>
+<dd>direction: either <code>PANDA_NET_RX</code> or <code>PANDA_NET_TX</code></dd>
+<dt><strong><code>uint64_t</code></strong></dt>
+<dd>buf_addr_rec: the address of <code>buf</code> at the time of recording</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_replay_hd_transfer"><code class="name flex">
+<span>def <span class="ident">@panda.cb_replay_hd_transfer</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>In replay only. Some kind of data transfer involving hard drive.
+Notes: Unlike most callbacks, this is neither a "before" or "after" callback. In replay the transfer doesn't really happen. We are <em>at</em> the point at which it happened, really.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+<dt><strong><code>uint32_t</code></strong></dt>
+<dd>type: type of transfer
+(Hd_transfer_type)</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>src_addr: address for src</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>dest_addr: address for dest</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>num_bytes: size of transfer in bytes</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_replay_net_transfer"><code class="name flex">
+<span>def <span class="ident">@panda.cb_replay_net_transfer</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>In replay only, some kind of data transfer within the network card (currently, only the E1000 is supported).
+Notes: Unlike most callbacks, this is neither a "before" or "after" callback. In replay the transfer doesn't really happen. We are <em>at</em> the point at which it happened, really. Also, the src_addr and dest_addr may be for either host (ie. a location in the emulated network device) or guest, depending upon the type.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+<dt><strong><code>uint32_t</code></strong></dt>
+<dd>type: type of transfer
+(Net_transfer_type)</dd>
+<dt><strong><code>uint64_t</code></strong></dt>
+<dd>src_addr: address for src</dd>
+<dt><strong><code>uint64_t</code></strong></dt>
+<dd>dest_addr: address for dest</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>num_bytes: size of transfer in bytes</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_replay_serial_read"><code class="name flex">
+<span>def <span class="ident">@panda.cb_replay_serial_read</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>In replay only, called when a byte read from the serial RX FIFO
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>fifo_addr: address of the data within the fifo (source)</dd>
+<dt><strong><code>uint32_t</code></strong></dt>
+<dd>port_addr: address of the IO port where data is being read (destination)</dd>
+<dt><strong><code>uint8_t</code></strong></dt>
+<dd>value: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_replay_serial_receive"><code class="name flex">
+<span>def <span class="ident">@panda.cb_replay_serial_receive</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>In replay only, called when a byte is received on the serial port.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>fifo_addr: address of the data within the fifo</dd>
+<dt><strong><code>uint8_t</code></strong></dt>
+<dd>value: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>unused
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_replay_serial_send"><code class="name flex">
+<span>def <span class="ident">@panda.cb_replay_serial_send</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>In replay only, called when a byte is sent on the serial port.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>fifo_addr: address of the data within the fifo</dd>
+<dt><strong><code>uint8_t</code></strong></dt>
+<dd>value: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_replay_serial_write"><code class="name flex">
+<span>def <span class="ident">@panda.cb_replay_serial_write</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>fifo_addr: address of the data within the fifo (source)</dd>
+<dt><strong><code>uint32_t</code></strong></dt>
+<dd>port_addr: address of the IO port where data is being read (destination)</dd>
+<dt><strong><code>uint8_t</code></strong></dt>
+<dd>value: </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_start_block_exec"><code class="name flex">
+<span>def <span class="ident">@panda.cb_start_block_exec</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This is like before_block_exec except its part of the TCG stream.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>cpu: </dd>
+<dt><strong><code>TranslationBlock*</code></strong></dt>
+<dd>tb: the TB we are executing</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_top_loop"><code class="name flex">
+<span>def <span class="ident">@panda.cb_top_loop</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called at the top of the loop that manages emulation.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: pointer to CPUState</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>unused
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_unassigned_io_read"><code class="name flex">
+<span>def <span class="ident">@panda.cb_unassigned_io_read</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when the guest attempts to read from an unmapped peripheral via MMIO
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: </dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: Guest program counter at time of write</dd>
+<dt><strong><code>hwaddr</code></strong></dt>
+<dd>addr: Physical address written to</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: Size of write</dd>
+<dt><strong><code>uint64_t*</code></strong></dt>
+<dd>val: Pointer to a buffer that will be passed to the guest as the result of the read</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if value read was changed by a PANDA plugin and should be returned False if error-logic (invalid write) should be run
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_unassigned_io_write"><code class="name flex">
+<span>def <span class="ident">@panda.cb_unassigned_io_write</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when the guest attempts to write to an unmapped peripheral via MMIO
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: </dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: Guest program counter at time of write</dd>
+<dt><strong><code>hwaddr</code></strong></dt>
+<dd>addr: Physical address written to</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: Size of write</dd>
+<dt><strong><code>uint64_t</code></strong></dt>
+<dd>val: Data being written, up to 8 bytes</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the write should be allowed without error False if normal behavior should be used (error-logic)
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_virt_mem_after_read"><code class="name flex">
+<span>def <span class="ident">@panda.cb_virt_mem_after_read</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after memory is read.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC doing the read</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>addr: the (virtual) address being read</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: the size of the read</dd>
+<dt><strong><code>uint8_t*</code></strong></dt>
+<dd>buf: pointer to data just read</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_virt_mem_after_write"><code class="name flex">
+<span>def <span class="ident">@panda.cb_virt_mem_after_write</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called after memory is written.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC doing the write</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>addr: the (virtual) address being written</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: the size of the write</dd>
+<dt><strong><code>uint8_t*</code></strong></dt>
+<dd>buf: pointer to the data that was written</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_virt_mem_before_read"><code class="name flex">
+<span>def <span class="ident">@panda.cb_virt_mem_before_read</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called before memory is read.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC doing the read</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>addr: the (virtual) address being read</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: the size of the read</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Callbacks.@panda.cb_virt_mem_before_write"><code class="name flex">
+<span>def <span class="ident">@panda.cb_virt_mem_before_write</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called before memory is written.
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>CPUState*</code></strong></dt>
+<dd>env: the current CPU state</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>pc: the guest PC doing the write</dd>
+<dt><strong><code>target_ptr_t</code></strong></dt>
+<dd>addr: the (virtual) address being written</dd>
+<dt><strong><code>size_t</code></strong></dt>
+<dd>size: the size of the write</dd>
+<dt><strong><code>uint8_t*</code></strong></dt>
+<dd>buf: pointer to the data that is to be written</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>void</code></dt>
+<dd>none
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -463,6 +2005,65 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></li>
 <li><code><a title="pandare.taint" href="taint/index.html">pandare.taint</a></code></li>
 <li><code><a title="pandare.utils" href="utils.html">pandare.utils</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pandare.Callbacks" href="#pandare.Callbacks">Callbacks</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.Callbacks.@panda.cb_after_block_exec" href="#pandare.Callbacks.@panda.cb_after_block_exec">@panda.cb_after_block_exec</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_after_block_translate" href="#pandare.Callbacks.@panda.cb_after_block_translate">@panda.cb_after_block_translate</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_after_cpu_exec_enter" href="#pandare.Callbacks.@panda.cb_after_cpu_exec_enter">@panda.cb_after_cpu_exec_enter</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_after_insn_exec" href="#pandare.Callbacks.@panda.cb_after_insn_exec">@panda.cb_after_insn_exec</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_after_insn_translate" href="#pandare.Callbacks.@panda.cb_after_insn_translate">@panda.cb_after_insn_translate</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_after_loadvm" href="#pandare.Callbacks.@panda.cb_after_loadvm">@panda.cb_after_loadvm</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_after_machine_init" href="#pandare.Callbacks.@panda.cb_after_machine_init">@panda.cb_after_machine_init</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_asid_changed" href="#pandare.Callbacks.@panda.cb_asid_changed">@panda.cb_asid_changed</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_before_block_exec" href="#pandare.Callbacks.@panda.cb_before_block_exec">@panda.cb_before_block_exec</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_before_block_exec_invalidate_opt" href="#pandare.Callbacks.@panda.cb_before_block_exec_invalidate_opt">@panda.cb_before_block_exec_invalidate_opt</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_before_block_translate" href="#pandare.Callbacks.@panda.cb_before_block_translate">@panda.cb_before_block_translate</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_before_cpu_exec_exit" href="#pandare.Callbacks.@panda.cb_before_cpu_exec_exit">@panda.cb_before_cpu_exec_exit</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_before_handle_exception" href="#pandare.Callbacks.@panda.cb_before_handle_exception">@panda.cb_before_handle_exception</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_before_handle_interrupt" href="#pandare.Callbacks.@panda.cb_before_handle_interrupt">@panda.cb_before_handle_interrupt</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_before_loadvm" href="#pandare.Callbacks.@panda.cb_before_loadvm">@panda.cb_before_loadvm</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_before_tcg_codegen" href="#pandare.Callbacks.@panda.cb_before_tcg_codegen">@panda.cb_before_tcg_codegen</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_cpu_restore_state" href="#pandare.Callbacks.@panda.cb_cpu_restore_state">@panda.cb_cpu_restore_state</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_during_machine_init" href="#pandare.Callbacks.@panda.cb_during_machine_init">@panda.cb_during_machine_init</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_end_block_exec" href="#pandare.Callbacks.@panda.cb_end_block_exec">@panda.cb_end_block_exec</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_guest_hypercall" href="#pandare.Callbacks.@panda.cb_guest_hypercall">@panda.cb_guest_hypercall</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_hd_read" href="#pandare.Callbacks.@panda.cb_hd_read">@panda.cb_hd_read</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_hd_write" href="#pandare.Callbacks.@panda.cb_hd_write">@panda.cb_hd_write</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_insn_exec" href="#pandare.Callbacks.@panda.cb_insn_exec">@panda.cb_insn_exec</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_insn_translate" href="#pandare.Callbacks.@panda.cb_insn_translate">@panda.cb_insn_translate</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_main_loop_wait" href="#pandare.Callbacks.@panda.cb_main_loop_wait">@panda.cb_main_loop_wait</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_mmio_after_read" href="#pandare.Callbacks.@panda.cb_mmio_after_read">@panda.cb_mmio_after_read</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_mmio_before_write" href="#pandare.Callbacks.@panda.cb_mmio_before_write">@panda.cb_mmio_before_write</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_monitor" href="#pandare.Callbacks.@panda.cb_monitor">@panda.cb_monitor</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_phys_mem_after_read" href="#pandare.Callbacks.@panda.cb_phys_mem_after_read">@panda.cb_phys_mem_after_read</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_phys_mem_after_write" href="#pandare.Callbacks.@panda.cb_phys_mem_after_write">@panda.cb_phys_mem_after_write</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_phys_mem_before_read" href="#pandare.Callbacks.@panda.cb_phys_mem_before_read">@panda.cb_phys_mem_before_read</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_phys_mem_before_write" href="#pandare.Callbacks.@panda.cb_phys_mem_before_write">@panda.cb_phys_mem_before_write</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_pre_shutdown" href="#pandare.Callbacks.@panda.cb_pre_shutdown">@panda.cb_pre_shutdown</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_replay_after_dma" href="#pandare.Callbacks.@panda.cb_replay_after_dma">@panda.cb_replay_after_dma</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_replay_before_dma" href="#pandare.Callbacks.@panda.cb_replay_before_dma">@panda.cb_replay_before_dma</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_replay_handle_packet" href="#pandare.Callbacks.@panda.cb_replay_handle_packet">@panda.cb_replay_handle_packet</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_replay_hd_transfer" href="#pandare.Callbacks.@panda.cb_replay_hd_transfer">@panda.cb_replay_hd_transfer</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_replay_net_transfer" href="#pandare.Callbacks.@panda.cb_replay_net_transfer">@panda.cb_replay_net_transfer</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_replay_serial_read" href="#pandare.Callbacks.@panda.cb_replay_serial_read">@panda.cb_replay_serial_read</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_replay_serial_receive" href="#pandare.Callbacks.@panda.cb_replay_serial_receive">@panda.cb_replay_serial_receive</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_replay_serial_send" href="#pandare.Callbacks.@panda.cb_replay_serial_send">@panda.cb_replay_serial_send</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_replay_serial_write" href="#pandare.Callbacks.@panda.cb_replay_serial_write">@panda.cb_replay_serial_write</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_start_block_exec" href="#pandare.Callbacks.@panda.cb_start_block_exec">@panda.cb_start_block_exec</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_top_loop" href="#pandare.Callbacks.@panda.cb_top_loop">@panda.cb_top_loop</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_unassigned_io_read" href="#pandare.Callbacks.@panda.cb_unassigned_io_read">@panda.cb_unassigned_io_read</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_unassigned_io_write" href="#pandare.Callbacks.@panda.cb_unassigned_io_write">@panda.cb_unassigned_io_write</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_virt_mem_after_read" href="#pandare.Callbacks.@panda.cb_virt_mem_after_read">@panda.cb_virt_mem_after_read</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_virt_mem_after_write" href="#pandare.Callbacks.@panda.cb_virt_mem_after_write">@panda.cb_virt_mem_after_write</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_virt_mem_before_read" href="#pandare.Callbacks.@panda.cb_virt_mem_before_read">@panda.cb_virt_mem_before_read</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_virt_mem_before_write" href="#pandare.Callbacks.@panda.cb_virt_mem_before_write">@panda.cb_virt_mem_before_write</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

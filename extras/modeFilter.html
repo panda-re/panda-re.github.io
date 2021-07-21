@@ -173,11 +173,11 @@ class ModeFilter:
                 self.panda = panda
                 self.set_mode(&#34;mode1&#34;)
 
-            @self.mode_filter(&#34;mode1&#34;)
-            @self.panda.ppp(&#34;syscalls2&#34;, &#34;on_sys_open_enter&#34;)
-            def on_open(cpu, pc, fname_ptr, flags, mode):
-                # assert(self.mode == &#34;mode1&#34;) # Note decorator ensures this
-                self.set_mode(&#34;mode2&#34;) # Change mode - so this callback won&#39;t run again
+                @self.mode_filter(&#34;mode1&#34;)
+                @self.panda.ppp(&#34;syscalls2&#34;, &#34;on_sys_open_enter&#34;)
+                def on_open(cpu, pc, fname_ptr, flags, mode):
+                    # assert(self.mode == &#34;mode1&#34;) # Note decorator ensures this
+                    self.set_mode(&#34;mode2&#34;) # Change mode - so this callback won&#39;t run again
             ...
             def run(self):
                 self.panda.run()
@@ -299,11 +299,11 @@ from pandare.extras import ModeFilter</p>
 def <strong>init</strong>(self, panda)
 self.panda = panda
 self.set_mode("mode1")</p>
-<pre><code>@self.mode_filter("mode1")
-@self.panda.ppp("syscalls2", "on_sys_open_enter")
-def on_open(cpu, pc, fname_ptr, flags, mode):
-    # assert(self.mode == "mode1") # Note decorator ensures this
-    self.set_mode("mode2") # Change mode - so this callback won't run again
+<pre><code>    @self.mode_filter("mode1")
+    @self.panda.ppp("syscalls2", "on_sys_open_enter")
+    def on_open(cpu, pc, fname_ptr, flags, mode):
+        # assert(self.mode == "mode1") # Note decorator ensures this
+        self.set_mode("mode2") # Change mode - so this callback won't run again
 ...
 def run(self):
     self.panda.run()
@@ -332,11 +332,11 @@ mc.run()</p></div>
                 self.panda = panda
                 self.set_mode(&#34;mode1&#34;)
 
-            @self.mode_filter(&#34;mode1&#34;)
-            @self.panda.ppp(&#34;syscalls2&#34;, &#34;on_sys_open_enter&#34;)
-            def on_open(cpu, pc, fname_ptr, flags, mode):
-                # assert(self.mode == &#34;mode1&#34;) # Note decorator ensures this
-                self.set_mode(&#34;mode2&#34;) # Change mode - so this callback won&#39;t run again
+                @self.mode_filter(&#34;mode1&#34;)
+                @self.panda.ppp(&#34;syscalls2&#34;, &#34;on_sys_open_enter&#34;)
+                def on_open(cpu, pc, fname_ptr, flags, mode):
+                    # assert(self.mode == &#34;mode1&#34;) # Note decorator ensures this
+                    self.set_mode(&#34;mode2&#34;) # Change mode - so this callback won&#39;t run again
             ...
             def run(self):
                 self.panda.run()

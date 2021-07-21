@@ -148,12 +148,9 @@ padding: .5rem 1rem;
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from ..ffi_importer import ffi
+<pre><code class="python">class TaintQuery:
 
-
-class TaintQuery:
-
-    def __init__(self, query_result, panda_taint2):
+    def __init__(self, query_result, panda_taint2, ffi):
         self.num_labels = query_result.num_labels
         self.tcn = query_result.tcn
         self.cb_mask = query_result.cb_mask
@@ -210,7 +207,7 @@ class TaintQuery:
 <dl>
 <dt id="pandare.taint.TaintQuery.TaintQuery"><code class="flex name class">
 <span>class <span class="ident">TaintQuery</span></span>
-<span>(</span><span>query_result, panda_taint2)</span>
+<span>(</span><span>query_result, panda_taint2, ffi)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -220,7 +217,7 @@ class TaintQuery:
 </summary>
 <pre><code class="python">class TaintQuery:
 
-    def __init__(self, query_result, panda_taint2):
+    def __init__(self, query_result, panda_taint2, ffi):
         self.num_labels = query_result.num_labels
         self.tcn = query_result.tcn
         self.cb_mask = query_result.cb_mask
