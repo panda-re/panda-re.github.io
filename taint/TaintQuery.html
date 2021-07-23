@@ -157,6 +157,7 @@ padding: .5rem 1rem;
         self.qr = query_result
         self.taint2 = panda_taint2
         self.no_more = False
+        self.ffi = ffi
 
     def __iter__(self):
         return self
@@ -164,13 +165,13 @@ padding: .5rem 1rem;
     def __next__(self):        
         if self.no_more:
             raise StopIteration
-        done = ffi.new(&#34;bool *&#34;)
+        done = self.ffi.new(&#34;bool *&#34;)
 #        print(&#34;before calling taint2_query_result_next&#34;)
         label = self.taint2.taint2_query_result_next(self.qr, done)
 #        print(&#34;after calling taint2_query_result_next&#34;)
         # this means there aren&#39;t any more labels
         # for next time
-        if ffi.unpack(done,1)[0]:
+        if self.ffi.unpack(done,1)[0]:
             self.no_more = True
         return label
 
@@ -224,6 +225,7 @@ padding: .5rem 1rem;
         self.qr = query_result
         self.taint2 = panda_taint2
         self.no_more = False
+        self.ffi = ffi
 
     def __iter__(self):
         return self
@@ -231,13 +233,13 @@ padding: .5rem 1rem;
     def __next__(self):        
         if self.no_more:
             raise StopIteration
-        done = ffi.new(&#34;bool *&#34;)
+        done = self.ffi.new(&#34;bool *&#34;)
 #        print(&#34;before calling taint2_query_result_next&#34;)
         label = self.taint2.taint2_query_result_next(self.qr, done)
 #        print(&#34;after calling taint2_query_result_next&#34;)
         # this means there aren&#39;t any more labels
         # for next time
-        if ffi.unpack(done,1)[0]:
+        if self.ffi.unpack(done,1)[0]:
             self.no_more = True
         return label
 
