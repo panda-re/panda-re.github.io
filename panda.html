@@ -207,7 +207,8 @@ class Panda():
             os=&#34;linux&#34;,
             generic=None, # Helper: specify a generic qcow to use and set other arguments. Supported values: arm/ppc/x86_64/i386. Will download qcow automatically
             raw_monitor=False, # When set, don&#39;t specify a -monitor. arg Allows for use of -nographic in args with ctrl-A+C for interactive qemu prompt.
-            extra_args=None):
+            extra_args=None,
+            libpanda_path=None):
         &#39;&#39;&#39;
         Construct a new `Panda` object.  Note that multiple Panda objects cannot coexist in the same Python instance.
         Args:
@@ -287,7 +288,11 @@ class Panda():
 
         self.build_dir  = self._find_build_dir()
         environ[&#34;PANDA_DIR&#34;] = self.build_dir
-        self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
+
+        if libpanda_path:
+            self.libpanda_path = libpanda_path
+        else:
+            self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
         self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
 
         self.ffi = self._do_types_import()
@@ -3193,7 +3198,7 @@ class Panda():
 <dl>
 <dt id="pandare.panda.Panda"><code class="flex name class">
 <span>class <span class="ident">Panda</span></span>
-<span>(</span><span>arch='i386', mem='128M', expect_prompt=None, serial_kwargs=None, os_version=None, qcow=None, os='linux', generic=None, raw_monitor=False, extra_args=None)</span>
+<span>(</span><span>arch='i386', mem='128M', expect_prompt=None, serial_kwargs=None, os_version=None, qcow=None, os='linux', generic=None, raw_monitor=False, extra_args=None, libpanda_path=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This is the object used to interact with PANDA. Initializing it creates a virtual machine to interact with.</p>
@@ -3251,7 +3256,8 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             os=&#34;linux&#34;,
             generic=None, # Helper: specify a generic qcow to use and set other arguments. Supported values: arm/ppc/x86_64/i386. Will download qcow automatically
             raw_monitor=False, # When set, don&#39;t specify a -monitor. arg Allows for use of -nographic in args with ctrl-A+C for interactive qemu prompt.
-            extra_args=None):
+            extra_args=None,
+            libpanda_path=None):
         &#39;&#39;&#39;
         Construct a new `Panda` object.  Note that multiple Panda objects cannot coexist in the same Python instance.
         Args:
@@ -3331,7 +3337,11 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
         self.build_dir  = self._find_build_dir()
         environ[&#34;PANDA_DIR&#34;] = self.build_dir
-        self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
+
+        if libpanda_path:
+            self.libpanda_path = libpanda_path
+        else:
+            self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
         self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
 
         self.ffi = self._do_types_import()
