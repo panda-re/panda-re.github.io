@@ -621,7 +621,7 @@ class X86Arch(PandaArch):
                            &#34;syscall&#34;:    &#34;EAX&#34;}
         
         self.call_conventions = {&#34;stack&#34;: &#34;stack&#34;,
-                                 &#34;syscall&#34;: [&#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EBP&#34;]}
+                                 &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;stack&#39;]
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)
@@ -1831,7 +1831,7 @@ in the signature here so it can be set by a caller without regard for the guest 
                            &#34;syscall&#34;:    &#34;EAX&#34;}
         
         self.call_conventions = {&#34;stack&#34;: &#34;stack&#34;,
-                                 &#34;syscall&#34;: [&#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EBP&#34;]}
+                                 &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;stack&#39;]
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)

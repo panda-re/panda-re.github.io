@@ -1959,7 +1959,6 @@ pandare.plog_reader [input.plog]</code> to translate input.plog file to json.</p
 
     &#39;&#39;&#39;
     def __init__(self, fn):
-        import pandare.plog_pb2
         self.f = open(fn, &#39;rb&#39;)
         self.version, _, self.dir_pos, _, self.chunk_gsize = struct.unpack(&#39;&lt;IIQII&#39;, self.f.read(24))
 
