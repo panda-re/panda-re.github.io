@@ -3973,6 +3973,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         else:
             return None
 
+    # enables symbolic tracing
     def taint_sym_enable(self, cont=True):
         &#34;&#34;&#34;
         Inform python that taint is enabled.
@@ -4001,17 +4002,112 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
     # label all bytes in this register.
     # or at least four of them
+    # XXX label must increment by panda.register_size after the call
     def taint_sym_label_reg(self, reg_num, label):
         self.taint_sym_enable(cont=False)
-        #if debug:
-        #    progress(&#34;taint_reg reg=%d label=%d&#34; % (reg_num, label))
-
         # XXX must ensure labeling is done in a before_block_invalidate that rets 1
         #     or some other safe way where the main_loop_wait code will always be run
         #self.stop()
         for i in range(self.register_size):
-            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_reg, [reg_num, i, label])
+            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_reg, [reg_num, i, label+i])
         self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
+    
+    # Deserialize a z3 solver
+    # Lazy import z3. 
+    def string_to_solver(self, string: str):
+        from z3 import Solver
+        s = Solver()
+        s.from_string(string)
+        return s
+
+    # Get the first condition in serialized solver str
+    def string_to_condition(self, string: str):
+        s = self.string_to_solver(string)
+        asrts = s.assertions()
+        if len(asrts) == 0:
+            return None 
+        return asrts[0]
+
+    # Get the expr in serialized solver str
+    # (https://github.com/Z3Prover/z3/issues/2674) 
+    def string_to_expr(self, string: str):
+        eq = self.string_to_condition(string)
+        if eq and len(eq.children()) &gt; 0:
+            return eq.children()[0]
+        return None
+
+    # Query the ram addr with given size
+    def taint_sym_query_ram(self, addr, size=1):
+        # Prepare ptr for returned string
+        str_ptr_ffi = self.ffi.new(&#39;char**&#39;)
+        # Prepare ptr for string size
+        n_ptr_ffi = self.ffi.new(&#39;uint32_t *&#39;, 0)
+
+        self.plugins[&#39;taint2&#39;].taint2_sym_query_ram(addr, size, n_ptr_ffi, str_ptr_ffi)
+        # Unpack size
+        n = self.ffi.unpack(n_ptr_ffi, 1)[0]
+        if n == 0:
+            return None
+        # Unpack cstr
+        str_ptr = self.ffi.unpack(str_ptr_ffi, 1)[0]
+        str_bs = self.ffi.unpack(str_ptr, n)
+        expr_str = str(str_bs, &#39;utf-8&#39;)
+        return self.string_to_expr(expr_str)
+
+    # Query all bytes in this register.
+    def taint_sym_query_reg(self, addr):
+        # Prepare ptr for returned string
+        str_ptr_ffi = self.ffi.new(&#39;char**&#39;)
+        # Prepare ptr for string size
+        n_ptr_ffi = self.ffi.new(&#39;uint32_t *&#39;, 0)
+
+        self.plugins[&#39;taint2&#39;].taint2_sym_query_reg(addr, n_ptr_ffi, str_ptr_ffi)
+        # Unpack size
+        n = self.ffi.unpack(n_ptr_ffi, 1)[0]
+        if n == 0:
+            return None
+        # Unpack cstr
+        str_ptr = self.ffi.unpack(str_ptr_ffi, 1)[0]
+        str_bs = self.ffi.unpack(str_ptr, n)
+        expr_str = str(str_bs, &#39;utf-8&#39;)
+        return self.string_to_expr(expr_str)
+
+    def taint_sym_path_constraints(self):
+        # Prepare ptr for returned string
+        str_ptr_ffi = self.ffi.new(&#39;char**&#39;)
+        # Prepare ptr for string size
+        n_ptr_ffi = self.ffi.new(&#39;uint32_t *&#39;, 0)
+
+        self.plugins[&#39;taint2&#39;].taint2_sym_path_constraints(n_ptr_ffi, str_ptr_ffi)
+        # Unpack size
+        n = self.ffi.unpack(n_ptr_ffi, 1)[0]
+        if n == 0:
+            return []
+        # Unpack cstr
+        str_ptr = self.ffi.unpack(str_ptr_ffi, 1)[0]
+        str_bs = self.ffi.unpack(str_ptr, n)
+        expr_str = str(str_bs, &#39;utf-8&#39;)
+        solver = self.string_to_solver(expr_str)
+        return solver.assertions() if solver != None else []
+
+    def taint_sym_branch_meta(self):
+        branch_meta_ptr_ffi = self.ffi.new(&#39;SymbolicBranchMeta **&#39;)
+        n_ptr_ffi = self.ffi.new(&#39;uint32_t *&#39;, 0)
+
+        self.plugins[&#39;taint2&#39;].taint2_sym_branch_meta(n_ptr_ffi, branch_meta_ptr_ffi)
+        # Unpack size
+        n = self.ffi.unpack(n_ptr_ffi, 1)[0]
+        if n == 0:
+            return []
+        meta_ptr = self.ffi.unpack(branch_meta_ptr_ffi, 1)[0]
+        metas_ffi = self.ffi.unpack(meta_ptr, n)
+        # Meta only has a pc field now
+        metas = [
+            meta_ffi.pc
+            for meta_ffi in metas_ffi
+        ]
+        return metas
+
 
 
     ############ Volatility mixins
@@ -8935,6 +9031,55 @@ def stop_run(self):
     self.libpanda.panda_break_vl_loop_req = True</code></pre>
 </details>
 </dd>
+<dt id="pandare.Panda.string_to_condition"><code class="name flex">
+<span>def <span class="ident">string_to_condition</span></span>(<span>self, string: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def string_to_condition(self, string: str):
+    s = self.string_to_solver(string)
+    asrts = s.assertions()
+    if len(asrts) == 0:
+        return None 
+    return asrts[0]</code></pre>
+</details>
+</dd>
+<dt id="pandare.Panda.string_to_expr"><code class="name flex">
+<span>def <span class="ident">string_to_expr</span></span>(<span>self, string: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def string_to_expr(self, string: str):
+    eq = self.string_to_condition(string)
+    if eq and len(eq.children()) &gt; 0:
+        return eq.children()[0]
+    return None</code></pre>
+</details>
+</dd>
+<dt id="pandare.Panda.string_to_solver"><code class="name flex">
+<span>def <span class="ident">string_to_solver</span></span>(<span>self, string: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def string_to_solver(self, string: str):
+    from z3 import Solver
+    s = Solver()
+    s.from_string(string)
+    return s</code></pre>
+</details>
+</dd>
 <dt id="pandare.Panda.sysbus_create_varargs"><code class="name flex">
 <span>def <span class="ident">sysbus_create_varargs</span></span>(<span>self, name, addr)</span>
 </code></dt>
@@ -9154,6 +9299,34 @@ QueryResult struct otherwise</p></div>
     self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
 </details>
 </dd>
+<dt id="pandare.Panda.taint_sym_branch_meta"><code class="name flex">
+<span>def <span class="ident">taint_sym_branch_meta</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def taint_sym_branch_meta(self):
+    branch_meta_ptr_ffi = self.ffi.new(&#39;SymbolicBranchMeta **&#39;)
+    n_ptr_ffi = self.ffi.new(&#39;uint32_t *&#39;, 0)
+
+    self.plugins[&#39;taint2&#39;].taint2_sym_branch_meta(n_ptr_ffi, branch_meta_ptr_ffi)
+    # Unpack size
+    n = self.ffi.unpack(n_ptr_ffi, 1)[0]
+    if n == 0:
+        return []
+    meta_ptr = self.ffi.unpack(branch_meta_ptr_ffi, 1)[0]
+    metas_ffi = self.ffi.unpack(meta_ptr, n)
+    # Meta only has a pc field now
+    metas = [
+        meta_ffi.pc
+        for meta_ffi in metas_ffi
+    ]
+    return metas</code></pre>
+</details>
+</dd>
 <dt id="pandare.Panda.taint_sym_enable"><code class="name flex">
 <span>def <span class="ident">taint_sym_enable</span></span>(<span>self, cont=True)</span>
 </code></dt>
@@ -9211,15 +9384,94 @@ QueryResult struct otherwise</p></div>
 </summary>
 <pre><code class="python">def taint_sym_label_reg(self, reg_num, label):
     self.taint_sym_enable(cont=False)
-    #if debug:
-    #    progress(&#34;taint_reg reg=%d label=%d&#34; % (reg_num, label))
-
     # XXX must ensure labeling is done in a before_block_invalidate that rets 1
     #     or some other safe way where the main_loop_wait code will always be run
     #self.stop()
     for i in range(self.register_size):
-        self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_reg, [reg_num, i, label])
+        self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_reg, [reg_num, i, label+i])
     self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
+</details>
+</dd>
+<dt id="pandare.Panda.taint_sym_path_constraints"><code class="name flex">
+<span>def <span class="ident">taint_sym_path_constraints</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def taint_sym_path_constraints(self):
+    # Prepare ptr for returned string
+    str_ptr_ffi = self.ffi.new(&#39;char**&#39;)
+    # Prepare ptr for string size
+    n_ptr_ffi = self.ffi.new(&#39;uint32_t *&#39;, 0)
+
+    self.plugins[&#39;taint2&#39;].taint2_sym_path_constraints(n_ptr_ffi, str_ptr_ffi)
+    # Unpack size
+    n = self.ffi.unpack(n_ptr_ffi, 1)[0]
+    if n == 0:
+        return []
+    # Unpack cstr
+    str_ptr = self.ffi.unpack(str_ptr_ffi, 1)[0]
+    str_bs = self.ffi.unpack(str_ptr, n)
+    expr_str = str(str_bs, &#39;utf-8&#39;)
+    solver = self.string_to_solver(expr_str)
+    return solver.assertions() if solver != None else []</code></pre>
+</details>
+</dd>
+<dt id="pandare.Panda.taint_sym_query_ram"><code class="name flex">
+<span>def <span class="ident">taint_sym_query_ram</span></span>(<span>self, addr, size=1)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def taint_sym_query_ram(self, addr, size=1):
+    # Prepare ptr for returned string
+    str_ptr_ffi = self.ffi.new(&#39;char**&#39;)
+    # Prepare ptr for string size
+    n_ptr_ffi = self.ffi.new(&#39;uint32_t *&#39;, 0)
+
+    self.plugins[&#39;taint2&#39;].taint2_sym_query_ram(addr, size, n_ptr_ffi, str_ptr_ffi)
+    # Unpack size
+    n = self.ffi.unpack(n_ptr_ffi, 1)[0]
+    if n == 0:
+        return None
+    # Unpack cstr
+    str_ptr = self.ffi.unpack(str_ptr_ffi, 1)[0]
+    str_bs = self.ffi.unpack(str_ptr, n)
+    expr_str = str(str_bs, &#39;utf-8&#39;)
+    return self.string_to_expr(expr_str)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Panda.taint_sym_query_reg"><code class="name flex">
+<span>def <span class="ident">taint_sym_query_reg</span></span>(<span>self, addr)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def taint_sym_query_reg(self, addr):
+    # Prepare ptr for returned string
+    str_ptr_ffi = self.ffi.new(&#39;char**&#39;)
+    # Prepare ptr for string size
+    n_ptr_ffi = self.ffi.new(&#39;uint32_t *&#39;, 0)
+
+    self.plugins[&#39;taint2&#39;].taint2_sym_query_reg(addr, n_ptr_ffi, str_ptr_ffi)
+    # Unpack size
+    n = self.ffi.unpack(n_ptr_ffi, 1)[0]
+    if n == 0:
+        return None
+    # Unpack cstr
+    str_ptr = self.ffi.unpack(str_ptr_ffi, 1)[0]
+    str_bs = self.ffi.unpack(str_ptr, n)
+    expr_str = str(str_bs, &#39;utf-8&#39;)
+    return self.string_to_expr(expr_str)</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.to_unsigned_guest"><code class="name flex">
@@ -9819,6 +10071,9 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.Panda.set_pandalog" href="#pandare.Panda.set_pandalog">set_pandalog</a></code></li>
 <li><code><a title="pandare.Panda.snap" href="#pandare.Panda.snap">snap</a></code></li>
 <li><code><a title="pandare.Panda.stop_run" href="#pandare.Panda.stop_run">stop_run</a></code></li>
+<li><code><a title="pandare.Panda.string_to_condition" href="#pandare.Panda.string_to_condition">string_to_condition</a></code></li>
+<li><code><a title="pandare.Panda.string_to_expr" href="#pandare.Panda.string_to_expr">string_to_expr</a></code></li>
+<li><code><a title="pandare.Panda.string_to_solver" href="#pandare.Panda.string_to_solver">string_to_solver</a></code></li>
 <li><code><a title="pandare.Panda.sysbus_create_varargs" href="#pandare.Panda.sysbus_create_varargs">sysbus_create_varargs</a></code></li>
 <li><code><a title="pandare.Panda.taint_check_laddr" href="#pandare.Panda.taint_check_laddr">taint_check_laddr</a></code></li>
 <li><code><a title="pandare.Panda.taint_check_ram" href="#pandare.Panda.taint_check_ram">taint_check_ram</a></code></li>
@@ -9829,9 +10084,13 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.Panda.taint_get_reg" href="#pandare.Panda.taint_get_reg">taint_get_reg</a></code></li>
 <li><code><a title="pandare.Panda.taint_label_ram" href="#pandare.Panda.taint_label_ram">taint_label_ram</a></code></li>
 <li><code><a title="pandare.Panda.taint_label_reg" href="#pandare.Panda.taint_label_reg">taint_label_reg</a></code></li>
+<li><code><a title="pandare.Panda.taint_sym_branch_meta" href="#pandare.Panda.taint_sym_branch_meta">taint_sym_branch_meta</a></code></li>
 <li><code><a title="pandare.Panda.taint_sym_enable" href="#pandare.Panda.taint_sym_enable">taint_sym_enable</a></code></li>
 <li><code><a title="pandare.Panda.taint_sym_label_ram" href="#pandare.Panda.taint_sym_label_ram">taint_sym_label_ram</a></code></li>
 <li><code><a title="pandare.Panda.taint_sym_label_reg" href="#pandare.Panda.taint_sym_label_reg">taint_sym_label_reg</a></code></li>
+<li><code><a title="pandare.Panda.taint_sym_path_constraints" href="#pandare.Panda.taint_sym_path_constraints">taint_sym_path_constraints</a></code></li>
+<li><code><a title="pandare.Panda.taint_sym_query_ram" href="#pandare.Panda.taint_sym_query_ram">taint_sym_query_ram</a></code></li>
+<li><code><a title="pandare.Panda.taint_sym_query_reg" href="#pandare.Panda.taint_sym_query_reg">taint_sym_query_reg</a></code></li>
 <li><code><a title="pandare.Panda.to_unsigned_guest" href="#pandare.Panda.to_unsigned_guest">to_unsigned_guest</a></code></li>
 <li><code><a title="pandare.Panda.type_serial_cmd" href="#pandare.Panda.type_serial_cmd">type_serial_cmd</a></code></li>
 <li><code><a title="pandare.Panda.unload_plugin" href="#pandare.Panda.unload_plugin">unload_plugin</a></code></li>
