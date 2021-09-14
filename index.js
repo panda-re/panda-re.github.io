@@ -729,6 +729,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Panda.serial_read_until",
+"url":0,
+"doc":"",
+"func":1
+},
+{
 "ref":"pandare.Panda.run_serial_cmd_async",
 "url":0,
 "doc":"Type a command and press enter in the guest. Return immediately. No results available Only use this if you know what you're doing!",
@@ -2557,6 +2563,12 @@ INDEX=[
 "ref":"pandare.panda.Panda.run_serial_cmd",
 "url":4,
 "doc":"Run a command inside the guest through a terminal exposed over a serial port. Can only be used if your guest is configured in this way Guest output will be analyzed until we see the expect_prompt regex printed (i.e., the PS1 prompt) Args: cmd: command to run. timeout: maximum time to wait for the command to finish no_timeout: if set, don't ever timeout Returns: String: all the output (stdout + stderr) printed after typing your command and pressing enter until the next prompt was printed.",
+"func":1
+},
+{
+"ref":"pandare.panda.Panda.serial_read_until",
+"url":4,
+"doc":"",
 "func":1
 },
 {

@@ -160,6 +160,7 @@ if version_info[0] &lt; 3:
     exit(0)
 
 import socket
+import select
 import threading
 
 
@@ -243,6 +244,7 @@ class Panda():
         self.__sighandler = None
         self.ending = False # True during end_analysis
 
+        self.serial_unconsumed_data = b&#39;&#39;
 
         if isinstance(extra_args, str): # Extra args can be a string or array
             extra_args = extra_args.split()
@@ -423,6 +425,7 @@ class Panda():
         # Now we&#39;ve run qemu init so we can connect to the sockets for the monitor and serial
         if self.serial_console and not self.serial_console.is_connected():
             self.serial_socket.connect(self.serial_file)
+            self.serial_socket.settimeout(None)
             self.serial_console.connect(self.serial_socket)
         if not self.raw_monitor and not self.monitor_console.is_connected():
             self.monitor_socket.connect(self.monitor_file)
@@ -434,6 +437,7 @@ class Panda():
 
         self._initialized_panda = True
 
+        
 
     def __main_loop_wait_cb(self):
         &#39;&#39;&#39;
@@ -1752,6 +1756,7 @@ class Panda():
             Returns:
                 None
         &#34;&#34;&#34;
+        print (&#34;os_name=[%s]&#34; % os_name)
         os_name_new = self.ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
         self.libpanda.panda_set_os_name(os_name_new)
 
@@ -2394,6 +2399,37 @@ class Panda():
         return result
 
     @blocking
+    def serial_read_until(self, byte_sequence):
+        if len(self.serial_unconsumed_data) &gt; 0:
+            found_idx = self.serial_unconsumed_data.find(byte_sequence)
+            if found_idx &gt;= 0:
+                match = self.serial_unconsumed_data[ : found_idx]
+                self.serial_unconsumed_data = self.serial_unconsumed_data[found_idx + 1 : ]
+                return match
+        while self.serial_socket != None:
+            try:
+                readable, _, _ = select.select([self.serial_socket], [], [], 0.5)
+                if len(readable) == 0:
+                    continue
+                data = self.serial_socket.recv(65535)
+            except Exception as e:
+                if &#39;[Errno 11]&#39; in str(e) or &#39;[Errno 35]&#39; in str(e):
+                    # EAGAIN
+                    continue
+                raise Exception(&#34;Data Read Error: {}&#34;.format(e.message))
+            if not data:
+                raise Exception(&#39;Connection Closed by Server&#39;)
+
+            self.serial_unconsumed_data += data
+            found_idx = self.serial_unconsumed_data.find(byte_sequence)
+            if found_idx &gt;= 0:
+                match = self.serial_unconsumed_data[ : found_idx]
+                self.serial_unconsumed_data = self.serial_unconsumed_data[found_idx + 1 : ]
+                return match
+        return None
+            
+    
+    @blocking
     def run_serial_cmd_async(self, cmd, delay=1):
         &#39;&#39;&#39;
         Type a command and press enter in the guest. Return immediately. No results available
@@ -2508,8 +2544,10 @@ class Panda():
                 raise RuntimeError(f&#34;Failed to mount media inside guest: {mount_status}&#34;)
 
             # Note the . after our src/. directory - that&#39;s special syntax for cp -a
-            copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;ok&#39;&#34;, timeout=timeout)
-            if copy_result != &#39;ok&#39;:
+            copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;copyok&#39;&#34;, timeout=timeout)
+            
+            # NB: exact match here causing issues so making things more flexible
+            if not (&#39;copyok&#39; in copy_result):
                 raise RuntimeError(f&#34;Copy to rw directory failed: {copy_result}&#34;)
 
         finally:
@@ -3388,6 +3426,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         self.__sighandler = None
         self.ending = False # True during end_analysis
 
+        self.serial_unconsumed_data = b&#39;&#39;
 
         if isinstance(extra_args, str): # Extra args can be a string or array
             extra_args = extra_args.split()
@@ -3568,6 +3607,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         # Now we&#39;ve run qemu init so we can connect to the sockets for the monitor and serial
         if self.serial_console and not self.serial_console.is_connected():
             self.serial_socket.connect(self.serial_file)
+            self.serial_socket.settimeout(None)
             self.serial_console.connect(self.serial_socket)
         if not self.raw_monitor and not self.monitor_console.is_connected():
             self.monitor_socket.connect(self.monitor_file)
@@ -3579,6 +3619,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
         self._initialized_panda = True
 
+        
 
     def __main_loop_wait_cb(self):
         &#39;&#39;&#39;
@@ -4897,6 +4938,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             Returns:
                 None
         &#34;&#34;&#34;
+        print (&#34;os_name=[%s]&#34; % os_name)
         os_name_new = self.ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
         self.libpanda.panda_set_os_name(os_name_new)
 
@@ -5539,6 +5581,37 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         return result
 
     @blocking
+    def serial_read_until(self, byte_sequence):
+        if len(self.serial_unconsumed_data) &gt; 0:
+            found_idx = self.serial_unconsumed_data.find(byte_sequence)
+            if found_idx &gt;= 0:
+                match = self.serial_unconsumed_data[ : found_idx]
+                self.serial_unconsumed_data = self.serial_unconsumed_data[found_idx + 1 : ]
+                return match
+        while self.serial_socket != None:
+            try:
+                readable, _, _ = select.select([self.serial_socket], [], [], 0.5)
+                if len(readable) == 0:
+                    continue
+                data = self.serial_socket.recv(65535)
+            except Exception as e:
+                if &#39;[Errno 11]&#39; in str(e) or &#39;[Errno 35]&#39; in str(e):
+                    # EAGAIN
+                    continue
+                raise Exception(&#34;Data Read Error: {}&#34;.format(e.message))
+            if not data:
+                raise Exception(&#39;Connection Closed by Server&#39;)
+
+            self.serial_unconsumed_data += data
+            found_idx = self.serial_unconsumed_data.find(byte_sequence)
+            if found_idx &gt;= 0:
+                match = self.serial_unconsumed_data[ : found_idx]
+                self.serial_unconsumed_data = self.serial_unconsumed_data[found_idx + 1 : ]
+                return match
+        return None
+            
+    
+    @blocking
     def run_serial_cmd_async(self, cmd, delay=1):
         &#39;&#39;&#39;
         Type a command and press enter in the guest. Return immediately. No results available
@@ -5653,8 +5726,10 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                 raise RuntimeError(f&#34;Failed to mount media inside guest: {mount_status}&#34;)
 
             # Note the . after our src/. directory - that&#39;s special syntax for cp -a
-            copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;ok&#39;&#34;, timeout=timeout)
-            if copy_result != &#39;ok&#39;:
+            copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;copyok&#39;&#34;, timeout=timeout)
+            
+            # NB: exact match here causing issues so making things more flexible
+            if not (&#39;copyok&#39; in copy_result):
                 raise RuntimeError(f&#34;Copy to rw directory failed: {copy_result}&#34;)
 
         finally:
@@ -6614,8 +6689,10 @@ def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, set
             raise RuntimeError(f&#34;Failed to mount media inside guest: {mount_status}&#34;)
 
         # Note the . after our src/. directory - that&#39;s special syntax for cp -a
-        copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;ok&#39;&#34;, timeout=timeout)
-        if copy_result != &#39;ok&#39;:
+        copy_result = self.run_serial_cmd(f&#34;cp -a {mount_dir}.ro/. {mount_dir} &amp;&amp; echo &#39;copyok&#39;&#34;, timeout=timeout)
+        
+        # NB: exact match here causing issues so making things more flexible
+        if not (&#39;copyok&#39; in copy_result):
             raise RuntimeError(f&#34;Copy to rw directory failed: {copy_result}&#34;)
 
     finally:
@@ -10148,6 +10225,46 @@ def run_serial_cmd_async(self, cmd, delay=1):
     return output</code></pre>
 </details>
 </dd>
+<dt id="pandare.panda.Panda.serial_read_until"><code class="name flex">
+<span>def <span class="ident">serial_read_until</span></span>(<span>self, byte_sequence)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@blocking
+def serial_read_until(self, byte_sequence):
+    if len(self.serial_unconsumed_data) &gt; 0:
+        found_idx = self.serial_unconsumed_data.find(byte_sequence)
+        if found_idx &gt;= 0:
+            match = self.serial_unconsumed_data[ : found_idx]
+            self.serial_unconsumed_data = self.serial_unconsumed_data[found_idx + 1 : ]
+            return match
+    while self.serial_socket != None:
+        try:
+            readable, _, _ = select.select([self.serial_socket], [], [], 0.5)
+            if len(readable) == 0:
+                continue
+            data = self.serial_socket.recv(65535)
+        except Exception as e:
+            if &#39;[Errno 11]&#39; in str(e) or &#39;[Errno 35]&#39; in str(e):
+                # EAGAIN
+                continue
+            raise Exception(&#34;Data Read Error: {}&#34;.format(e.message))
+        if not data:
+            raise Exception(&#39;Connection Closed by Server&#39;)
+
+        self.serial_unconsumed_data += data
+        found_idx = self.serial_unconsumed_data.find(byte_sequence)
+        if found_idx &gt;= 0:
+            match = self.serial_unconsumed_data[ : found_idx]
+            self.serial_unconsumed_data = self.serial_unconsumed_data[found_idx + 1 : ]
+            return match
+    return None</code></pre>
+</details>
+</dd>
 <dt id="pandare.panda.Panda.set_breakpoint"><code class="name flex">
 <span>def <span class="ident">set_breakpoint</span></span>(<span>self, cpu, pc)</span>
 </code></dt>
@@ -10204,6 +10321,7 @@ Returns:
         Returns:
             None
     &#34;&#34;&#34;
+    print (&#34;os_name=[%s]&#34; % os_name)
     os_name_new = self.ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
     self.libpanda.panda_set_os_name(os_name_new)</code></pre>
 </details>
@@ -11244,6 +11362,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.panda.Panda.run_serial_cmd" href="#pandare.panda.Panda.run_serial_cmd">run_serial_cmd</a></code></li>
 <li><code><a title="pandare.panda.Panda.run_serial_cmd_async" href="#pandare.panda.Panda.run_serial_cmd_async">run_serial_cmd_async</a></code></li>
 <li><code><a title="pandare.panda.Panda.run_volatility" href="#pandare.panda.Panda.run_volatility">run_volatility</a></code></li>
+<li><code><a title="pandare.panda.Panda.serial_read_until" href="#pandare.panda.Panda.serial_read_until">serial_read_until</a></code></li>
 <li><code><a title="pandare.panda.Panda.set_breakpoint" href="#pandare.panda.Panda.set_breakpoint">set_breakpoint</a></code></li>
 <li><code><a title="pandare.panda.Panda.set_os_name" href="#pandare.panda.Panda.set_os_name">set_os_name</a></code></li>
 <li><code><a title="pandare.panda.Panda.set_pandalog" href="#pandare.panda.Panda.set_pandalog">set_pandalog</a></code></li>
