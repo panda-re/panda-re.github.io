@@ -400,13 +400,13 @@ if __name__ == &#34;__main__&#34;:
     Bash will issue ioctls on /dev/ttys0 - this is just a simple test to make sure they&#39;re being captured
     &#39;&#39;&#39;
 
-    from pandare import blocking, Panda
+    from pandare import Panda
 
     # No arguments, x86_64. Otherwise argument should be guest arch
     generic_type = sys.argv[1] if len(sys.argv) &gt; 1 else &#34;x86_64&#34;
     panda = Panda(generic=generic_type)
 
-    @blocking
+    @panda.queue_blocking
     def run_cmd():
 
         # Setup faker
@@ -424,7 +424,6 @@ if __name__ == &#34;__main__&#34;:
         assert(len(normal_rets)), &#34;No normal returns&#34;
         panda.end_analysis()
 
-    panda.queue_async(run_cmd)
     panda.run()
     print(&#34;Success&#34;)</code></pre>
 </details>
