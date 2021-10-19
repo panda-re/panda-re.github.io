@@ -209,6 +209,7 @@ class Panda():
             generic=None, # Helper: specify a generic qcow to use and set other arguments. Supported values: arm/ppc/x86_64/i386. Will download qcow automatically
             raw_monitor=False, # When set, don&#39;t specify a -monitor. arg Allows for use of -nographic in args with ctrl-A+C for interactive qemu prompt.
             extra_args=None,
+            catch_exceptions=True, # Should we catch and end_analysis() when python code raises an exception?
             libpanda_path=None):
         &#39;&#39;&#39;
         Construct a new `Panda` object.  Note that multiple Panda objects cannot coexist in the same Python instance.
@@ -226,6 +227,7 @@ class Panda():
             os_version: analagous to PANDA&#39;s -os argument (e.g, linux-32-debian:3.2.0-4-686-pae&#34;)
             os: type of OS (e.g. &#34;linux&#34;)
             qcow: path to a qcow file to load
+            catch_exceptions: Should we catch exceptions raised by python code and end_analysis() and then print a backtrace (Default: True)
             raw_monitor: When set, don&#39;t specify a -monitor. arg Allows for use of
                     -nographic in args with ctrl-A+C for interactive qemu prompt. Experts only!
             extra_args: extra arguments to pass to PANDA as either a string or an
@@ -243,6 +245,7 @@ class Panda():
         self.lambda_cnt = 0
         self.__sighandler = None
         self.ending = False # True during end_analysis
+        self.catch_exceptions=catch_exceptions
 
         self.serial_unconsumed_data = b&#39;&#39;
 
@@ -2708,8 +2711,11 @@ class Panda():
                 except Exception as e:
                     # exceptions wont work in our thread. Therefore we print it here and then throw it after the
                     # machine exits.
-                    self.callback_exit_exception = e
-                    self.end_analysis()
+                    if self.catch_exceptions:
+                        self.callback_exit_exception = e
+                        self.end_analysis()
+                    else:
+                        raise e
                     return return_from_exception
 
             cast_rc = pandatype(_run_and_catch)
@@ -2944,11 +2950,14 @@ class Panda():
                 except Exception as e:
                     # exceptions wont work in our thread. Therefore we print it here and then throw it after the
                     # machine exits.
-                    self.callback_exit_exception = e
-                    self.end_analysis()
+                    if self.catch_exceptions:
+                        self.callback_exit_exception = e
+                        self.end_analysis()
+                    else:
+                        raise e
                     # this works in all current callback cases. CFFI auto-converts to void, bool, int, and int32_t
 
-            f = self.ffi.callback(attr+&#34;_t&#34;)(_run_and_catch)  # Wrap the python fn in a c-callback.
+            cast_rc = self.ffi.callback(attr+&#34;_t&#34;)(_run_and_catch)  # Wrap the python fn in a c-callback.
             if local_name == &#34;&lt;lambda&gt;&#34;:
                 local_name = f&#34;&lt;lambda_{self.lambda_cnt}&gt;&#34;
                 self.lambda_cnt += 1
@@ -2960,10 +2969,10 @@ class Panda():
             assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
 
             # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
-            self.ppp_registered_cbs[local_name] = (f, plugin_name, attr)
+            self.ppp_registered_cbs[local_name] = (cast_rc, plugin_name, attr)
 
-            eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(f) # All PPP  cbs start with this string. XXX insecure eval
-            return f
+            eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(cast_rc) # All PPP  cbs start with this string. XXX insecure eval
+            return cast_rc
         return decorator
 
 
@@ -3332,7 +3341,7 @@ class Panda():
 <dl>
 <dt id="pandare.panda.Panda"><code class="flex name class">
 <span>class <span class="ident">Panda</span></span>
-<span>(</span><span>arch='i386', mem='128M', expect_prompt=None, serial_kwargs=None, os_version=None, qcow=None, os='linux', generic=None, raw_monitor=False, extra_args=None, libpanda_path=None)</span>
+<span>(</span><span>arch='i386', mem='128M', expect_prompt=None, serial_kwargs=None, os_version=None, qcow=None, os='linux', generic=None, raw_monitor=False, extra_args=None, catch_exceptions=True, libpanda_path=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This is the object used to interact with PANDA. Initializing it creates a virtual machine to interact with.</p>
@@ -3361,6 +3370,8 @@ remove command strings repeated by the shell from the shell output).</dd>
 <dd>type of OS (e.g. "linux")</dd>
 <dt><strong><code>qcow</code></strong></dt>
 <dd>path to a qcow file to load</dd>
+<dt><strong><code>catch_exceptions</code></strong></dt>
+<dd>Should we catch exceptions raised by python code and end_analysis() and then print a backtrace (Default: True)</dd>
 <dt><strong><code>raw_monitor</code></strong></dt>
 <dd>When set, don't specify a -monitor. arg Allows for use of
 -nographic in args with ctrl-A+C for interactive qemu prompt. Experts only!</dd>
@@ -3391,6 +3402,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             generic=None, # Helper: specify a generic qcow to use and set other arguments. Supported values: arm/ppc/x86_64/i386. Will download qcow automatically
             raw_monitor=False, # When set, don&#39;t specify a -monitor. arg Allows for use of -nographic in args with ctrl-A+C for interactive qemu prompt.
             extra_args=None,
+            catch_exceptions=True, # Should we catch and end_analysis() when python code raises an exception?
             libpanda_path=None):
         &#39;&#39;&#39;
         Construct a new `Panda` object.  Note that multiple Panda objects cannot coexist in the same Python instance.
@@ -3408,6 +3420,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             os_version: analagous to PANDA&#39;s -os argument (e.g, linux-32-debian:3.2.0-4-686-pae&#34;)
             os: type of OS (e.g. &#34;linux&#34;)
             qcow: path to a qcow file to load
+            catch_exceptions: Should we catch exceptions raised by python code and end_analysis() and then print a backtrace (Default: True)
             raw_monitor: When set, don&#39;t specify a -monitor. arg Allows for use of
                     -nographic in args with ctrl-A+C for interactive qemu prompt. Experts only!
             extra_args: extra arguments to pass to PANDA as either a string or an
@@ -3425,6 +3438,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         self.lambda_cnt = 0
         self.__sighandler = None
         self.ending = False # True during end_analysis
+        self.catch_exceptions=catch_exceptions
 
         self.serial_unconsumed_data = b&#39;&#39;
 
@@ -5890,8 +5904,11 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                 except Exception as e:
                     # exceptions wont work in our thread. Therefore we print it here and then throw it after the
                     # machine exits.
-                    self.callback_exit_exception = e
-                    self.end_analysis()
+                    if self.catch_exceptions:
+                        self.callback_exit_exception = e
+                        self.end_analysis()
+                    else:
+                        raise e
                     return return_from_exception
 
             cast_rc = pandatype(_run_and_catch)
@@ -6126,11 +6143,14 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                 except Exception as e:
                     # exceptions wont work in our thread. Therefore we print it here and then throw it after the
                     # machine exits.
-                    self.callback_exit_exception = e
-                    self.end_analysis()
+                    if self.catch_exceptions:
+                        self.callback_exit_exception = e
+                        self.end_analysis()
+                    else:
+                        raise e
                     # this works in all current callback cases. CFFI auto-converts to void, bool, int, and int32_t
 
-            f = self.ffi.callback(attr+&#34;_t&#34;)(_run_and_catch)  # Wrap the python fn in a c-callback.
+            cast_rc = self.ffi.callback(attr+&#34;_t&#34;)(_run_and_catch)  # Wrap the python fn in a c-callback.
             if local_name == &#34;&lt;lambda&gt;&#34;:
                 local_name = f&#34;&lt;lambda_{self.lambda_cnt}&gt;&#34;
                 self.lambda_cnt += 1
@@ -6142,10 +6162,10 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
 
             # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
-            self.ppp_registered_cbs[local_name] = (f, plugin_name, attr)
+            self.ppp_registered_cbs[local_name] = (cast_rc, plugin_name, attr)
 
-            eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(f) # All PPP  cbs start with this string. XXX insecure eval
-            return f
+            eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(cast_rc) # All PPP  cbs start with this string. XXX insecure eval
+            return cast_rc
         return decorator
 
 
@@ -9334,11 +9354,14 @@ def my_fun(cpu, pc, filename, flags, mode):
             except Exception as e:
                 # exceptions wont work in our thread. Therefore we print it here and then throw it after the
                 # machine exits.
-                self.callback_exit_exception = e
-                self.end_analysis()
+                if self.catch_exceptions:
+                    self.callback_exit_exception = e
+                    self.end_analysis()
+                else:
+                    raise e
                 # this works in all current callback cases. CFFI auto-converts to void, bool, int, and int32_t
 
-        f = self.ffi.callback(attr+&#34;_t&#34;)(_run_and_catch)  # Wrap the python fn in a c-callback.
+        cast_rc = self.ffi.callback(attr+&#34;_t&#34;)(_run_and_catch)  # Wrap the python fn in a c-callback.
         if local_name == &#34;&lt;lambda&gt;&#34;:
             local_name = f&#34;&lt;lambda_{self.lambda_cnt}&gt;&#34;
             self.lambda_cnt += 1
@@ -9350,10 +9373,10 @@ def my_fun(cpu, pc, filename, flags, mode):
         assert (local_name not in self.ppp_registered_cbs), f&#34;Two callbacks with conflicting name: {local_name}&#34;
 
         # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
-        self.ppp_registered_cbs[local_name] = (f, plugin_name, attr)
+        self.ppp_registered_cbs[local_name] = (cast_rc, plugin_name, attr)
 
-        eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(f) # All PPP  cbs start with this string. XXX insecure eval
-        return f
+        eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(cast_rc) # All PPP  cbs start with this string. XXX insecure eval
+        return cast_rc
     return decorator</code></pre>
 </details>
 </dd>
