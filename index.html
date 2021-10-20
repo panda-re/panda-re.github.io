@@ -312,8 +312,9 @@ Example plugins are available in the [examples directory](https://github.com/pan
 
 from .panda import Panda, blocking
 from .plog_reader import PLogReader
+from .panda_plugin import PandaPlugin
 
-__all__ = [&#39;Panda&#39;, &#39;PLogReader&#39;, &#39;Callbacks&#39;]
+__all__ = [&#39;Panda&#39;, &#39;PLogReader&#39;, &#39;Callbacks&#39;, &#39;PandaPlugin&#39;]
 
 __pdoc__ = {}
 
@@ -459,9 +460,17 @@ this is done by passing a handle from your script's PANDA object …</p></div>
 <dd>
 <div class="desc"><p>Custom library for interacting/expecting data via serial-like FDs</p></div>
 </dd>
+<dt><code class="name"><a title="pandare.panda_plugin" href="panda_plugin.html">pandare.panda_plugin</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt><code class="name"><a title="pandare.plog_reader" href="plog_reader.html">pandare.plog_reader</a></code></dt>
 <dd>
 <div class="desc"><p>Module for reading and writing PANDAlog (plog) files from Python.</p></div>
+</dd>
+<dt><code class="name"><a title="pandare.pyplugin" href="pyplugin.html">pandare.pyplugin</a></code></dt>
+<dd>
+<div class="desc"><p>Class to manage loading Panda PyPlugins. See docs/pyplugins.md for details.</p></div>
 </dd>
 <dt><code class="name"><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></dt>
 <dd>
@@ -3090,6 +3099,19 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.queue_async(f)
         return f
 
+    # PyPlugin helpers
+    @property
+    def pyplugin(self):
+        &#34;&#34;&#34;
+        A reference to an auto-instantiated `pandare.pyplugin.PyPluginManager` class.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#34;_pyplugin_manager&#34;):
+            from .pyplugin import PyPluginManager
+            self._pyplugin_manager = PyPluginManager(self)
+        return self._pyplugin_manager
+
+
+
 
     ########################## LIBPANDA FUNCTIONS ########################
     # Methods that directly pass data to/from PANDA with no extra logic beyond argument reformatting.
@@ -5208,6 +5230,24 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 <dt id="pandare.Panda.arch"><code class="name">var <span class="ident">arch</span></code></dt>
 <dd>
 <div class="desc"><p>A reference to an auto-instantiated <code><a title="pandare.arch.PandaArch" href="arch.html#pandare.arch.PandaArch">PandaArch</a></code> subclass (e.g., <code><a title="pandare.arch.X86Arch" href="arch.html#pandare.arch.X86Arch">X86Arch</a></code>)</p></div>
+</dd>
+<dt id="pandare.Panda.pyplugin"><code class="name">var <span class="ident">pyplugin</span></code></dt>
+<dd>
+<div class="desc"><p>A reference to an auto-instantiated <code><a title="pandare.pyplugin.PyPluginManager" href="pyplugin.html#pandare.pyplugin.PyPluginManager">PyPluginManager</a></code> class.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def pyplugin(self):
+    &#34;&#34;&#34;
+    A reference to an auto-instantiated `pandare.pyplugin.PyPluginManager` class.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#34;_pyplugin_manager&#34;):
+        from .pyplugin import PyPluginManager
+        self._pyplugin_manager = PyPluginManager(self)
+    return self._pyplugin_manager</code></pre>
+</details>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -9880,6 +9920,102 @@ Returns true if the pyperipheral was successfully removed, else false.</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="pandare.PandaPlugin"><code class="flex name class">
+<span>class <span class="ident">PandaPlugin</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class which PyPANDA plugins should inherit. Subclasses may
+register callbacks using the provided panda object and use
+PandaPlugin.get_args or PandaPlugin.get_arg_bool to check argument
+values (note these helpers should be accessed with <code>self.get_&hellip;</code>).</p>
+<p>This PyPANDA extra aims to mirror the snake_hook (rust) plugin
+so a single PyPANDA plugin can be used from both pure PyPANDA (with this class)
+or from CLI panda with snake_hook.</p>
+<p>For more information, read the snake_hook documentation</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PandaPlugin:
+    def __init__(self, panda):
+        &#39;&#39;&#39;
+        Base class which PyPANDA plugins should inherit. Subclasses may
+        register callbacks using the provided panda object and use
+        PandaPlugin.get_args or PandaPlugin.get_arg_bool to check argument
+        values (note these helpers should be accessed with `self.get_...`).
+
+        This PyPANDA extra aims to mirror the snake_hook (rust) plugin
+        so a single PyPANDA plugin can be used from both pure PyPANDA (with this class)
+        or from CLI panda with snake_hook.
+
+        For more information, read the snake_hook documentation
+        &#39;&#39;&#39;
+        pass
+
+    def __preinit__(self, args):
+        self.args = args
+
+    def get_arg(self, arg_name):
+        &#39;&#39;&#39;
+        returns either the argument as a string or None if the argument
+        wasn&#39;t passed (arguments passed in bool form (i.e., set but with no value)
+        instead of key/value form will also return None).
+        &#39;&#39;&#39;
+        if arg_name in self.args:
+            return self.args[arg_name]
+
+        return None
+
+    def get_arg_bool(self, arg_name):
+        &#39;&#39;&#39;
+        returns True if the argument is True
+        &#39;&#39;&#39;
+        return arg_name in self.args and self.args[arg_name]==True</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.PandaPlugin.get_arg"><code class="name flex">
+<span>def <span class="ident">get_arg</span></span>(<span>self, arg_name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns either the argument as a string or None if the argument
+wasn't passed (arguments passed in bool form (i.e., set but with no value)
+instead of key/value form will also return None).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_arg(self, arg_name):
+    &#39;&#39;&#39;
+    returns either the argument as a string or None if the argument
+    wasn&#39;t passed (arguments passed in bool form (i.e., set but with no value)
+    instead of key/value form will also return None).
+    &#39;&#39;&#39;
+    if arg_name in self.args:
+        return self.args[arg_name]
+
+    return None</code></pre>
+</details>
+</dd>
+<dt id="pandare.PandaPlugin.get_arg_bool"><code class="name flex">
+<span>def <span class="ident">get_arg_bool</span></span>(<span>self, arg_name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns True if the argument is True</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_arg_bool(self, arg_name):
+    &#39;&#39;&#39;
+    returns True if the argument is True
+    &#39;&#39;&#39;
+    return arg_name in self.args and self.args[arg_name]==True</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 </dl>
 </section>
 </article>
@@ -9973,7 +10109,9 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.extras" href="extras/index.html">pandare.extras</a></code></li>
 <li><code><a title="pandare.panda" href="panda.html">pandare.panda</a></code></li>
 <li><code><a title="pandare.panda_expect" href="panda_expect.html">pandare.panda_expect</a></code></li>
+<li><code><a title="pandare.panda_plugin" href="panda_plugin.html">pandare.panda_plugin</a></code></li>
 <li><code><a title="pandare.plog_reader" href="plog_reader.html">pandare.plog_reader</a></code></li>
+<li><code><a title="pandare.pyplugin" href="pyplugin.html">pandare.pyplugin</a></code></li>
 <li><code><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></li>
 <li><code><a title="pandare.taint" href="taint/index.html">pandare.taint</a></code></li>
 <li><code><a title="pandare.utils" href="utils.html">pandare.utils</a></code></li>
@@ -10139,6 +10277,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.Panda.ppp" href="#pandare.Panda.ppp">ppp</a></code></li>
 <li><code><a title="pandare.Panda.pyperiph_read_cb" href="#pandare.Panda.pyperiph_read_cb">pyperiph_read_cb</a></code></li>
 <li><code><a title="pandare.Panda.pyperiph_write_cb" href="#pandare.Panda.pyperiph_write_cb">pyperiph_write_cb</a></code></li>
+<li><code><a title="pandare.Panda.pyplugin" href="#pandare.Panda.pyplugin">pyplugin</a></code></li>
 <li><code><a title="pandare.Panda.queue_async" href="#pandare.Panda.queue_async">queue_async</a></code></li>
 <li><code><a title="pandare.Panda.queue_blocking" href="#pandare.Panda.queue_blocking">queue_blocking</a></code></li>
 <li><code><a title="pandare.Panda.queue_main_loop_wait_fn" href="#pandare.Panda.queue_main_loop_wait_fn">queue_main_loop_wait_fn</a></code></li>
@@ -10196,6 +10335,13 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.Panda.virtual_memory_write" href="#pandare.Panda.virtual_memory_write">virtual_memory_write</a></code></li>
 <li><code><a title="pandare.Panda.vm_stop" href="#pandare.Panda.vm_stop">vm_stop</a></code></li>
 <li><code><a title="pandare.Panda.was_aborted" href="#pandare.Panda.was_aborted">was_aborted</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.PandaPlugin" href="#pandare.PandaPlugin">PandaPlugin</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.PandaPlugin.get_arg" href="#pandare.PandaPlugin.get_arg">get_arg</a></code></li>
+<li><code><a title="pandare.PandaPlugin.get_arg_bool" href="#pandare.PandaPlugin.get_arg_bool">get_arg_bool</a></code></li>
 </ul>
 </li>
 </ul>

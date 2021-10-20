@@ -165,7 +165,8 @@ from .modeFilter import ModeFilter
 from .procWriteCapture import ProcWriteCapture
 
 
-__all__ = [&#39;FakeFile&#39;, &#39;FileFaker&#39;, &#39;FileHook&#39;, &#39;IoctlFaker&#39;, &#39;ModeFilter&#39;, &#39;ProcWriteCapture&#39;]</code></pre>
+__all__ = [&#39;FakeFile&#39;, &#39;FileFaker&#39;, &#39;FileHook&#39;, &#39;IoctlFaker&#39;, &#39;ModeFilter&#39;, &#39;ProcWriteCapture&#39;,
+           &#39;PandaPlugin&#39;, &#39;Snake&#39;]</code></pre>
 </details>
 </section>
 <section>
@@ -1403,6 +1404,340 @@ Can be stacked with console capture.</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="pandare.extras.ProcWriteCapture"><code class="flex name class">
+<span>class <span class="ident">PandaPlugin</span></span>
+<span>(</span><span>panda, console_capture=False, proc_name=None, log_dir=None, rm_existing_logs=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set console_capture = True to capture all console output to file, including boot messages.
+Set proc_name = "name_of_proc" to, for a named process, capture stdout/stderr and any file writes from the hypervisor, mirror results to log directory.
+Can be stacked with console capture.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ProcWriteCapture():
+
+    &#39;&#39;&#39;
+    Set console_capture = True to capture all console output to file, including boot messages.
+    Set proc_name = &#34;name_of_proc&#34; to, for a named process, capture stdout/stderr and any file writes from the hypervisor, mirror results to log directory.
+    Can be stacked with console capture.
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, console_capture = False, proc_name = None, log_dir = None, rm_existing_logs = False):
+
+        self._panda = panda
+        self._files_written = set()
+        self._rm = rm_existing_logs
+        self._console_capture = console_capture
+        self._proc_name = proc_name
+        self._proc_printed_err = False
+        self._console_printed_err = False
+
+        if log_dir == None:
+            self._console_log_dir = Path.cwd()
+            if proc_name:
+                self._proc_log_dir = Path.cwd() / self._proc_name
+        else:
+            self._console_log_dir = Path(log_dir)
+            if proc_name:
+                self._proc_log_dir = Path(log_dir).joinpath(self._proc_name)
+
+        # Setup logging dir
+        self._console_log_dir.mkdir(parents=True, exist_ok=True)
+        if proc_name:
+            self._proc_log_dir.mkdir(parents=True, exist_ok=True)
+        if self._rm:
+            if proc_name:
+                shutil.rmtree(self._proc_log_dir)
+            shutil.rmtree(self._console_log_dir)
+
+        # Mirror writes
+        @self._panda.ppp(&#34;syscalls2&#34;, &#34;on_sys_write_enter&#34;)
+        def proc_write_capture_on_sys_write_enter(cpu, pc, fd, buf, cnt):
+
+            try_read = False
+
+            # Capture console output
+            if self._console_capture:
+
+                # Fun trick: lazy eval of OSI
+                # Based on the idea that a non-POSIX FD will only be used after boot is finished an OSI is functional
+                # Note: doesn&#39;t capture boot logs (would require hooking kernel&#39;s printk, not write syscall)
+                if (fd == 1) or (fd == 2) or (fd == 3):
+                    try_read = True
+                else:
+                    curr_proc = panda.plugins[&#39;osi&#39;].get_current_process(cpu)
+                    file_name_ptr = panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, curr_proc, fd)
+                    file_path = panda.ffi.string(file_name_ptr).decode()
+                    if (&#34;tty&#34; in file_path):
+                        try_read = True
+
+                if try_read:
+
+                    try:
+                        data = panda.virtual_memory_read(cpu, buf, cnt)
+                    except ValueError:
+                        raise RuntimeError(f&#34;Failed to read buffer: addr 0x{buf:016x}&#34;)
+
+                    if fd == 2:
+                        self._console_printed_err = True
+
+                    log_file = self._console_log_dir.joinpath(&#34;console.out&#34;)
+                    with open(log_file, &#34;ab&#34;) as f:
+                        f.write(data)
+
+                    self._files_written.add(str(log_file))
+
+            # Use OSI to capture logs for a named process
+            if self._proc_name:
+
+                curr_proc = panda.plugins[&#39;osi&#39;].get_current_process(cpu)
+                curr_proc_name = panda.ffi.string(curr_proc.name).decode()
+
+                if self._proc_name == curr_proc_name:
+
+                    if not try_read: # If we didn&#39;t already read this data in once for console capture
+                        try:
+                            data = panda.virtual_memory_read(cpu, buf, cnt)
+                        except ValueError:
+                            raise RuntimeError(f&#34;Failed to read buffer: proc \&#39;{curr_proc_name}\&#39;, addr 0x{buf:016x}&#34;)
+
+                    file_name_ptr = panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, curr_proc, fd)
+                    file_path = panda.ffi.string(file_name_ptr).decode()
+
+                    # For informational purposes only, collection not reliant on this exact mapping
+                    if fd == 1: # POSIX stdout
+                        file_path += &#34;.stdout&#34;
+                    elif fd == 2: # POSIX stderr
+                        file_path += &#34;.stderr&#34;
+                        self._proc_printed_err = True
+
+                    log_file = self._proc_log_dir.joinpath(file_path.replace(&#34;//&#34;, &#34;_&#34;).replace(&#34;/&#34;, &#34;_&#34;))
+                    with open(log_file, &#34;ab&#34;) as f:
+                        f.write(data)
+
+                    self._files_written.add(str(log_file))
+
+    def proc_printed_err(self):
+        return self._proc_printed_err
+
+    def console_printed_post_boot_err(self):
+        return self._console_printed_err
+
+    def get_files_written(self):
+        return self._files_written</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.extras.ProcWriteCapture.console_printed_post_boot_err"><code class="name flex">
+<span>def <span class="ident">console_printed_post_boot_err</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def console_printed_post_boot_err(self):
+    return self._console_printed_err</code></pre>
+</details>
+</dd>
+<dt id="pandare.extras.ProcWriteCapture.get_files_written"><code class="name flex">
+<span>def <span class="ident">get_files_written</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_files_written(self):
+    return self._files_written</code></pre>
+</details>
+</dd>
+<dt id="pandare.extras.ProcWriteCapture.proc_printed_err"><code class="name flex">
+<span>def <span class="ident">proc_printed_err</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def proc_printed_err(self):
+    return self._proc_printed_err</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.extras.ProcWriteCapture"><code class="flex name class">
+<span>class <span class="ident">Snake</span></span>
+<span>(</span><span>panda, console_capture=False, proc_name=None, log_dir=None, rm_existing_logs=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set console_capture = True to capture all console output to file, including boot messages.
+Set proc_name = "name_of_proc" to, for a named process, capture stdout/stderr and any file writes from the hypervisor, mirror results to log directory.
+Can be stacked with console capture.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ProcWriteCapture():
+
+    &#39;&#39;&#39;
+    Set console_capture = True to capture all console output to file, including boot messages.
+    Set proc_name = &#34;name_of_proc&#34; to, for a named process, capture stdout/stderr and any file writes from the hypervisor, mirror results to log directory.
+    Can be stacked with console capture.
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, console_capture = False, proc_name = None, log_dir = None, rm_existing_logs = False):
+
+        self._panda = panda
+        self._files_written = set()
+        self._rm = rm_existing_logs
+        self._console_capture = console_capture
+        self._proc_name = proc_name
+        self._proc_printed_err = False
+        self._console_printed_err = False
+
+        if log_dir == None:
+            self._console_log_dir = Path.cwd()
+            if proc_name:
+                self._proc_log_dir = Path.cwd() / self._proc_name
+        else:
+            self._console_log_dir = Path(log_dir)
+            if proc_name:
+                self._proc_log_dir = Path(log_dir).joinpath(self._proc_name)
+
+        # Setup logging dir
+        self._console_log_dir.mkdir(parents=True, exist_ok=True)
+        if proc_name:
+            self._proc_log_dir.mkdir(parents=True, exist_ok=True)
+        if self._rm:
+            if proc_name:
+                shutil.rmtree(self._proc_log_dir)
+            shutil.rmtree(self._console_log_dir)
+
+        # Mirror writes
+        @self._panda.ppp(&#34;syscalls2&#34;, &#34;on_sys_write_enter&#34;)
+        def proc_write_capture_on_sys_write_enter(cpu, pc, fd, buf, cnt):
+
+            try_read = False
+
+            # Capture console output
+            if self._console_capture:
+
+                # Fun trick: lazy eval of OSI
+                # Based on the idea that a non-POSIX FD will only be used after boot is finished an OSI is functional
+                # Note: doesn&#39;t capture boot logs (would require hooking kernel&#39;s printk, not write syscall)
+                if (fd == 1) or (fd == 2) or (fd == 3):
+                    try_read = True
+                else:
+                    curr_proc = panda.plugins[&#39;osi&#39;].get_current_process(cpu)
+                    file_name_ptr = panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, curr_proc, fd)
+                    file_path = panda.ffi.string(file_name_ptr).decode()
+                    if (&#34;tty&#34; in file_path):
+                        try_read = True
+
+                if try_read:
+
+                    try:
+                        data = panda.virtual_memory_read(cpu, buf, cnt)
+                    except ValueError:
+                        raise RuntimeError(f&#34;Failed to read buffer: addr 0x{buf:016x}&#34;)
+
+                    if fd == 2:
+                        self._console_printed_err = True
+
+                    log_file = self._console_log_dir.joinpath(&#34;console.out&#34;)
+                    with open(log_file, &#34;ab&#34;) as f:
+                        f.write(data)
+
+                    self._files_written.add(str(log_file))
+
+            # Use OSI to capture logs for a named process
+            if self._proc_name:
+
+                curr_proc = panda.plugins[&#39;osi&#39;].get_current_process(cpu)
+                curr_proc_name = panda.ffi.string(curr_proc.name).decode()
+
+                if self._proc_name == curr_proc_name:
+
+                    if not try_read: # If we didn&#39;t already read this data in once for console capture
+                        try:
+                            data = panda.virtual_memory_read(cpu, buf, cnt)
+                        except ValueError:
+                            raise RuntimeError(f&#34;Failed to read buffer: proc \&#39;{curr_proc_name}\&#39;, addr 0x{buf:016x}&#34;)
+
+                    file_name_ptr = panda.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, curr_proc, fd)
+                    file_path = panda.ffi.string(file_name_ptr).decode()
+
+                    # For informational purposes only, collection not reliant on this exact mapping
+                    if fd == 1: # POSIX stdout
+                        file_path += &#34;.stdout&#34;
+                    elif fd == 2: # POSIX stderr
+                        file_path += &#34;.stderr&#34;
+                        self._proc_printed_err = True
+
+                    log_file = self._proc_log_dir.joinpath(file_path.replace(&#34;//&#34;, &#34;_&#34;).replace(&#34;/&#34;, &#34;_&#34;))
+                    with open(log_file, &#34;ab&#34;) as f:
+                        f.write(data)
+
+                    self._files_written.add(str(log_file))
+
+    def proc_printed_err(self):
+        return self._proc_printed_err
+
+    def console_printed_post_boot_err(self):
+        return self._console_printed_err
+
+    def get_files_written(self):
+        return self._files_written</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.extras.ProcWriteCapture.console_printed_post_boot_err"><code class="name flex">
+<span>def <span class="ident">console_printed_post_boot_err</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def console_printed_post_boot_err(self):
+    return self._console_printed_err</code></pre>
+</details>
+</dd>
+<dt id="pandare.extras.ProcWriteCapture.get_files_written"><code class="name flex">
+<span>def <span class="ident">get_files_written</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_files_written(self):
+    return self._files_written</code></pre>
+</details>
+</dd>
+<dt id="pandare.extras.ProcWriteCapture.proc_printed_err"><code class="name flex">
+<span>def <span class="ident">proc_printed_err</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def proc_printed_err(self):
+    return self._proc_printed_err</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 </dl>
 </section>
 </article>
@@ -1515,6 +1850,22 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.extras.ModeFilter.mode" href="#pandare.extras.ModeFilter.mode">mode</a></code></li>
 <li><code><a title="pandare.extras.ModeFilter.mode_filter" href="#pandare.extras.ModeFilter.mode_filter">mode_filter</a></code></li>
 <li><code><a title="pandare.extras.ModeFilter.set_mode" href="#pandare.extras.ModeFilter.set_mode">set_mode</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.extras.ProcWriteCapture" href="#pandare.extras.ProcWriteCapture">ProcWriteCapture</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.extras.ProcWriteCapture.console_printed_post_boot_err" href="#pandare.extras.ProcWriteCapture.console_printed_post_boot_err">console_printed_post_boot_err</a></code></li>
+<li><code><a title="pandare.extras.ProcWriteCapture.get_files_written" href="#pandare.extras.ProcWriteCapture.get_files_written">get_files_written</a></code></li>
+<li><code><a title="pandare.extras.ProcWriteCapture.proc_printed_err" href="#pandare.extras.ProcWriteCapture.proc_printed_err">proc_printed_err</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.extras.ProcWriteCapture" href="#pandare.extras.ProcWriteCapture">ProcWriteCapture</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.extras.ProcWriteCapture.console_printed_post_boot_err" href="#pandare.extras.ProcWriteCapture.console_printed_post_boot_err">console_printed_post_boot_err</a></code></li>
+<li><code><a title="pandare.extras.ProcWriteCapture.get_files_written" href="#pandare.extras.ProcWriteCapture.get_files_written">get_files_written</a></code></li>
+<li><code><a title="pandare.extras.ProcWriteCapture.proc_printed_err" href="#pandare.extras.ProcWriteCapture.proc_printed_err">proc_printed_err</a></code></li>
 </ul>
 </li>
 <li>

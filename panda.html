@@ -1214,6 +1214,19 @@ class Panda():
             self.queue_async(f)
         return f
 
+    # PyPlugin helpers
+    @property
+    def pyplugin(self):
+        &#34;&#34;&#34;
+        A reference to an auto-instantiated `pandare.pyplugin.PyPluginManager` class.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#34;_pyplugin_manager&#34;):
+            from .pyplugin import PyPluginManager
+            self._pyplugin_manager = PyPluginManager(self)
+        return self._pyplugin_manager
+
+
+
 
     ########################## LIBPANDA FUNCTIONS ########################
     # Methods that directly pass data to/from PANDA with no extra logic beyond argument reformatting.
@@ -4407,6 +4420,19 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.queue_async(f)
         return f
 
+    # PyPlugin helpers
+    @property
+    def pyplugin(self):
+        &#34;&#34;&#34;
+        A reference to an auto-instantiated `pandare.pyplugin.PyPluginManager` class.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#34;_pyplugin_manager&#34;):
+            from .pyplugin import PyPluginManager
+            self._pyplugin_manager = PyPluginManager(self)
+        return self._pyplugin_manager
+
+
+
 
     ########################## LIBPANDA FUNCTIONS ########################
     # Methods that directly pass data to/from PANDA with no extra logic beyond argument reformatting.
@@ -6525,6 +6551,24 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 <dt id="pandare.panda.Panda.arch"><code class="name">var <span class="ident">arch</span></code></dt>
 <dd>
 <div class="desc"><p>A reference to an auto-instantiated <code><a title="pandare.arch.PandaArch" href="arch.html#pandare.arch.PandaArch">PandaArch</a></code> subclass (e.g., <code><a title="pandare.arch.X86Arch" href="arch.html#pandare.arch.X86Arch">X86Arch</a></code>)</p></div>
+</dd>
+<dt id="pandare.panda.Panda.pyplugin"><code class="name">var <span class="ident">pyplugin</span></code></dt>
+<dd>
+<div class="desc"><p>A reference to an auto-instantiated <code><a title="pandare.pyplugin.PyPluginManager" href="pyplugin.html#pandare.pyplugin.PyPluginManager">PyPluginManager</a></code> class.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def pyplugin(self):
+    &#34;&#34;&#34;
+    A reference to an auto-instantiated `pandare.pyplugin.PyPluginManager` class.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#34;_pyplugin_manager&#34;):
+        from .pyplugin import PyPluginManager
+        self._pyplugin_manager = PyPluginManager(self)
+    return self._pyplugin_manager</code></pre>
+</details>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -11364,6 +11408,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.panda.Panda.ppp" href="#pandare.panda.Panda.ppp">ppp</a></code></li>
 <li><code><a title="pandare.panda.Panda.pyperiph_read_cb" href="#pandare.panda.Panda.pyperiph_read_cb">pyperiph_read_cb</a></code></li>
 <li><code><a title="pandare.panda.Panda.pyperiph_write_cb" href="#pandare.panda.Panda.pyperiph_write_cb">pyperiph_write_cb</a></code></li>
+<li><code><a title="pandare.panda.Panda.pyplugin" href="#pandare.panda.Panda.pyplugin">pyplugin</a></code></li>
 <li><code><a title="pandare.panda.Panda.queue_async" href="#pandare.panda.Panda.queue_async">queue_async</a></code></li>
 <li><code><a title="pandare.panda.Panda.queue_blocking" href="#pandare.panda.Panda.queue_blocking">queue_blocking</a></code></li>
 <li><code><a title="pandare.panda.Panda.queue_main_loop_wait_fn" href="#pandare.panda.Panda.queue_main_loop_wait_fn">queue_main_loop_wait_fn</a></code></li>
