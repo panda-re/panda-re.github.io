@@ -1455,7 +1455,7 @@ INDEX=[
 {
 "ref":"pandare.arch.PandaArch.get_retval",
 "url":5,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. Return value from syscalls is signed",
 "func":1
 },
 {
@@ -1501,7 +1501,7 @@ INDEX=[
 {
 "ref":"pandare.arch.ArmArch.get_return_value",
 "url":5,
-"doc":"returns register value used to return results",
+"doc":" Deprecated use get_retval",
 "func":1
 },
 {
@@ -1554,7 +1554,7 @@ INDEX=[
 {
 "ref":"pandare.arch.ArmArch.get_retval",
 "url":5,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. Return value from syscalls is signed",
 "func":1
 },
 {
@@ -1601,7 +1601,7 @@ INDEX=[
 {
 "ref":"pandare.arch.Aarch64Arch.get_return_value",
 "url":5,
-"doc":"returns register value used to return results",
+"doc":" Deprecated use get_retval",
 "func":1
 },
 {
@@ -1648,7 +1648,7 @@ INDEX=[
 {
 "ref":"pandare.arch.Aarch64Arch.get_retval",
 "url":5,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. Return value from syscalls is signed",
 "func":1
 },
 {
@@ -1687,9 +1687,15 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.arch.MipsArch.get_retval",
+"url":5,
+"doc":"Overloaded to incorporate error data from A3 register for syscalls. If A3 is 1 and convention is syscall,  negate the return value. This matches behavior of other architecures (where -ERRNO is returned on error)",
+"func":1
+},
+{
 "ref":"pandare.arch.MipsArch.get_return_value",
 "url":5,
-"doc":"returns register value used to return results",
+"doc":" Deprecated use get_retval",
 "func":1
 },
 {
@@ -1735,12 +1741,6 @@ INDEX=[
 "func":1
 },
 {
-"ref":"pandare.arch.MipsArch.get_retval",
-"url":5,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
-"func":1
-},
-{
 "ref":"pandare.arch.MipsArch.dump_regs",
 "url":5,
 "doc":"Print (telescoping) each register and its values",
@@ -1783,7 +1783,7 @@ INDEX=[
 {
 "ref":"pandare.arch.X86Arch.get_return_value",
 "url":5,
-"doc":"returns register value used to return results",
+"doc":" Deprecated use get_retval",
 "func":1
 },
 {
@@ -1831,7 +1831,7 @@ INDEX=[
 {
 "ref":"pandare.arch.X86Arch.get_retval",
 "url":5,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. Return value from syscalls is signed",
 "func":1
 },
 {
@@ -1877,7 +1877,7 @@ INDEX=[
 {
 "ref":"pandare.arch.X86_64Arch.get_return_value",
 "url":5,
-"doc":"returns register value used to return results",
+"doc":" Deprecated use get_retval",
 "func":1
 },
 {
@@ -1919,7 +1919,7 @@ INDEX=[
 {
 "ref":"pandare.arch.X86_64Arch.get_retval",
 "url":5,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value.",
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. Return value from syscalls is signed",
 "func":1
 },
 {
@@ -2923,7 +2923,7 @@ INDEX=[
 {
 "ref":"pandare.qcows.SUPPORTED_IMAGES",
 "url":9,
-"doc":"Dictionary of  Image objects by name. Supported values include: x86_64 i386 ppc arm aarch64 mips mipsel"
+"doc":"Dictionary of  Image objects by name. Generic values (underlying OS version may change) include: x86_64 i386 ppc arm aarch64 mips mipsel mips64 You may also specify an exact arch/OS combination from the following exist: x86_64_ubuntu_1804 i386_ubuntu_1604 ppc_wheezy arm_wheezy aarch64 _focal mips_wheezy mips_buildroot5 mipsel_wheezy mipsel_buildroot5 mips64"
 },
 {
 "ref":"pandare.qcows.Qcows",

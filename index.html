@@ -2134,8 +2134,8 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
         self.serial_unconsumed_data = b&#39;&#39;
 
-        if isinstance(extra_args, str): # Extra args can be a string or array
-            extra_args = extra_args.split()
+        if isinstance(extra_args, str): # Extra args can be a string or array. Use shlex to preserve quoted substrings
+            extra_args = shlex_split(extra_args)
         elif extra_args is None:
             extra_args = []
 
@@ -2149,7 +2149,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.qcow     = Qcows.get_qcow(generic)
             self.expect_prompt = q.prompt
             if q.extra_args:
-                extra_args.extend(q.extra_args.split(&#34; &#34;))
+                extra_args.extend(shlex_split(q.extra_args))
 
         if self.qcow: # Otherwise we shuld be able to do a replay with no qcow but this is probably broken
             if not (exists(self.qcow)):
@@ -2172,6 +2172,8 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.arch = Aarch64Arch(self)
         elif self.arch_name in [&#34;mips&#34;, &#34;mipsel&#34;]:
             self.arch = MipsArch(self)
+        elif self.arch_name in [&#34;mips64&#34;]:
+            self.arch = MipsArch(self) # XXX: We probably need a different class?
         else:
             raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
         self.bits, self.endianness, self.register_size = self.arch._determine_bits()
@@ -2196,12 +2198,16 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
         # Setup argv for panda
         self.panda_args = [self.panda]
-        biospath = realpath(pjoin(self.build_dir, &#34;pc-bios&#34;)) # XXX: necessary for network drivers for arm, so &#39;pc-bios&#39; is a misleading name
+        biospath = realpath(pjoin(self.build_dir, &#34;pc-bios&#34;)) # XXX: necessary for network drivers for arm/mips, so &#39;pc-bios&#39; is a misleading name
         self.panda_args.append(&#34;-L&#34;)
         self.panda_args.append(biospath)
 
         if self.qcow:
-            self.panda_args.append(self.qcow)
+            if self.arch_name == &#39;mips64&#39;:
+                # XXX: mips64 needs virtio interface for the qcow
+                self.panda_args.extend([&#34;-drive&#34;, f&#34;file={self.qcow},if=virtio&#34;])
+            else:
+                self.panda_args.append(self.qcow)
 
         self.panda_args += extra_args
 
