@@ -245,6 +245,7 @@ class Panda():
         self.lambda_cnt = 0
         self.__sighandler = None
         self.ending = False # True during end_analysis
+        self.cdrom = None
         self.catch_exceptions=catch_exceptions
 
         self.serial_unconsumed_data = b&#39;&#39;
@@ -263,6 +264,7 @@ class Panda():
             self.mem      = q.default_mem # Might clobber a specified argument, but required if you want snapshots
             self.qcow     = Qcows.get_qcow(generic)
             self.expect_prompt = q.prompt
+            self.cdrom    = q.cdrom
             if q.extra_args:
                 extra_args.extend(shlex_split(q.extra_args))
 
@@ -2507,7 +2509,7 @@ class Panda():
         self.run_monitor_cmd(&#34;delvm {}&#34;.format(snapshot_name))
 
     @blocking
-    def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, setup_script=&#34;setup.sh&#34;, timeout=None):
+    def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, setup_script=&#34;setup.sh&#34;, timeout=None, cdrom=None):
         &#39;&#39;&#39;
 
         Copy a directory from the host into the guest by
@@ -2550,7 +2552,15 @@ class Panda():
 
         # Tell panda to we insert the CD drive
         # TODO: the cd-drive name should be a config option, see the values in qcow.py
-        errs = self.run_monitor_cmd(&#34;change ide1-cd0 \&#34;{}\&#34;&#34;.format(iso_name))
+
+        cd_drive_name = cdrom
+        if cdrom is None:
+            if self.cdrom is not None:
+                cd_drive_name = self.cdrom
+            else:
+                cd_drive_name = &#34;ide1-cd0&#34;
+
+        errs = self.run_monitor_cmd(&#34;change {} \&#34;{}\&#34;&#34;.format(cd_drive_name, iso_name))
         if len(errs):
             warn(f&#34;Warning encountered when connecting media to guest: {errs}&#34;)
 
@@ -2576,7 +2586,7 @@ class Panda():
             # Ensure we disconnect the CD drive after the mount + copy, even if it fails
             self.run_serial_cmd(&#34;umount /dev/cdrom&#34;) # This can fail and that&#39;s okay, we&#39;ll forece eject
             sleep(1)
-            errs = self.run_monitor_cmd(&#34;eject -f ide1-cd0&#34;)
+            errs = self.run_monitor_cmd(f&#34;eject -f {cd_drive_name}&#34;)
             if len(errs):
                 warn(f&#34;Warning encountered when disconnecting media from guest: {errs}&#34;)
 
@@ -3457,6 +3467,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         self.lambda_cnt = 0
         self.__sighandler = None
         self.ending = False # True during end_analysis
+        self.cdrom = None
         self.catch_exceptions=catch_exceptions
 
         self.serial_unconsumed_data = b&#39;&#39;
@@ -3475,6 +3486,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.mem      = q.default_mem # Might clobber a specified argument, but required if you want snapshots
             self.qcow     = Qcows.get_qcow(generic)
             self.expect_prompt = q.prompt
+            self.cdrom    = q.cdrom
             if q.extra_args:
                 extra_args.extend(shlex_split(q.extra_args))
 
@@ -5719,7 +5731,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         self.run_monitor_cmd(&#34;delvm {}&#34;.format(snapshot_name))
 
     @blocking
-    def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, setup_script=&#34;setup.sh&#34;, timeout=None):
+    def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, setup_script=&#34;setup.sh&#34;, timeout=None, cdrom=None):
         &#39;&#39;&#39;
 
         Copy a directory from the host into the guest by
@@ -5762,7 +5774,15 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
         # Tell panda to we insert the CD drive
         # TODO: the cd-drive name should be a config option, see the values in qcow.py
-        errs = self.run_monitor_cmd(&#34;change ide1-cd0 \&#34;{}\&#34;&#34;.format(iso_name))
+
+        cd_drive_name = cdrom
+        if cdrom is None:
+            if self.cdrom is not None:
+                cd_drive_name = self.cdrom
+            else:
+                cd_drive_name = &#34;ide1-cd0&#34;
+
+        errs = self.run_monitor_cmd(&#34;change {} \&#34;{}\&#34;&#34;.format(cd_drive_name, iso_name))
         if len(errs):
             warn(f&#34;Warning encountered when connecting media to guest: {errs}&#34;)
 
@@ -5788,7 +5808,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             # Ensure we disconnect the CD drive after the mount + copy, even if it fails
             self.run_serial_cmd(&#34;umount /dev/cdrom&#34;) # This can fail and that&#39;s okay, we&#39;ll forece eject
             sleep(1)
-            errs = self.run_monitor_cmd(&#34;eject -f ide1-cd0&#34;)
+            errs = self.run_monitor_cmd(f&#34;eject -f {cd_drive_name}&#34;)
             if len(errs):
                 warn(f&#34;Warning encountered when disconnecting media from guest: {errs}&#34;)
 
@@ -6679,7 +6699,7 @@ Handle conversion and return get_callers from callstack_instr.</p></div>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.copy_to_guest"><code class="name flex">
-<span>def <span class="ident">copy_to_guest</span></span>(<span>self, copy_directory, iso_name=None, absolute_paths=False, setup_script='setup.sh', timeout=None)</span>
+<span>def <span class="ident">copy_to_guest</span></span>(<span>self, copy_directory, iso_name=None, absolute_paths=False, setup_script='setup.sh', timeout=None, cdrom=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Copy a directory from the host into the guest by
@@ -6706,7 +6726,7 @@ Handle conversion and return get_callers from callstack_instr.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@blocking
-def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, setup_script=&#34;setup.sh&#34;, timeout=None):
+def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, setup_script=&#34;setup.sh&#34;, timeout=None, cdrom=None):
     &#39;&#39;&#39;
 
     Copy a directory from the host into the guest by
@@ -6749,7 +6769,15 @@ def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, set
 
     # Tell panda to we insert the CD drive
     # TODO: the cd-drive name should be a config option, see the values in qcow.py
-    errs = self.run_monitor_cmd(&#34;change ide1-cd0 \&#34;{}\&#34;&#34;.format(iso_name))
+
+    cd_drive_name = cdrom
+    if cdrom is None:
+        if self.cdrom is not None:
+            cd_drive_name = self.cdrom
+        else:
+            cd_drive_name = &#34;ide1-cd0&#34;
+
+    errs = self.run_monitor_cmd(&#34;change {} \&#34;{}\&#34;&#34;.format(cd_drive_name, iso_name))
     if len(errs):
         warn(f&#34;Warning encountered when connecting media to guest: {errs}&#34;)
 
@@ -6775,7 +6803,7 @@ def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, set
         # Ensure we disconnect the CD drive after the mount + copy, even if it fails
         self.run_serial_cmd(&#34;umount /dev/cdrom&#34;) # This can fail and that&#39;s okay, we&#39;ll forece eject
         sleep(1)
-        errs = self.run_monitor_cmd(&#34;eject -f ide1-cd0&#34;)
+        errs = self.run_monitor_cmd(f&#34;eject -f {cd_drive_name}&#34;)
         if len(errs):
             warn(f&#34;Warning encountered when disconnecting media from guest: {errs}&#34;)
 
