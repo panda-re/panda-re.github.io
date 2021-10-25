@@ -3724,7 +3724,10 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         for proc in self.get_processes(cpu):
             assert(proc != self.ffi.NULL)
             assert(proc.pid not in procs)
-            procs[proc.pid] = {&#34;name&#34;: self.ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;), &#39;pid&#39;: proc.pid, &#39;parent_pid&#39;: proc.ppid}
+            procs[proc.pid] = {&#39;name&#39;: self.ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;),
+                               &#39;pid&#39;: proc.pid,
+                               &#39;parent_pid&#39;: proc.ppid,
+                               &#39;create_time&#39;: proc.create_time}
             assert(not (proc.pid != 0 and proc.pid == proc.ppid)) # No cycles allowed other than at 0
         return procs
 
@@ -6713,7 +6716,10 @@ and its parent pid (ppid).</p>
     for proc in self.get_processes(cpu):
         assert(proc != self.ffi.NULL)
         assert(proc.pid not in procs)
-        procs[proc.pid] = {&#34;name&#34;: self.ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;), &#39;pid&#39;: proc.pid, &#39;parent_pid&#39;: proc.ppid}
+        procs[proc.pid] = {&#39;name&#39;: self.ffi.string(proc.name).decode(&#39;utf8&#39;, &#39;ignore&#39;),
+                           &#39;pid&#39;: proc.pid,
+                           &#39;parent_pid&#39;: proc.ppid,
+                           &#39;create_time&#39;: proc.create_time}
         assert(not (proc.pid != 0 and proc.pid == proc.ppid)) # No cycles allowed other than at 0
     return procs</code></pre>
 </details>
