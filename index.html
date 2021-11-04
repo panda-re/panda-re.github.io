@@ -312,9 +312,9 @@ Example plugins are available in the [examples directory](https://github.com/pan
 
 from .panda import Panda, blocking
 from .plog_reader import PLogReader
-from .panda_plugin import PandaPlugin
+from .pyplugin import PyPlugin
 
-__all__ = [&#39;Panda&#39;, &#39;PLogReader&#39;, &#39;Callbacks&#39;, &#39;PandaPlugin&#39;]
+__all__ = [&#39;Panda&#39;, &#39;PLogReader&#39;, &#39;Callbacks&#39;, &#39;PyPlugin&#39;]
 
 __pdoc__ = {}
 
@@ -460,15 +460,15 @@ this is done by passing a handle from your script's PANDA object …</p></div>
 <dd>
 <div class="desc"><p>Custom library for interacting/expecting data via serial-like FDs</p></div>
 </dd>
-<dt><code class="name"><a title="pandare.panda_plugin" href="panda_plugin.html">pandare.panda_plugin</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
 <dt><code class="name"><a title="pandare.plog_reader" href="plog_reader.html">pandare.plog_reader</a></code></dt>
 <dd>
 <div class="desc"><p>Module for reading and writing PANDAlog (plog) files from Python.</p></div>
 </dd>
 <dt><code class="name"><a title="pandare.pyplugin" href="pyplugin.html">pandare.pyplugin</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="pandare.pypluginmanager" href="pypluginmanager.html">pandare.pypluginmanager</a></code></dt>
 <dd>
 <div class="desc"><p>Class to manage loading Panda PyPlugins. See docs/pyplugins.md for details.</p></div>
 </dd>
@@ -2791,6 +2791,10 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                 continue
             #self.disable_callback(name)
 
+        # Next, unload any pyplugins
+        if hasattr(self, &#34;_pyplugin_manager&#34;):
+            self.pyplugins.unload_all()
+
         # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
         self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)
 
@@ -3109,16 +3113,14 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
     # PyPlugin helpers
     @property
-    def pyplugin(self):
+    def pyplugins(self):
         &#34;&#34;&#34;
         A reference to an auto-instantiated `pandare.pyplugin.PyPluginManager` class.
         &#34;&#34;&#34;
         if not hasattr(self, &#34;_pyplugin_manager&#34;):
-            from .pyplugin import PyPluginManager
+            from .pypluginmanager import PyPluginManager
             self._pyplugin_manager = PyPluginManager(self)
         return self._pyplugin_manager
-
-
 
 
     ########################## LIBPANDA FUNCTIONS ########################
@@ -5250,20 +5252,20 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 <dd>
 <div class="desc"><p>A reference to an auto-instantiated <code><a title="pandare.arch.PandaArch" href="arch.html#pandare.arch.PandaArch">PandaArch</a></code> subclass (e.g., <code><a title="pandare.arch.X86Arch" href="arch.html#pandare.arch.X86Arch">X86Arch</a></code>)</p></div>
 </dd>
-<dt id="pandare.Panda.pyplugin"><code class="name">var <span class="ident">pyplugin</span></code></dt>
+<dt id="pandare.Panda.pyplugins"><code class="name">var <span class="ident">pyplugins</span></code></dt>
 <dd>
-<div class="desc"><p>A reference to an auto-instantiated <code><a title="pandare.pyplugin.PyPluginManager" href="pyplugin.html#pandare.pyplugin.PyPluginManager">PyPluginManager</a></code> class.</p></div>
+<div class="desc"><p>A reference to an auto-instantiated <code>pandare.pyplugin.PyPluginManager</code> class.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def pyplugin(self):
+def pyplugins(self):
     &#34;&#34;&#34;
     A reference to an auto-instantiated `pandare.pyplugin.PyPluginManager` class.
     &#34;&#34;&#34;
     if not hasattr(self, &#34;_pyplugin_manager&#34;):
-        from .pyplugin import PyPluginManager
+        from .pypluginmanager import PyPluginManager
         self._pyplugin_manager = PyPluginManager(self)
     return self._pyplugin_manager</code></pre>
 </details>
@@ -9759,6 +9761,10 @@ panda.panda_finish directly (which is done at the end of panda.run())</p></div>
             continue
         #self.disable_callback(name)
 
+    # Next, unload any pyplugins
+    if hasattr(self, &#34;_pyplugin_manager&#34;):
+        self.pyplugins.unload_all()
+
     # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
     self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)</code></pre>
 </details>
@@ -9950,45 +9956,96 @@ Returns true if the pyperipheral was successfully removed, else false.</p></div>
 </dd>
 </dl>
 </dd>
-<dt id="pandare.PandaPlugin"><code class="flex name class">
-<span>class <span class="ident">PandaPlugin</span></span>
+<dt id="pandare.PyPlugin"><code class="flex name class">
+<span>class <span class="ident">PyPlugin</span></span>
 <span>(</span><span>panda)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class which PyPANDA plugins should inherit. Subclasses may
-register callbacks using the provided panda object and use
-PandaPlugin.get_args or PandaPlugin.get_arg_bool to check argument
-values (note these helpers should be accessed with <code>self.get_&hellip;</code>).</p>
-<p>This PyPANDA extra aims to mirror the snake_hook (rust) plugin
-so a single PyPANDA plugin can be used from both pure PyPANDA (with this class)
-or from CLI panda with snake_hook.</p>
-<p>For more information, read the snake_hook documentation</p></div>
+register callbacks using the provided panda object and use the
+PyPlugin APIs:</p>
+<ul>
+<li>self.get_args or self.get_arg_bool to check argument values</li>
+<li>self.ppp to interact with other PyPlugins via PPP interfaces</li>
+<li>self.ppp_cb_boilerplate('cb_name') to register a ppp-style callback</li>
+<li>self.ppp_run_cb('cb_name') to run a previously-registered ppp-style callback</li>
+<li>@PyPlugin.ppp_export to mark a class method as ppp-exported</li>
+</ul>
+<p>For more information, check out the pyplugin documentation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class PandaPlugin:
+<pre><code class="python">class PyPlugin:
     def __init__(self, panda):
         &#39;&#39;&#39;
         Base class which PyPANDA plugins should inherit. Subclasses may
-        register callbacks using the provided panda object and use
-        PandaPlugin.get_args or PandaPlugin.get_arg_bool to check argument
-        values (note these helpers should be accessed with `self.get_...`).
+        register callbacks using the provided panda object and use the
+        PyPlugin APIs:
 
-        This PyPANDA extra aims to mirror the snake_hook (rust) plugin
-        so a single PyPANDA plugin can be used from both pure PyPANDA (with this class)
-        or from CLI panda with snake_hook.
+        * self.get_args or self.get_arg_bool to check argument values
+        * self.ppp to interact with other PyPlugins via PPP interfaces
+        * self.ppp_cb_boilerplate(&#39;cb_name&#39;) to register a ppp-style callback
+        * self.ppp_run_cb(&#39;cb_name&#39;) to run a previously-registered ppp-style callback
+        * @PyPlugin.ppp_export to mark a class method as ppp-exported
 
-        For more information, read the snake_hook documentation
+        For more information, check out the pyplugin documentation.
         &#39;&#39;&#39;
-        pass
 
-    def __preinit__(self, args):
+    # Parent init method which will be called prior to child __init__
+    def __preinit__(self, pypluginmgr, args):
+        self.ppp_cbs = {} # ppp callback name =&gt; _PPP instance which tracks registered cbs and runs them
+
         self.args = args
+        self.pypluginmgr = pypluginmgr
 
+    @property
+    def ppp(self):
+        # Why is this a property you ask? Because it makes it easier to set a docstring
+        &#39;&#39;&#39;
+        The .ppp property of the PyPlugin class is used for accessing PPP methods and callbacks
+        exposed by other PyPlugins. (Under the hood, this is a refernece to the PyPluginManager.ppp
+        property).
+
+        Through self.ppp, you can reference another PyPlugin by name, e.g., if a previously-loaded plugin
+        is named `Server`, from your plugin you can do `self.ppp.Server` to access PPP-exported methods.
+
+        From there, you can run PPP-exported functions by name: `self.ppp.Server.some_exported_fn(*args)`.
+        Or you can register a local class method a PPP-style callback provided by the other plugin:
+            `self.ppp.server.ppp_reg_cb(&#39;some_provided_callback&#39;, self.some_local_method)`
+        &#39;&#39;&#39;
+        return self.pypluginmgr.ppp
+
+
+    @staticmethod
+    def ppp_export(method):
+        &#39;&#39;&#39;
+        Decorator to apply to a class method in a PyPlugin to indicate that other plugins should
+        be allowed to call this function. Example:
+
+            from pandare import PyPlugin
+            Class Server(PyPlugin):
+                def __init__(self, panda):
+                    pass
+
+                @PyPlugin.ppp_export
+                def do_add(self, x):
+                    return x+1
+
+            Class Client(PyPlugin):
+                def __init__(self, panda):
+                    print(self.ppp.Server.do_add(1))
+        &#39;&#39;&#39;
+        @wraps(method)
+        def f(*args, **kwargs):
+            return method(*args, **kwargs)
+        f.__is_pyplugin_ppp = True
+        return f
+
+    # Argument loading
     def get_arg(self, arg_name):
         &#39;&#39;&#39;
-        returns either the argument as a string or None if the argument
+        Returns either the argument as a string or None if the argument
         wasn&#39;t passed (arguments passed in bool form (i.e., set but with no value)
         instead of key/value form will also return None).
         &#39;&#39;&#39;
@@ -9999,17 +10056,139 @@ or from CLI panda with snake_hook.</p>
 
     def get_arg_bool(self, arg_name):
         &#39;&#39;&#39;
-        returns True if the argument is True
+        Returns True if the argument is set and has a value of True
         &#39;&#39;&#39;
-        return arg_name in self.args and self.args[arg_name]==True</code></pre>
+        return arg_name in self.args and self.args[arg_name]==True
+
+    # Callback definition / registration / use. Note these functions mirror the behavior of the macros used
+    # in C plugin, check out docs/readme.md for additional details.
+
+    def ppp_cb_boilerplate(self, cb_name):
+        &#39;&#39;&#39;
+        &#34;Define&#34; a PPP-style function in this plugin. Note that there is no type
+        information because this is Python. Run via .ppp[cb_name].run(...)
+        &#39;&#39;&#39;
+        plugin_name = self.__class__.__name__
+
+        if cb_name in self.ppp_cbs:
+            raise ValueError(f&#34;PPP function {cb_name} is being redefined in {plugin_name}&#34;)
+
+        # Add two callbacks into our PPP namesapce: fn_add and fn_run
+        this_ppp_cb = _PPP_CB()
+        self.ppp.add(self.__class__.__name__, &#34;ppp_reg_cb_&#34; + cb_name, this_ppp_cb.add_callback)
+        self.ppp.add(self.__class__.__name__, &#34;ppp_run_cb_&#34; + cb_name, this_ppp_cb.run)
+
+        # Make sure we have a helper self.ppp[class].ppp_reg_cb which just calls
+        # the ppp_reg_[cb_name] we just saved
+        try:
+            getattr(getattr(self.ppp, self.__class__.__name__), &#34;ppp_reg_cb&#34;)
+        except AttributeError:
+            def _reg_cb(target_ppp, func):
+                getattr(getattr(self.ppp,
+                    self.__class__.__name__), &#34;ppp_reg_cb_&#34; + target_ppp)(func)
+            self.ppp.add(self.__class__.__name__, &#34;ppp_reg_cb&#34;, _reg_cb)
+
+    def ppp_run_cb(self, target_ppp, *args):
+        &#39;&#39;&#39;
+        Trigger a previously defind PPP-style callback named `target_ppp` in this plugin with `args`
+        Any other pyplugins which have registered a function to run on this callback will be called with `args`.
+        &#39;&#39;&#39;
+        getattr(getattr(self.ppp, self.__class__.__name__), &#34;ppp_run_cb_&#34; + target_ppp)(*args)</code></pre>
 </details>
+<h3>Static methods</h3>
+<dl>
+<dt id="pandare.PyPlugin.ppp_export"><code class="name flex">
+<span>def <span class="ident">ppp_export</span></span>(<span>method)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Decorator to apply to a class method in a PyPlugin to indicate that other plugins should
+be allowed to call this function. Example:</p>
+<pre><code>from pandare import PyPlugin
+Class Server(PyPlugin):
+    def __init__(self, panda):
+        pass
+
+    @PyPlugin.ppp_export
+    def do_add(self, x):
+        return x+1
+
+Class Client(PyPlugin):
+    def __init__(self, panda):
+        print(self.ppp.Server.do_add(1))
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def ppp_export(method):
+    &#39;&#39;&#39;
+    Decorator to apply to a class method in a PyPlugin to indicate that other plugins should
+    be allowed to call this function. Example:
+
+        from pandare import PyPlugin
+        Class Server(PyPlugin):
+            def __init__(self, panda):
+                pass
+
+            @PyPlugin.ppp_export
+            def do_add(self, x):
+                return x+1
+
+        Class Client(PyPlugin):
+            def __init__(self, panda):
+                print(self.ppp.Server.do_add(1))
+    &#39;&#39;&#39;
+    @wraps(method)
+    def f(*args, **kwargs):
+        return method(*args, **kwargs)
+    f.__is_pyplugin_ppp = True
+    return f</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.PyPlugin.ppp"><code class="name">var <span class="ident">ppp</span></code></dt>
+<dd>
+<div class="desc"><p>The .ppp property of the PyPlugin class is used for accessing PPP methods and callbacks
+exposed by other PyPlugins. (Under the hood, this is a refernece to the PyPluginManager.ppp
+property).</p>
+<p>Through self.ppp, you can reference another PyPlugin by name, e.g., if a previously-loaded plugin
+is named <code>Server</code>, from your plugin you can do <code>self.ppp.Server</code> to access PPP-exported methods.</p>
+<p>From there, you can run PPP-exported functions by name: <code>self.ppp.Server.some_exported_fn(*args)</code>.
+Or you can register a local class method a PPP-style callback provided by the other plugin:
+<code>self.ppp.server.ppp_reg_cb('some_provided_callback', self.some_local_method)</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ppp(self):
+    # Why is this a property you ask? Because it makes it easier to set a docstring
+    &#39;&#39;&#39;
+    The .ppp property of the PyPlugin class is used for accessing PPP methods and callbacks
+    exposed by other PyPlugins. (Under the hood, this is a refernece to the PyPluginManager.ppp
+    property).
+
+    Through self.ppp, you can reference another PyPlugin by name, e.g., if a previously-loaded plugin
+    is named `Server`, from your plugin you can do `self.ppp.Server` to access PPP-exported methods.
+
+    From there, you can run PPP-exported functions by name: `self.ppp.Server.some_exported_fn(*args)`.
+    Or you can register a local class method a PPP-style callback provided by the other plugin:
+        `self.ppp.server.ppp_reg_cb(&#39;some_provided_callback&#39;, self.some_local_method)`
+    &#39;&#39;&#39;
+    return self.pypluginmgr.ppp</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
-<dt id="pandare.PandaPlugin.get_arg"><code class="name flex">
+<dt id="pandare.PyPlugin.get_arg"><code class="name flex">
 <span>def <span class="ident">get_arg</span></span>(<span>self, arg_name)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>returns either the argument as a string or None if the argument
+<div class="desc"><p>Returns either the argument as a string or None if the argument
 wasn't passed (arguments passed in bool form (i.e., set but with no value)
 instead of key/value form will also return None).</p></div>
 <details class="source">
@@ -10018,7 +10197,7 @@ instead of key/value form will also return None).</p></div>
 </summary>
 <pre><code class="python">def get_arg(self, arg_name):
     &#39;&#39;&#39;
-    returns either the argument as a string or None if the argument
+    Returns either the argument as a string or None if the argument
     wasn&#39;t passed (arguments passed in bool form (i.e., set but with no value)
     instead of key/value form will also return None).
     &#39;&#39;&#39;
@@ -10028,20 +10207,74 @@ instead of key/value form will also return None).</p></div>
     return None</code></pre>
 </details>
 </dd>
-<dt id="pandare.PandaPlugin.get_arg_bool"><code class="name flex">
+<dt id="pandare.PyPlugin.get_arg_bool"><code class="name flex">
 <span>def <span class="ident">get_arg_bool</span></span>(<span>self, arg_name)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>returns True if the argument is True</p></div>
+<div class="desc"><p>Returns True if the argument is set and has a value of True</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_arg_bool(self, arg_name):
     &#39;&#39;&#39;
-    returns True if the argument is True
+    Returns True if the argument is set and has a value of True
     &#39;&#39;&#39;
     return arg_name in self.args and self.args[arg_name]==True</code></pre>
+</details>
+</dd>
+<dt id="pandare.PyPlugin.ppp_cb_boilerplate"><code class="name flex">
+<span>def <span class="ident">ppp_cb_boilerplate</span></span>(<span>self, cb_name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>"Define" a PPP-style function in this plugin. Note that there is no type
+information because this is Python. Run via .ppp[cb_name].run(&hellip;)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ppp_cb_boilerplate(self, cb_name):
+    &#39;&#39;&#39;
+    &#34;Define&#34; a PPP-style function in this plugin. Note that there is no type
+    information because this is Python. Run via .ppp[cb_name].run(...)
+    &#39;&#39;&#39;
+    plugin_name = self.__class__.__name__
+
+    if cb_name in self.ppp_cbs:
+        raise ValueError(f&#34;PPP function {cb_name} is being redefined in {plugin_name}&#34;)
+
+    # Add two callbacks into our PPP namesapce: fn_add and fn_run
+    this_ppp_cb = _PPP_CB()
+    self.ppp.add(self.__class__.__name__, &#34;ppp_reg_cb_&#34; + cb_name, this_ppp_cb.add_callback)
+    self.ppp.add(self.__class__.__name__, &#34;ppp_run_cb_&#34; + cb_name, this_ppp_cb.run)
+
+    # Make sure we have a helper self.ppp[class].ppp_reg_cb which just calls
+    # the ppp_reg_[cb_name] we just saved
+    try:
+        getattr(getattr(self.ppp, self.__class__.__name__), &#34;ppp_reg_cb&#34;)
+    except AttributeError:
+        def _reg_cb(target_ppp, func):
+            getattr(getattr(self.ppp,
+                self.__class__.__name__), &#34;ppp_reg_cb_&#34; + target_ppp)(func)
+        self.ppp.add(self.__class__.__name__, &#34;ppp_reg_cb&#34;, _reg_cb)</code></pre>
+</details>
+</dd>
+<dt id="pandare.PyPlugin.ppp_run_cb"><code class="name flex">
+<span>def <span class="ident">ppp_run_cb</span></span>(<span>self, target_ppp, *args)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Trigger a previously defind PPP-style callback named <code>target_ppp</code> in this plugin with <code>args</code>
+Any other pyplugins which have registered a function to run on this callback will be called with <code>args</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ppp_run_cb(self, target_ppp, *args):
+    &#39;&#39;&#39;
+    Trigger a previously defind PPP-style callback named `target_ppp` in this plugin with `args`
+    Any other pyplugins which have registered a function to run on this callback will be called with `args`.
+    &#39;&#39;&#39;
+    getattr(getattr(self.ppp, self.__class__.__name__), &#34;ppp_run_cb_&#34; + target_ppp)(*args)</code></pre>
 </details>
 </dd>
 </dl>
@@ -10139,9 +10372,9 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.extras" href="extras/index.html">pandare.extras</a></code></li>
 <li><code><a title="pandare.panda" href="panda.html">pandare.panda</a></code></li>
 <li><code><a title="pandare.panda_expect" href="panda_expect.html">pandare.panda_expect</a></code></li>
-<li><code><a title="pandare.panda_plugin" href="panda_plugin.html">pandare.panda_plugin</a></code></li>
 <li><code><a title="pandare.plog_reader" href="plog_reader.html">pandare.plog_reader</a></code></li>
 <li><code><a title="pandare.pyplugin" href="pyplugin.html">pandare.pyplugin</a></code></li>
+<li><code><a title="pandare.pypluginmanager" href="pypluginmanager.html">pandare.pypluginmanager</a></code></li>
 <li><code><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></li>
 <li><code><a title="pandare.taint" href="taint/index.html">pandare.taint</a></code></li>
 <li><code><a title="pandare.utils" href="utils.html">pandare.utils</a></code></li>
@@ -10307,7 +10540,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.Panda.ppp" href="#pandare.Panda.ppp">ppp</a></code></li>
 <li><code><a title="pandare.Panda.pyperiph_read_cb" href="#pandare.Panda.pyperiph_read_cb">pyperiph_read_cb</a></code></li>
 <li><code><a title="pandare.Panda.pyperiph_write_cb" href="#pandare.Panda.pyperiph_write_cb">pyperiph_write_cb</a></code></li>
-<li><code><a title="pandare.Panda.pyplugin" href="#pandare.Panda.pyplugin">pyplugin</a></code></li>
+<li><code><a title="pandare.Panda.pyplugins" href="#pandare.Panda.pyplugins">pyplugins</a></code></li>
 <li><code><a title="pandare.Panda.queue_async" href="#pandare.Panda.queue_async">queue_async</a></code></li>
 <li><code><a title="pandare.Panda.queue_blocking" href="#pandare.Panda.queue_blocking">queue_blocking</a></code></li>
 <li><code><a title="pandare.Panda.queue_main_loop_wait_fn" href="#pandare.Panda.queue_main_loop_wait_fn">queue_main_loop_wait_fn</a></code></li>
@@ -10368,10 +10601,14 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li>
-<h4><code><a title="pandare.PandaPlugin" href="#pandare.PandaPlugin">PandaPlugin</a></code></h4>
-<ul class="">
-<li><code><a title="pandare.PandaPlugin.get_arg" href="#pandare.PandaPlugin.get_arg">get_arg</a></code></li>
-<li><code><a title="pandare.PandaPlugin.get_arg_bool" href="#pandare.PandaPlugin.get_arg_bool">get_arg_bool</a></code></li>
+<h4><code><a title="pandare.PyPlugin" href="#pandare.PyPlugin">PyPlugin</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pandare.PyPlugin.get_arg" href="#pandare.PyPlugin.get_arg">get_arg</a></code></li>
+<li><code><a title="pandare.PyPlugin.get_arg_bool" href="#pandare.PyPlugin.get_arg_bool">get_arg_bool</a></code></li>
+<li><code><a title="pandare.PyPlugin.ppp" href="#pandare.PyPlugin.ppp">ppp</a></code></li>
+<li><code><a title="pandare.PyPlugin.ppp_cb_boilerplate" href="#pandare.PyPlugin.ppp_cb_boilerplate">ppp_cb_boilerplate</a></code></li>
+<li><code><a title="pandare.PyPlugin.ppp_export" href="#pandare.PyPlugin.ppp_export">ppp_export</a></code></li>
+<li><code><a title="pandare.PyPlugin.ppp_run_cb" href="#pandare.PyPlugin.ppp_run_cb">ppp_run_cb</a></code></li>
 </ul>
 </li>
 </ul>

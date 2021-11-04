@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>pandare.pyplugin API documentation</title>
-<meta name="description" content="Class to manage loading Panda PyPlugins. See docs/pyplugins.md for details." />
+<meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -144,215 +144,146 @@ padding: .5rem 1rem;
 <h1 class="title">Module <code>pandare.pyplugin</code></h1>
 </header>
 <section id="section-intro">
-<p>Class to manage loading Panda PyPlugins. See docs/pyplugins.md for details.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">#!/usr/bin/env python3
+<pre><code class="python">from functools import wraps
 
-&#34;&#34;&#34;
-Class to manage loading Panda PyPlugins. See docs/pyplugins.md for details.
-&#34;&#34;&#34;
-from pathlib import Path
-from pandare import PandaPlugin
+class _PPP_CB:
+    &#39;&#39;&#39;
+    Internal class to keep track of a the functions to run when a PPP-style
+    callback is triggered
+    &#39;&#39;&#39;
+    def __init__(self):
+        self.callbacks = []
 
-class PyPluginManager:
-    def __init__(self, panda, flask=False, host=&#39;127.0.0.1&#39;, port=8080, silence_warning=False):
+    def run(self, *args):
+        for targ_func in self.callbacks:
+            targ_func(*args)
+
+    def add_callback(self, fn):
+        assert(fn not in self.callbacks), &#34;Duplicate callback&#34;
+        self.callbacks.append(fn)
+
+class PyPlugin:
+    def __init__(self, panda):
         &#39;&#39;&#39;
-        Set up an instance of PyPluginManager.
-        &#39;&#39;&#39;
+        Base class which PyPANDA plugins should inherit. Subclasses may
+        register callbacks using the provided panda object and use the
+        PyPlugin APIs:
 
-        self.panda = panda
-        self.plugins = {}
-        self.silence_warning = silence_warning
+        * self.get_args or self.get_arg_bool to check argument values
+        * self.ppp to interact with other PyPlugins via PPP interfaces
+        * self.ppp_cb_boilerplate(&#39;cb_name&#39;) to register a ppp-style callback
+        * self.ppp_run_cb(&#39;cb_name&#39;) to run a previously-registered ppp-style callback
+        * @PyPlugin.ppp_export to mark a class method as ppp-exported
 
-        self.flask = flask
-        self.port  = None
-        self.host  = None
-        self.app   = None
-        self.blueprint    = None
-        self.flask_thread = None
-
-        if self.flask:
-            self.enable_flask(host, port)
-
-    def enable_flask(self, host=&#39;127.0.0.1&#39;, port=8080):
-        &#39;&#39;&#39;
-        Enable flask mode for this instance of the PyPlugin manager. Registered PyPlugins
-        which support flask will be made available at the web interfaces.
-        &#39;&#39;&#39;
-        if len(self.plugins) and not self.silence_warning:
-            print(&#34;WARNING: You&#39;ve previously registered some PyPlugins prior to enabling flask&#34;)
-            print(f&#34;Plugin(s) {self.plugins.keys()} will be unable to use flask&#34;)
-
-        from flask import Flask, Blueprint
-        self.flask = True
-        self.app = Flask(__name__)
-        self.blueprint = Blueprint
-        self.host = host
-        self.port = port
-
-    def load_plugin_class(self, plugin_file, class_name):
-        &#39;&#39;&#39;
-        For backwards compatability with PyPlugins which subclass
-        PandaPlugin without importing it.
-
-        Given a path to a python file which has a class that subclasses
-        PandaPlugin, set up the imports correctly such that we can
-        generate an uninstantiated instance of that class and return
-        that object.
-
-        Note you can also just add `from pandare import PandaPlugin` to
-        the plugin file and then just import the class(es) you want and pass them
-        directly to panda.pyplugin.register()
-
-        This avoids the `NameError: name &#39;PandaPlugin&#39; is not defined` which
-        you would get from directly doing `import [class_name] from [plugin_file]`
-        &#39;&#39;&#39;
-        import importlib.util
-        spec = importlib.util.spec_from_file_location(plugin_file.split(&#34;/&#34;)[-1], plugin_file)
-        if spec is None:
-            raise ValueError(f&#34;Unable to resolve plugin {plugin_file}&#34;)
-        plugin = importlib.util.module_from_spec(spec)
-        plugin.PandaPlugin = PandaPlugin
-        spec.loader.exec_module(plugin)
-        if not hasattr(plugin, class_name):
-            raise ValueError(f&#34;Unable to find class {class_name} in {plugin_file}&#34;)
-        cls = getattr(plugin, class_name)
-        assert issubclass(cls, PandaPlugin), f&#34;Class {class_name} does not subclass PandaPlugin&#34;
-        return cls
-
-    def register(self, pluginclass, args=None, name=None, template_dir=None):
-        &#39;&#39;&#39;
-        Register a PyPANDA plugin  to run. It can later be unloaded
-        by using panda.pyplugin.unregister(name).
-
-        pluginclass can either be an uninstantiated python class
-        or a tuple of (path_to_module.py, classname) where classname subclasses PandaPlugin.
-
-        If name is unspecified, a string representation of the class will be used instead
+        For more information, check out the pyplugin documentation.
         &#39;&#39;&#39;
 
-        if args is None:
-            args = {}
+    # Parent init method which will be called prior to child __init__
+    def __preinit__(self, pypluginmgr, args):
+        self.ppp_cbs = {} # ppp callback name =&gt; _PPP instance which tracks registered cbs and runs them
 
-        pluginpath = None
-        if isinstance(pluginclass, tuple):
-            pluginpath, clsname = pluginclass
-            pluginclass = self.load_plugin_class(pluginpath, clsname)
+        self.args = args
+        self.pypluginmgr = pypluginmgr
 
-        # This is a little tricky - we can&#39;t just instantiate
-        # an instance of the object- it may use self.get_arg
-        # in its init method. To allow this behavior, we create
-        # the object, use the __preinit__ function defined above
-        # and then ultimately call the __init__ method
-        # See https://stackoverflow.com/a/6384982/2796854
+    @property
+    def ppp(self):
+        # Why is this a property you ask? Because it makes it easier to set a docstring
+        &#39;&#39;&#39;
+        The .ppp property of the PyPlugin class is used for accessing PPP methods and callbacks
+        exposed by other PyPlugins. (Under the hood, this is a refernece to the PyPluginManager.ppp
+        property).
 
-        if not isinstance(pluginclass, type) or not issubclass(pluginclass, PandaPlugin):
-            raise ValueError(f&#34;pluginclass must be an uninstantiated subclass of PandaPlugin&#34;)
+        Through self.ppp, you can reference another PyPlugin by name, e.g., if a previously-loaded plugin
+        is named `Server`, from your plugin you can do `self.ppp.Server` to access PPP-exported methods.
 
-        if name is None:
-            name = pluginclass.__name__ 
-
-        self.plugins[name] = pluginclass.__new__(pluginclass)
-        self.plugins[name].__preinit__(args)
-        self.plugins[name].__init__(self.panda)
-
-        # Setup webserver if necessary
-        if self.flask:
-            self.plugins[name].flask = self.app
-
-            # If no template_dir was provided, try using ./templates in the dir of the plugin
-            # if we know it, otherwise ./templates
-            if template_dir is None:
-                if pluginpath is not None:
-                    template_dir = (Path(pluginpath).parent / &#34;templates&#34;).absolute()
-                elif (Path(&#34;.&#34;) / &#34;templates&#34;).exists():
-                    template_dir = (Path(&#34;.&#34;) / &#34;templates&#34;).absolute()
-                else:
-                    print(&#34;Warning: pyplugin couldn&#39;t find a template dir&#34;)
-
-            bp = self.blueprint(name, __name__, template_folder=template_dir)
-            self.plugins[name].webserver_init(bp)
-            self.app.register_blueprint(bp, url_prefix=&#34;/&#34; + name)
-
-    def unregister(self, pluginclass, name=None):
-        if name is None:
-            name = pluginclass.__name__ 
-        del self.plugins[name]
-
-    def is_registered(self, pluginclass, name=None):
-        if name is None:
-            name = pluginclass.__name__ 
-        return name in self.plugins
-
-    def serve(self):
-        assert(self.flask)
-        assert(self.flask_thread is None)
-        from threading import Thread
-        self.flask_thread = Thread(target=self._do_serve, daemon=True)
-        self.flask_thread.start() # TODO: shut down more gracefully?
-
-    def _do_serve(self):
-        assert(self.flask)
-
-        @self.app.route(&#34;/&#34;)
-        def index():
-            return &#34;PANDA PyPlugin web interface. Available plugins:&#34; + &#34;&lt;br\&gt;&#34;.join( \
-                    [f&#34;&lt;li&gt;&lt;a href=&#39;/{name}&#39;&gt;{name}&lt;/a&gt;&lt;/li&gt;&#34; \
-                            for name in self.plugins.keys() \
-                            if hasattr(self.plugins[name], &#39;flask&#39;)])
-
-        self.app.run(host=self.host, port=self.port)
-
-if __name__ == &#39;__main__&#39;:
-    from pandare import Panda
-    panda = Panda(generic=&#34;x86_64&#34;)
-
-    globals()[&#39;_test_class_init_ran&#39;] = False
-    globals()[&#39;_test_get_arg_foo&#39;] = False
-    globals()[&#39;_test_print_hello_false&#39;] = False
-    globals()[&#39;_test_print_hello2_true&#39;] = False
-    globals()[&#39;_test_deleted&#39;] = False
-
-    class TestPlugin(PandaPlugin):
-        def __init__(self, panda):
-            path = self.get_arg(&#39;path&#39;)
-            print(f&#34;path = {path}&#34;)
-            global _test_class_init_ran, _test_get_arg_foo, \
-                   _test_print_hello_false, _test_print_hello2_true
-            _test_class_init_ran = True
-            _test_get_arg_foo = path == &#34;/foo&#34;
-
-            should_print_hello = self.get_arg_bool(&#39;should_print_hello&#39;)
-            if should_print_hello:
-                print(&#34;Hello!&#34;)
-            else:
-                _test_print_hello_false = True
-
-            should_print_hello2 = self.get_arg_bool(&#39;should_print_hello2&#39;)
-            if should_print_hello2:
-                _test_print_hello2_true = True
+        From there, you can run PPP-exported functions by name: `self.ppp.Server.some_exported_fn(*args)`.
+        Or you can register a local class method a PPP-style callback provided by the other plugin:
+            `self.ppp.server.ppp_reg_cb(&#39;some_provided_callback&#39;, self.some_local_method)`
+        &#39;&#39;&#39;
+        return self.pypluginmgr.ppp
 
 
-        def __del__(self):
-            global _test_deleted
-            _test_deleted = True
-    panda.pyplugin.register(TestPlugin, {&#39;path&#39;: &#39;/foo&#39;, &#39;should_print_hello&#39;: False,
-                                                         &#39;should_print_hello2&#39;: True})
-    @panda.queue_blocking
-    def driver():
-        panda.revert_sync(&#34;root&#34;)
-        assert(panda.run_serial_cmd(&#34;whoami&#34;) == &#39;root&#39;), &#34;Bad guest behavior&#34;
-        panda.pyplugin.unregister(TestPlugin)
-        panda.end_analysis()
+    @staticmethod
+    def ppp_export(method):
+        &#39;&#39;&#39;
+        Decorator to apply to a class method in a PyPlugin to indicate that other plugins should
+        be allowed to call this function. Example:
 
-    panda.run()
+            from pandare import PyPlugin
+            Class Server(PyPlugin):
+                def __init__(self, panda):
+                    pass
 
-    for k in [&#39;_test_class_init_ran&#39;, &#39;_test_print_hello_false&#39;, &#39;_test_get_arg_foo&#39;,
-              &#39;_test_print_hello2_true&#39;,&#39;_test_deleted&#39;]:
-        assert(globals()[k] == True), f&#34;Failed test {k}&#34;</code></pre>
+                @PyPlugin.ppp_export
+                def do_add(self, x):
+                    return x+1
+
+            Class Client(PyPlugin):
+                def __init__(self, panda):
+                    print(self.ppp.Server.do_add(1))
+        &#39;&#39;&#39;
+        @wraps(method)
+        def f(*args, **kwargs):
+            return method(*args, **kwargs)
+        f.__is_pyplugin_ppp = True
+        return f
+
+    # Argument loading
+    def get_arg(self, arg_name):
+        &#39;&#39;&#39;
+        Returns either the argument as a string or None if the argument
+        wasn&#39;t passed (arguments passed in bool form (i.e., set but with no value)
+        instead of key/value form will also return None).
+        &#39;&#39;&#39;
+        if arg_name in self.args:
+            return self.args[arg_name]
+
+        return None
+
+    def get_arg_bool(self, arg_name):
+        &#39;&#39;&#39;
+        Returns True if the argument is set and has a value of True
+        &#39;&#39;&#39;
+        return arg_name in self.args and self.args[arg_name]==True
+
+    # Callback definition / registration / use. Note these functions mirror the behavior of the macros used
+    # in C plugin, check out docs/readme.md for additional details.
+
+    def ppp_cb_boilerplate(self, cb_name):
+        &#39;&#39;&#39;
+        &#34;Define&#34; a PPP-style function in this plugin. Note that there is no type
+        information because this is Python. Run via .ppp[cb_name].run(...)
+        &#39;&#39;&#39;
+        plugin_name = self.__class__.__name__
+
+        if cb_name in self.ppp_cbs:
+            raise ValueError(f&#34;PPP function {cb_name} is being redefined in {plugin_name}&#34;)
+
+        # Add two callbacks into our PPP namesapce: fn_add and fn_run
+        this_ppp_cb = _PPP_CB()
+        self.ppp.add(self.__class__.__name__, &#34;ppp_reg_cb_&#34; + cb_name, this_ppp_cb.add_callback)
+        self.ppp.add(self.__class__.__name__, &#34;ppp_run_cb_&#34; + cb_name, this_ppp_cb.run)
+
+        # Make sure we have a helper self.ppp[class].ppp_reg_cb which just calls
+        # the ppp_reg_[cb_name] we just saved
+        try:
+            getattr(getattr(self.ppp, self.__class__.__name__), &#34;ppp_reg_cb&#34;)
+        except AttributeError:
+            def _reg_cb(target_ppp, func):
+                getattr(getattr(self.ppp,
+                    self.__class__.__name__), &#34;ppp_reg_cb_&#34; + target_ppp)(func)
+            self.ppp.add(self.__class__.__name__, &#34;ppp_reg_cb&#34;, _reg_cb)
+
+    def ppp_run_cb(self, target_ppp, *args):
+        &#39;&#39;&#39;
+        Trigger a previously defind PPP-style callback named `target_ppp` in this plugin with `args`
+        Any other pyplugins which have registered a function to run on this callback will be called with `args`.
+        &#39;&#39;&#39;
+        getattr(getattr(self.ppp, self.__class__.__name__), &#34;ppp_run_cb_&#34; + target_ppp)(*args)</code></pre>
 </details>
 </section>
 <section>
@@ -364,358 +295,325 @@ if __name__ == &#39;__main__&#39;:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="pandare.pyplugin.PyPluginManager"><code class="flex name class">
-<span>class <span class="ident">PyPluginManager</span></span>
-<span>(</span><span>panda, flask=False, host='127.0.0.1', port=8080, silence_warning=False)</span>
+<dt id="pandare.pyplugin.PyPlugin"><code class="flex name class">
+<span>class <span class="ident">PyPlugin</span></span>
+<span>(</span><span>panda)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Set up an instance of PyPluginManager.</p></div>
+<div class="desc"><p>Base class which PyPANDA plugins should inherit. Subclasses may
+register callbacks using the provided panda object and use the
+PyPlugin APIs:</p>
+<ul>
+<li>self.get_args or self.get_arg_bool to check argument values</li>
+<li>self.ppp to interact with other PyPlugins via PPP interfaces</li>
+<li>self.ppp_cb_boilerplate('cb_name') to register a ppp-style callback</li>
+<li>self.ppp_run_cb('cb_name') to run a previously-registered ppp-style callback</li>
+<li>@PyPlugin.ppp_export to mark a class method as ppp-exported</li>
+</ul>
+<p>For more information, check out the pyplugin documentation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class PyPluginManager:
-    def __init__(self, panda, flask=False, host=&#39;127.0.0.1&#39;, port=8080, silence_warning=False):
+<pre><code class="python">class PyPlugin:
+    def __init__(self, panda):
         &#39;&#39;&#39;
-        Set up an instance of PyPluginManager.
-        &#39;&#39;&#39;
+        Base class which PyPANDA plugins should inherit. Subclasses may
+        register callbacks using the provided panda object and use the
+        PyPlugin APIs:
 
-        self.panda = panda
-        self.plugins = {}
-        self.silence_warning = silence_warning
+        * self.get_args or self.get_arg_bool to check argument values
+        * self.ppp to interact with other PyPlugins via PPP interfaces
+        * self.ppp_cb_boilerplate(&#39;cb_name&#39;) to register a ppp-style callback
+        * self.ppp_run_cb(&#39;cb_name&#39;) to run a previously-registered ppp-style callback
+        * @PyPlugin.ppp_export to mark a class method as ppp-exported
 
-        self.flask = flask
-        self.port  = None
-        self.host  = None
-        self.app   = None
-        self.blueprint    = None
-        self.flask_thread = None
-
-        if self.flask:
-            self.enable_flask(host, port)
-
-    def enable_flask(self, host=&#39;127.0.0.1&#39;, port=8080):
-        &#39;&#39;&#39;
-        Enable flask mode for this instance of the PyPlugin manager. Registered PyPlugins
-        which support flask will be made available at the web interfaces.
-        &#39;&#39;&#39;
-        if len(self.plugins) and not self.silence_warning:
-            print(&#34;WARNING: You&#39;ve previously registered some PyPlugins prior to enabling flask&#34;)
-            print(f&#34;Plugin(s) {self.plugins.keys()} will be unable to use flask&#34;)
-
-        from flask import Flask, Blueprint
-        self.flask = True
-        self.app = Flask(__name__)
-        self.blueprint = Blueprint
-        self.host = host
-        self.port = port
-
-    def load_plugin_class(self, plugin_file, class_name):
-        &#39;&#39;&#39;
-        For backwards compatability with PyPlugins which subclass
-        PandaPlugin without importing it.
-
-        Given a path to a python file which has a class that subclasses
-        PandaPlugin, set up the imports correctly such that we can
-        generate an uninstantiated instance of that class and return
-        that object.
-
-        Note you can also just add `from pandare import PandaPlugin` to
-        the plugin file and then just import the class(es) you want and pass them
-        directly to panda.pyplugin.register()
-
-        This avoids the `NameError: name &#39;PandaPlugin&#39; is not defined` which
-        you would get from directly doing `import [class_name] from [plugin_file]`
-        &#39;&#39;&#39;
-        import importlib.util
-        spec = importlib.util.spec_from_file_location(plugin_file.split(&#34;/&#34;)[-1], plugin_file)
-        if spec is None:
-            raise ValueError(f&#34;Unable to resolve plugin {plugin_file}&#34;)
-        plugin = importlib.util.module_from_spec(spec)
-        plugin.PandaPlugin = PandaPlugin
-        spec.loader.exec_module(plugin)
-        if not hasattr(plugin, class_name):
-            raise ValueError(f&#34;Unable to find class {class_name} in {plugin_file}&#34;)
-        cls = getattr(plugin, class_name)
-        assert issubclass(cls, PandaPlugin), f&#34;Class {class_name} does not subclass PandaPlugin&#34;
-        return cls
-
-    def register(self, pluginclass, args=None, name=None, template_dir=None):
-        &#39;&#39;&#39;
-        Register a PyPANDA plugin  to run. It can later be unloaded
-        by using panda.pyplugin.unregister(name).
-
-        pluginclass can either be an uninstantiated python class
-        or a tuple of (path_to_module.py, classname) where classname subclasses PandaPlugin.
-
-        If name is unspecified, a string representation of the class will be used instead
+        For more information, check out the pyplugin documentation.
         &#39;&#39;&#39;
 
-        if args is None:
-            args = {}
+    # Parent init method which will be called prior to child __init__
+    def __preinit__(self, pypluginmgr, args):
+        self.ppp_cbs = {} # ppp callback name =&gt; _PPP instance which tracks registered cbs and runs them
 
-        pluginpath = None
-        if isinstance(pluginclass, tuple):
-            pluginpath, clsname = pluginclass
-            pluginclass = self.load_plugin_class(pluginpath, clsname)
+        self.args = args
+        self.pypluginmgr = pypluginmgr
 
-        # This is a little tricky - we can&#39;t just instantiate
-        # an instance of the object- it may use self.get_arg
-        # in its init method. To allow this behavior, we create
-        # the object, use the __preinit__ function defined above
-        # and then ultimately call the __init__ method
-        # See https://stackoverflow.com/a/6384982/2796854
+    @property
+    def ppp(self):
+        # Why is this a property you ask? Because it makes it easier to set a docstring
+        &#39;&#39;&#39;
+        The .ppp property of the PyPlugin class is used for accessing PPP methods and callbacks
+        exposed by other PyPlugins. (Under the hood, this is a refernece to the PyPluginManager.ppp
+        property).
 
-        if not isinstance(pluginclass, type) or not issubclass(pluginclass, PandaPlugin):
-            raise ValueError(f&#34;pluginclass must be an uninstantiated subclass of PandaPlugin&#34;)
+        Through self.ppp, you can reference another PyPlugin by name, e.g., if a previously-loaded plugin
+        is named `Server`, from your plugin you can do `self.ppp.Server` to access PPP-exported methods.
 
-        if name is None:
-            name = pluginclass.__name__ 
+        From there, you can run PPP-exported functions by name: `self.ppp.Server.some_exported_fn(*args)`.
+        Or you can register a local class method a PPP-style callback provided by the other plugin:
+            `self.ppp.server.ppp_reg_cb(&#39;some_provided_callback&#39;, self.some_local_method)`
+        &#39;&#39;&#39;
+        return self.pypluginmgr.ppp
 
-        self.plugins[name] = pluginclass.__new__(pluginclass)
-        self.plugins[name].__preinit__(args)
-        self.plugins[name].__init__(self.panda)
 
-        # Setup webserver if necessary
-        if self.flask:
-            self.plugins[name].flask = self.app
+    @staticmethod
+    def ppp_export(method):
+        &#39;&#39;&#39;
+        Decorator to apply to a class method in a PyPlugin to indicate that other plugins should
+        be allowed to call this function. Example:
 
-            # If no template_dir was provided, try using ./templates in the dir of the plugin
-            # if we know it, otherwise ./templates
-            if template_dir is None:
-                if pluginpath is not None:
-                    template_dir = (Path(pluginpath).parent / &#34;templates&#34;).absolute()
-                elif (Path(&#34;.&#34;) / &#34;templates&#34;).exists():
-                    template_dir = (Path(&#34;.&#34;) / &#34;templates&#34;).absolute()
-                else:
-                    print(&#34;Warning: pyplugin couldn&#39;t find a template dir&#34;)
+            from pandare import PyPlugin
+            Class Server(PyPlugin):
+                def __init__(self, panda):
+                    pass
 
-            bp = self.blueprint(name, __name__, template_folder=template_dir)
-            self.plugins[name].webserver_init(bp)
-            self.app.register_blueprint(bp, url_prefix=&#34;/&#34; + name)
+                @PyPlugin.ppp_export
+                def do_add(self, x):
+                    return x+1
 
-    def unregister(self, pluginclass, name=None):
-        if name is None:
-            name = pluginclass.__name__ 
-        del self.plugins[name]
+            Class Client(PyPlugin):
+                def __init__(self, panda):
+                    print(self.ppp.Server.do_add(1))
+        &#39;&#39;&#39;
+        @wraps(method)
+        def f(*args, **kwargs):
+            return method(*args, **kwargs)
+        f.__is_pyplugin_ppp = True
+        return f
 
-    def is_registered(self, pluginclass, name=None):
-        if name is None:
-            name = pluginclass.__name__ 
-        return name in self.plugins
+    # Argument loading
+    def get_arg(self, arg_name):
+        &#39;&#39;&#39;
+        Returns either the argument as a string or None if the argument
+        wasn&#39;t passed (arguments passed in bool form (i.e., set but with no value)
+        instead of key/value form will also return None).
+        &#39;&#39;&#39;
+        if arg_name in self.args:
+            return self.args[arg_name]
 
-    def serve(self):
-        assert(self.flask)
-        assert(self.flask_thread is None)
-        from threading import Thread
-        self.flask_thread = Thread(target=self._do_serve, daemon=True)
-        self.flask_thread.start() # TODO: shut down more gracefully?
+        return None
 
-    def _do_serve(self):
-        assert(self.flask)
+    def get_arg_bool(self, arg_name):
+        &#39;&#39;&#39;
+        Returns True if the argument is set and has a value of True
+        &#39;&#39;&#39;
+        return arg_name in self.args and self.args[arg_name]==True
 
-        @self.app.route(&#34;/&#34;)
-        def index():
-            return &#34;PANDA PyPlugin web interface. Available plugins:&#34; + &#34;&lt;br\&gt;&#34;.join( \
-                    [f&#34;&lt;li&gt;&lt;a href=&#39;/{name}&#39;&gt;{name}&lt;/a&gt;&lt;/li&gt;&#34; \
-                            for name in self.plugins.keys() \
-                            if hasattr(self.plugins[name], &#39;flask&#39;)])
+    # Callback definition / registration / use. Note these functions mirror the behavior of the macros used
+    # in C plugin, check out docs/readme.md for additional details.
 
-        self.app.run(host=self.host, port=self.port)</code></pre>
+    def ppp_cb_boilerplate(self, cb_name):
+        &#39;&#39;&#39;
+        &#34;Define&#34; a PPP-style function in this plugin. Note that there is no type
+        information because this is Python. Run via .ppp[cb_name].run(...)
+        &#39;&#39;&#39;
+        plugin_name = self.__class__.__name__
+
+        if cb_name in self.ppp_cbs:
+            raise ValueError(f&#34;PPP function {cb_name} is being redefined in {plugin_name}&#34;)
+
+        # Add two callbacks into our PPP namesapce: fn_add and fn_run
+        this_ppp_cb = _PPP_CB()
+        self.ppp.add(self.__class__.__name__, &#34;ppp_reg_cb_&#34; + cb_name, this_ppp_cb.add_callback)
+        self.ppp.add(self.__class__.__name__, &#34;ppp_run_cb_&#34; + cb_name, this_ppp_cb.run)
+
+        # Make sure we have a helper self.ppp[class].ppp_reg_cb which just calls
+        # the ppp_reg_[cb_name] we just saved
+        try:
+            getattr(getattr(self.ppp, self.__class__.__name__), &#34;ppp_reg_cb&#34;)
+        except AttributeError:
+            def _reg_cb(target_ppp, func):
+                getattr(getattr(self.ppp,
+                    self.__class__.__name__), &#34;ppp_reg_cb_&#34; + target_ppp)(func)
+            self.ppp.add(self.__class__.__name__, &#34;ppp_reg_cb&#34;, _reg_cb)
+
+    def ppp_run_cb(self, target_ppp, *args):
+        &#39;&#39;&#39;
+        Trigger a previously defind PPP-style callback named `target_ppp` in this plugin with `args`
+        Any other pyplugins which have registered a function to run on this callback will be called with `args`.
+        &#39;&#39;&#39;
+        getattr(getattr(self.ppp, self.__class__.__name__), &#34;ppp_run_cb_&#34; + target_ppp)(*args)</code></pre>
 </details>
+<h3>Static methods</h3>
+<dl>
+<dt id="pandare.pyplugin.PyPlugin.ppp_export"><code class="name flex">
+<span>def <span class="ident">ppp_export</span></span>(<span>method)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Decorator to apply to a class method in a PyPlugin to indicate that other plugins should
+be allowed to call this function. Example:</p>
+<pre><code>from pandare import PyPlugin
+Class Server(PyPlugin):
+    def __init__(self, panda):
+        pass
+
+    @PyPlugin.ppp_export
+    def do_add(self, x):
+        return x+1
+
+Class Client(PyPlugin):
+    def __init__(self, panda):
+        print(self.ppp.Server.do_add(1))
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def ppp_export(method):
+    &#39;&#39;&#39;
+    Decorator to apply to a class method in a PyPlugin to indicate that other plugins should
+    be allowed to call this function. Example:
+
+        from pandare import PyPlugin
+        Class Server(PyPlugin):
+            def __init__(self, panda):
+                pass
+
+            @PyPlugin.ppp_export
+            def do_add(self, x):
+                return x+1
+
+        Class Client(PyPlugin):
+            def __init__(self, panda):
+                print(self.ppp.Server.do_add(1))
+    &#39;&#39;&#39;
+    @wraps(method)
+    def f(*args, **kwargs):
+        return method(*args, **kwargs)
+    f.__is_pyplugin_ppp = True
+    return f</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pandare.pyplugin.PyPlugin.ppp"><code class="name">var <span class="ident">ppp</span></code></dt>
+<dd>
+<div class="desc"><p>The .ppp property of the PyPlugin class is used for accessing PPP methods and callbacks
+exposed by other PyPlugins. (Under the hood, this is a refernece to the PyPluginManager.ppp
+property).</p>
+<p>Through self.ppp, you can reference another PyPlugin by name, e.g., if a previously-loaded plugin
+is named <code>Server</code>, from your plugin you can do <code>self.ppp.Server</code> to access PPP-exported methods.</p>
+<p>From there, you can run PPP-exported functions by name: <code>self.ppp.Server.some_exported_fn(*args)</code>.
+Or you can register a local class method a PPP-style callback provided by the other plugin:
+<code>self.ppp.server.ppp_reg_cb('some_provided_callback', self.some_local_method)</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ppp(self):
+    # Why is this a property you ask? Because it makes it easier to set a docstring
+    &#39;&#39;&#39;
+    The .ppp property of the PyPlugin class is used for accessing PPP methods and callbacks
+    exposed by other PyPlugins. (Under the hood, this is a refernece to the PyPluginManager.ppp
+    property).
+
+    Through self.ppp, you can reference another PyPlugin by name, e.g., if a previously-loaded plugin
+    is named `Server`, from your plugin you can do `self.ppp.Server` to access PPP-exported methods.
+
+    From there, you can run PPP-exported functions by name: `self.ppp.Server.some_exported_fn(*args)`.
+    Or you can register a local class method a PPP-style callback provided by the other plugin:
+        `self.ppp.server.ppp_reg_cb(&#39;some_provided_callback&#39;, self.some_local_method)`
+    &#39;&#39;&#39;
+    return self.pypluginmgr.ppp</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
-<dt id="pandare.pyplugin.PyPluginManager.enable_flask"><code class="name flex">
-<span>def <span class="ident">enable_flask</span></span>(<span>self, host='127.0.0.1', port=8080)</span>
+<dt id="pandare.pyplugin.PyPlugin.get_arg"><code class="name flex">
+<span>def <span class="ident">get_arg</span></span>(<span>self, arg_name)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Enable flask mode for this instance of the PyPlugin manager. Registered PyPlugins
-which support flask will be made available at the web interfaces.</p></div>
+<div class="desc"><p>Returns either the argument as a string or None if the argument
+wasn't passed (arguments passed in bool form (i.e., set but with no value)
+instead of key/value form will also return None).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def enable_flask(self, host=&#39;127.0.0.1&#39;, port=8080):
+<pre><code class="python">def get_arg(self, arg_name):
     &#39;&#39;&#39;
-    Enable flask mode for this instance of the PyPlugin manager. Registered PyPlugins
-    which support flask will be made available at the web interfaces.
+    Returns either the argument as a string or None if the argument
+    wasn&#39;t passed (arguments passed in bool form (i.e., set but with no value)
+    instead of key/value form will also return None).
     &#39;&#39;&#39;
-    if len(self.plugins) and not self.silence_warning:
-        print(&#34;WARNING: You&#39;ve previously registered some PyPlugins prior to enabling flask&#34;)
-        print(f&#34;Plugin(s) {self.plugins.keys()} will be unable to use flask&#34;)
+    if arg_name in self.args:
+        return self.args[arg_name]
 
-    from flask import Flask, Blueprint
-    self.flask = True
-    self.app = Flask(__name__)
-    self.blueprint = Blueprint
-    self.host = host
-    self.port = port</code></pre>
+    return None</code></pre>
 </details>
 </dd>
-<dt id="pandare.pyplugin.PyPluginManager.is_registered"><code class="name flex">
-<span>def <span class="ident">is_registered</span></span>(<span>self, pluginclass, name=None)</span>
+<dt id="pandare.pyplugin.PyPlugin.get_arg_bool"><code class="name flex">
+<span>def <span class="ident">get_arg_bool</span></span>(<span>self, arg_name)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns True if the argument is set and has a value of True</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_registered(self, pluginclass, name=None):
-    if name is None:
-        name = pluginclass.__name__ 
-    return name in self.plugins</code></pre>
+<pre><code class="python">def get_arg_bool(self, arg_name):
+    &#39;&#39;&#39;
+    Returns True if the argument is set and has a value of True
+    &#39;&#39;&#39;
+    return arg_name in self.args and self.args[arg_name]==True</code></pre>
 </details>
 </dd>
-<dt id="pandare.pyplugin.PyPluginManager.load_plugin_class"><code class="name flex">
-<span>def <span class="ident">load_plugin_class</span></span>(<span>self, plugin_file, class_name)</span>
+<dt id="pandare.pyplugin.PyPlugin.ppp_cb_boilerplate"><code class="name flex">
+<span>def <span class="ident">ppp_cb_boilerplate</span></span>(<span>self, cb_name)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>For backwards compatability with PyPlugins which subclass
-PandaPlugin without importing it.</p>
-<p>Given a path to a python file which has a class that subclasses
-PandaPlugin, set up the imports correctly such that we can
-generate an uninstantiated instance of that class and return
-that object.</p>
-<p>Note you can also just add <code>from <a title="pandare" href="index.html">pandare</a> import PandaPlugin</code> to
-the plugin file and then just import the class(es) you want and pass them
-directly to panda.pyplugin.register()</p>
-<p>This avoids the <code>NameError: name 'PandaPlugin' is not defined</code> which
-you would get from directly doing <code>import [class_name] from [plugin_file]</code></p></div>
+<div class="desc"><p>"Define" a PPP-style function in this plugin. Note that there is no type
+information because this is Python. Run via .ppp[cb_name].run(&hellip;)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def load_plugin_class(self, plugin_file, class_name):
+<pre><code class="python">def ppp_cb_boilerplate(self, cb_name):
     &#39;&#39;&#39;
-    For backwards compatability with PyPlugins which subclass
-    PandaPlugin without importing it.
-
-    Given a path to a python file which has a class that subclasses
-    PandaPlugin, set up the imports correctly such that we can
-    generate an uninstantiated instance of that class and return
-    that object.
-
-    Note you can also just add `from pandare import PandaPlugin` to
-    the plugin file and then just import the class(es) you want and pass them
-    directly to panda.pyplugin.register()
-
-    This avoids the `NameError: name &#39;PandaPlugin&#39; is not defined` which
-    you would get from directly doing `import [class_name] from [plugin_file]`
+    &#34;Define&#34; a PPP-style function in this plugin. Note that there is no type
+    information because this is Python. Run via .ppp[cb_name].run(...)
     &#39;&#39;&#39;
-    import importlib.util
-    spec = importlib.util.spec_from_file_location(plugin_file.split(&#34;/&#34;)[-1], plugin_file)
-    if spec is None:
-        raise ValueError(f&#34;Unable to resolve plugin {plugin_file}&#34;)
-    plugin = importlib.util.module_from_spec(spec)
-    plugin.PandaPlugin = PandaPlugin
-    spec.loader.exec_module(plugin)
-    if not hasattr(plugin, class_name):
-        raise ValueError(f&#34;Unable to find class {class_name} in {plugin_file}&#34;)
-    cls = getattr(plugin, class_name)
-    assert issubclass(cls, PandaPlugin), f&#34;Class {class_name} does not subclass PandaPlugin&#34;
-    return cls</code></pre>
+    plugin_name = self.__class__.__name__
+
+    if cb_name in self.ppp_cbs:
+        raise ValueError(f&#34;PPP function {cb_name} is being redefined in {plugin_name}&#34;)
+
+    # Add two callbacks into our PPP namesapce: fn_add and fn_run
+    this_ppp_cb = _PPP_CB()
+    self.ppp.add(self.__class__.__name__, &#34;ppp_reg_cb_&#34; + cb_name, this_ppp_cb.add_callback)
+    self.ppp.add(self.__class__.__name__, &#34;ppp_run_cb_&#34; + cb_name, this_ppp_cb.run)
+
+    # Make sure we have a helper self.ppp[class].ppp_reg_cb which just calls
+    # the ppp_reg_[cb_name] we just saved
+    try:
+        getattr(getattr(self.ppp, self.__class__.__name__), &#34;ppp_reg_cb&#34;)
+    except AttributeError:
+        def _reg_cb(target_ppp, func):
+            getattr(getattr(self.ppp,
+                self.__class__.__name__), &#34;ppp_reg_cb_&#34; + target_ppp)(func)
+        self.ppp.add(self.__class__.__name__, &#34;ppp_reg_cb&#34;, _reg_cb)</code></pre>
 </details>
 </dd>
-<dt id="pandare.pyplugin.PyPluginManager.register"><code class="name flex">
-<span>def <span class="ident">register</span></span>(<span>self, pluginclass, args=None, name=None, template_dir=None)</span>
+<dt id="pandare.pyplugin.PyPlugin.ppp_run_cb"><code class="name flex">
+<span>def <span class="ident">ppp_run_cb</span></span>(<span>self, target_ppp, *args)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Register a PyPANDA plugin
-to run. It can later be unloaded
-by using panda.pyplugin.unregister(name).</p>
-<p>pluginclass can either be an uninstantiated python class
-or a tuple of (path_to_module.py, classname) where classname subclasses PandaPlugin.</p>
-<p>If name is unspecified, a string representation of the class will be used instead</p></div>
+<div class="desc"><p>Trigger a previously defind PPP-style callback named <code>target_ppp</code> in this plugin with <code>args</code>
+Any other pyplugins which have registered a function to run on this callback will be called with <code>args</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def register(self, pluginclass, args=None, name=None, template_dir=None):
+<pre><code class="python">def ppp_run_cb(self, target_ppp, *args):
     &#39;&#39;&#39;
-    Register a PyPANDA plugin  to run. It can later be unloaded
-    by using panda.pyplugin.unregister(name).
-
-    pluginclass can either be an uninstantiated python class
-    or a tuple of (path_to_module.py, classname) where classname subclasses PandaPlugin.
-
-    If name is unspecified, a string representation of the class will be used instead
+    Trigger a previously defind PPP-style callback named `target_ppp` in this plugin with `args`
+    Any other pyplugins which have registered a function to run on this callback will be called with `args`.
     &#39;&#39;&#39;
-
-    if args is None:
-        args = {}
-
-    pluginpath = None
-    if isinstance(pluginclass, tuple):
-        pluginpath, clsname = pluginclass
-        pluginclass = self.load_plugin_class(pluginpath, clsname)
-
-    # This is a little tricky - we can&#39;t just instantiate
-    # an instance of the object- it may use self.get_arg
-    # in its init method. To allow this behavior, we create
-    # the object, use the __preinit__ function defined above
-    # and then ultimately call the __init__ method
-    # See https://stackoverflow.com/a/6384982/2796854
-
-    if not isinstance(pluginclass, type) or not issubclass(pluginclass, PandaPlugin):
-        raise ValueError(f&#34;pluginclass must be an uninstantiated subclass of PandaPlugin&#34;)
-
-    if name is None:
-        name = pluginclass.__name__ 
-
-    self.plugins[name] = pluginclass.__new__(pluginclass)
-    self.plugins[name].__preinit__(args)
-    self.plugins[name].__init__(self.panda)
-
-    # Setup webserver if necessary
-    if self.flask:
-        self.plugins[name].flask = self.app
-
-        # If no template_dir was provided, try using ./templates in the dir of the plugin
-        # if we know it, otherwise ./templates
-        if template_dir is None:
-            if pluginpath is not None:
-                template_dir = (Path(pluginpath).parent / &#34;templates&#34;).absolute()
-            elif (Path(&#34;.&#34;) / &#34;templates&#34;).exists():
-                template_dir = (Path(&#34;.&#34;) / &#34;templates&#34;).absolute()
-            else:
-                print(&#34;Warning: pyplugin couldn&#39;t find a template dir&#34;)
-
-        bp = self.blueprint(name, __name__, template_folder=template_dir)
-        self.plugins[name].webserver_init(bp)
-        self.app.register_blueprint(bp, url_prefix=&#34;/&#34; + name)</code></pre>
-</details>
-</dd>
-<dt id="pandare.pyplugin.PyPluginManager.serve"><code class="name flex">
-<span>def <span class="ident">serve</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def serve(self):
-    assert(self.flask)
-    assert(self.flask_thread is None)
-    from threading import Thread
-    self.flask_thread = Thread(target=self._do_serve, daemon=True)
-    self.flask_thread.start() # TODO: shut down more gracefully?</code></pre>
-</details>
-</dd>
-<dt id="pandare.pyplugin.PyPluginManager.unregister"><code class="name flex">
-<span>def <span class="ident">unregister</span></span>(<span>self, pluginclass, name=None)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def unregister(self, pluginclass, name=None):
-    if name is None:
-        name = pluginclass.__name__ 
-    del self.plugins[name]</code></pre>
+    getattr(getattr(self.ppp, self.__class__.__name__), &#34;ppp_run_cb_&#34; + target_ppp)(*args)</code></pre>
 </details>
 </dd>
 </dl>
@@ -788,14 +686,14 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="pandare.pyplugin.PyPluginManager" href="#pandare.pyplugin.PyPluginManager">PyPluginManager</a></code></h4>
+<h4><code><a title="pandare.pyplugin.PyPlugin" href="#pandare.pyplugin.PyPlugin">PyPlugin</a></code></h4>
 <ul class="two-column">
-<li><code><a title="pandare.pyplugin.PyPluginManager.enable_flask" href="#pandare.pyplugin.PyPluginManager.enable_flask">enable_flask</a></code></li>
-<li><code><a title="pandare.pyplugin.PyPluginManager.is_registered" href="#pandare.pyplugin.PyPluginManager.is_registered">is_registered</a></code></li>
-<li><code><a title="pandare.pyplugin.PyPluginManager.load_plugin_class" href="#pandare.pyplugin.PyPluginManager.load_plugin_class">load_plugin_class</a></code></li>
-<li><code><a title="pandare.pyplugin.PyPluginManager.register" href="#pandare.pyplugin.PyPluginManager.register">register</a></code></li>
-<li><code><a title="pandare.pyplugin.PyPluginManager.serve" href="#pandare.pyplugin.PyPluginManager.serve">serve</a></code></li>
-<li><code><a title="pandare.pyplugin.PyPluginManager.unregister" href="#pandare.pyplugin.PyPluginManager.unregister">unregister</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.get_arg" href="#pandare.pyplugin.PyPlugin.get_arg">get_arg</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.get_arg_bool" href="#pandare.pyplugin.PyPlugin.get_arg_bool">get_arg_bool</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.ppp" href="#pandare.pyplugin.PyPlugin.ppp">ppp</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.ppp_cb_boilerplate" href="#pandare.pyplugin.PyPlugin.ppp_cb_boilerplate">ppp_cb_boilerplate</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.ppp_export" href="#pandare.pyplugin.PyPlugin.ppp_export">ppp_export</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.ppp_run_cb" href="#pandare.pyplugin.PyPlugin.ppp_run_cb">ppp_run_cb</a></code></li>
 </ul>
 </li>
 </ul>
