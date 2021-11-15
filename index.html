@@ -10057,9 +10057,28 @@ PyPlugin APIs:</p>
 
     def get_arg_bool(self, arg_name):
         &#39;&#39;&#39;
-        Returns True if the argument is set and has a value of True
+        Returns True if the argument is set and has a truthy value
         &#39;&#39;&#39;
-        return arg_name in self.args and self.args[arg_name]==True
+
+        if arg_name not in self.args:
+            # Argument name unset - it&#39;s false
+            return False
+
+        arg_val = self.args[arg_name]
+        if isinstance(arg_val, bool):
+            # If it&#39;s a python bol already, just return it
+            return arg_val
+
+        if isinstance(arg_val, str):
+            # string of true/y/1  is True
+            return arg_val.lower() in [&#39;true&#39;, &#39;y&#39;, &#39;1&#39;]
+
+        if isinstance(arg_val, int):
+            # Nonzero is True
+            return arg_val != 0
+
+        # If it&#39;s not a string, int, or bool something is weird
+        raise ValueError(f&#34;Unsupported arg type: {type(arg_val)}&#34;)
 
     # Callback definition / registration / use. Note these functions mirror the behavior of the macros used
     # in C plugin, check out docs/readme.md for additional details.
@@ -10212,16 +10231,35 @@ instead of key/value form will also return None).</p></div>
 <span>def <span class="ident">get_arg_bool</span></span>(<span>self, arg_name)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns True if the argument is set and has a value of True</p></div>
+<div class="desc"><p>Returns True if the argument is set and has a truthy value</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_arg_bool(self, arg_name):
     &#39;&#39;&#39;
-    Returns True if the argument is set and has a value of True
+    Returns True if the argument is set and has a truthy value
     &#39;&#39;&#39;
-    return arg_name in self.args and self.args[arg_name]==True</code></pre>
+
+    if arg_name not in self.args:
+        # Argument name unset - it&#39;s false
+        return False
+
+    arg_val = self.args[arg_name]
+    if isinstance(arg_val, bool):
+        # If it&#39;s a python bol already, just return it
+        return arg_val
+
+    if isinstance(arg_val, str):
+        # string of true/y/1  is True
+        return arg_val.lower() in [&#39;true&#39;, &#39;y&#39;, &#39;1&#39;]
+
+    if isinstance(arg_val, int):
+        # Nonzero is True
+        return arg_val != 0
+
+    # If it&#39;s not a string, int, or bool something is weird
+    raise ValueError(f&#34;Unsupported arg type: {type(arg_val)}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.PyPlugin.ppp_cb_boilerplate"><code class="name flex">

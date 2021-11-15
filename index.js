@@ -1291,7 +1291,7 @@ INDEX=[
 {
 "ref":"pandare.PyPlugin.get_arg_bool",
 "url":0,
-"doc":"Returns True if the argument is set and has a value of True",
+"doc":"Returns True if the argument is set and has a truthy value",
 "func":1
 },
 {
@@ -1391,7 +1391,7 @@ INDEX=[
 {
 "ref":"pandare.pyplugin.PyPlugin.get_arg_bool",
 "url":3,
-"doc":"Returns True if the argument is set and has a value of True",
+"doc":"Returns True if the argument is set and has a truthy value",
 "func":1
 },
 {
