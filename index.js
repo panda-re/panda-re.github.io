@@ -2949,6 +2949,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.qcows.Qcows.cli",
+"url":8,
+"doc":"",
+"func":1
+},
+{
 "ref":"pandare.panda_expect",
 "url":9,
 "doc":"Custom library for interacting/expecting data via serial-like FDs"

@@ -154,12 +154,12 @@ padding: .5rem 1rem;
 Module for fetching generic PANDA images and managing their metadata.
 &#39;&#39;&#39;
 
-from os import path, remove, makedirs
 import logging
+from os import path, remove, makedirs
 from sys import argv
 from subprocess import check_call
 from collections import namedtuple
-
+from shlex import split as shlex_split
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -464,7 +464,50 @@ class Qcows():
         if len(argv) &gt; idx:
             return Qcows.get_qcow(argv[idx])
         else:
-            return Qcows.get_qcow()</code></pre>
+            return Qcows.get_qcow()
+
+    @staticmethod
+    def cli(target):
+        from .panda import Panda
+        q = Qcows.get_qcow_info(target)
+        qcow = Qcows.get_qcow(target)
+        arch = q.arch
+        build_dir = Panda._find_build_dir(arch)
+        panda_args = [build_dir + f&#34;/{arch}-softmmu/panda-system-{arch}&#34;]
+        biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
+        panda_args.extend([&#34;-L&#34;, biospath])
+
+        if arch == &#39;mips64&#39;:
+            panda_args.extend([&#34;-drive&#34;, f&#34;file={qcow},if=virtio&#34;])
+        else:
+            panda_args.append(qcow)
+
+        panda_args.extend([&#39;-m&#39;, q.default_mem])
+
+        if q.extra_args:
+            extra_args = shlex_split(q.extra_args)
+            for x in extra_args:
+                if &#34; &#34; in x:
+                    panda_args.append(repr(x))
+                else:
+                    panda_args.append(x)
+
+        panda_args.extend([&#39;-loadvm&#39;, q.snapshot])
+
+        return &#34; &#34;.join(panda_args)
+
+if __name__ == &#34;__main__&#34;:
+    from sys import argv, stdout
+    valid_names = &#34;, &#34;.join(SUPPORTED_IMAGES.keys())
+
+    if len(argv) != 2 or argv[1] not in SUPPORTED_IMAGES:
+        raise ValueError(f&#34;USAGE: {argv[0]}: target_arch where name is one of &#34; + valid_names)
+
+    cmd = Qcows.cli(argv[1])
+    if stdout.isatty():
+        print(f&#34;\nRun panda for {argv[1]} with:\n{cmd}&#34;)
+    else:
+        print(cmd)</code></pre>
 </details>
 </section>
 <section>
@@ -665,10 +708,80 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
         if len(argv) &gt; idx:
             return Qcows.get_qcow(argv[idx])
         else:
-            return Qcows.get_qcow()</code></pre>
+            return Qcows.get_qcow()
+
+    @staticmethod
+    def cli(target):
+        from .panda import Panda
+        q = Qcows.get_qcow_info(target)
+        qcow = Qcows.get_qcow(target)
+        arch = q.arch
+        build_dir = Panda._find_build_dir(arch)
+        panda_args = [build_dir + f&#34;/{arch}-softmmu/panda-system-{arch}&#34;]
+        biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
+        panda_args.extend([&#34;-L&#34;, biospath])
+
+        if arch == &#39;mips64&#39;:
+            panda_args.extend([&#34;-drive&#34;, f&#34;file={qcow},if=virtio&#34;])
+        else:
+            panda_args.append(qcow)
+
+        panda_args.extend([&#39;-m&#39;, q.default_mem])
+
+        if q.extra_args:
+            extra_args = shlex_split(q.extra_args)
+            for x in extra_args:
+                if &#34; &#34; in x:
+                    panda_args.append(repr(x))
+                else:
+                    panda_args.append(x)
+
+        panda_args.extend([&#39;-loadvm&#39;, q.snapshot])
+
+        return &#34; &#34;.join(panda_args)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
+<dt id="pandare.qcows.Qcows.cli"><code class="name flex">
+<span>def <span class="ident">cli</span></span>(<span>target)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def cli(target):
+    from .panda import Panda
+    q = Qcows.get_qcow_info(target)
+    qcow = Qcows.get_qcow(target)
+    arch = q.arch
+    build_dir = Panda._find_build_dir(arch)
+    panda_args = [build_dir + f&#34;/{arch}-softmmu/panda-system-{arch}&#34;]
+    biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
+    panda_args.extend([&#34;-L&#34;, biospath])
+
+    if arch == &#39;mips64&#39;:
+        panda_args.extend([&#34;-drive&#34;, f&#34;file={qcow},if=virtio&#34;])
+    else:
+        panda_args.append(qcow)
+
+    panda_args.extend([&#39;-m&#39;, q.default_mem])
+
+    if q.extra_args:
+        extra_args = shlex_split(q.extra_args)
+        for x in extra_args:
+            if &#34; &#34; in x:
+                panda_args.append(repr(x))
+            else:
+                panda_args.append(x)
+
+    panda_args.extend([&#39;-loadvm&#39;, q.snapshot])
+
+    return &#34; &#34;.join(panda_args)</code></pre>
+</details>
+</dd>
 <dt id="pandare.qcows.Qcows.get_qcow"><code class="name flex">
 <span>def <span class="ident">get_qcow</span></span>(<span>name=None)</span>
 </code></dt>
@@ -901,6 +1014,7 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="pandare.qcows.Qcows" href="#pandare.qcows.Qcows">Qcows</a></code></h4>
 <ul class="">
+<li><code><a title="pandare.qcows.Qcows.cli" href="#pandare.qcows.Qcows.cli">cli</a></code></li>
 <li><code><a title="pandare.qcows.Qcows.get_qcow" href="#pandare.qcows.Qcows.get_qcow">get_qcow</a></code></li>
 <li><code><a title="pandare.qcows.Qcows.get_qcow_info" href="#pandare.qcows.Qcows.get_qcow_info">get_qcow_info</a></code></li>
 <li><code><a title="pandare.qcows.Qcows.qcow_from_arg" href="#pandare.qcows.Qcows.qcow_from_arg">qcow_from_arg</a></code></li>
