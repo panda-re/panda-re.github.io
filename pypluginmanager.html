@@ -357,29 +357,31 @@ class PyPluginManager:
         all classes that subclass PyPlugin and passing them to self.load()
         &#39;&#39;&#39;
         import inspect, importlib
-        spec = importlib.util.spec_from_file_location(&#34;snake_hook&#34;, plugin_file)
+        spec = importlib.util.spec_from_file_location(&#34;plugin_file&#34;, plugin_file)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        for name, cls in inspect.getmembers(module, lambda x: inspect.isclass(x) and x.__module__ == &#34;snake_hook&#34;): # matches module set above
+        for name, cls in inspect.getmembers(module, lambda x: inspect.isclass(x)):
+            if not issubclass(cls, PyPlugin):
+                continue
+            cls.__name__ = name
             self.load(cls, args, template_dir)
 
-    def unload(self, pluginclass):
+    def unload(self, pluginclass, do_del=True):
         if isinstance(pluginclass, str):
             name = pluginclass
         else:
             name = pluginclass.__name__
 
-        del self.plugins[name]
+        if callable(getattr(self.plugins[name], &#34;uninit&#34;, None)):
+            self.plugins[name].uninit()
+
+        if do_del:
+            del self.plugins[name]
 
     def unload_all(self):
-        # XXX: Why don&#39;t we just clear the plugin list? The refcount isn&#39;t
-        # dropping to zero after the clear and I can&#39;t figure out why. So
-        # we&#39;ll explicitly call __del__ if it exists on unload as per
-        # the PyPlugin API
-        for instance in self.plugins.values():
-            if callable(getattr(instance, &#34;__del__&#34;, None)):
-                instance.__del__()
+        for name in self.plugins.keys():
+            self.unload(name, do_del=False)
         self.plugins.clear()
 
     def is_loaded(self, pluginclass):
@@ -645,29 +647,31 @@ if __name__ == &#39;__main__&#39;:
         all classes that subclass PyPlugin and passing them to self.load()
         &#39;&#39;&#39;
         import inspect, importlib
-        spec = importlib.util.spec_from_file_location(&#34;snake_hook&#34;, plugin_file)
+        spec = importlib.util.spec_from_file_location(&#34;plugin_file&#34;, plugin_file)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        for name, cls in inspect.getmembers(module, lambda x: inspect.isclass(x) and x.__module__ == &#34;snake_hook&#34;): # matches module set above
+        for name, cls in inspect.getmembers(module, lambda x: inspect.isclass(x)):
+            if not issubclass(cls, PyPlugin):
+                continue
+            cls.__name__ = name
             self.load(cls, args, template_dir)
 
-    def unload(self, pluginclass):
+    def unload(self, pluginclass, do_del=True):
         if isinstance(pluginclass, str):
             name = pluginclass
         else:
             name = pluginclass.__name__
 
-        del self.plugins[name]
+        if callable(getattr(self.plugins[name], &#34;uninit&#34;, None)):
+            self.plugins[name].uninit()
+
+        if do_del:
+            del self.plugins[name]
 
     def unload_all(self):
-        # XXX: Why don&#39;t we just clear the plugin list? The refcount isn&#39;t
-        # dropping to zero after the clear and I can&#39;t figure out why. So
-        # we&#39;ll explicitly call __del__ if it exists on unload as per
-        # the PyPlugin API
-        for instance in self.plugins.values():
-            if callable(getattr(instance, &#34;__del__&#34;, None)):
-                instance.__del__()
+        for name in self.plugins.keys():
+            self.unload(name, do_del=False)
         self.plugins.clear()
 
     def is_loaded(self, pluginclass):
@@ -901,11 +905,14 @@ all classes that subclass PyPlugin and passing them to self.load()</p></div>
     all classes that subclass PyPlugin and passing them to self.load()
     &#39;&#39;&#39;
     import inspect, importlib
-    spec = importlib.util.spec_from_file_location(&#34;snake_hook&#34;, plugin_file)
+    spec = importlib.util.spec_from_file_location(&#34;plugin_file&#34;, plugin_file)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
-    for name, cls in inspect.getmembers(module, lambda x: inspect.isclass(x) and x.__module__ == &#34;snake_hook&#34;): # matches module set above
+    for name, cls in inspect.getmembers(module, lambda x: inspect.isclass(x)):
+        if not issubclass(cls, PyPlugin):
+            continue
+        cls.__name__ = name
         self.load(cls, args, template_dir)</code></pre>
 </details>
 </dd>
@@ -987,7 +994,7 @@ you would get from directly doing <code>import [class_name] from [plugin_file]</
 </details>
 </dd>
 <dt id="pandare.pypluginmanager.PyPluginManager.unload"><code class="name flex">
-<span>def <span class="ident">unload</span></span>(<span>self, pluginclass)</span>
+<span>def <span class="ident">unload</span></span>(<span>self, pluginclass, do_del=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -995,13 +1002,17 @@ you would get from directly doing <code>import [class_name] from [plugin_file]</
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def unload(self, pluginclass):
+<pre><code class="python">def unload(self, pluginclass, do_del=True):
     if isinstance(pluginclass, str):
         name = pluginclass
     else:
         name = pluginclass.__name__
 
-    del self.plugins[name]</code></pre>
+    if callable(getattr(self.plugins[name], &#34;uninit&#34;, None)):
+        self.plugins[name].uninit()
+
+    if do_del:
+        del self.plugins[name]</code></pre>
 </details>
 </dd>
 <dt id="pandare.pypluginmanager.PyPluginManager.unload_all"><code class="name flex">
@@ -1014,13 +1025,8 @@ you would get from directly doing <code>import [class_name] from [plugin_file]</
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def unload_all(self):
-    # XXX: Why don&#39;t we just clear the plugin list? The refcount isn&#39;t
-    # dropping to zero after the clear and I can&#39;t figure out why. So
-    # we&#39;ll explicitly call __del__ if it exists on unload as per
-    # the PyPlugin API
-    for instance in self.plugins.values():
-        if callable(getattr(instance, &#34;__del__&#34;, None)):
-            instance.__del__()
+    for name in self.plugins.keys():
+        self.unload(name, do_del=False)
     self.plugins.clear()</code></pre>
 </details>
 </dd>
