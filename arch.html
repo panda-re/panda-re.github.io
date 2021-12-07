@@ -412,7 +412,7 @@ class ArmArch(PandaArch):
         self.reg_sp = regnames.index(&#34;SP&#34;)
         self.reg_retaddr = regnames.index(&#34;LR&#34;)
         self.call_conventions = {&#34;arm32&#34;:         [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;],
-                                 &#34;syscall&#34;: [&#34;R7&#34;, &#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;], # EABI
+                                 &#34;syscall&#34;: [&#34;R7&#34;, &#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;, &#34;R4&#34;, &#34;R5&#34;], # EABI
                                  }
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;arm32&#39;]
 
@@ -977,7 +977,7 @@ Note the PC is not stored in a general purpose reg</p></div>
         self.reg_sp = regnames.index(&#34;SP&#34;)
         self.reg_retaddr = regnames.index(&#34;LR&#34;)
         self.call_conventions = {&#34;arm32&#34;:         [&#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;],
-                                 &#34;syscall&#34;: [&#34;R7&#34;, &#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;], # EABI
+                                 &#34;syscall&#34;: [&#34;R7&#34;, &#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;, &#34;R4&#34;, &#34;R5&#34;], # EABI
                                  }
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;arm32&#39;]
 
