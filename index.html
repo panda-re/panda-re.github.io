@@ -3409,7 +3409,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         Returns:
             DeviceState struct
         &#39;&#39;&#39;
-        return self.libpanda.sysbus_create_varargs(name,addr,ffi.NULL)
+        return self.libpanda.sysbus_create_varargs(name,addr, self.ffi.NULL)
 
     def cpu_class_by_name(self, name, cpu_model):
         &#39;&#39;&#39;
@@ -3567,7 +3567,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         Returns:
             struct ObjectProperty pointer
         &#39;&#39;&#39;
-        return self.libpanda.object_property_find(obj,name,ffi.NULL)
+        return self.libpanda.object_property_find(obj,name, self.ffi.NULL)
 
     def memory_region_allocate_system_memory(self, mr, obj, name, ram_size):
         &#39;&#39;&#39;
@@ -7753,7 +7753,7 @@ Calls object_property_find QEMU function.</p>
     Returns:
         struct ObjectProperty pointer
     &#39;&#39;&#39;
-    return self.libpanda.object_property_find(obj,name,ffi.NULL)</code></pre>
+    return self.libpanda.object_property_find(obj,name, self.ffi.NULL)</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.object_property_get_bool"><code class="name flex">
@@ -9277,7 +9277,7 @@ Calls sysbus_create_varargs QEMU function.</p>
     Returns:
         DeviceState struct
     &#39;&#39;&#39;
-    return self.libpanda.sysbus_create_varargs(name,addr,ffi.NULL)</code></pre>
+    return self.libpanda.sysbus_create_varargs(name,addr, self.ffi.NULL)</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_check_laddr"><code class="name flex">
