@@ -268,7 +268,7 @@ class PandaArch():
         else:
             raise RuntimeError(f&#34;get_pc unsupported for {self.panda.arch_name}&#34;)
 
-    def _get_arg_reg(self, idx, convention):
+    def _get_arg_loc(self, idx, convention):
         &#39;&#39;&#39;
         return the name of the argument [idx] for the given arch with calling [convention]
         &#39;&#39;&#39;
@@ -291,7 +291,7 @@ class PandaArch():
 
         Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
         &#39;&#39;&#39;
-        reg = self._get_arg_reg(idx, convention)
+        reg = self._get_arg_loc(idx, convention)
         return self.set_reg(cpu, reg, val)
 
     def get_arg(self, cpu, idx, convention=&#39;default&#39;):
@@ -299,15 +299,47 @@ class PandaArch():
         Return arg [idx] for given calling convention. This only works right as the guest
         is calling or has called a function before register values are clobbered.
 
+        If arg[idx] should be stack-based, name it stack_0, stack_1... this allows mixed
+        conventions where some args are in registers and others are on the stack (i.e.,
+        mips32 syscalls).
+
+        When doing a stack-based read, this function may raise a ValueError if the memory
+        read fails (i.e., paged out, invalid address).
+
         Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
         &#39;&#39;&#39;
         
-        # i386 is stack based and so the convention wont work
-        if self.call_conventions[convention] == &#34;stack&#34;:
-            return self.get_arg_stack(cpu, idx)
-        reg = self._get_arg_reg(idx, convention)
-        return self.get_reg(cpu, reg)
+        argloc = self._get_arg_loc(idx, convention)
 
+        if self._is_stack_loc(argloc):
+            return self._read_stack(cpu, argloc)
+        else:
+            return self.get_reg(cpu, argloc)
+
+    @staticmethod
+    def _is_stack_loc(argloc):
+        &#39;&#39;&#39;
+        Given a name returned by self._get_arg_loc
+        check if it&#39;s the name of a stack offset
+        &#39;&#39;&#39;
+        return argloc.startswith(&#34;stack_&#34;)
+
+    def _read_stack(self, cpu, argloc):
+        &#39;&#39;&#39;
+        Given a name like stack_X, calculate where
+        the X-th value on the stack is, then read it out of
+        memory and return it.
+
+        May raise a ValueError if the memory read fails
+        &#39;&#39;&#39;
+        # Stack based - get stack base, calculate offset, then try to read it
+        assert(self._is_stack_loc(argloc)), f&#34;Can&#39;t get stack offset of {argloc}&#34;
+
+        stack_idx = int(argloc.split(&#34;stack_&#34;)[1])
+        stack_base = self.get_reg(cpu, self.reg_sp)
+        arg_sz = self.panda.bits // 8
+        offset = arg_sz * (stack_idx+1)
+        return self.panda.virtual_memory_read(cpu, stack_base + offset, arg_sz, fmt=&#39;int&#39;)
 
     def set_retval(self, cpu, val, convention=&#39;default&#39;, failure=False):
         &#39;&#39;&#39;
@@ -516,7 +548,7 @@ class Aarch64Arch(PandaArch):
 
 class MipsArch(PandaArch):
     &#39;&#39;&#39;
-    Register names and accessors for MIPS
+    Register names and accessors for 32-bit MIPS
     &#39;&#39;&#39;
 
     # Registers are:
@@ -545,8 +577,9 @@ class MipsArch(PandaArch):
 
         self.reg_sp = regnames.index(&#39;sp&#39;)
         self.reg_retaddr = regnames.index(&#34;ra&#34;)
+        # Default syscall/args are for mips o32
         self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;],
-                                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;]}
+                                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;stack_1&#34;, &#34;stack_2&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
 
         self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
@@ -606,7 +639,7 @@ class MipsArch(PandaArch):
         &#39;&#39;&#39;
         .. Deprecated:: use get_return_address
         &#39;&#39;&#39;
-        return self.get_return_addess(cpu)
+        return self.get_return_address(cpu)
 
     def get_return_address(self,cpu):
         &#39;&#39;&#39;
@@ -635,6 +668,33 @@ class MipsArch(PandaArch):
 
         return super().set_retval(cpu, val, convention)
 
+class Mips64Arch(MipsArch):
+    &#39;&#39;&#39;
+    Register names and accessors for MIPS64. Inherits from MipsArch for everything
+    except the register name and call conventions.
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        super().__init__(panda)
+        regnames = [&#34;zero&#34;, &#34;at&#34;,   &#34;v0&#34;,   &#34;v1&#34;,   &#34;a0&#34;,   &#34;a1&#34;,   &#34;a2&#34;,   &#34;a3&#34;,
+                    &#34;a4&#34;,   &#34;a5&#34;,   &#34;a6&#34;,   &#34;a7&#34;,   &#34;t0&#34;,   &#34;t1&#34;,   &#34;t2&#34;,   &#34;t3&#34;,
+                    &#34;s0&#34;,   &#34;s1&#34;,   &#34;s2&#34;,   &#34;s3&#34;,   &#34;s4&#34;,   &#34;s5&#34;,   &#34;s6&#34;,   &#34;s7&#34;,
+                    &#34;t8&#34;,   &#34;t9&#34;,   &#34;k0&#34;,   &#34;k1&#34;,   &#34;gp&#34;,   &#34;sp&#34;,   &#34;s8&#34;,   &#34;ra&#34;]
+
+        self.reg_sp = regnames.index(&#39;sp&#39;)
+        self.reg_retaddr = regnames.index(&#34;ra&#34;)
+        # Default syscall/args are for mips 64/n32 - note the registers are different than 32
+        self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;], # XXX Unsure?
+                                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;A4&#34;, &#34;A5&#34;]}
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
+
+        self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
+                            &#34;syscall&#34;:    &#39;V0&#39;}
+
+
+        # note names must be stored uppercase for get/set reg to work case-insensitively
+        self.registers = {regnames[idx].upper(): idx for idx in range(len(regnames)) }
+
 class X86Arch(PandaArch):
     &#39;&#39;&#39;
     Register names and accessors for x86
@@ -650,9 +710,9 @@ class X86Arch(PandaArch):
         self.reg_retval = {&#34;default&#34;:    &#34;EAX&#34;,
                            &#34;syscall&#34;:    &#34;EAX&#34;}
         
-        self.call_conventions = {&#34;stack&#34;: &#34;stack&#34;,
+        self.call_conventions = {&#34;cdecl&#34;: [&#34;stack_{x}&#34; for x in range(20)], # 20: arbitrary but big
                                  &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;]}
-        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;stack&#39;]
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;cdecl&#39;]
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
@@ -695,14 +755,6 @@ class X86Arch(PandaArch):
         esp = self.get_reg(cpu,&#34;ESP&#34;)
         return self.panda.virtual_memory_read(cpu,esp,4,fmt=&#39;int&#39;)
     
-    # we need this because X86 is stack based
-    def get_arg_stack(self, cpu, num, kernel=False):
-        &#39;&#39;&#39;
-        Gets arguments based on the number. Supports kernel and usermode.
-        &#39;&#39;&#39;
-        esp = self.get_reg(cpu, &#34;ESP&#34;)
-        return self.panda.virtual_memory_read(cpu, esp+(4*(num+1)),4,fmt=&#39;int&#39;)
-
 class X86_64Arch(PandaArch):
     &#39;&#39;&#39;
     Register names and accessors for x86_64
@@ -1070,12 +1122,79 @@ Note the PC is not stored in a general purpose reg</p></div>
 </li>
 </ul>
 </dd>
+<dt id="pandare.arch.Mips64Arch"><code class="flex name class">
+<span>class <span class="ident">Mips64Arch</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register names and accessors for MIPS64. Inherits from MipsArch for everything
+except the register name and call conventions.</p>
+<p>Initialize a PANDA-supported architecture and hold a handle on the PANDA object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Mips64Arch(MipsArch):
+    &#39;&#39;&#39;
+    Register names and accessors for MIPS64. Inherits from MipsArch for everything
+    except the register name and call conventions.
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        super().__init__(panda)
+        regnames = [&#34;zero&#34;, &#34;at&#34;,   &#34;v0&#34;,   &#34;v1&#34;,   &#34;a0&#34;,   &#34;a1&#34;,   &#34;a2&#34;,   &#34;a3&#34;,
+                    &#34;a4&#34;,   &#34;a5&#34;,   &#34;a6&#34;,   &#34;a7&#34;,   &#34;t0&#34;,   &#34;t1&#34;,   &#34;t2&#34;,   &#34;t3&#34;,
+                    &#34;s0&#34;,   &#34;s1&#34;,   &#34;s2&#34;,   &#34;s3&#34;,   &#34;s4&#34;,   &#34;s5&#34;,   &#34;s6&#34;,   &#34;s7&#34;,
+                    &#34;t8&#34;,   &#34;t9&#34;,   &#34;k0&#34;,   &#34;k1&#34;,   &#34;gp&#34;,   &#34;sp&#34;,   &#34;s8&#34;,   &#34;ra&#34;]
+
+        self.reg_sp = regnames.index(&#39;sp&#39;)
+        self.reg_retaddr = regnames.index(&#34;ra&#34;)
+        # Default syscall/args are for mips 64/n32 - note the registers are different than 32
+        self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;], # XXX Unsure?
+                                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;A4&#34;, &#34;A5&#34;]}
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
+
+        self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
+                            &#34;syscall&#34;:    &#39;V0&#39;}
+
+
+        # note names must be stored uppercase for get/set reg to work case-insensitively
+        self.registers = {regnames[idx].upper(): idx for idx in range(len(regnames)) }</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="pandare.arch.MipsArch" href="#pandare.arch.MipsArch">MipsArch</a></li>
+<li><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="pandare.arch.MipsArch" href="#pandare.arch.MipsArch">MipsArch</a></b></code>:
+<ul class="hlist">
+<li><code><a title="pandare.arch.MipsArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_call_return" href="#pandare.arch.MipsArch.get_call_return">get_call_return</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_pc" href="#pandare.arch.MipsArch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_return_address" href="#pandare.arch.MipsArch.get_return_address">get_return_address</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_return_value" href="#pandare.arch.MipsArch.get_return_value">get_return_value</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_retval" href="#pandare.arch.MipsArch.get_retval">get_retval</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.set_pc" href="#pandare.arch.MipsArch.set_pc">set_pc</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.set_retval" href="#pandare.arch.MipsArch.set_retval">set_retval</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
 <dt id="pandare.arch.MipsArch"><code class="flex name class">
 <span>class <span class="ident">MipsArch</span></span>
 <span>(</span><span>panda)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Register names and accessors for MIPS</p>
+<div class="desc"><p>Register names and accessors for 32-bit MIPS</p>
 <p>Initialize a PANDA-supported architecture and hold a handle on the PANDA object</p></div>
 <details class="source">
 <summary>
@@ -1083,7 +1202,7 @@ Note the PC is not stored in a general purpose reg</p></div>
 </summary>
 <pre><code class="python">class MipsArch(PandaArch):
     &#39;&#39;&#39;
-    Register names and accessors for MIPS
+    Register names and accessors for 32-bit MIPS
     &#39;&#39;&#39;
 
     # Registers are:
@@ -1112,8 +1231,9 @@ Note the PC is not stored in a general purpose reg</p></div>
 
         self.reg_sp = regnames.index(&#39;sp&#39;)
         self.reg_retaddr = regnames.index(&#34;ra&#34;)
+        # Default syscall/args are for mips o32
         self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;],
-                                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;]}
+                                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;stack_1&#34;, &#34;stack_2&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
 
         self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
@@ -1173,7 +1293,7 @@ Note the PC is not stored in a general purpose reg</p></div>
         &#39;&#39;&#39;
         .. Deprecated:: use get_return_address
         &#39;&#39;&#39;
-        return self.get_return_addess(cpu)
+        return self.get_return_address(cpu)
 
     def get_return_address(self,cpu):
         &#39;&#39;&#39;
@@ -1206,6 +1326,10 @@ Note the PC is not stored in a general purpose reg</p></div>
 <ul class="hlist">
 <li><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></li>
 </ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="pandare.arch.Mips64Arch" href="#pandare.arch.Mips64Arch">Mips64Arch</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
 <dt id="pandare.arch.MipsArch.get_call_return"><code class="name flex">
@@ -1223,7 +1347,7 @@ Note the PC is not stored in a general purpose reg</p></div>
     &#39;&#39;&#39;
     .. Deprecated:: use get_return_address
     &#39;&#39;&#39;
-    return self.get_return_addess(cpu)</code></pre>
+    return self.get_return_address(cpu)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.MipsArch.get_pc"><code class="name flex">
@@ -1488,7 +1612,7 @@ otherwise it will be set to 1</p></div>
         else:
             raise RuntimeError(f&#34;get_pc unsupported for {self.panda.arch_name}&#34;)
 
-    def _get_arg_reg(self, idx, convention):
+    def _get_arg_loc(self, idx, convention):
         &#39;&#39;&#39;
         return the name of the argument [idx] for the given arch with calling [convention]
         &#39;&#39;&#39;
@@ -1511,7 +1635,7 @@ otherwise it will be set to 1</p></div>
 
         Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
         &#39;&#39;&#39;
-        reg = self._get_arg_reg(idx, convention)
+        reg = self._get_arg_loc(idx, convention)
         return self.set_reg(cpu, reg, val)
 
     def get_arg(self, cpu, idx, convention=&#39;default&#39;):
@@ -1519,15 +1643,47 @@ otherwise it will be set to 1</p></div>
         Return arg [idx] for given calling convention. This only works right as the guest
         is calling or has called a function before register values are clobbered.
 
+        If arg[idx] should be stack-based, name it stack_0, stack_1... this allows mixed
+        conventions where some args are in registers and others are on the stack (i.e.,
+        mips32 syscalls).
+
+        When doing a stack-based read, this function may raise a ValueError if the memory
+        read fails (i.e., paged out, invalid address).
+
         Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
         &#39;&#39;&#39;
         
-        # i386 is stack based and so the convention wont work
-        if self.call_conventions[convention] == &#34;stack&#34;:
-            return self.get_arg_stack(cpu, idx)
-        reg = self._get_arg_reg(idx, convention)
-        return self.get_reg(cpu, reg)
+        argloc = self._get_arg_loc(idx, convention)
 
+        if self._is_stack_loc(argloc):
+            return self._read_stack(cpu, argloc)
+        else:
+            return self.get_reg(cpu, argloc)
+
+    @staticmethod
+    def _is_stack_loc(argloc):
+        &#39;&#39;&#39;
+        Given a name returned by self._get_arg_loc
+        check if it&#39;s the name of a stack offset
+        &#39;&#39;&#39;
+        return argloc.startswith(&#34;stack_&#34;)
+
+    def _read_stack(self, cpu, argloc):
+        &#39;&#39;&#39;
+        Given a name like stack_X, calculate where
+        the X-th value on the stack is, then read it out of
+        memory and return it.
+
+        May raise a ValueError if the memory read fails
+        &#39;&#39;&#39;
+        # Stack based - get stack base, calculate offset, then try to read it
+        assert(self._is_stack_loc(argloc)), f&#34;Can&#39;t get stack offset of {argloc}&#34;
+
+        stack_idx = int(argloc.split(&#34;stack_&#34;)[1])
+        stack_base = self.get_reg(cpu, self.reg_sp)
+        arg_sz = self.panda.bits // 8
+        offset = arg_sz * (stack_idx+1)
+        return self.panda.virtual_memory_read(cpu, stack_base + offset, arg_sz, fmt=&#39;int&#39;)
 
     def set_retval(self, cpu, val, convention=&#39;default&#39;, failure=False):
         &#39;&#39;&#39;
@@ -1709,6 +1865,11 @@ otherwise it will be set to 1</p></div>
 <dd>
 <div class="desc"><p>Return arg [idx] for given calling convention. This only works right as the guest
 is calling or has called a function before register values are clobbered.</p>
+<p>If arg[idx] should be stack-based, name it stack_0, stack_1&hellip; this allows mixed
+conventions where some args are in registers and others are on the stack (i.e.,
+mips32 syscalls).</p>
+<p>When doing a stack-based read, this function may raise a ValueError if the memory
+read fails (i.e., paged out, invalid address).</p>
 <p>Note for syscalls we define arg[0] as syscall number and then 1-index the actual args</p></div>
 <details class="source">
 <summary>
@@ -1719,14 +1880,22 @@ is calling or has called a function before register values are clobbered.</p>
     Return arg [idx] for given calling convention. This only works right as the guest
     is calling or has called a function before register values are clobbered.
 
+    If arg[idx] should be stack-based, name it stack_0, stack_1... this allows mixed
+    conventions where some args are in registers and others are on the stack (i.e.,
+    mips32 syscalls).
+
+    When doing a stack-based read, this function may raise a ValueError if the memory
+    read fails (i.e., paged out, invalid address).
+
     Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
     &#39;&#39;&#39;
     
-    # i386 is stack based and so the convention wont work
-    if self.call_conventions[convention] == &#34;stack&#34;:
-        return self.get_arg_stack(cpu, idx)
-    reg = self._get_arg_reg(idx, convention)
-    return self.get_reg(cpu, reg)</code></pre>
+    argloc = self._get_arg_loc(idx, convention)
+
+    if self._is_stack_loc(argloc):
+        return self._read_stack(cpu, argloc)
+    else:
+        return self.get_reg(cpu, argloc)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.PandaArch.get_args"><code class="name flex">
@@ -1828,7 +1997,7 @@ a different value.</p>
 
     Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
     &#39;&#39;&#39;
-    reg = self._get_arg_reg(idx, convention)
+    reg = self._get_arg_loc(idx, convention)
     return self.set_reg(cpu, reg, val)</code></pre>
 </details>
 </dd>
@@ -1935,9 +2104,9 @@ in the signature here so it can be set by a caller without regard for the guest 
         self.reg_retval = {&#34;default&#34;:    &#34;EAX&#34;,
                            &#34;syscall&#34;:    &#34;EAX&#34;}
         
-        self.call_conventions = {&#34;stack&#34;: &#34;stack&#34;,
+        self.call_conventions = {&#34;cdecl&#34;: [&#34;stack_{x}&#34; for x in range(20)], # 20: arbitrary but big
                                  &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;]}
-        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;stack&#39;]
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;cdecl&#39;]
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
@@ -1978,15 +2147,7 @@ in the signature here so it can be set by a caller without regard for the guest 
         looks up where ret will go
         &#39;&#39;&#39;
         esp = self.get_reg(cpu,&#34;ESP&#34;)
-        return self.panda.virtual_memory_read(cpu,esp,4,fmt=&#39;int&#39;)
-    
-    # we need this because X86 is stack based
-    def get_arg_stack(self, cpu, num, kernel=False):
-        &#39;&#39;&#39;
-        Gets arguments based on the number. Supports kernel and usermode.
-        &#39;&#39;&#39;
-        esp = self.get_reg(cpu, &#34;ESP&#34;)
-        return self.panda.virtual_memory_read(cpu, esp+(4*(num+1)),4,fmt=&#39;int&#39;)</code></pre>
+        return self.panda.virtual_memory_read(cpu,esp,4,fmt=&#39;int&#39;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1994,23 +2155,6 @@ in the signature here so it can be set by a caller without regard for the guest 
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="pandare.arch.X86Arch.get_arg_stack"><code class="name flex">
-<span>def <span class="ident">get_arg_stack</span></span>(<span>self, cpu, num, kernel=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets arguments based on the number. Supports kernel and usermode.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_arg_stack(self, cpu, num, kernel=False):
-    &#39;&#39;&#39;
-    Gets arguments based on the number. Supports kernel and usermode.
-    &#39;&#39;&#39;
-    esp = self.get_reg(cpu, &#34;ESP&#34;)
-    return self.panda.virtual_memory_read(cpu, esp+(4*(num+1)),4,fmt=&#39;int&#39;)</code></pre>
-</details>
-</dd>
 <dt id="pandare.arch.X86Arch.get_pc"><code class="name flex">
 <span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
 </code></dt>
@@ -2345,6 +2489,9 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li>
+<h4><code><a title="pandare.arch.Mips64Arch" href="#pandare.arch.Mips64Arch">Mips64Arch</a></code></h4>
+</li>
+<li>
 <h4><code><a title="pandare.arch.MipsArch" href="#pandare.arch.MipsArch">MipsArch</a></code></h4>
 <ul class="two-column">
 <li><code><a title="pandare.arch.MipsArch.get_call_return" href="#pandare.arch.MipsArch.get_call_return">get_call_return</a></code></li>
@@ -2377,7 +2524,6 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="pandare.arch.X86Arch" href="#pandare.arch.X86Arch">X86Arch</a></code></h4>
 <ul class="">
-<li><code><a title="pandare.arch.X86Arch.get_arg_stack" href="#pandare.arch.X86Arch.get_arg_stack">get_arg_stack</a></code></li>
 <li><code><a title="pandare.arch.X86Arch.get_pc" href="#pandare.arch.X86Arch.get_pc">get_pc</a></code></li>
 <li><code><a title="pandare.arch.X86Arch.get_return_address" href="#pandare.arch.X86Arch.get_return_address">get_return_address</a></code></li>
 <li><code><a title="pandare.arch.X86Arch.get_return_value" href="#pandare.arch.X86Arch.get_return_value">get_return_value</a></code></li>

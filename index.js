@@ -1443,7 +1443,7 @@ INDEX=[
 {
 "ref":"pandare.arch.PandaArch.get_arg",
 "url":4,
-"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
+"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. If arg[idx] should be stack-based, name it stack_0, stack_1 . this allows mixed conventions where some args are in registers and others are on the stack (i.e., mips32 syscalls). When doing a stack-based read, this function may raise a ValueError if the memory read fails (i.e., paged out, invalid address). Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
 "func":1
 },
 {
@@ -1542,7 +1542,7 @@ INDEX=[
 {
 "ref":"pandare.arch.ArmArch.get_arg",
 "url":4,
-"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
+"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. If arg[idx] should be stack-based, name it stack_0, stack_1 . this allows mixed conventions where some args are in registers and others are on the stack (i.e., mips32 syscalls). When doing a stack-based read, this function may raise a ValueError if the memory read fails (i.e., paged out, invalid address). Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
 "func":1
 },
 {
@@ -1636,7 +1636,7 @@ INDEX=[
 {
 "ref":"pandare.arch.Aarch64Arch.get_arg",
 "url":4,
-"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
+"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. If arg[idx] should be stack-based, name it stack_0, stack_1 . this allows mixed conventions where some args are in registers and others are on the stack (i.e., mips32 syscalls). When doing a stack-based read, this function may raise a ValueError if the memory read fails (i.e., paged out, invalid address). Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
 "func":1
 },
 {
@@ -1672,7 +1672,7 @@ INDEX=[
 {
 "ref":"pandare.arch.MipsArch",
 "url":4,
-"doc":"Register names and accessors for MIPS Initialize a PANDA-supported architecture and hold a handle on the PANDA object"
+"doc":"Register names and accessors for 32-bit MIPS Initialize a PANDA-supported architecture and hold a handle on the PANDA object"
 },
 {
 "ref":"pandare.arch.MipsArch.get_pc",
@@ -1737,7 +1737,7 @@ INDEX=[
 {
 "ref":"pandare.arch.MipsArch.get_arg",
 "url":4,
-"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
+"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. If arg[idx] should be stack-based, name it stack_0, stack_1 . this allows mixed conventions where some args are in registers and others are on the stack (i.e., mips32 syscalls). When doing a stack-based read, this function may raise a ValueError if the memory read fails (i.e., paged out, invalid address). Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
 "func":1
 },
 {
@@ -1760,6 +1760,100 @@ INDEX=[
 },
 {
 "ref":"pandare.arch.MipsArch.registers",
+"url":4,
+"doc":"Mapping of register names to indices into the appropriate CPUState array"
+},
+{
+"ref":"pandare.arch.Mips64Arch",
+"url":4,
+"doc":"Register names and accessors for MIPS64. Inherits from MipsArch for everything except the register name and call conventions. Initialize a PANDA-supported architecture and hold a handle on the PANDA object"
+},
+{
+"ref":"pandare.arch.Mips64Arch.get_pc",
+"url":4,
+"doc":"Overloaded function to return the MIPS current program counter",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.set_pc",
+"url":4,
+"doc":"Overloaded function set the MIPS program counter",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.get_retval",
+"url":4,
+"doc":"Overloaded to incorporate error data from A3 register for syscalls. If A3 is 1 and convention is syscall,  negate the return value. This matches behavior of other architecures (where -ERRNO is returned on error)",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.get_return_value",
+"url":4,
+"doc":" Deprecated use get_retval",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.get_call_return",
+"url":4,
+"doc":" Deprecated use get_return_address",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.get_return_address",
+"url":4,
+"doc":"looks up where ret will go",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.set_retval",
+"url":4,
+"doc":"Overloaded function so when convention is syscall, user can control the A3 register (which indicates syscall success/failure) in addition to syscall return value. When convention  'syscall', failure = False means A3 will bet set to 0, otherwise it will be set to 1",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.get_reg",
+"url":4,
+"doc":"Return value in a  reg which is either a register name or index (e.g., \"R0\" or 0)",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.set_reg",
+"url":4,
+"doc":"Set register  reg to a value where  reg is either a register name or index (e.g., \"R0\" or 0)",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.set_arg",
+"url":4,
+"doc":"Set arg [idx] to [val] for given calling convention. Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.get_arg",
+"url":4,
+"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. If arg[idx] should be stack-based, name it stack_0, stack_1 . this allows mixed conventions where some args are in registers and others are on the stack (i.e., mips32 syscalls). When doing a stack-based read, this function may raise a ValueError if the memory read fails (i.e., paged out, invalid address). Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.dump_regs",
+"url":4,
+"doc":"Print (telescoping) each register and its values",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.dump_stack",
+"url":4,
+"doc":"Print (telescoping) most recent  words words on the stack (from stack pointer to stack pointer +  words word_size)",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.dump_state",
+"url":4,
+"doc":"Print registers and stack",
+"func":1
+},
+{
+"ref":"pandare.arch.Mips64Arch.registers",
 "url":4,
 "doc":"Mapping of register names to indices into the appropriate CPUState array"
 },
@@ -1793,12 +1887,6 @@ INDEX=[
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.get_arg_stack",
-"url":4,
-"doc":"Gets arguments based on the number. Supports kernel and usermode.",
-"func":1
-},
-{
 "ref":"pandare.arch.X86Arch.get_reg",
 "url":4,
 "doc":"Return value in a  reg which is either a register name or index (e.g., \"R0\" or 0)",
@@ -1819,7 +1907,7 @@ INDEX=[
 {
 "ref":"pandare.arch.X86Arch.get_arg",
 "url":4,
-"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
+"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. If arg[idx] should be stack-based, name it stack_0, stack_1 . this allows mixed conventions where some args are in registers and others are on the stack (i.e., mips32 syscalls). When doing a stack-based read, this function may raise a ValueError if the memory read fails (i.e., paged out, invalid address). Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
 "func":1
 },
 {
@@ -1907,7 +1995,7 @@ INDEX=[
 {
 "ref":"pandare.arch.X86_64Arch.get_arg",
 "url":4,
-"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
+"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. If arg[idx] should be stack-based, name it stack_0, stack_1 . this allows mixed conventions where some args are in registers and others are on the stack (i.e., mips32 syscalls). When doing a stack-based read, this function may raise a ValueError if the memory read fails (i.e., paged out, invalid address). Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
 "func":1
 },
 {

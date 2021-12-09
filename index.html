@@ -2175,7 +2175,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         elif self.arch_name in [&#34;mips&#34;, &#34;mipsel&#34;]:
             self.arch = MipsArch(self)
         elif self.arch_name in [&#34;mips64&#34;]:
-            self.arch = MipsArch(self) # XXX: We probably need a different class?
+            self.arch = Mips64Arch(self)
         else:
             raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
         self.bits, self.endianness, self.register_size = self.arch._determine_bits()
