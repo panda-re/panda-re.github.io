@@ -4473,7 +4473,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
         if isfile(pjoin(copy_directory, setup_script)):
             setup_result = self.run_serial_cmd(f&#34;{mount_dir}/{setup_script}&#34;, timeout=timeout)
-            progress(&#34;[Setup command]: {setup_result}&#34;)
+            progress(f&#34;[Setup command]: {setup_result}&#34;)
 
     @blocking
     def record_cmd(self, guest_command, copy_directory=None, iso_name=None, setup_command=None, recording_name=&#34;recording&#34;, snap_name=&#34;root&#34;, ignore_errors=False):
@@ -5515,7 +5515,7 @@ def copy_to_guest(self, copy_directory, iso_name=None, absolute_paths=False, set
 
     if isfile(pjoin(copy_directory, setup_script)):
         setup_result = self.run_serial_cmd(f&#34;{mount_dir}/{setup_script}&#34;, timeout=timeout)
-        progress(&#34;[Setup command]: {setup_result}&#34;)</code></pre>
+        progress(f&#34;[Setup command]: {setup_result}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.cpu_class_by_name"><code class="name flex">

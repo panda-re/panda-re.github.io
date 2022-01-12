@@ -161,6 +161,7 @@ initialize a PandaArch class for the specified architecture in the variable
 
 &#39;&#39;&#39;
 import binascii
+import struct
 from .utils import telescope
 
 class PandaArch():
@@ -291,8 +292,12 @@ class PandaArch():
 
         Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
         &#39;&#39;&#39;
-        reg = self._get_arg_loc(idx, convention)
-        return self.set_reg(cpu, reg, val)
+        argloc = self._get_arg_loc(idx, convention)
+
+        if self._is_stack_loc(argloc):
+            return self._write_stack(cpu, argloc, val)
+        else:
+            return self.set_reg(cpu, argloc, val)
 
     def get_arg(self, cpu, idx, convention=&#39;default&#39;):
         &#39;&#39;&#39;
@@ -323,6 +328,33 @@ class PandaArch():
         check if it&#39;s the name of a stack offset
         &#39;&#39;&#39;
         return argloc.startswith(&#34;stack_&#34;)
+
+    def _write_stack(self, cpu, argloc, val):
+        &#39;&#39;&#39;
+        Given a name like stack_X, calculate where
+        the X-th value on the stack is, then write val
+        to that location
+
+        May raise a ValueError if the memory write fails
+        &#39;&#39;&#39;
+
+        if isinstance(val, int):
+            # Encode as word-size with endianness
+            bits, endianness, reg_sz = self._determine_bits()
+            val = val.to_bytes(reg_sz, byteorder=endianness)
+
+        if not isinstance(val, bytes):
+            raise ValueError(&#34;_write_stack needs an int or bytes&#34;)
+
+
+        # Stack based - get stack base, calculate offset, then try to read it
+        assert(self._is_stack_loc(argloc)), f&#34;Can&#39;t get stack offset of {argloc}&#34;
+
+        stack_idx = int(argloc.split(&#34;stack_&#34;)[1])
+        stack_base = self.get_reg(cpu, self.reg_sp)
+        offset = reg_sz * (stack_idx+1)
+        if self.panda.virtual_memory_write(cpu, stack_base + offset, val):
+            raise ValueError
 
     def _read_stack(self, cpu, argloc):
         &#39;&#39;&#39;
@@ -579,7 +611,7 @@ class MipsArch(PandaArch):
         self.reg_retaddr = regnames.index(&#34;ra&#34;)
         # Default syscall/args are for mips o32
         self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;],
-                                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;stack_1&#34;, &#34;stack_2&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;]}
+                &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]} # XXX: Note it&#39;s not 0-indexed for stack args, I guess the syscall pushes stuff too
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
 
         self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
@@ -1233,7 +1265,7 @@ except the register name and call conventions.</p>
         self.reg_retaddr = regnames.index(&#34;ra&#34;)
         # Default syscall/args are for mips o32
         self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;],
-                                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;stack_1&#34;, &#34;stack_2&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;]}
+                &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]} # XXX: Note it&#39;s not 0-indexed for stack args, I guess the syscall pushes stuff too
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
 
         self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
@@ -1635,8 +1667,12 @@ otherwise it will be set to 1</p></div>
 
         Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
         &#39;&#39;&#39;
-        reg = self._get_arg_loc(idx, convention)
-        return self.set_reg(cpu, reg, val)
+        argloc = self._get_arg_loc(idx, convention)
+
+        if self._is_stack_loc(argloc):
+            return self._write_stack(cpu, argloc, val)
+        else:
+            return self.set_reg(cpu, argloc, val)
 
     def get_arg(self, cpu, idx, convention=&#39;default&#39;):
         &#39;&#39;&#39;
@@ -1667,6 +1703,33 @@ otherwise it will be set to 1</p></div>
         check if it&#39;s the name of a stack offset
         &#39;&#39;&#39;
         return argloc.startswith(&#34;stack_&#34;)
+
+    def _write_stack(self, cpu, argloc, val):
+        &#39;&#39;&#39;
+        Given a name like stack_X, calculate where
+        the X-th value on the stack is, then write val
+        to that location
+
+        May raise a ValueError if the memory write fails
+        &#39;&#39;&#39;
+
+        if isinstance(val, int):
+            # Encode as word-size with endianness
+            bits, endianness, reg_sz = self._determine_bits()
+            val = val.to_bytes(reg_sz, byteorder=endianness)
+
+        if not isinstance(val, bytes):
+            raise ValueError(&#34;_write_stack needs an int or bytes&#34;)
+
+
+        # Stack based - get stack base, calculate offset, then try to read it
+        assert(self._is_stack_loc(argloc)), f&#34;Can&#39;t get stack offset of {argloc}&#34;
+
+        stack_idx = int(argloc.split(&#34;stack_&#34;)[1])
+        stack_base = self.get_reg(cpu, self.reg_sp)
+        offset = reg_sz * (stack_idx+1)
+        if self.panda.virtual_memory_write(cpu, stack_base + offset, val):
+            raise ValueError
 
     def _read_stack(self, cpu, argloc):
         &#39;&#39;&#39;
@@ -1997,8 +2060,12 @@ a different value.</p>
 
     Note for syscalls we define arg[0] as syscall number and then 1-index the actual args
     &#39;&#39;&#39;
-    reg = self._get_arg_loc(idx, convention)
-    return self.set_reg(cpu, reg, val)</code></pre>
+    argloc = self._get_arg_loc(idx, convention)
+
+    if self._is_stack_loc(argloc):
+        return self._write_stack(cpu, argloc, val)
+    else:
+        return self.set_reg(cpu, argloc, val)</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.PandaArch.set_pc"><code class="name flex">

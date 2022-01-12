@@ -494,7 +494,11 @@ class Qcows():
 
         panda_args.extend([&#39;-loadvm&#39;, q.snapshot])
 
-        return &#34; &#34;.join(panda_args)
+        ret = &#34; &#34;.join(panda_args)
+
+        if &#34;-display none&#34; in ret:
+            ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
+        return ret
 
 if __name__ == &#34;__main__&#34;:
     from sys import argv, stdout
@@ -738,7 +742,11 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
 
         panda_args.extend([&#39;-loadvm&#39;, q.snapshot])
 
-        return &#34; &#34;.join(panda_args)</code></pre>
+        ret = &#34; &#34;.join(panda_args)
+
+        if &#34;-display none&#34; in ret:
+            ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
+        return ret</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -779,7 +787,11 @@ def cli(target):
 
     panda_args.extend([&#39;-loadvm&#39;, q.snapshot])
 
-    return &#34; &#34;.join(panda_args)</code></pre>
+    ret = &#34; &#34;.join(panda_args)
+
+    if &#34;-display none&#34; in ret:
+        ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
+    return ret</code></pre>
 </details>
 </dd>
 <dt id="pandare.qcows.Qcows.get_qcow"><code class="name flex">
