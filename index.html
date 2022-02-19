@@ -476,6 +476,10 @@ this is done by passing a handle from your script's PANDA object …</p></div>
 <dd>
 <div class="desc"><p>Module for fetching generic PANDA images and managing their metadata.</p></div>
 </dd>
+<dt><code class="name"><a title="pandare.qemu_logging" href="qemu_logging.html">pandare.qemu_logging</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt><code class="name"><a title="pandare.taint" href="taint/index.html">pandare.taint</a></code></dt>
 <dd>
 <div class="desc"><p>Structures to support the taint subsystem.</p></div>
@@ -2132,6 +2136,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         self.ending = False # True during end_analysis
         self.cdrom = None
         self.catch_exceptions=catch_exceptions
+        self.qlog = QEMU_Log_Manager(self)
 
         self.serial_unconsumed_data = b&#39;&#39;
 
@@ -10472,6 +10477,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.pyplugin" href="pyplugin.html">pandare.pyplugin</a></code></li>
 <li><code><a title="pandare.pypluginmanager" href="pypluginmanager.html">pandare.pypluginmanager</a></code></li>
 <li><code><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></li>
+<li><code><a title="pandare.qemu_logging" href="qemu_logging.html">pandare.qemu_logging</a></code></li>
 <li><code><a title="pandare.taint" href="taint/index.html">pandare.taint</a></code></li>
 <li><code><a title="pandare.utils" href="utils.html">pandare.utils</a></code></li>
 </ul>
