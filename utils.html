@@ -158,7 +158,7 @@ from colorama import Fore, Style
 from functools import wraps
 from os import devnull
 from subprocess import check_call, STDOUT
-from sys import platform
+from sys import platform, stdout
 from threading import current_thread, main_thread
 
 # Set to enable pypanda debugging
@@ -166,15 +166,23 @@ debug = False
 
 def progress(msg):
     &#34;&#34;&#34;
-    Print a message with a green &#34;[PYPANDA]&#34; prefix
+    Print a message with a green &#34;[PYPANDA]&#34; prefix if in a tty
+    otherwise just print the message
     &#34;&#34;&#34;
-    print(Fore.GREEN + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
+    if stdout.isatty():
+        print(Fore.GREEN + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
+    else:
+        print(f&#34;[PYPANDA] {msg}&#34;)
 
 def warn(msg):
     &#34;&#34;&#34;
-    Print a message with a red &#34;[PYPANDA]&#34; prefix
+    Print a message with a red &#34;[PYPANDA]&#34; prefix if in a tty
+    otherwise just print the message
     &#34;&#34;&#34;
-    print(Fore.RED + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
+    if stdout.isatty():
+        print(Fore.RED + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
+    else:
+        print(f&#34;[PYPANDA] {msg}&#34;)
 
 def make_iso(directory, iso_path):
     &#39;&#39;&#39;
@@ -346,16 +354,21 @@ class plugin_list(dict):
 <span>def <span class="ident">progress</span></span>(<span>msg)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Print a message with a green "[PYPANDA]" prefix</p></div>
+<div class="desc"><p>Print a message with a green "[PYPANDA]" prefix if in a tty
+otherwise just print the message</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def progress(msg):
     &#34;&#34;&#34;
-    Print a message with a green &#34;[PYPANDA]&#34; prefix
+    Print a message with a green &#34;[PYPANDA]&#34; prefix if in a tty
+    otherwise just print the message
     &#34;&#34;&#34;
-    print(Fore.GREEN + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)</code></pre>
+    if stdout.isatty():
+        print(Fore.GREEN + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
+    else:
+        print(f&#34;[PYPANDA] {msg}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.utils.telescope"><code class="name flex">
@@ -420,16 +433,21 @@ to until
 <span>def <span class="ident">warn</span></span>(<span>msg)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Print a message with a red "[PYPANDA]" prefix</p></div>
+<div class="desc"><p>Print a message with a red "[PYPANDA]" prefix if in a tty
+otherwise just print the message</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def warn(msg):
     &#34;&#34;&#34;
-    Print a message with a red &#34;[PYPANDA]&#34; prefix
+    Print a message with a red &#34;[PYPANDA]&#34; prefix if in a tty
+    otherwise just print the message
     &#34;&#34;&#34;
-    print(Fore.RED + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)</code></pre>
+    if stdout.isatty():
+        print(Fore.RED + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
+    else:
+        print(f&#34;[PYPANDA] {msg}&#34;)</code></pre>
 </details>
 </dd>
 </dl>

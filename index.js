@@ -1377,13 +1377,13 @@ INDEX=[
 {
 "ref":"pandare.utils.progress",
 "url":3,
-"doc":"Print a message with a green \"[PYPANDA]\" prefix",
+"doc":"Print a message with a green \"[PYPANDA]\" prefix if in a tty otherwise just print the message",
 "func":1
 },
 {
 "ref":"pandare.utils.warn",
 "url":3,
-"doc":"Print a message with a red \"[PYPANDA]\" prefix",
+"doc":"Print a message with a red \"[PYPANDA]\" prefix if in a tty otherwise just print the message",
 "func":1
 },
 {
