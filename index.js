@@ -593,33 +593,39 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Panda.taint_enabled",
+"url":0,
+"doc":"Checks to see if taint2 plugin has been loaded",
+"func":1
+},
+{
 "ref":"pandare.Panda.taint_enable",
 "url":0,
-"doc":"Inform python that taint is enabled.",
+"doc":"Enable taint.",
 "func":1
 },
 {
 "ref":"pandare.Panda.taint_label_reg",
 "url":0,
-"doc":"",
+"doc":"Labels taint register reg_num with label.",
 "func":1
 },
 {
 "ref":"pandare.Panda.taint_label_ram",
 "url":0,
-"doc":"",
+"doc":"Labels ram at address with label.",
 "func":1
 },
 {
 "ref":"pandare.Panda.taint_check_reg",
 "url":0,
-"doc":"",
+"doc":"Checks if register reg_num is tainted. Returns boolean.",
 "func":1
 },
 {
 "ref":"pandare.Panda.taint_check_ram",
 "url":0,
-"doc":"",
+"doc":"returns boolean representing if physical address is tainted.",
 "func":1
 },
 {
@@ -631,19 +637,19 @@ INDEX=[
 {
 "ref":"pandare.Panda.taint_get_ram",
 "url":0,
-"doc":"",
+"doc":"returns array of results, one for each byte in this register None if no taint. QueryResult struct otherwise",
 "func":1
 },
 {
 "ref":"pandare.Panda.taint_check_laddr",
 "url":0,
-"doc":"",
+"doc":"returns boolean result checking if this laddr is tainted",
 "func":1
 },
 {
 "ref":"pandare.Panda.taint_get_laddr",
 "url":0,
-"doc":"",
+"doc":"returns array of results, one for each byte in this laddr None if no taint. QueryResult struct otherwise",
 "func":1
 },
 {
@@ -2660,33 +2666,39 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.panda.Panda.taint_enabled",
+"url":6,
+"doc":"Checks to see if taint2 plugin has been loaded",
+"func":1
+},
+{
 "ref":"pandare.panda.Panda.taint_enable",
 "url":6,
-"doc":"Inform python that taint is enabled.",
+"doc":"Enable taint.",
 "func":1
 },
 {
 "ref":"pandare.panda.Panda.taint_label_reg",
 "url":6,
-"doc":"",
+"doc":"Labels taint register reg_num with label.",
 "func":1
 },
 {
 "ref":"pandare.panda.Panda.taint_label_ram",
 "url":6,
-"doc":"",
+"doc":"Labels ram at address with label.",
 "func":1
 },
 {
 "ref":"pandare.panda.Panda.taint_check_reg",
 "url":6,
-"doc":"",
+"doc":"Checks if register reg_num is tainted. Returns boolean.",
 "func":1
 },
 {
 "ref":"pandare.panda.Panda.taint_check_ram",
 "url":6,
-"doc":"",
+"doc":"returns boolean representing if physical address is tainted.",
 "func":1
 },
 {
@@ -2698,19 +2710,19 @@ INDEX=[
 {
 "ref":"pandare.panda.Panda.taint_get_ram",
 "url":6,
-"doc":"",
+"doc":"returns array of results, one for each byte in this register None if no taint. QueryResult struct otherwise",
 "func":1
 },
 {
 "ref":"pandare.panda.Panda.taint_check_laddr",
 "url":6,
-"doc":"",
+"doc":"returns boolean result checking if this laddr is tainted",
 "func":1
 },
 {
 "ref":"pandare.panda.Panda.taint_get_laddr",
 "url":6,
-"doc":"",
+"doc":"returns array of results, one for each byte in this laddr None if no taint. QueryResult struct otherwise",
 "func":1
 },
 {

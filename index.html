@@ -2259,8 +2259,6 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
         self._initialized_panda = False
         self.disabled_tb_chaining = False
-        self.taint_enabled = False
-        self.taint_sym_enabled = False
         self.named_hooks = {}
         self.hook_list = []
         self.hook_list2 = {}
@@ -2694,6 +2692,10 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         Load a C plugin with no arguments. Deprecated. Use load_plugin
         &#39;&#39;&#39;
         self.load_plugin(name, args={})
+    
+    def _plugin_loaded(self, name):
+        name_c = self.ffi.new(&#34;char[]&#34;, bytes(name, &#34;utf-8&#34;))
+        return self.libpanda.panda_get_plugin_by_name(name_c) != self.ffi.NULL
 
     def load_plugin(self, name, args={}):
         &#39;&#39;&#39;
@@ -3907,71 +3909,65 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.disable_callback(&#34;pyperipheral_write_callback&#34;, forever=True)
             self.pyperipherals_registered_cb = False
         return True
+    
 
     ############## TAINT FUNCTIONS ###############
     # Convenience methods for interacting with the taint subsystem.
-    def taint_enable(self, cont=True):
-        &#34;&#34;&#34;
-        Inform python that taint is enabled.
-        &#34;&#34;&#34;
-        if not self.taint_enabled:
-            progress(&#34;taint not enabled -- enabling&#34;)
-            self.vm_stop()
-            self.load_plugin(&#34;taint2&#34;)
-#            self.queue_main_loop_wait_fn(self.load_plugin, [&#34;taint2&#34;])
-            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_enable_taint, [])
-            if cont:
-                self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
-            self.taint_enabled = True
 
-    # label all bytes in this register.
-    # or at least four of them
+    def taint_enabled(self):
+        &#39;&#39;&#39;
+        Checks to see if taint2 plugin has been loaded
+        &#39;&#39;&#39;
+        return self._plugin_loaded(&#34;taint2&#34;) and self.plugins[&#34;taint2&#34;].taint2_enabled()
+
+    def taint_enable(self):
+        &#39;&#39;&#39;
+        Enable taint.
+        &#39;&#39;&#39;
+        self.plugins[&#34;taint2&#34;].taint2_enable_taint()
+    
+    def _assert_taint_enabled(self):
+        if not self.taint_enabled():
+            raise Exception(&#34;taint2 must be loaded before tainting values&#34;)
+
     def taint_label_reg(self, reg_num, label):
-        self.taint_enable(cont=False)
-        #if debug:
-        #    progress(&#34;taint_reg reg=%d label=%d&#34; % (reg_num, label))
-
-        # XXX must ensure labeling is done in a before_block_invalidate that rets 1
-        #     or some other safe way where the main_loop_wait code will always be run
-        #self.stop()
+        &#39;&#39;&#39;
+        Labels taint register reg_num with label.
+        &#39;&#39;&#39;
+        self._assert_taint_enabled()
         for i in range(self.register_size):
-            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_label_reg, [reg_num, i, label])
-        self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
+            self.plugins[&#34;taint2&#34;].taint2_label_reg(reg_num, i, label)
 
     def taint_label_ram(self, addr, label):
-        self.taint_enable(cont=False)
-        #if debug:
-            #progress(&#34;taint_ram addr=0x%x label=%d&#34; % (addr, label))
+        &#39;&#39;&#39;
+        Labels ram at address with label.
+        &#39;&#39;&#39;
+        self._assert_taint_enabled()
+        self.plugins[&#34;taint2&#34;].taint2_label_ram(addr, label)
 
-        # XXX must ensure labeling is done in a before_block_invalidate that rets 1
-        #     or some other safe way where the main_loop_wait code will always be run
-        #self.stop()
-        self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_label_ram, [addr, label])
-        self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
-
-    # returns true if any bytes in this register have any taint labels
     def taint_check_reg(self, reg_num):
-        if not self.taint_enabled: return False
-#        if debug:
-#            progress(&#34;taint_check_reg %d&#34; % (reg_num))
+        &#39;&#39;&#39;
+        Checks if register reg_num is tainted. Returns boolean.
+        &#39;&#39;&#39;
+        self._assert_taint_enabled()
         for offset in range(self.register_size):
             if self.plugins[&#39;taint2&#39;].taint2_query_reg(reg_num, offset) &gt; 0:
                 return True
+        return False
 
-    # returns true if this physical address is tainted
     def taint_check_ram(self, addr):
-        if not self.taint_enabled: return False
-        if self.plugins[&#39;taint2&#39;].taint2_query_ram(addr) &gt; 0:
-            return True
+        &#39;&#39;&#39;
+        returns boolean representing if physical address is tainted.
+        &#39;&#39;&#39;
+        self._assert_taint_enabled()
+        return self.plugins[&#39;taint2&#39;].taint2_query_ram(addr) &gt; 0
 
     def taint_get_reg(self, reg_num):
         &#39;&#39;&#39;
         Returns array of results, one for each byte in this register
         None if no taint.  QueryResult struct otherwise
         &#39;&#39;&#39;
-        if not self.taint_enabled: return None
-        if debug:
-            progress(&#34;taint_get_reg %d&#34; % (reg_num))
+        self._assert_taint_enabled()
         res = []
         for offset in range(self.register_size):
             if self.plugins[&#39;taint2&#39;].taint2_query_reg(reg_num, offset) &gt; 0:
@@ -3983,10 +3979,12 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                 res.append(None)
         return res
 
-    # returns array of results, one for each byte in this register
-    # None if no taint.  QueryResult struct otherwise
     def taint_get_ram(self, addr):
-        if not self.taint_enabled: return None
+        &#39;&#39;&#39;
+        returns array of results, one for each byte in this register
+        None if no taint.  QueryResult struct otherwise
+        &#39;&#39;&#39;
+        self._assert_taint_enabled()
         if self.plugins[&#39;taint2&#39;].taint2_query_ram(addr) &gt; 0:
             query_res = self.ffi.new(&#34;QueryResult *&#34;)
             self.plugins[&#39;taint2&#39;].taint2_query_ram_full(addr, query_res)
@@ -3995,16 +3993,19 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         else:
             return None
 
-    # returns true if this laddr is tainted
     def taint_check_laddr(self, addr, off):
-        if not self.taint_enabled: return False
-        if self.plugins[&#39;taint2&#39;].taint2_query_laddr(addr, off) &gt; 0:
-            return True
+        &#39;&#39;&#39;
+        returns boolean result checking if this laddr is tainted
+        &#39;&#39;&#39;
+        self._assert_taint_enabled()
+        return self.plugins[&#39;taint2&#39;].taint2_query_laddr(addr, off) &gt; 0
 
-    # returns array of results, one for each byte in this laddr
-    # None if no taint.  QueryResult struct otherwise
     def taint_get_laddr(self, addr, offset):
-        if not self.taint_enabled: return None
+        &#39;&#39;&#39;
+        returns array of results, one for each byte in this laddr
+        None if no taint.  QueryResult struct otherwise
+        &#39;&#39;&#39;
+        self._assert_taint_enabled()
         if self.plugins[&#39;taint2&#39;].taint2_query_laddr(addr, offset) &gt; 0:
             query_res = self.ffi.new(&#34;QueryResult *&#34;)
             self.plugins[&#39;taint2&#39;].taint2_query_laddr_full(addr, offset, query_res)
@@ -4014,43 +4015,31 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             return None
 
     # enables symbolic tracing
-    def taint_sym_enable(self, cont=True):
+    def taint_sym_enable(self):
         &#34;&#34;&#34;
         Inform python that taint is enabled.
         &#34;&#34;&#34;
-        if not self.taint_enabled:
+        if not self.taint_enabled():
+            self.taint_enable()
             progress(&#34;taint symbolic not enabled -- enabling&#34;)
-            self.vm_stop()
-            self.load_plugin(&#34;taint2&#34;)
-#            self.queue_main_loop_wait_fn(self.load_plugin, [&#34;taint2&#34;])
-        if not self.taint_sym_enabled:
-            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_enable_sym, [])
-            if cont:
-                self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
-            self.taint_enabled = True
+        self.plugins[&#34;taint2&#34;].taint2_enable_sym()
+    
+    def _assert_taint_sym_enabled(self):
+        self._assert_taint_enabled()
+        self.plugins[&#39;taint2&#39;].taint2_enable_sym()
 
     def taint_sym_label_ram(self, addr, label):
-        self.taint_sym_enable(cont=False)
-        #if debug:
-            #progress(&#34;taint_ram addr=0x%x label=%d&#34; % (addr, label))
+        self._assert_taint_sym_enabled()
+        self.plugins[&#39;taint2&#39;].taint2_sym_label_ram(addr,label)
 
-        # XXX must ensure labeling is done in a before_block_invalidate that rets 1
-        #     or some other safe way where the main_loop_wait code will always be run
-        #self.stop()
-        self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_ram, [addr, label])
-        self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
-
-    # label all bytes in this register.
-    # or at least four of them
-    # XXX label must increment by panda.register_size after the call
     def taint_sym_label_reg(self, reg_num, label):
-        self.taint_sym_enable(cont=False)
-        # XXX must ensure labeling is done in a before_block_invalidate that rets 1
-        #     or some other safe way where the main_loop_wait code will always be run
-        #self.stop()
+        # label all bytes in this register.
+        # or at least four of them
+        # XXX label must increment by panda.register_size after the call
+        self._assert_taint_sym_enabled()
+        self.taint_sym_enable()
         for i in range(self.register_size):
-            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_reg, [reg_num, i, label+i])
-        self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
+            self.plugins[&#39;taint2&#39;].taint2_sym_label_reg(reg_num, i, label+i)
     
     # Deserialize a z3 solver
     # Lazy import z3. 
@@ -9346,85 +9335,105 @@ Calls sysbus_create_varargs QEMU function.</p>
 <span>def <span class="ident">taint_check_laddr</span></span>(<span>self, addr, off)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns boolean result checking if this laddr is tainted</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def taint_check_laddr(self, addr, off):
-    if not self.taint_enabled: return False
-    if self.plugins[&#39;taint2&#39;].taint2_query_laddr(addr, off) &gt; 0:
-        return True</code></pre>
+    &#39;&#39;&#39;
+    returns boolean result checking if this laddr is tainted
+    &#39;&#39;&#39;
+    self._assert_taint_enabled()
+    return self.plugins[&#39;taint2&#39;].taint2_query_laddr(addr, off) &gt; 0</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_check_ram"><code class="name flex">
 <span>def <span class="ident">taint_check_ram</span></span>(<span>self, addr)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns boolean representing if physical address is tainted.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def taint_check_ram(self, addr):
-    if not self.taint_enabled: return False
-    if self.plugins[&#39;taint2&#39;].taint2_query_ram(addr) &gt; 0:
-        return True</code></pre>
+    &#39;&#39;&#39;
+    returns boolean representing if physical address is tainted.
+    &#39;&#39;&#39;
+    self._assert_taint_enabled()
+    return self.plugins[&#39;taint2&#39;].taint2_query_ram(addr) &gt; 0</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_check_reg"><code class="name flex">
 <span>def <span class="ident">taint_check_reg</span></span>(<span>self, reg_num)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Checks if register reg_num is tainted. Returns boolean.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">    def taint_check_reg(self, reg_num):
-        if not self.taint_enabled: return False
-#        if debug:
-#            progress(&#34;taint_check_reg %d&#34; % (reg_num))
-        for offset in range(self.register_size):
-            if self.plugins[&#39;taint2&#39;].taint2_query_reg(reg_num, offset) &gt; 0:
-                return True</code></pre>
+<pre><code class="python">def taint_check_reg(self, reg_num):
+    &#39;&#39;&#39;
+    Checks if register reg_num is tainted. Returns boolean.
+    &#39;&#39;&#39;
+    self._assert_taint_enabled()
+    for offset in range(self.register_size):
+        if self.plugins[&#39;taint2&#39;].taint2_query_reg(reg_num, offset) &gt; 0:
+            return True
+    return False</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_enable"><code class="name flex">
-<span>def <span class="ident">taint_enable</span></span>(<span>self, cont=True)</span>
+<span>def <span class="ident">taint_enable</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Inform python that taint is enabled.</p></div>
+<div class="desc"><p>Enable taint.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">    def taint_enable(self, cont=True):
-        &#34;&#34;&#34;
-        Inform python that taint is enabled.
-        &#34;&#34;&#34;
-        if not self.taint_enabled:
-            progress(&#34;taint not enabled -- enabling&#34;)
-            self.vm_stop()
-            self.load_plugin(&#34;taint2&#34;)
-#            self.queue_main_loop_wait_fn(self.load_plugin, [&#34;taint2&#34;])
-            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_enable_taint, [])
-            if cont:
-                self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
-            self.taint_enabled = True</code></pre>
+<pre><code class="python">def taint_enable(self):
+    &#39;&#39;&#39;
+    Enable taint.
+    &#39;&#39;&#39;
+    self.plugins[&#34;taint2&#34;].taint2_enable_taint()</code></pre>
+</details>
+</dd>
+<dt id="pandare.Panda.taint_enabled"><code class="name flex">
+<span>def <span class="ident">taint_enabled</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Checks to see if taint2 plugin has been loaded</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def taint_enabled(self):
+    &#39;&#39;&#39;
+    Checks to see if taint2 plugin has been loaded
+    &#39;&#39;&#39;
+    return self._plugin_loaded(&#34;taint2&#34;) and self.plugins[&#34;taint2&#34;].taint2_enabled()</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_get_laddr"><code class="name flex">
 <span>def <span class="ident">taint_get_laddr</span></span>(<span>self, addr, offset)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns array of results, one for each byte in this laddr
+None if no taint.
+QueryResult struct otherwise</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def taint_get_laddr(self, addr, offset):
-    if not self.taint_enabled: return None
+    &#39;&#39;&#39;
+    returns array of results, one for each byte in this laddr
+    None if no taint.  QueryResult struct otherwise
+    &#39;&#39;&#39;
+    self._assert_taint_enabled()
     if self.plugins[&#39;taint2&#39;].taint2_query_laddr(addr, offset) &gt; 0:
         query_res = self.ffi.new(&#34;QueryResult *&#34;)
         self.plugins[&#39;taint2&#39;].taint2_query_laddr_full(addr, offset, query_res)
@@ -9438,13 +9447,19 @@ Calls sysbus_create_varargs QEMU function.</p>
 <span>def <span class="ident">taint_get_ram</span></span>(<span>self, addr)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>returns array of results, one for each byte in this register
+None if no taint.
+QueryResult struct otherwise</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def taint_get_ram(self, addr):
-    if not self.taint_enabled: return None
+    &#39;&#39;&#39;
+    returns array of results, one for each byte in this register
+    None if no taint.  QueryResult struct otherwise
+    &#39;&#39;&#39;
+    self._assert_taint_enabled()
     if self.plugins[&#39;taint2&#39;].taint2_query_ram(addr) &gt; 0:
         query_res = self.ffi.new(&#34;QueryResult *&#34;)
         self.plugins[&#39;taint2&#39;].taint2_query_ram_full(addr, query_res)
@@ -9470,9 +9485,7 @@ QueryResult struct otherwise</p></div>
     Returns array of results, one for each byte in this register
     None if no taint.  QueryResult struct otherwise
     &#39;&#39;&#39;
-    if not self.taint_enabled: return None
-    if debug:
-        progress(&#34;taint_get_reg %d&#34; % (reg_num))
+    self._assert_taint_enabled()
     res = []
     for offset in range(self.register_size):
         if self.plugins[&#39;taint2&#39;].taint2_query_reg(reg_num, offset) &gt; 0:
@@ -9489,43 +9502,35 @@ QueryResult struct otherwise</p></div>
 <span>def <span class="ident">taint_label_ram</span></span>(<span>self, addr, label)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Labels ram at address with label.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def taint_label_ram(self, addr, label):
-    self.taint_enable(cont=False)
-    #if debug:
-        #progress(&#34;taint_ram addr=0x%x label=%d&#34; % (addr, label))
-
-    # XXX must ensure labeling is done in a before_block_invalidate that rets 1
-    #     or some other safe way where the main_loop_wait code will always be run
-    #self.stop()
-    self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_label_ram, [addr, label])
-    self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
+    &#39;&#39;&#39;
+    Labels ram at address with label.
+    &#39;&#39;&#39;
+    self._assert_taint_enabled()
+    self.plugins[&#34;taint2&#34;].taint2_label_ram(addr, label)</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_label_reg"><code class="name flex">
 <span>def <span class="ident">taint_label_reg</span></span>(<span>self, reg_num, label)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Labels taint register reg_num with label.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def taint_label_reg(self, reg_num, label):
-    self.taint_enable(cont=False)
-    #if debug:
-    #    progress(&#34;taint_reg reg=%d label=%d&#34; % (reg_num, label))
-
-    # XXX must ensure labeling is done in a before_block_invalidate that rets 1
-    #     or some other safe way where the main_loop_wait code will always be run
-    #self.stop()
+    &#39;&#39;&#39;
+    Labels taint register reg_num with label.
+    &#39;&#39;&#39;
+    self._assert_taint_enabled()
     for i in range(self.register_size):
-        self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_label_reg, [reg_num, i, label])
-    self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
+        self.plugins[&#34;taint2&#34;].taint2_label_reg(reg_num, i, label)</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_sym_branch_meta"><code class="name flex">
@@ -9557,7 +9562,7 @@ QueryResult struct otherwise</p></div>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_sym_enable"><code class="name flex">
-<span>def <span class="ident">taint_sym_enable</span></span>(<span>self, cont=True)</span>
+<span>def <span class="ident">taint_sym_enable</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Inform python that taint is enabled.</p></div>
@@ -9565,20 +9570,14 @@ QueryResult struct otherwise</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">    def taint_sym_enable(self, cont=True):
-        &#34;&#34;&#34;
-        Inform python that taint is enabled.
-        &#34;&#34;&#34;
-        if not self.taint_enabled:
-            progress(&#34;taint symbolic not enabled -- enabling&#34;)
-            self.vm_stop()
-            self.load_plugin(&#34;taint2&#34;)
-#            self.queue_main_loop_wait_fn(self.load_plugin, [&#34;taint2&#34;])
-        if not self.taint_sym_enabled:
-            self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_enable_sym, [])
-            if cont:
-                self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])
-            self.taint_enabled = True</code></pre>
+<pre><code class="python">def taint_sym_enable(self):
+    &#34;&#34;&#34;
+    Inform python that taint is enabled.
+    &#34;&#34;&#34;
+    if not self.taint_enabled():
+        self.taint_enable()
+        progress(&#34;taint symbolic not enabled -- enabling&#34;)
+    self.plugins[&#34;taint2&#34;].taint2_enable_sym()</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_sym_label_ram"><code class="name flex">
@@ -9591,15 +9590,8 @@ QueryResult struct otherwise</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def taint_sym_label_ram(self, addr, label):
-    self.taint_sym_enable(cont=False)
-    #if debug:
-        #progress(&#34;taint_ram addr=0x%x label=%d&#34; % (addr, label))
-
-    # XXX must ensure labeling is done in a before_block_invalidate that rets 1
-    #     or some other safe way where the main_loop_wait code will always be run
-    #self.stop()
-    self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_ram, [addr, label])
-    self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
+    self._assert_taint_sym_enabled()
+    self.plugins[&#39;taint2&#39;].taint2_sym_label_ram(addr,label)</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_sym_label_reg"><code class="name flex">
@@ -9612,13 +9604,13 @@ QueryResult struct otherwise</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def taint_sym_label_reg(self, reg_num, label):
-    self.taint_sym_enable(cont=False)
-    # XXX must ensure labeling is done in a before_block_invalidate that rets 1
-    #     or some other safe way where the main_loop_wait code will always be run
-    #self.stop()
+    # label all bytes in this register.
+    # or at least four of them
+    # XXX label must increment by panda.register_size after the call
+    self._assert_taint_sym_enabled()
+    self.taint_sym_enable()
     for i in range(self.register_size):
-        self.queue_main_loop_wait_fn(self.plugins[&#39;taint2&#39;].taint2_sym_label_reg, [reg_num, i, label+i])
-    self.queue_main_loop_wait_fn(self.libpanda.panda_cont, [])</code></pre>
+        self.plugins[&#39;taint2&#39;].taint2_sym_label_reg(reg_num, i, label+i)</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.taint_sym_path_constraints"><code class="name flex">
@@ -10678,6 +10670,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.Panda.taint_check_ram" href="#pandare.Panda.taint_check_ram">taint_check_ram</a></code></li>
 <li><code><a title="pandare.Panda.taint_check_reg" href="#pandare.Panda.taint_check_reg">taint_check_reg</a></code></li>
 <li><code><a title="pandare.Panda.taint_enable" href="#pandare.Panda.taint_enable">taint_enable</a></code></li>
+<li><code><a title="pandare.Panda.taint_enabled" href="#pandare.Panda.taint_enabled">taint_enabled</a></code></li>
 <li><code><a title="pandare.Panda.taint_get_laddr" href="#pandare.Panda.taint_get_laddr">taint_get_laddr</a></code></li>
 <li><code><a title="pandare.Panda.taint_get_ram" href="#pandare.Panda.taint_get_ram">taint_get_ram</a></code></li>
 <li><code><a title="pandare.Panda.taint_get_reg" href="#pandare.Panda.taint_get_reg">taint_get_reg</a></code></li>
