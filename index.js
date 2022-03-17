@@ -353,6 +353,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Panda.get_id",
+"url":0,
+"doc":"Get current hw_proc_id ID Args: cpu (CPUState): CPUState structure Returns: integer: value of current hw_proc_id",
+"func":1
+},
+{
 "ref":"pandare.Panda.disas2",
 "url":0,
 "doc":"Call panda_disas to diasassemble an amount of code at a pointer. FIXME: seem to not match up to PANDA definition",
@@ -2423,6 +2429,12 @@ INDEX=[
 "ref":"pandare.panda.Panda.current_asid",
 "url":6,
 "doc":"Get current Application Specific ID Args: cpu (CPUState): CPUState structure Returns: integer: value of current ASID",
+"func":1
+},
+{
+"ref":"pandare.panda.Panda.get_id",
+"url":6,
+"doc":"Get current hw_proc_id ID Args: cpu (CPUState): CPUState structure Returns: integer: value of current hw_proc_id",
 "func":1
 },
 {

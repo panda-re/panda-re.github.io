@@ -1427,6 +1427,18 @@ class Panda():
             integer: value of current ASID
         &#39;&#39;&#39;
         return self.libpanda.panda_current_asid(cpu)
+    
+    def get_id(self, cpu):
+        &#39;&#39;&#39;
+        Get current hw_proc_id ID
+
+        Args:
+            cpu (CPUState): CPUState structure
+        
+        Returns:
+            integer: value of current hw_proc_id
+        &#39;&#39;&#39;
+        return self.plugins[&#34;hw_proc_id&#34;].get_id(cpu)
 
     def disas2(self, code, size):
         &#39;&#39;&#39;
@@ -4682,6 +4694,18 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             integer: value of current ASID
         &#39;&#39;&#39;
         return self.libpanda.panda_current_asid(cpu)
+    
+    def get_id(self, cpu):
+        &#39;&#39;&#39;
+        Get current hw_proc_id ID
+
+        Args:
+            cpu (CPUState): CPUState structure
+        
+        Returns:
+            integer: value of current hw_proc_id
+        &#39;&#39;&#39;
+        return self.plugins[&#34;hw_proc_id&#34;].get_id(cpu)
 
     def disas2(self, code, size):
         &#39;&#39;&#39;
@@ -7976,6 +8000,38 @@ XXX: You rarely want this</p>
         CPUState: cpu
     &#39;&#39;&#39;
     return self.libpanda.get_cpu()</code></pre>
+</details>
+</dd>
+<dt id="pandare.panda.Panda.get_id"><code class="name flex">
+<span>def <span class="ident">get_id</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get current hw_proc_id ID</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cpu</code></strong> :&ensp;<code>CPUState</code></dt>
+<dd>CPUState structure</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>integer</code></dt>
+<dd>value of current hw_proc_id</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_id(self, cpu):
+    &#39;&#39;&#39;
+    Get current hw_proc_id ID
+
+    Args:
+        cpu (CPUState): CPUState structure
+    
+    Returns:
+        integer: value of current hw_proc_id
+    &#39;&#39;&#39;
+    return self.plugins[&#34;hw_proc_id&#34;].get_id(cpu)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.get_mappings"><code class="name flex">
@@ -11501,6 +11557,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.panda.Panda.garray_len" href="#pandare.panda.Panda.garray_len">garray_len</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_best_matching_symbol" href="#pandare.panda.Panda.get_best_matching_symbol">get_best_matching_symbol</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_cpu" href="#pandare.panda.Panda.get_cpu">get_cpu</a></code></li>
+<li><code><a title="pandare.panda.Panda.get_id" href="#pandare.panda.Panda.get_id">get_id</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_mappings" href="#pandare.panda.Panda.get_mappings">get_mappings</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_process_name" href="#pandare.panda.Panda.get_process_name">get_process_name</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_processes" href="#pandare.panda.Panda.get_processes">get_processes</a></code></li>
