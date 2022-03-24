@@ -2251,6 +2251,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
         # Callbacks
         self.register_cb_decorators()
+        self.plugin_register_count = 0
         self.registered_callbacks = {} # name -&gt; {procname: &#34;bash&#34;, enabled: False, callback: None}
 
         # Register asid_changed CB if and only if a callback requires procname
@@ -4720,7 +4721,8 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         cb = self.callback_dictionary[callback]
 
         # Generate a unique handle for each callback type using the number of previously registered CBs of that type added to a constant
-        handle = self.ffi.cast(&#39;void *&#39;, 0x8888 + 100*len([x for x in self.registered_callbacks.values() if x[&#39;callback&#39;] == cb]))
+        self.plugin_register_count += 1
+        handle = self.ffi.cast(&#39;void *&#39;, self.plugin_register_count)
 
         # XXX: We should have another layer of indirection here so we can catch
         #      exceptions raised during execution of the CB and abort analysis
@@ -8641,7 +8643,8 @@ def record_cmd(self, guest_command, copy_directory=None, iso_name=None, setup_co
     cb = self.callback_dictionary[callback]
 
     # Generate a unique handle for each callback type using the number of previously registered CBs of that type added to a constant
-    handle = self.ffi.cast(&#39;void *&#39;, 0x8888 + 100*len([x for x in self.registered_callbacks.values() if x[&#39;callback&#39;] == cb]))
+    self.plugin_register_count += 1
+    handle = self.ffi.cast(&#39;void *&#39;, self.plugin_register_count)
 
     # XXX: We should have another layer of indirection here so we can catch
     #      exceptions raised during execution of the CB and abort analysis
