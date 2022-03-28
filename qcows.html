@@ -156,7 +156,6 @@ Module for fetching generic PANDA images and managing their metadata.
 
 import logging
 from os import path, remove, makedirs
-from sys import argv
 from subprocess import check_call
 from collections import namedtuple
 from shlex import split as shlex_split
@@ -461,6 +460,8 @@ class Qcows():
         Returns:
             string: Path to qcow
         &#39;&#39;&#39;
+        from sys import argv
+
         if len(argv) &gt; idx:
             return Qcows.get_qcow(argv[idx])
         else:
@@ -709,6 +710,8 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
         Returns:
             string: Path to qcow
         &#39;&#39;&#39;
+        from sys import argv
+
         if len(argv) &gt; idx:
             return Qcows.get_qcow(argv[idx])
         else:
@@ -940,6 +943,8 @@ def qcow_from_arg(idx=1):
     Returns:
         string: Path to qcow
     &#39;&#39;&#39;
+    from sys import argv
+
     if len(argv) &gt; idx:
         return Qcows.get_qcow(argv[idx])
     else:
