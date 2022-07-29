@@ -299,6 +299,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Panda.break_exec",
+"url":0,
+"doc":"If called from a start block exec callback, will cause the emulation to bail  before executing the rest of the current block.",
+"func":1
+},
+{
 "ref":"pandare.Panda.enable_precise_pc",
 "url":0,
 "doc":"By default, QEMU does not update the program counter after every instruction. This function enables precise tracking of the program counter. After enabling precise PC tracking, the program counter will be available in env->panda_guest_pc and can be assumed to accurately reflect the guest state.",
@@ -2375,6 +2381,12 @@ INDEX=[
 "ref":"pandare.panda.Panda.flush_tb",
 "url":6,
 "doc":"This function requests that the translation block cache be flushed as soon as possible. If running with translation block chaining turned off (e.g. when in LLVM mode or replay mode), this will happen when the current translation block is done executing. Flushing the translation block cache is additionally necessary if the plugin makes changes to the way code is translated. For example, by using panda_enable_precise_pc.",
+"func":1
+},
+{
+"ref":"pandare.panda.Panda.break_exec",
+"url":6,
+"doc":"If called from a start block exec callback, will cause the emulation to bail  before executing the rest of the current block.",
 "func":1
 },
 {

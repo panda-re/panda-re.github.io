@@ -3221,6 +3221,13 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         &#39;&#39;&#39;
         return self.libpanda.panda_do_flush_tb()
 
+    def break_exec(self):
+        &#39;&#39;&#39;
+        If called from a start block exec callback, will cause the emulation to bail *before* executing
+        the rest of the current block.
+        &#39;&#39;&#39;
+        return self.libpanda.panda_do_break_exec()
+
     def enable_precise_pc(self):
         &#39;&#39;&#39;
         By default, QEMU does not update the program counter after every instruction.
@@ -5330,6 +5337,24 @@ def pyplugins(self):
 </summary>
 <pre><code class="python">def arm_load_kernel(self, cpu, bootinfo):
     return self.libpanda.arm_load_kernel(cpu, bootinfo)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Panda.break_exec"><code class="name flex">
+<span>def <span class="ident">break_exec</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>If called from a start block exec callback, will cause the emulation to bail <em>before</em> executing
+the rest of the current block.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def break_exec(self):
+    &#39;&#39;&#39;
+    If called from a start block exec callback, will cause the emulation to bail *before* executing
+    the rest of the current block.
+    &#39;&#39;&#39;
+    return self.libpanda.panda_do_break_exec()</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.callstack_callers"><code class="name flex">
@@ -10586,6 +10611,7 @@ setTimeout(() => input.focus(), 100);
 <ul class="">
 <li><code><a title="pandare.Panda.arch" href="#pandare.Panda.arch">arch</a></code></li>
 <li><code><a title="pandare.Panda.arm_load_kernel" href="#pandare.Panda.arm_load_kernel">arm_load_kernel</a></code></li>
+<li><code><a title="pandare.Panda.break_exec" href="#pandare.Panda.break_exec">break_exec</a></code></li>
 <li><code><a title="pandare.Panda.callstack_callers" href="#pandare.Panda.callstack_callers">callstack_callers</a></code></li>
 <li><code><a title="pandare.Panda.cleanup" href="#pandare.Panda.cleanup">cleanup</a></code></li>
 <li><code><a title="pandare.Panda.clear_breakpoint" href="#pandare.Panda.clear_breakpoint">clear_breakpoint</a></code></li>
