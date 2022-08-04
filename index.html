@@ -3689,6 +3689,17 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         os_name_new = self.ffi.new(&#34;char[]&#34;, bytes(os_name, &#34;utf-8&#34;))
         self.libpanda.panda_set_os_name(os_name_new)
 
+    def get_os_family(self):
+        &#39;&#39;&#39;
+        Get the current OS family name. Valid values are the entries in `OSFamilyEnum`
+
+        Returns:
+            string: one of OS_UNKNOWN, OS_WINDOWS, OS_LINUX, OS_FREEBSD
+        &#39;&#39;&#39;
+
+        family_num = self.libpanda.panda_os_familyno
+        family_name = self.ffi.string(self.ffi.cast(&#34;PandaOsFamily&#34;, family_num))
+        return family_name
 
     def get_mappings(self, cpu):
         &#39;&#39;&#39;
@@ -4362,7 +4373,9 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
     @blocking
     def type_serial_cmd(self, cmd):
         #Can send message into socket without guest running (no self.running.wait())
-        self.serial_console.send(cmd.encode(&#34;utf8&#34;)) # send, not sendline
+        if isinstance(cmd, str):
+            cmd = cmd.encode(&#39;utf8&#39;)
+        self.serial_console.send(cmd) # send, not sendline
 
     def finish_serial_cmd(self):
         result = self.serial_console.send_eol()
@@ -6718,6 +6731,33 @@ XXX: You rarely want this</p>
     maps = self.plugins[&#39;osi&#39;].get_mappings(cpu, current)
     map_len = self.garray_len(maps)
     return GArrayIterator(self.plugins[&#39;osi&#39;].get_one_module, maps, map_len, self.plugins[&#39;osi&#39;].cleanup_garray)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Panda.get_os_family"><code class="name flex">
+<span>def <span class="ident">get_os_family</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the current OS family name. Valid values are the entries in <code>OSFamilyEnum</code></p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>one of OS_UNKNOWN, OS_WINDOWS, OS_LINUX, OS_FREEBSD</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_os_family(self):
+    &#39;&#39;&#39;
+    Get the current OS family name. Valid values are the entries in `OSFamilyEnum`
+
+    Returns:
+        string: one of OS_UNKNOWN, OS_WINDOWS, OS_LINUX, OS_FREEBSD
+    &#39;&#39;&#39;
+
+    family_num = self.libpanda.panda_os_familyno
+    family_name = self.ffi.string(self.ffi.cast(&#34;PandaOsFamily&#34;, family_num))
+    return family_name</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.get_process_name"><code class="name flex">
@@ -9819,7 +9859,9 @@ depending on guest bit-size</p>
 <pre><code class="python">@blocking
 def type_serial_cmd(self, cmd):
     #Can send message into socket without guest running (no self.running.wait())
-    self.serial_console.send(cmd.encode(&#34;utf8&#34;)) # send, not sendline</code></pre>
+    if isinstance(cmd, str):
+        cmd = cmd.encode(&#39;utf8&#39;)
+    self.serial_console.send(cmd) # send, not sendline</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.unload_plugin"><code class="name flex">
@@ -10665,6 +10707,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.Panda.get_cpu" href="#pandare.Panda.get_cpu">get_cpu</a></code></li>
 <li><code><a title="pandare.Panda.get_id" href="#pandare.Panda.get_id">get_id</a></code></li>
 <li><code><a title="pandare.Panda.get_mappings" href="#pandare.Panda.get_mappings">get_mappings</a></code></li>
+<li><code><a title="pandare.Panda.get_os_family" href="#pandare.Panda.get_os_family">get_os_family</a></code></li>
 <li><code><a title="pandare.Panda.get_process_name" href="#pandare.Panda.get_process_name">get_process_name</a></code></li>
 <li><code><a title="pandare.Panda.get_processes" href="#pandare.Panda.get_processes">get_processes</a></code></li>
 <li><code><a title="pandare.Panda.get_processes_dict" href="#pandare.Panda.get_processes_dict">get_processes_dict</a></code></li>

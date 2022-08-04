@@ -591,8 +591,8 @@ class Expect(object):
             self.consumed_first = True
 
         # Newlines will call problems
-        assert len(msg.decode().split(&#34;\n&#34;)) &lt;= 2, &#34;Multiline cmds unsupported&#34;
-        self.last_msg = msg.decode().replace(&#34;\n&#34;, &#34;&#34;)
+        assert len(msg.decode(errors=&#39;ignore&#39;).split(&#34;\n&#34;)) &lt;= 2, &#34;Multiline cmds unsupported&#34;
+        self.last_msg = msg.decode(errors=&#39;ignore&#39;).replace(&#34;\n&#34;, &#34;&#34;)
         os.write(self.fd, msg)
         if self.logfile:
             self.logfile.write(msg)
@@ -1061,8 +1061,8 @@ class Expect(object):
             self.consumed_first = True
 
         # Newlines will call problems
-        assert len(msg.decode().split(&#34;\n&#34;)) &lt;= 2, &#34;Multiline cmds unsupported&#34;
-        self.last_msg = msg.decode().replace(&#34;\n&#34;, &#34;&#34;)
+        assert len(msg.decode(errors=&#39;ignore&#39;).split(&#34;\n&#34;)) &lt;= 2, &#34;Multiline cmds unsupported&#34;
+        self.last_msg = msg.decode(errors=&#39;ignore&#39;).replace(&#34;\n&#34;, &#34;&#34;)
         os.write(self.fd, msg)
         if self.logfile:
             self.logfile.write(msg)
@@ -1296,8 +1296,8 @@ The epxectation value will show up on the start of a line.</p>
         self.consumed_first = True
 
     # Newlines will call problems
-    assert len(msg.decode().split(&#34;\n&#34;)) &lt;= 2, &#34;Multiline cmds unsupported&#34;
-    self.last_msg = msg.decode().replace(&#34;\n&#34;, &#34;&#34;)
+    assert len(msg.decode(errors=&#39;ignore&#39;).split(&#34;\n&#34;)) &lt;= 2, &#34;Multiline cmds unsupported&#34;
+    self.last_msg = msg.decode(errors=&#39;ignore&#39;).replace(&#34;\n&#34;, &#34;&#34;)
     os.write(self.fd, msg)
     if self.logfile:
         self.logfile.write(msg)

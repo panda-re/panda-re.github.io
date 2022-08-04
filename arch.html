@@ -817,6 +817,21 @@ class X86_64Arch(PandaArch):
         &#39;&#39;&#39;
         return cpu.env_ptr.eip
 
+    def get_retval(self, cpu, convention=&#39;default&#39;):
+        &#39;&#39;&#39;
+        Overloaded to support FreeBSD syscall ABI
+        In that ABI, if eflags carry bit is set, an error has occured. To standardize
+        pandare.arch returns across architectures/ABIs, we indicate a failure by returnning
+        -ERRNO.
+        &#39;&#39;&#39;
+
+        error_flip = False
+        if convention == &#39;syscall&#39; and self.panda.get_os_family() == &#39;OS_FREEBSD&#39; and \
+                self.panda.libpanda.cpu_cc_compute_all(cpu.env_ptr, 1) &amp; 1 == 1:
+            error_flip = True
+
+        return super().get_retval(cpu, convention) * (-1 if error_flip else 1)
+
     def set_pc(self, cpu, val):
         &#39;&#39;&#39;
         Overloaded function to set the x86_64 program counter
@@ -2349,6 +2364,21 @@ in the signature here so it can be set by a caller without regard for the guest 
         &#39;&#39;&#39;
         return cpu.env_ptr.eip
 
+    def get_retval(self, cpu, convention=&#39;default&#39;):
+        &#39;&#39;&#39;
+        Overloaded to support FreeBSD syscall ABI
+        In that ABI, if eflags carry bit is set, an error has occured. To standardize
+        pandare.arch returns across architectures/ABIs, we indicate a failure by returnning
+        -ERRNO.
+        &#39;&#39;&#39;
+
+        error_flip = False
+        if convention == &#39;syscall&#39; and self.panda.get_os_family() == &#39;OS_FREEBSD&#39; and \
+                self.panda.libpanda.cpu_cc_compute_all(cpu.env_ptr, 1) &amp; 1 == 1:
+            error_flip = True
+
+        return super().get_retval(cpu, convention) * (-1 if error_flip else 1)
+
     def set_pc(self, cpu, val):
         &#39;&#39;&#39;
         Overloaded function to set the x86_64 program counter
@@ -2437,6 +2467,34 @@ in the signature here so it can be set by a caller without regard for the guest 
     return self.get_retval(cpu)</code></pre>
 </details>
 </dd>
+<dt id="pandare.arch.X86_64Arch.get_retval"><code class="name flex">
+<span>def <span class="ident">get_retval</span></span>(<span>self, cpu, convention='default')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded to support FreeBSD syscall ABI
+In that ABI, if eflags carry bit is set, an error has occured. To standardize
+pandare.arch returns across architectures/ABIs, we indicate a failure by returnning
+-ERRNO.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_retval(self, cpu, convention=&#39;default&#39;):
+    &#39;&#39;&#39;
+    Overloaded to support FreeBSD syscall ABI
+    In that ABI, if eflags carry bit is set, an error has occured. To standardize
+    pandare.arch returns across architectures/ABIs, we indicate a failure by returnning
+    -ERRNO.
+    &#39;&#39;&#39;
+
+    error_flip = False
+    if convention == &#39;syscall&#39; and self.panda.get_os_family() == &#39;OS_FREEBSD&#39; and \
+            self.panda.libpanda.cpu_cc_compute_all(cpu.env_ptr, 1) &amp; 1 == 1:
+        error_flip = True
+
+    return super().get_retval(cpu, convention) * (-1 if error_flip else 1)</code></pre>
+</details>
+</dd>
 <dt id="pandare.arch.X86_64Arch.set_pc"><code class="name flex">
 <span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
 </code></dt>
@@ -2463,7 +2521,6 @@ in the signature here so it can be set by a caller without regard for the guest 
 <li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.get_retval" href="#pandare.arch.PandaArch.get_retval">get_retval</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
@@ -2603,6 +2660,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.arch.X86_64Arch.get_pc" href="#pandare.arch.X86_64Arch.get_pc">get_pc</a></code></li>
 <li><code><a title="pandare.arch.X86_64Arch.get_return_address" href="#pandare.arch.X86_64Arch.get_return_address">get_return_address</a></code></li>
 <li><code><a title="pandare.arch.X86_64Arch.get_return_value" href="#pandare.arch.X86_64Arch.get_return_value">get_return_value</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.get_retval" href="#pandare.arch.X86_64Arch.get_retval">get_retval</a></code></li>
 <li><code><a title="pandare.arch.X86_64Arch.set_pc" href="#pandare.arch.X86_64Arch.set_pc">set_pc</a></code></li>
 </ul>
 </li>

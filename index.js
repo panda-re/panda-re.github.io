@@ -557,6 +557,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Panda.get_os_family",
+"url":0,
+"doc":"Get the current OS family name. Valid values are the entries in  OSFamilyEnum Returns: string: one of OS_UNKNOWN, OS_WINDOWS, OS_LINUX, OS_FREEBSD",
+"func":1
+},
+{
 "ref":"pandare.Panda.get_mappings",
 "url":0,
 "doc":"Get all active memory mappings in the system. Requires: OSI Args: cpu: CPUState struct Returns: pandare.utils.GArrayIterator: iterator of OsiModule structures",
@@ -2028,6 +2034,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.arch.X86_64Arch.get_retval",
+"url":5,
+"doc":"Overloaded to support FreeBSD syscall ABI In that ABI, if eflags carry bit is set, an error has occured. To standardize pandare.arch returns across architectures/ABIs, we indicate a failure by returnning -ERRNO.",
+"func":1
+},
+{
 "ref":"pandare.arch.X86_64Arch.set_pc",
 "url":5,
 "doc":"Overloaded function to set the x86_64 program counter",
@@ -2073,12 +2085,6 @@ INDEX=[
 "ref":"pandare.arch.X86_64Arch.set_retval",
 "url":5,
 "doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. If the given architecture returns failure/success in a second register (i.e., the A3 register for mips), set that according to the failure flag. Note the failure argument only used by subclasses that overload this function. It's provided in the signature here so it can be set by a caller without regard for the guest architecture.",
-"func":1
-},
-{
-"ref":"pandare.arch.X86_64Arch.get_retval",
-"url":5,
-"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. Return value from syscalls is signed",
 "func":1
 },
 {
@@ -2639,6 +2645,12 @@ INDEX=[
 "ref":"pandare.panda.Panda.set_os_name",
 "url":6,
 "doc":"Set OS target. Equivalent to \"-os\" flag on the command line. Matches the form of: \"windows[-_]32[-_]xpsp[23]\", \"windows[-_]32[-_]7\", \"windows[-_]32[-_]2000\", \"linux[-_]32[-_].+\", \"linux[-_]64[-_].+\", Args: os_name (str): Name that matches the format for the os flag. Returns: None",
+"func":1
+},
+{
+"ref":"pandare.panda.Panda.get_os_family",
+"url":6,
+"doc":"Get the current OS family name. Valid values are the entries in  OSFamilyEnum Returns: string: one of OS_UNKNOWN, OS_WINDOWS, OS_LINUX, OS_FREEBSD",
 "func":1
 },
 {
