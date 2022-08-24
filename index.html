@@ -3674,10 +3674,13 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         Set OS target. Equivalent to &#34;-os&#34; flag on the command line. Matches the form of:
 
             &#34;windows[-_]32[-_]xpsp[23]&#34;,
-            &#34;windows[-_]32[-_]7&#34;,
             &#34;windows[-_]32[-_]2000&#34;,
+            &#34;windows[-_]32[-_]7sp[01]&#34;,
+            &#34;windows[-_]64[-_]7sp[01]&#34;,
             &#34;linux[-_]32[-_].+&#34;,
             &#34;linux[-_]64[-_].+&#34;,
+            &#34;freebsd[-_]32[-_].+&#34;,
+            &#34;freebsd[-_]64[-_].+&#34;,
 
             Args:
                 os_name (str): Name that matches the format for the os flag.
@@ -9232,10 +9235,13 @@ GDB instance can introspect on guest memory. Requires starting panda with -s, at
 <dd>
 <div class="desc"><p>Set OS target. Equivalent to "-os" flag on the command line. Matches the form of:</p>
 <pre><code>"windows[-_]32[-_]xpsp[23]",
-"windows[-_]32[-_]7",
 "windows[-_]32[-_]2000",
+"windows[-_]32[-_]7sp[01]",
+"windows[-_]64[-_]7sp[01]",
 "linux[-_]32[-_].+",
 "linux[-_]64[-_].+",
+"freebsd[-_]32[-_].+",
+"freebsd[-_]64[-_].+",
 
 Args:
     os_name (str): Name that matches the format for the os flag.
@@ -9252,10 +9258,13 @@ Returns:
     Set OS target. Equivalent to &#34;-os&#34; flag on the command line. Matches the form of:
 
         &#34;windows[-_]32[-_]xpsp[23]&#34;,
-        &#34;windows[-_]32[-_]7&#34;,
         &#34;windows[-_]32[-_]2000&#34;,
+        &#34;windows[-_]32[-_]7sp[01]&#34;,
+        &#34;windows[-_]64[-_]7sp[01]&#34;,
         &#34;linux[-_]32[-_].+&#34;,
         &#34;linux[-_]64[-_].+&#34;,
+        &#34;freebsd[-_]32[-_].+&#34;,
+        &#34;freebsd[-_]64[-_].+&#34;,
 
         Args:
             os_name (str): Name that matches the format for the os flag.
