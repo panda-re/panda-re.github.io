@@ -449,8 +449,6 @@ class Panda():
 
         self._initialized_panda = True
 
-        
-
     def __main_loop_wait_cb(self):
         &#39;&#39;&#39;
         __main_loop_wait_cb is called at the start of the main cpu loop in qemu.
@@ -469,30 +467,42 @@ class Panda():
             self.end_analysis()
 
     @staticmethod
-    def _find_build_dir(arch_name):
+    def _find_build_dir(arch_name, find_executable=False):
         &#39;&#39;&#39;
-        Find build directory containing ARCH-softmmu/libpanda-ARCH.so and ARCH-softmmu/panda/plugins/
-        1) check relative to file (in the case of installed packages)
+        Find build directory containing:
+                        A: (if not find_executable) ARCH-softmmu/libpanda-ARCH.so and ARCH-softmmu/panda/plugins/
+                        B: (if find_executable) the panda-system-ARCH binary
+        1) Check relative to file (in the case of installed packages)
         2) Check in../ ../../../build/
-        3) raise RuntimeError
+        2) Search path if user is looking for an executable instead of a library
+        3) Raise RuntimeError if we find nothing
+
+        Set find_executable if you want to search for the directory with the
+        panda-system-[arch] binary instead of the libpanda-[arch].so library.
         &#39;&#39;&#39;
-        archs = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;ppc&#39;]
+        arches = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;aarch64&#39;, &#39;ppc&#39;, &#39;mips&#39;, &#39;mipsel&#39;, &#39;mips64&#39;]
+        if arch_name not in arches:
+            raise ValueError(f&#34;Unsupported architecture name: {arch_name}, allowed values are: {arches}&#34;)
         python_package = pjoin(*[dirname(__file__), &#34;data&#34;])
         local_build = realpath(pjoin(dirname(__file__), &#34;../../../../build&#34;))
-        path_end = &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(arch_name)
+        arch_dir = f&#34;{arch_name}-softmmu&#34;
+        file_name = f&#34;panda-system-{arch_name}&#34; if find_executable else \
+                    f&#34;libpanda-{arch_name}.so&#34;
+        pot_paths = [pjoin(python_package, arch_dir), pjoin(local_build, arch_dir)]
 
-        pot_paths = [python_package, local_build]
+        if find_executable and &#39;PATH&#39; in environ:
+            # If we&#39;re looking for the panda executable, also search the user&#39;s path
+            pot_paths.extend(environ.get(&#39;PATH&#39;).split(&#34;:&#34;))
+
         for potential_path in pot_paths:
-            if isfile(pjoin(potential_path, path_end)):
+            if isfile(pjoin(potential_path, file_name)):
                 #print(&#34;Loading libpanda from {}&#34;.format(potential_path))
                 return potential_path
 
         searched_paths = &#34;\n&#34;.join([&#34;\t&#34;+p for p in  pot_paths])
-        raise RuntimeError((&#34;Couldn&#39;t find libpanda-{}.so.\n&#34;
-                            &#34;Did you built PANDA for this architecture?\n&#34;
-                            &#34;Searched paths:\n{}&#34;
-                           ).format(arch_name, searched_paths))
-
+        raise RuntimeError((f&#34;Couldn&#39;t find {file_name}\n&#34;
+                            f&#34;Did you built PANDA for this architecture?\n&#34;
+                            f&#34;Searched for {arch_dir}/{file_name} in:\n{searched_paths}&#34;))
 
     def queue_main_loop_wait_fn(self, fn, args=[]):
         &#39;&#39;&#39;
@@ -3741,8 +3751,6 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
         self._initialized_panda = True
 
-        
-
     def __main_loop_wait_cb(self):
         &#39;&#39;&#39;
         __main_loop_wait_cb is called at the start of the main cpu loop in qemu.
@@ -3761,30 +3769,42 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.end_analysis()
 
     @staticmethod
-    def _find_build_dir(arch_name):
+    def _find_build_dir(arch_name, find_executable=False):
         &#39;&#39;&#39;
-        Find build directory containing ARCH-softmmu/libpanda-ARCH.so and ARCH-softmmu/panda/plugins/
-        1) check relative to file (in the case of installed packages)
+        Find build directory containing:
+                        A: (if not find_executable) ARCH-softmmu/libpanda-ARCH.so and ARCH-softmmu/panda/plugins/
+                        B: (if find_executable) the panda-system-ARCH binary
+        1) Check relative to file (in the case of installed packages)
         2) Check in../ ../../../build/
-        3) raise RuntimeError
+        2) Search path if user is looking for an executable instead of a library
+        3) Raise RuntimeError if we find nothing
+
+        Set find_executable if you want to search for the directory with the
+        panda-system-[arch] binary instead of the libpanda-[arch].so library.
         &#39;&#39;&#39;
-        archs = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;ppc&#39;]
+        arches = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;aarch64&#39;, &#39;ppc&#39;, &#39;mips&#39;, &#39;mipsel&#39;, &#39;mips64&#39;]
+        if arch_name not in arches:
+            raise ValueError(f&#34;Unsupported architecture name: {arch_name}, allowed values are: {arches}&#34;)
         python_package = pjoin(*[dirname(__file__), &#34;data&#34;])
         local_build = realpath(pjoin(dirname(__file__), &#34;../../../../build&#34;))
-        path_end = &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(arch_name)
+        arch_dir = f&#34;{arch_name}-softmmu&#34;
+        file_name = f&#34;panda-system-{arch_name}&#34; if find_executable else \
+                    f&#34;libpanda-{arch_name}.so&#34;
+        pot_paths = [pjoin(python_package, arch_dir), pjoin(local_build, arch_dir)]
 
-        pot_paths = [python_package, local_build]
+        if find_executable and &#39;PATH&#39; in environ:
+            # If we&#39;re looking for the panda executable, also search the user&#39;s path
+            pot_paths.extend(environ.get(&#39;PATH&#39;).split(&#34;:&#34;))
+
         for potential_path in pot_paths:
-            if isfile(pjoin(potential_path, path_end)):
+            if isfile(pjoin(potential_path, file_name)):
                 #print(&#34;Loading libpanda from {}&#34;.format(potential_path))
                 return potential_path
 
         searched_paths = &#34;\n&#34;.join([&#34;\t&#34;+p for p in  pot_paths])
-        raise RuntimeError((&#34;Couldn&#39;t find libpanda-{}.so.\n&#34;
-                            &#34;Did you built PANDA for this architecture?\n&#34;
-                            &#34;Searched paths:\n{}&#34;
-                           ).format(arch_name, searched_paths))
-
+        raise RuntimeError((f&#34;Couldn&#39;t find {file_name}\n&#34;
+                            f&#34;Did you built PANDA for this architecture?\n&#34;
+                            f&#34;Searched for {arch_dir}/{file_name} in:\n{searched_paths}&#34;))
 
     def queue_main_loop_wait_fn(self, fn, args=[]):
         &#39;&#39;&#39;

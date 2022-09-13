@@ -470,13 +470,15 @@ class Qcows():
     @staticmethod
     def cli(target):
         from .panda import Panda
+        from os import environ
         q = Qcows.get_qcow_info(target)
         qcow = Qcows.get_qcow(target)
         arch = q.arch
-        build_dir = Panda._find_build_dir(arch)
+        build_dir = Panda._find_build_dir(arch, find_executable=True)
         panda_args = [build_dir + f&#34;/{arch}-softmmu/panda-system-{arch}&#34;]
         biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
         panda_args.extend([&#34;-L&#34;, biospath])
+        panda_args.extend([&#34;-os&#34;, q.os])
 
         if arch == &#39;mips64&#39;:
             panda_args.extend([&#34;-drive&#34;, f&#34;file={qcow},if=virtio&#34;])
@@ -499,6 +501,10 @@ class Qcows():
 
         if &#34;-display none&#34; in ret:
             ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
+
+        # Repalce /home/username with ~ when we can
+        if &#39;HOME&#39; in environ:
+            ret = ret.replace(environ[&#39;HOME&#39;], &#39;~&#39;)
         return ret
 
 if __name__ == &#34;__main__&#34;:
@@ -720,13 +726,15 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
     @staticmethod
     def cli(target):
         from .panda import Panda
+        from os import environ
         q = Qcows.get_qcow_info(target)
         qcow = Qcows.get_qcow(target)
         arch = q.arch
-        build_dir = Panda._find_build_dir(arch)
+        build_dir = Panda._find_build_dir(arch, find_executable=True)
         panda_args = [build_dir + f&#34;/{arch}-softmmu/panda-system-{arch}&#34;]
         biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
         panda_args.extend([&#34;-L&#34;, biospath])
+        panda_args.extend([&#34;-os&#34;, q.os])
 
         if arch == &#39;mips64&#39;:
             panda_args.extend([&#34;-drive&#34;, f&#34;file={qcow},if=virtio&#34;])
@@ -749,6 +757,10 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
 
         if &#34;-display none&#34; in ret:
             ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
+
+        # Repalce /home/username with ~ when we can
+        if &#39;HOME&#39; in environ:
+            ret = ret.replace(environ[&#39;HOME&#39;], &#39;~&#39;)
         return ret</code></pre>
 </details>
 <h3>Static methods</h3>
@@ -765,13 +777,15 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
 <pre><code class="python">@staticmethod
 def cli(target):
     from .panda import Panda
+    from os import environ
     q = Qcows.get_qcow_info(target)
     qcow = Qcows.get_qcow(target)
     arch = q.arch
-    build_dir = Panda._find_build_dir(arch)
+    build_dir = Panda._find_build_dir(arch, find_executable=True)
     panda_args = [build_dir + f&#34;/{arch}-softmmu/panda-system-{arch}&#34;]
     biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
     panda_args.extend([&#34;-L&#34;, biospath])
+    panda_args.extend([&#34;-os&#34;, q.os])
 
     if arch == &#39;mips64&#39;:
         panda_args.extend([&#34;-drive&#34;, f&#34;file={qcow},if=virtio&#34;])
@@ -794,6 +808,10 @@ def cli(target):
 
     if &#34;-display none&#34; in ret:
         ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
+
+    # Repalce /home/username with ~ when we can
+    if &#39;HOME&#39; in environ:
+        ret = ret.replace(environ[&#39;HOME&#39;], &#39;~&#39;)
     return ret</code></pre>
 </details>
 </dd>
