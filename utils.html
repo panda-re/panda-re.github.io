@@ -314,8 +314,11 @@ def _find_build_dir(arch_name, find_executable=False):
 
     for potential_path in pot_paths:
         if isfile(pjoin(potential_path, file_name)):
-            # potential_path may contain [arch]-softmmu, if so remove it
-            potential_path = potential_path.replace(arch_dir, &#34;&#34;)
+            if not find_executable:
+                # potential_path may contain [arch]-softmmu/ which
+                # we shouldn&#39;t return unless we&#39;re looking for an executable&#39;s
+                # build dir
+                potential_path = potential_path.replace(arch_dir, &#34;&#34;)
             return potential_path
 
     searched_paths = &#34;\n&#34;.join([&#34;\t&#34;+p for p in  pot_paths])
@@ -326,9 +329,10 @@ def _find_build_dir(arch_name, find_executable=False):
 
 def find_build_dir(arch_name=None, find_executable=False):
     &#39;&#39;&#39;
-    Find build directory (i.e., ~git/panda/build) containing the binaries we care about. If
+    Find directory containing the binaries we care about (i.e., ~git/panda/build). If
     find_executable is False, we&#39;re looking for [arch]-softmmu/libpanda-[arch].so. If
-    find_executable is True, we&#39;re looking for [arch]-softmmu/panda-system-[arhc]
+    find_executable is True, we&#39;re looking for [arch]-softmmu/panda-system-[arch] and we&#39;ll return
+    the parent dir of the executable (i.e., ~/git/panda/build/x86_64-softmmu/)
 
     We do this by searching paths in the following order:
         1) Check relative to file (in the case of installed packages)
@@ -389,9 +393,10 @@ def find_build_dir(arch_name=None, find_executable=False):
 <span>def <span class="ident">find_build_dir</span></span>(<span>arch_name=None, find_executable=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Find build directory (i.e., ~git/panda/build) containing the binaries we care about. If
+<div class="desc"><p>Find directory containing the binaries we care about (i.e., ~git/panda/build). If
 find_executable is False, we're looking for [arch]-softmmu/libpanda-[arch].so. If
-find_executable is True, we're looking for [arch]-softmmu/panda-system-[arhc]</p>
+find_executable is True, we're looking for [arch]-softmmu/panda-system-[arch] and we'll return
+the parent dir of the executable (i.e., ~/git/panda/build/x86_64-softmmu/)</p>
 <p>We do this by searching paths in the following order:
 1) Check relative to file (in the case of installed packages)
 2) Check in../ ../../../build/
@@ -405,9 +410,10 @@ one we find.</p></div>
 </summary>
 <pre><code class="python">def find_build_dir(arch_name=None, find_executable=False):
     &#39;&#39;&#39;
-    Find build directory (i.e., ~git/panda/build) containing the binaries we care about. If
+    Find directory containing the binaries we care about (i.e., ~git/panda/build). If
     find_executable is False, we&#39;re looking for [arch]-softmmu/libpanda-[arch].so. If
-    find_executable is True, we&#39;re looking for [arch]-softmmu/panda-system-[arhc]
+    find_executable is True, we&#39;re looking for [arch]-softmmu/panda-system-[arch] and we&#39;ll return
+    the parent dir of the executable (i.e., ~/git/panda/build/x86_64-softmmu/)
 
     We do this by searching paths in the following order:
         1) Check relative to file (in the case of installed packages)

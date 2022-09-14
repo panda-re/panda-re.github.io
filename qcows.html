@@ -226,8 +226,8 @@ class Qcows_cli():
         # But if they just want to download/delete files and we find another arch
         # we can fetch/delete the files print a warning about how the generatd command won&#39;t work.
 
-        build_dir = Qcows_cli._find_build_dir(arch)
-        panda_args = [path.join(build_dir, f&#34;{arch}-softmmu/panda-system-{arch}&#34;)]
+        build_dir = Qcows_cli._find_build_dir(arch) # will set find_executable
+        panda_args = [path.join(build_dir, f&#34;panda-system-{arch}&#34;)]
         biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
         panda_args.extend([&#34;-L&#34;, biospath])
         panda_args.extend([&#34;-os&#34;, q.os])
@@ -359,8 +359,8 @@ if __name__ == &#34;__main__&#34;:
         # But if they just want to download/delete files and we find another arch
         # we can fetch/delete the files print a warning about how the generatd command won&#39;t work.
 
-        build_dir = Qcows_cli._find_build_dir(arch)
-        panda_args = [path.join(build_dir, f&#34;{arch}-softmmu/panda-system-{arch}&#34;)]
+        build_dir = Qcows_cli._find_build_dir(arch) # will set find_executable
+        panda_args = [path.join(build_dir, f&#34;panda-system-{arch}&#34;)]
         biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
         panda_args.extend([&#34;-L&#34;, biospath])
         panda_args.extend([&#34;-os&#34;, q.os])
@@ -412,8 +412,8 @@ def cli(target):
     # But if they just want to download/delete files and we find another arch
     # we can fetch/delete the files print a warning about how the generatd command won&#39;t work.
 
-    build_dir = Qcows_cli._find_build_dir(arch)
-    panda_args = [path.join(build_dir, f&#34;{arch}-softmmu/panda-system-{arch}&#34;)]
+    build_dir = Qcows_cli._find_build_dir(arch) # will set find_executable
+    panda_args = [path.join(build_dir, f&#34;panda-system-{arch}&#34;)]
     biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
     panda_args.extend([&#34;-L&#34;, biospath])
     panda_args.extend([&#34;-os&#34;, q.os])

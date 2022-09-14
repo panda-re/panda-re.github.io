@@ -1442,7 +1442,7 @@ INDEX=[
 {
 "ref":"pandare.utils.find_build_dir",
 "url":3,
-"doc":"Find build directory (i.e., ~git/panda/build) containing the binaries we care about. If find_executable is False, we're looking for [arch]-softmmu/libpanda-[arch].so. If find_executable is True, we're looking for [arch]-softmmu/panda-system-[arhc] We do this by searching paths in the following order: 1) Check relative to file (in the case of installed packages) 2) Check in /  / / /build/ 2) Search path if user is looking for an executable instead of a library 3) Raise RuntimeError if we find nothing If arch_name is none, we'll search for any supported architecture and return the first one we find.",
+"doc":"Find directory containing the binaries we care about (i.e., ~git/panda/build). If find_executable is False, we're looking for [arch]-softmmu/libpanda-[arch].so. If find_executable is True, we're looking for [arch]-softmmu/panda-system-[arch] and we'll return the parent dir of the executable (i.e., ~/git/panda/build/x86_64-softmmu/) We do this by searching paths in the following order: 1) Check relative to file (in the case of installed packages) 2) Check in /  / / /build/ 2) Search path if user is looking for an executable instead of a library 3) Raise RuntimeError if we find nothing If arch_name is none, we'll search for any supported architecture and return the first one we find.",
 "func":1
 },
 {
