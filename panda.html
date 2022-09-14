@@ -183,11 +183,11 @@ from shlex import quote as shlex_quote, split as shlex_split
 from time import sleep
 from cffi import FFI
 
-from .utils import progress, warn, make_iso, debug, blocking, GArrayIterator, plugin_list
+from .utils import progress, warn, make_iso, debug, blocking, GArrayIterator, plugin_list, find_build_dir
 from .taint import TaintQuery
 from .panda_expect import Expect
 from .asyncthread import AsyncThread
-from .qcows import Qcows
+from .qcows_internal import Qcows
 from .qemu_logging import QEMU_Log_Manager
 from .arch import ArmArch, Aarch64Arch, MipsArch, Mips64Arch, X86Arch, X86_64Arch
 
@@ -297,7 +297,7 @@ class Panda():
             raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
         self.bits, self.endianness, self.register_size = self.arch._determine_bits()
 
-        self.build_dir  = self._find_build_dir(self.arch_name)
+        self.build_dir  = find_build_dir(self.arch_name)
         environ[&#34;PANDA_DIR&#34;] = self.build_dir
 
         if libpanda_path:
@@ -465,44 +465,6 @@ class Panda():
             self.main_loop_wait_fnargs = []
         except KeyboardInterrupt:
             self.end_analysis()
-
-    @staticmethod
-    def _find_build_dir(arch_name, find_executable=False):
-        &#39;&#39;&#39;
-        Find build directory containing:
-                        A: (if not find_executable) ARCH-softmmu/libpanda-ARCH.so and ARCH-softmmu/panda/plugins/
-                        B: (if find_executable) the panda-system-ARCH binary
-        1) Check relative to file (in the case of installed packages)
-        2) Check in../ ../../../build/
-        2) Search path if user is looking for an executable instead of a library
-        3) Raise RuntimeError if we find nothing
-
-        Set find_executable if you want to search for the directory with the
-        panda-system-[arch] binary instead of the libpanda-[arch].so library.
-        &#39;&#39;&#39;
-        arches = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;aarch64&#39;, &#39;ppc&#39;, &#39;mips&#39;, &#39;mipsel&#39;, &#39;mips64&#39;]
-        if arch_name not in arches:
-            raise ValueError(f&#34;Unsupported architecture name: {arch_name}, allowed values are: {arches}&#34;)
-        python_package = pjoin(*[dirname(__file__), &#34;data&#34;])
-        local_build = realpath(pjoin(dirname(__file__), &#34;../../../../build&#34;))
-        arch_dir = f&#34;{arch_name}-softmmu&#34;
-        file_name = f&#34;panda-system-{arch_name}&#34; if find_executable else \
-                    f&#34;libpanda-{arch_name}.so&#34;
-        pot_paths = [pjoin(python_package, arch_dir), pjoin(local_build, arch_dir)]
-
-        if find_executable and &#39;PATH&#39; in environ:
-            # If we&#39;re looking for the panda executable, also search the user&#39;s path
-            pot_paths.extend(environ.get(&#39;PATH&#39;).split(&#34;:&#34;))
-
-        for potential_path in pot_paths:
-            if isfile(pjoin(potential_path, file_name)):
-                #print(&#34;Loading libpanda from {}&#34;.format(potential_path))
-                return potential_path
-
-        searched_paths = &#34;\n&#34;.join([&#34;\t&#34;+p for p in  pot_paths])
-        raise RuntimeError((f&#34;Couldn&#39;t find {file_name}\n&#34;
-                            f&#34;Did you built PANDA for this architecture?\n&#34;
-                            f&#34;Searched for {arch_dir}/{file_name} in:\n{searched_paths}&#34;))
 
     def queue_main_loop_wait_fn(self, fn, args=[]):
         &#39;&#39;&#39;
@@ -3462,7 +3424,7 @@ Note that multiple Panda objects cannot coexist in the same Python instance.</p>
 <dt><strong><code>arch</code></strong></dt>
 <dd>architecture string (e.g. "i386", "x86_64", "arm", "mips", "mipsel")</dd>
 <dt><strong><code>generic</code></strong></dt>
-<dd>specify a generic qcow to use from <code><a title="pandare.qcows.SUPPORTED_IMAGES" href="qcows.html#pandare.qcows.SUPPORTED_IMAGES">SUPPORTED_IMAGES</a></code> and set all subsequent arguments. Will automatically download qcow if necessary.</dd>
+<dd>specify a generic qcow to use from <code>pandare.qcows.SUPPORTED_IMAGES</code> and set all subsequent arguments. Will automatically download qcow if necessary.</dd>
 <dt><strong><code>mem</code></strong></dt>
 <dd>size of memory for machine (e.g. "128M", "1G")</dd>
 <dt><strong><code>expect_prompt</code></strong></dt>
@@ -3599,7 +3561,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
         self.bits, self.endianness, self.register_size = self.arch._determine_bits()
 
-        self.build_dir  = self._find_build_dir(self.arch_name)
+        self.build_dir  = find_build_dir(self.arch_name)
         environ[&#34;PANDA_DIR&#34;] = self.build_dir
 
         if libpanda_path:
@@ -3767,44 +3729,6 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.main_loop_wait_fnargs = []
         except KeyboardInterrupt:
             self.end_analysis()
-
-    @staticmethod
-    def _find_build_dir(arch_name, find_executable=False):
-        &#39;&#39;&#39;
-        Find build directory containing:
-                        A: (if not find_executable) ARCH-softmmu/libpanda-ARCH.so and ARCH-softmmu/panda/plugins/
-                        B: (if find_executable) the panda-system-ARCH binary
-        1) Check relative to file (in the case of installed packages)
-        2) Check in../ ../../../build/
-        2) Search path if user is looking for an executable instead of a library
-        3) Raise RuntimeError if we find nothing
-
-        Set find_executable if you want to search for the directory with the
-        panda-system-[arch] binary instead of the libpanda-[arch].so library.
-        &#39;&#39;&#39;
-        arches = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;aarch64&#39;, &#39;ppc&#39;, &#39;mips&#39;, &#39;mipsel&#39;, &#39;mips64&#39;]
-        if arch_name not in arches:
-            raise ValueError(f&#34;Unsupported architecture name: {arch_name}, allowed values are: {arches}&#34;)
-        python_package = pjoin(*[dirname(__file__), &#34;data&#34;])
-        local_build = realpath(pjoin(dirname(__file__), &#34;../../../../build&#34;))
-        arch_dir = f&#34;{arch_name}-softmmu&#34;
-        file_name = f&#34;panda-system-{arch_name}&#34; if find_executable else \
-                    f&#34;libpanda-{arch_name}.so&#34;
-        pot_paths = [pjoin(python_package, arch_dir), pjoin(local_build, arch_dir)]
-
-        if find_executable and &#39;PATH&#39; in environ:
-            # If we&#39;re looking for the panda executable, also search the user&#39;s path
-            pot_paths.extend(environ.get(&#39;PATH&#39;).split(&#34;:&#34;))
-
-        for potential_path in pot_paths:
-            if isfile(pjoin(potential_path, file_name)):
-                #print(&#34;Loading libpanda from {}&#34;.format(potential_path))
-                return potential_path
-
-        searched_paths = &#34;\n&#34;.join([&#34;\t&#34;+p for p in  pot_paths])
-        raise RuntimeError((f&#34;Couldn&#39;t find {file_name}\n&#34;
-                            f&#34;Did you built PANDA for this architecture?\n&#34;
-                            f&#34;Searched for {arch_dir}/{file_name} in:\n{searched_paths}&#34;))
 
     def queue_main_loop_wait_fn(self, fn, args=[]):
         &#39;&#39;&#39;

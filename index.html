@@ -188,7 +188,7 @@ print(&quot;Finished. Saw a total of {} basic blocks during execution&quot;.form
 <h1 id="usage">Usage</h1>
 <h2 id="create-an-instance-of-panda">Create an instance of Panda</h2>
 <p>The <code><a title="pandare.Panda" href="#pandare.Panda">Panda</a></code> class takes many arguments, but the only crucial argument is a
-specificed qcow image. If you wish to get started quickly you may use the <code><a title="pandare.qcows.Qcows" href="qcows.html#pandare.qcows.Qcows">Qcows</a></code> module
+specificed qcow image. If you wish to get started quickly you may use the <code>pandare.qcows.Qcows</code> module
 to automatically download a pre-configured virtual machine for you to use.</p>
 <p>For example: <code>panda = Panda(generic='i386')</code></p>
 <h2 id="register-a-callback">Register a callback</h2>
@@ -473,6 +473,11 @@ this is done by passing a handle from your script's PANDA object …</p></div>
 <div class="desc"><p>Class to manage loading Panda PyPlugins. See docs/pyplugins.md for details.</p></div>
 </dd>
 <dt><code class="name"><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></dt>
+<dd>
+<div class="desc"><p>Module to simplify PANDA command line usage. Use python3 -m pandare.qcows to
+fetch files necessary to run various generic VMs and generate command …</p></div>
+</dd>
+<dt><code class="name"><a title="pandare.qcows_internal" href="qcows_internal.html">pandare.qcows_internal</a></code></dt>
 <dd>
 <div class="desc"><p>Module for fetching generic PANDA images and managing their metadata.</p></div>
 </dd>
@@ -2048,7 +2053,7 @@ Note that multiple Panda objects cannot coexist in the same Python instance.</p>
 <dt><strong><code>arch</code></strong></dt>
 <dd>architecture string (e.g. "i386", "x86_64", "arm", "mips", "mipsel")</dd>
 <dt><strong><code>generic</code></strong></dt>
-<dd>specify a generic qcow to use from <code><a title="pandare.qcows.SUPPORTED_IMAGES" href="qcows.html#pandare.qcows.SUPPORTED_IMAGES">SUPPORTED_IMAGES</a></code> and set all subsequent arguments. Will automatically download qcow if necessary.</dd>
+<dd>specify a generic qcow to use from <code>pandare.qcows.SUPPORTED_IMAGES</code> and set all subsequent arguments. Will automatically download qcow if necessary.</dd>
 <dt><strong><code>mem</code></strong></dt>
 <dd>size of memory for machine (e.g. "128M", "1G")</dd>
 <dt><strong><code>expect_prompt</code></strong></dt>
@@ -2185,7 +2190,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
         self.bits, self.endianness, self.register_size = self.arch._determine_bits()
 
-        self.build_dir  = self._find_build_dir(self.arch_name)
+        self.build_dir  = find_build_dir(self.arch_name)
         environ[&#34;PANDA_DIR&#34;] = self.build_dir
 
         if libpanda_path:
@@ -2353,44 +2358,6 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.main_loop_wait_fnargs = []
         except KeyboardInterrupt:
             self.end_analysis()
-
-    @staticmethod
-    def _find_build_dir(arch_name, find_executable=False):
-        &#39;&#39;&#39;
-        Find build directory containing:
-                        A: (if not find_executable) ARCH-softmmu/libpanda-ARCH.so and ARCH-softmmu/panda/plugins/
-                        B: (if find_executable) the panda-system-ARCH binary
-        1) Check relative to file (in the case of installed packages)
-        2) Check in../ ../../../build/
-        2) Search path if user is looking for an executable instead of a library
-        3) Raise RuntimeError if we find nothing
-
-        Set find_executable if you want to search for the directory with the
-        panda-system-[arch] binary instead of the libpanda-[arch].so library.
-        &#39;&#39;&#39;
-        arches = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;aarch64&#39;, &#39;ppc&#39;, &#39;mips&#39;, &#39;mipsel&#39;, &#39;mips64&#39;]
-        if arch_name not in arches:
-            raise ValueError(f&#34;Unsupported architecture name: {arch_name}, allowed values are: {arches}&#34;)
-        python_package = pjoin(*[dirname(__file__), &#34;data&#34;])
-        local_build = realpath(pjoin(dirname(__file__), &#34;../../../../build&#34;))
-        arch_dir = f&#34;{arch_name}-softmmu&#34;
-        file_name = f&#34;panda-system-{arch_name}&#34; if find_executable else \
-                    f&#34;libpanda-{arch_name}.so&#34;
-        pot_paths = [pjoin(python_package, arch_dir), pjoin(local_build, arch_dir)]
-
-        if find_executable and &#39;PATH&#39; in environ:
-            # If we&#39;re looking for the panda executable, also search the user&#39;s path
-            pot_paths.extend(environ.get(&#39;PATH&#39;).split(&#34;:&#34;))
-
-        for potential_path in pot_paths:
-            if isfile(pjoin(potential_path, file_name)):
-                #print(&#34;Loading libpanda from {}&#34;.format(potential_path))
-                return potential_path
-
-        searched_paths = &#34;\n&#34;.join([&#34;\t&#34;+p for p in  pot_paths])
-        raise RuntimeError((f&#34;Couldn&#39;t find {file_name}\n&#34;
-                            f&#34;Did you built PANDA for this architecture?\n&#34;
-                            f&#34;Searched for {arch_dir}/{file_name} in:\n{searched_paths}&#34;))
 
     def queue_main_loop_wait_fn(self, fn, args=[]):
         &#39;&#39;&#39;
@@ -10602,6 +10569,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.pyplugin" href="pyplugin.html">pandare.pyplugin</a></code></li>
 <li><code><a title="pandare.pypluginmanager" href="pypluginmanager.html">pandare.pypluginmanager</a></code></li>
 <li><code><a title="pandare.qcows" href="qcows.html">pandare.qcows</a></code></li>
+<li><code><a title="pandare.qcows_internal" href="qcows_internal.html">pandare.qcows_internal</a></code></li>
 <li><code><a title="pandare.qemu_logging" href="qemu_logging.html">pandare.qemu_logging</a></code></li>
 <li><code><a title="pandare.taint" href="taint/index.html">pandare.taint</a></code></li>
 <li><code><a title="pandare.utils" href="utils.html">pandare.utils</a></code></li>

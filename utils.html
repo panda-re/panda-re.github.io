@@ -160,6 +160,9 @@ from os import devnull
 from subprocess import check_call, STDOUT
 from sys import platform, stdout
 from threading import current_thread, main_thread
+#for _find_build_path
+from os import dup, getenv, environ, path
+from os.path import realpath, isfile, dirname, join as pjoin
 
 # Set to enable pypanda debugging
 debug = False
@@ -292,7 +295,65 @@ class plugin_list(dict):
     def __getitem__(self,plugin_name):
         if plugin_name not in self:
             self._panda.load_plugin(plugin_name)
-        return super().__getitem__(plugin_name)</code></pre>
+        return super().__getitem__(plugin_name)
+
+def _find_build_dir(arch_name, find_executable=False):
+    &#39;&#39;&#39;
+    Internal function to return the build directory for the specified architecture
+    &#39;&#39;&#39;
+    python_package = pjoin(*[dirname(__file__), &#34;data&#34;])
+    local_build = realpath(pjoin(dirname(__file__), &#34;../../../../build&#34;))
+    arch_dir = f&#34;{arch_name}-softmmu&#34;
+    file_name = f&#34;panda-system-{arch_name}&#34; if find_executable else \
+                f&#34;libpanda-{arch_name}.so&#34;
+    pot_paths = [pjoin(python_package, arch_dir), pjoin(local_build, arch_dir)]
+
+    if find_executable and &#39;PATH&#39; in environ:
+        # If we&#39;re looking for the panda executable, also search the user&#39;s path
+        pot_paths.extend(environ.get(&#39;PATH&#39;).split(&#34;:&#34;))
+
+    for potential_path in pot_paths:
+        if isfile(pjoin(potential_path, file_name)):
+            # potential_path may contain [arch]-softmmu, if so remove it
+            potential_path = potential_path.replace(arch_dir, &#34;&#34;)
+            return potential_path
+
+    searched_paths = &#34;\n&#34;.join([&#34;\t&#34;+p for p in  pot_paths])
+    raise RuntimeError((f&#34;Couldn&#39;t find {file_name}\n&#34;
+                        f&#34;Did you built PANDA for this architecture?\n&#34;
+                        f&#34;Searched for {arch_dir}/{file_name} in:\n{searched_paths}&#34;))
+
+
+def find_build_dir(arch_name=None, find_executable=False):
+    &#39;&#39;&#39;
+    Find build directory (i.e., ~git/panda/build) containing the binaries we care about. If
+    find_executable is False, we&#39;re looking for [arch]-softmmu/libpanda-[arch].so. If
+    find_executable is True, we&#39;re looking for [arch]-softmmu/panda-system-[arhc]
+
+    We do this by searching paths in the following order:
+        1) Check relative to file (in the case of installed packages)
+        2) Check in../ ../../../build/
+        2) Search path if user is looking for an executable instead of a library
+        3) Raise RuntimeError if we find nothing
+
+    If arch_name is none, we&#39;ll search for any supported architecture and return the first
+    one we find.
+    &#39;&#39;&#39;
+    arches = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;aarch64&#39;, &#39;ppc&#39;, &#39;mips&#39;, &#39;mipsel&#39;, &#39;mips64&#39;]
+
+    if arch_name is None:
+        e = None
+        for arch in arches:
+            try:
+                return _find_build_dir(arch, find_executable)
+            except RuntimeError as _e:
+                e = _e
+        if e:
+            raise e
+
+    elif arch_name not in arches:
+        raise ValueError(f&#34;Unsupported architecture name: {arch_name}, allowed values are: {arches}&#34;)
+    return _find_build_dir(arch_name, find_executable)</code></pre>
 </details>
 </section>
 <section>
@@ -322,6 +383,56 @@ class plugin_list(dict):
     wrapper.__blocking__ = True
     wrapper.__name__ = func.__name__ + &#34; (with async thread)&#34;
     return wrapper</code></pre>
+</details>
+</dd>
+<dt id="pandare.utils.find_build_dir"><code class="name flex">
+<span>def <span class="ident">find_build_dir</span></span>(<span>arch_name=None, find_executable=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Find build directory (i.e., ~git/panda/build) containing the binaries we care about. If
+find_executable is False, we're looking for [arch]-softmmu/libpanda-[arch].so. If
+find_executable is True, we're looking for [arch]-softmmu/panda-system-[arhc]</p>
+<p>We do this by searching paths in the following order:
+1) Check relative to file (in the case of installed packages)
+2) Check in../ ../../../build/
+2) Search path if user is looking for an executable instead of a library
+3) Raise RuntimeError if we find nothing</p>
+<p>If arch_name is none, we'll search for any supported architecture and return the first
+one we find.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_build_dir(arch_name=None, find_executable=False):
+    &#39;&#39;&#39;
+    Find build directory (i.e., ~git/panda/build) containing the binaries we care about. If
+    find_executable is False, we&#39;re looking for [arch]-softmmu/libpanda-[arch].so. If
+    find_executable is True, we&#39;re looking for [arch]-softmmu/panda-system-[arhc]
+
+    We do this by searching paths in the following order:
+        1) Check relative to file (in the case of installed packages)
+        2) Check in../ ../../../build/
+        2) Search path if user is looking for an executable instead of a library
+        3) Raise RuntimeError if we find nothing
+
+    If arch_name is none, we&#39;ll search for any supported architecture and return the first
+    one we find.
+    &#39;&#39;&#39;
+    arches = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;aarch64&#39;, &#39;ppc&#39;, &#39;mips&#39;, &#39;mipsel&#39;, &#39;mips64&#39;]
+
+    if arch_name is None:
+        e = None
+        for arch in arches:
+            try:
+                return _find_build_dir(arch, find_executable)
+            except RuntimeError as _e:
+                e = _e
+        if e:
+            raise e
+
+    elif arch_name not in arches:
+        raise ValueError(f&#34;Unsupported architecture name: {arch_name}, allowed values are: {arches}&#34;)
+    return _find_build_dir(arch_name, find_executable)</code></pre>
 </details>
 </dd>
 <dt id="pandare.utils.make_iso"><code class="name flex">
@@ -591,8 +702,9 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="pandare.utils.blocking" href="#pandare.utils.blocking">blocking</a></code></li>
+<li><code><a title="pandare.utils.find_build_dir" href="#pandare.utils.find_build_dir">find_build_dir</a></code></li>
 <li><code><a title="pandare.utils.make_iso" href="#pandare.utils.make_iso">make_iso</a></code></li>
 <li><code><a title="pandare.utils.progress" href="#pandare.utils.progress">progress</a></code></li>
 <li><code><a title="pandare.utils.telescope" href="#pandare.utils.telescope">telescope</a></code></li>

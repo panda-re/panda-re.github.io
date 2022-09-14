@@ -1,0 +1,1294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>pandare.qcows_internal API documentation</title>
+<meta name="description" content="Module for fetching generic PANDA images and managing their metadata." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<!-- Bootstrap core CSS -->
+<!--
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+-->
+<!-- hand-crafted bootstrap navbar -->
+<style>
+.bg-light {
+background-color: #f8f9fa!important;
+}
+.navbar {
+position: relative;
+display: -ms-flexbox;
+display: flex;
+-ms-flex-wrap: wrap;
+flex-wrap: wrap;
+-ms-flex-align: center;
+align-items: center;
+-ms-flex-pack: justify;
+justify-content: space-between;
+padding: .5rem 1rem;
+}
+.navbar-expand-lg {
+-ms-flex-direction: row;
+flex-direction: row;
+-ms-flex-wrap: nowrap;
+flex-wrap: nowrap;
+-ms-flex-pack: start;
+justify-content: flex-start;
+}
+navbar-light .navbar-brand {
+color: rgba(0,0,0,.9);
+}
+.navbar-brand {
+display: inline-block;
+padding-top: .3125rem;
+padding-bottom: .3125rem;
+margin-right: 1rem;
+font-size: 1.25rem;
+line-height: inherit;
+white-space: nowrap;
+}
+.navbar-nav {
+display: -ms-flexbox;
+display: flex;
+-ms-flex-direction: column;
+flex-direction: column;
+padding-left: 0;
+margin-bottom: 0;
+list-style: none;
+}
+.navbar-expand-lg .navbar-nav {
+-ms-flex-direction: row;
+flex-direction: row;
+}
+.mr-auto {
+margin-right: auto!important;
+}
+.navbar-expand-lg .navbar-collapse {
+display: -ms-flexbox!important;
+display: flex!important;
+}
+.navbar-collapse {
+-ms-flex-preferred-size: 100%;
+flex-basis: 100%;
+-ms-flex-align: center;
+align-items: center;
+}
+.navbar-light .navbar-brand {
+color: rgba(0,0,0,.9);
+}
+.navbar a {
+color: #007bff;
+text-decoration: none;
+background-color: transparent;
+-webkit-text-decoration-skip: objects;
+}
+.navbar-expand-lg .navbar-nav .nav-link {
+padding-right: .5rem;
+padding-left: .5rem;
+}
+.navbar .navbar-nav {
+margin: 0;
+font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+font-size: 1rem;
+font-weight: 400;
+line-height: 1.5;
+color: #212529;
+}
+.navbar-light .navbar-nav .active>.nav-link, .navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .nav-link.show, .navbar-light .navbar-nav .show>.nav-link {
+color: rgba(0,0,0,.9);
+}
+.navbar-light .navbar-nav .nav-link {
+color: rgba(0,0,0,.5);
+}
+.nav-link {
+display: block;
+padding: .5rem 1rem;
+}
+</style>
+<style>.homelink{display:block;font-size:2em;font-weight:bold;color:#555;padding-bottom:.5em;border-bottom:1px solid silver}.homelink:hover{color:inherit}.homelink img{max-width:20%;max-height:5em;margin:auto;margin-bottom:.3em}</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<a class="navbar-brand" href="/">PANDA.re</a>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a class="nav-link" href="//panda.re/">Home</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" target="_new" href="https://github.com/panda-re/panda">Github</a>
+</li>
+<li class="nav-item ">
+<a class="nav-link" href="//panda.re/blog/">Blog</a>
+</li>
+<li class="nav-item ">
+<a class="nav-link active" href="//docs.panda.re">Python Docs</a>
+</li>
+<li class="nav-item ">
+<a class="nav-link" href="//panda.re/invite.php">Slack</a>
+</li>
+<!-- No resources tab here because we don't have real bootstrap -->
+</div>
+</nav>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pandare.qcows_internal</code></h1>
+</header>
+<section id="section-intro">
+<p>Module for fetching generic PANDA images and managing their metadata.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#!/usr/bin/env python3
+&#39;&#39;&#39;
+Module for fetching generic PANDA images and managing their metadata.
+&#39;&#39;&#39;
+
+import logging
+import random
+import hashlib
+from os import path, remove, makedirs
+from subprocess import Popen, PIPE, CalledProcessError
+from collections import namedtuple
+from shlex import split as shlex_split
+from sys import exit, stderr
+from shutil import move
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+VM_DIR = path.join(path.expanduser(&#34;~&#34;), &#34;.panda&#34;)
+
+class Image(namedtuple(&#39;Image&#39;, [&#39;arch&#39;, &#39;os&#39;, &#39;prompt&#39;, &#39;cdrom&#39;, &#39;snapshot&#39;, &#39;url&#39;, &#39;alternate_urls&#39;, &#39;extra_files&#39;, &#39;qcow&#39;, &#39;default_mem&#39;, &#39;extra_args&#39;, &#39;hashes&#39;])):
+    &#39;&#39;&#39;
+    The Image class stores information about a supported PANDA image
+
+    Args:
+        arch (str): Arch for the given architecture.
+        os (str): an os string we can pass to panda with -os
+        prompt (regex): a regex to detect a bash prompt after loading the snapshot and sending commands
+        cdrom (str): name to use for cd-drive when inserting an ISO via monitor
+        qcow (str): optional name to save qcow as
+        url (str): url to download the qcow (e.g. https:// website.com/yourqcow.qcow2)
+        default_mem (str): memory to use for the root snapshot (e.g. 1G)
+        extra_files (list): other files (assumed to be in same directory on server) that we also need
+        extra_args (list): Extra arguments to pass to PANDA (e.g. [&#39;-display&#39;, &#39;none&#39;])
+        hashes (dict, optional): Mapping between qcow filenames and SHA1hashes they should match upon download
+    &#39;&#39;&#39;
+
+Image.__new__.__defaults__ = (None,) * len(Image._fields)
+
+SUPPORTED_IMAGES = {
+    # Debian: support for 4 arches on Wheezy
+    &#39;i386_wheezy&#39;: Image(
+            arch = &#39;i386&#39;,
+            os=&#34;linux-32-debian:3.2.0-4-686-pae&#34;,
+            prompt=rb&#34;root@debian-i386:.*# &#34;,
+            qcow=&#34;wheezy_panda2.qcow2&#34;, # Backwards compatability
+            cdrom=&#34;ide1-cd0&#34;,
+            snapshot=&#34;root&#34;,
+            default_mem=&#39;128M&#39;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/x86/debian_7.3_x86.qcow&#34;,
+            extra_args=&#34;-display none&#34;),
+
+    &#39;x86_64_wheezy&#39;: Image(
+            arch=&#39;x86_64&#39;,
+            os=&#34;linux-64-debian:3.2.0-4-amd64&#34;,
+            prompt=rb&#34;root@debian-amd64:.*# &#34;,
+            qcow=&#34;wheezy_x64.qcow2&#34;,# Backwards compatability 
+            cdrom=&#34;ide1-cd0&#34;,
+            snapshot=&#34;root&#34;,
+            default_mem=&#39;128M&#39;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/x86_64/debian_7.3_x86_64.qcow&#34;,
+            extra_args=&#34;-display none&#34;),
+
+    &#39;ppc_wheezy&#39;: Image(
+            arch=&#39;ppc&#39;,
+            os=&#34;linux-64-debian:3.2.0-4-ppc-pae&#34;,
+            prompt=rb&#34;root@debian-powerpc:.*# &#34;,
+            qcow=&#34;ppc_wheezy.qcow2&#34;,# Backwards compatability 
+            cdrom=&#34;ide1-cd0&#34;,
+            default_mem=&#39;128M&#39;,
+            snapshot=&#34;root&#34;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/ppc/debian_7.3_ppc.qcow&#34;,
+            extra_args=&#34;-display none&#34;),
+
+    &#39;arm_wheezy&#39;: Image(
+            arch=&#39;arm&#39;,
+            os=&#34;linux-32-debian:3.2.0-4-versatile-arm&#34;,
+            prompt=rb&#34;root@debian-armel:.*# &#34;,
+            qcow=&#34;arm_wheezy.qcow&#34;,# Backwards compatability 
+            cdrom=&#34;scsi0-cd2&#34;,
+            default_mem=&#39;128M&#39;,
+            snapshot=&#34;root&#34;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/arm/debian_7.3_arm.qcow&#34;,
+            extra_files=[&#39;vmlinuz-3.2.0-4-versatile&#39;, &#39;initrd.img-3.2.0-4-versatile&#39;],
+            extra_args=&#39;-display none -M versatilepb -append &#34;root=/dev/sda1&#34; -kernel {DOT_DIR}/vmlinuz-3.2.0-4-versatile -initrd {DOT_DIR}/initrd.img-3.2.0-4-versatile&#39;.format(DOT_DIR=VM_DIR)),
+
+    &#39;aarch64_focal&#39;: Image(
+            arch=&#39;aarch64&#39;,
+            os=&#34;linux-64-ubuntu:5.4.0-58-generic-arm64&#34;,
+            prompt=rb&#34;root@ubuntu-panda:.*# &#34;,
+            #cdrom=&#34;scsi0-cd2&#34;, # No idea what this should be
+            default_mem=&#39;1G&#39;,
+            snapshot=&#34;root&#34;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/2004/aarch64/ubuntu20_04-aarch64.qcow&#34;,
+            extra_files=[&#39;ubuntu20_04-aarch64-flash0.qcow&#39;],
+            extra_args=&#39;-nographic -machine virt -cpu cortex-a57 -drive file={DOT_DIR}/ubuntu20_04-aarch64-flash0.qcow,if=pflash,readonly=on&#39;.format(DOT_DIR=VM_DIR)),
+
+    &#39;mips64&#39;: Image(
+            arch=&#39;mips64&#39;,
+            os=&#34;linux-64-debian:4.14.0-3-5kc-malta&#34;, # XXX: NO OSI
+            prompt=rb&#34;root@debian-buster-mips:.*# &#34;,
+            cdrom=&#34;ide1-cd0&#34;, # not sure
+            snapshot=&#34;root&#34;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/10/mips64/debian-buster-mips.qcow2&#34;,
+            default_mem=&#39;2g&#39;,
+            extra_files=[&#39;vmlinux-4.14.0-3-5kc-malta.mips.buster&#39;, &#39;initrd.img-4.14.0-3-5kc-malta.mips.buster&#39;],
+            extra_args=&#39;-M malta -cpu MIPS64R2-generic -append &#34;root=/dev/vda console=ttyS0 mem=2048m net.ifnames=0 nokaslr&#34; -netdev user,id=user.0 -device virtio-net,netdev=user.0 -device usb-kbd -device usb-tablet -kernel {DOT_DIR}/vmlinux-4.14.0-3-5kc-malta.mips.buster -initrd {DOT_DIR}/initrd.img-4.14.0-3-5kc-malta.mips.buster -nographic&#39;.format(DOT_DIR=VM_DIR)),
+
+    &#39;mips_wheezy&#39;: Image(
+            arch=&#39;mips&#39;,
+            os=&#34;linux-32-debian:3.2.0-4-4kc-malta&#34;,
+            prompt=rb&#34;root@debian-mips:.*# &#34;,
+            cdrom=&#34;ide1-cd0&#34;,
+            snapshot=&#34;root&#34;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/mips/debian_7.3_mips.qcow&#34;,
+            default_mem=&#39;1g&#39;,
+            extra_files=[&#39;vmlinux-3.2.0-4-4kc-malta&#39;],
+            extra_args=&#39;-M malta -kernel {DOT_DIR}/vmlinux-3.2.0-4-4kc-malta -append &#34;root=/dev/sda1&#34; -nographic&#39;.format(DOT_DIR=VM_DIR)),
+
+    &#39;mipsel_wheezy&#39;:  Image(
+            arch=&#39;mipsel&#39;,
+            os = &#34;linux-32-debian:3.2.0-4-4kc-malta&#34;,
+            prompt=rb&#34;root@debian-mipsel:.*# &#34;,
+            cdrom=&#34;ide1-cd0&#34;,
+            snapshot=&#34;root&#34;,
+            default_mem=&#39;1g&#39;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/mipsel/debian_7.3_mipsel.qcow&#34;,
+            extra_files=[&#39;vmlinux-3.2.0-4-4kc-malta.mipsel&#39;,],
+            extra_args=&#39;-M malta -kernel {DOT_DIR}/vmlinux-3.2.0-4-4kc-malta.mipsel -append &#34;root=/dev/sda1&#34; -nographic&#39;.format(DOT_DIR=VM_DIR),
+            hashes={&#39;vmlinux-3.2.0-4-4kc-malta&#39;: &#39;592e384a4edc16dade52a6cd5c785c637bcbc9ad&#39;,
+                    &#39;debian_7.3_mipsel.qcow&#39;: &#39;eeb5de0128a95c5f0d76c4f2161afd1bb320d85b&#39;}),
+
+    &#39;mips_buildroot5&#39;:  Image(
+            arch=&#39;mips&#39;,
+            os = &#34;linux-32-buildroot:5.10.7-4kc-malta&#34;,
+            prompt=rb&#34;# &#34;,
+            cdrom=&#34;ide1-cd0&#34;,
+            snapshot=&#34;root&#34;,
+            default_mem=&#39;1g&#39;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/buildroot/5.10/mips/mips32_buildroot.qcow&#34;,
+            extra_files=[&#39;mips32_vmlinux-5.10.7-4kc-malta&#39;,],
+            extra_args=&#39;-M malta -kernel {DOT_DIR}/mips32_vmlinux-5.10.7-4kc-malta -net nic,model=pcnet -net user -append &#34;root=/dev/hda&#34; -nographic&#39;.format(DOT_DIR=VM_DIR)),
+
+
+    &#39;mipsel_buildroot5&#39;:  Image(
+            arch=&#39;mipsel&#39;,
+            os = &#34;linux-32-buildroot:5.10.7-4kc-malta-el&#34;,
+            prompt=rb&#34;# &#34;,
+            cdrom=&#34;ide1-cd0&#34;,
+            snapshot=&#34;root&#34;,
+            default_mem=&#39;1g&#39;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/buildroot/5.10/mipsel/mipsel32_buildroot.qcow&#34;,
+            extra_files=[&#39;mipsel32_vmlinux-5.10.7-4kc-malta-el&#39;,],
+            extra_args=&#39;-M malta -kernel {DOT_DIR}/mipsel32_vmlinux-5.10.7-4kc-malta-el -net nic,model=pcnet -net user -append &#34;root=/dev/hda&#34; -nographic&#39;.format(DOT_DIR=VM_DIR)),
+
+
+    # Ubuntu: x86/x86_64 support for 16.04, x86_64 support for 18.04
+    &#39;i386_ubuntu_1604&#39;: Image(
+            arch = &#39;i386&#39;,
+            os=&#34;linux-32-ubuntu:4.4.200-170-generic&#34;, # Version.c is 200 but name is 4.4.0. Not sure why
+            prompt=rb&#34;root@instance-1:.*#&#34;,
+            cdrom=&#34;ide1-cd0&#34;,
+            snapshot=&#34;root&#34;,
+            default_mem=&#39;1024&#39;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/1604/x86/ubuntu_1604_x86.qcow&#34;,
+            extra_args=&#34;-display none&#34;),
+
+    #&#39;x86_64_ubuntu_1604&#39;: Image( # XXX: This one is broken
+    #        arch=&#39;x86_64&#39;,
+    #        os=&#34;linux-64-ubuntu:4.4.0-180-pae&#34;,
+    #        prompt=rb&#34;root@instance-1:.*#&#34;,
+    #        cdrom=&#34;ide1-cd0&#34;,
+    #        snapshot=&#34;root&#34;,
+    #        default_mem=&#39;1024&#39;,
+    #        url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/1604/x86_64/ubuntu_1604_x86_64.qcow&#34;,
+    #        extra_files=[&#39;xenial-server-cloudimg-amd64-disk1.img&#39;,],
+    #        extra_args=&#34;-display none&#34;),
+
+    &#39;x86_64_ubuntu_1804&#39;: Image(
+            arch=&#39;x86_64&#39;,
+            os=&#34;linux-64-ubuntu:4.15.0-72-generic-noaslr-nokaslr&#34;,
+            prompt=rb&#34;root@ubuntu:.*#&#34;,
+            cdrom=&#34;ide1-cd0&#34;,
+            snapshot=&#34;root&#34;,
+            default_mem=&#39;1024&#39;,
+            url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/1804/x86_64/bionic-server-cloudimg-amd64-noaslr-nokaslr.qcow2&#34;,
+            alternate_urls=[&#34;https://www.dropbox.com/s/4avqfxqemd29i5j/bionic-server-cloudimg-amd64-noaslr-nokaslr.qcow2?dl=1&#34;],
+            extra_args=&#34;-display none&#34;,
+            hashes={&#34;bionic-server-cloudimg-amd64-noaslr-nokaslr.qcow2&#34;: &#34;556305921c8250537bbbfbb57cb56f9ef07f4d63&#34;}),
+}
+&#34;&#34;&#34;
+Dictionary of `Image` objects by name.
+Generic values (underlying OS version may change) include:
+    x86_64
+    i386
+    ppc
+    arm
+    aarch64
+    mips
+    mipsel
+    mips64
+
+You may also specify an exact arch/OS combination from the following exist:
+    x86_64_ubuntu_1804
+    i386_ubuntu_1604
+    ppc_wheezy
+    arm_wheezy
+    aarch64 _focal
+    mips_wheezy
+    mips_buildroot5
+    mipsel_wheezy
+    mipsel_buildroot5
+    mips64
+&#34;&#34;&#34; # TODO: autogenerate values here
+
+# Default values
+SUPPORTED_IMAGES[&#39;x86_64&#39;]  = SUPPORTED_IMAGES[&#39;x86_64_ubuntu_1804&#39;]
+SUPPORTED_IMAGES[&#39;i386&#39;]    = SUPPORTED_IMAGES[&#39;i386_ubuntu_1604&#39;]
+SUPPORTED_IMAGES[&#39;ppc&#39;]     = SUPPORTED_IMAGES[&#39;ppc_wheezy&#39;]
+SUPPORTED_IMAGES[&#39;arm&#39;]     = SUPPORTED_IMAGES[&#39;arm_wheezy&#39;]
+SUPPORTED_IMAGES[&#39;aarch64&#39;] = SUPPORTED_IMAGES[&#39;aarch64_focal&#39;]
+SUPPORTED_IMAGES[&#39;mips&#39;]    = SUPPORTED_IMAGES[&#39;mips_wheezy&#39;]
+SUPPORTED_IMAGES[&#39;mipsel&#39;]  = SUPPORTED_IMAGES[&#39;mipsel_wheezy&#39;]
+SUPPORTED_IMAGES[&#39;mips64&#39;]    = SUPPORTED_IMAGES[&#39;mips64&#39;]
+
+class Qcows():
+    &#39;&#39;&#39;
+    Helper library for managing qcows on your filesystem.
+    Given an architecture, it can download a qcow from `panda.mit.edu` to `~/.panda/` and then use that.
+    Alternatively, if a path to a qcow is provided, it can just use that.
+    A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt.
+    &#39;&#39;&#39;
+
+    @staticmethod
+    def get_qcow_info(name=None):
+        &#39;&#39;&#39;
+        Get information about supported image as specified by name.
+
+        Args:
+            name (str): String idenfifying a qcow supported
+                
+        Returns:
+            Image: Instance of the Image class for a qcow
+        &#39;&#39;&#39;
+        if name is None:
+            logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
+            name = &#34;i386&#34;
+
+        if path.isfile(name):
+            raise RuntimeError(&#34;TODO: can&#39;t automatically determine system info from custom qcows. Use one of: {}&#34;.format(&#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
+
+        name = name.lower() # Case insensitive. Assumes supported_arches keys are lowercase
+        if name not in SUPPORTED_IMAGES.keys():
+            raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
+
+        r = SUPPORTED_IMAGES[name]
+        # Move properties in .arch to being in the main object
+        return r
+
+    @staticmethod
+    def get_qcow(name=None, download=True, _is_tty=True):
+        &#39;&#39;&#39;
+        Given a generic name of a qcow in `pandare.qcows.SUPPORTED_IMAGES` or a path to a qcow, return the path. Defaults to i386
+
+        Args:
+            name (str): generic name or path to qcow
+            download (bool, default True): should the qcow be downloaded if necessary
+                
+        Returns:
+            string: Path to qcow
+
+        Raises:
+            ValueError: if download is set to False and the qcow is not present
+            RuntimeError: if the architecture is unsupported or the necessary files could not be downloaded
+        &#39;&#39;&#39;
+        if name is None:
+            logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
+            name = &#34;i386&#34;
+
+        if path.isfile(name):
+            logger.debug(&#34;Provided qcow name appears to be a path, returning it directly: %s&#34;, name)
+            return name
+
+        name = name.lower() # Case insensitive. Assumes supported_images keys are lowercase
+        if name not in SUPPORTED_IMAGES.keys():
+            raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
+
+        image_data = SUPPORTED_IMAGES[name]
+        qc = image_data.qcow
+        if not qc: # Default, get name from url
+            qc = image_data.url.split(&#34;/&#34;)[-1]
+        qcow_path = path.join(VM_DIR,qc)
+        makedirs(VM_DIR, exist_ok=True)
+
+        # We need to downlaod if the QCOW or any extra files are missing
+        # If the files are present on disk, assume they&#39;re okay
+        needs_download = not path.isfile(qcow_path)
+
+        if not needs_download:
+            for extra_file in image_data.extra_files or []:
+                extra_file_path = path.join(VM_DIR, extra_file)
+                if not path.isfile(extra_file_path):
+                    needs_download = True
+                    break
+
+        if needs_download and download:
+            Qcows.download_qcow(image_data, qcow_path, _is_tty=_is_tty)
+        elif needs_download:
+            raise ValueError(&#34;Qcow is not on disk and download option is disabled&#34;)
+
+        return qcow_path
+
+    @staticmethod
+    def get_file(urls, output_path, sha1hash=None, do_retry=True, _is_tty=True):
+        assert len(urls) &gt; 0
+        url = random.choice([x for x in urls if x is not None])
+
+        if _is_tty:
+            print(f&#34;Downloading required file: {url}&#34;)
+            cmd = [&#34;wget&#34;, &#39;--show-progress&#39;, &#39;--quiet&#39;, url, &#34;-O&#34;, output_path+&#34;.tmp&#34;]
+        else:
+            print(f&#34;Please wait for download of required file: {url}&#34;, file=stderr)
+            cmd = [&#34;wget&#34;, &#34;--quiet&#34;, url, &#34;-O&#34;, output_path+&#34;.tmp&#34;]
+
+        try:
+            with Popen(cmd, stdout=PIPE, bufsize=1, universal_newlines=True) as p:
+                for line in p.stdout:
+                    print(line, end=&#39;&#39;)
+
+            if p.returncode != 0:
+                raise CalledProcessError(p.returncode, p.args)
+
+            # Check hash if we have one
+            if sha1hash is not None:
+                if _is_tty:
+                    print(f&#34;Validating file hash&#34;)
+                sha1 = hashlib.sha1()
+
+                with open(output_path+&#34;.tmp&#34;, &#39;rb&#39;) as f:
+                    while True:
+                        data = f.read(65536) #64kb chunks
+                        if not data:
+                            break
+                        sha1.update(data)
+                computed_hash = sha1.hexdigest()
+                if computed_hash != sha1hash:
+                    raise ValueError(f&#34;{url} has hash {computed_hash} vs expected hash {sha1hash}&#34;)
+                # Hash matches, move .tmp file to actual path
+                move(output_path+&#34;.tmp&#34;, output_path)
+
+        except Exception as e:
+            logger.info(&#34;Download failed, deleting partial file: %s&#34;, output_path)
+            remove(output_path+&#34;.tmp&#34;)
+
+            if do_retry:
+                if _is_tty and do_retry:
+                    print(&#34;Hash mismatch - retrying&#34;)
+                Qcows.get_file([url], output_path, sha1hash, do_retry=False, _is_tty=_is_tty)
+            else:
+                # Not retrying again, fatal - leave any partial files though
+                raise RuntimeError(f&#34;Unable to download expeted file from {url} even after retrying: {e}&#34;) from None
+        logger.debug(&#34;Downloaded %s to %s&#34;, url, output_path)
+
+    @staticmethod
+    def download_qcow(image_data, output_path, _is_retry=False, _is_tty=True):
+        &#39;&#39;&#39;
+        Download the qcow described in the Image object in image_data
+        Store to the output output_path.
+        If the Image includes SHA1 hashes, validate the file was downloaded correctly, otherwise retry once
+        &#39;&#39;&#39;
+
+        # Check if we have a hash for the base qcow. Then download and vlidate with that hash
+        qcow_base = image_data.url.split(&#34;/&#34;)[-1] if &#39;/&#39; in image_data.url else image_data.url
+        base_hash = None
+
+        if image_data.hashes is not None and qcow_base in image_data.hashes:
+            base_hash = image_data.hashes[qcow_base]
+
+        Qcows.get_file([image_data.url] + (image_data.alternate_urls if image_data.alternate_urls is not None else []), output_path, base_hash, _is_tty=_is_tty)
+
+        # Download all extra files out of the same directory
+        url_base = image_data.url[:image_data.url.rfind(&#34;/&#34;)] + &#34;/&#34;  # Truncate url to last /
+        for extra_file in image_data.extra_files or []:
+            extra_file_path = path.join(VM_DIR, extra_file)
+            extra_hash = None
+            if image_data.hashes is not None and extra_file in image_data.hashes:
+                extra_hash = image_data.hashes[extra_file]
+            Qcows.get_file([url_base + extra_file], extra_file_path, extra_hash, _is_tty=_is_tty) # TODO: support alternate URL here too? Won&#39;t work for some hosting options
+
+    @staticmethod
+    def qcow_from_arg(idx=1):
+        &#39;&#39;&#39;
+        Given an index into argv, call get_qcow with that arg if it exists, else with None
+
+        Args:
+            idx (int): an index into argv
+                
+        Returns:
+            string: Path to qcow
+        &#39;&#39;&#39;
+        from sys import argv
+
+        if len(argv) &gt; idx:
+            return Qcows.get_qcow(argv[idx])
+        else:
+            return Qcows.get_qcow()
+
+    @staticmethod
+    def remove_image(target):
+        try:
+            qcow = Qcows.get_qcow(target, download=False)
+        except ValueError:
+            # No QCOW, we&#39;re good!
+            return
+
+        try:
+            image_data = SUPPORTED_IMAGES[target]
+        except ValueError:
+            # Not a valid image? I guess we&#39;re good
+            return
+
+        qc = image_data.qcow
+        if not qc: # Default, get name from url
+            qc = image_data.url.split(&#34;/&#34;)[-1]
+        qcow_path = path.join(VM_DIR, qc)
+        remove(qcow_path)
+
+        for extra_file in image_data.extra_files or []:
+            extra_file_path = path.join(VM_DIR, extra_file)
+            if path.isfile(extra_file_path):
+                remove(extra_file_path)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="pandare.qcows_internal.SUPPORTED_IMAGES"><code class="name">var <span class="ident">SUPPORTED_IMAGES</span></code></dt>
+<dd>
+<div class="desc"><p>Dictionary of <code><a title="pandare.qcows_internal.Image" href="#pandare.qcows_internal.Image">Image</a></code> objects by name.
+Generic values (underlying OS version may change) include:
+x86_64
+i386
+ppc
+arm
+aarch64
+mips
+mipsel
+mips64</p>
+<p>You may also specify an exact arch/OS combination from the following exist:
+x86_64_ubuntu_1804
+i386_ubuntu_1604
+ppc_wheezy
+arm_wheezy
+aarch64 _focal
+mips_wheezy
+mips_buildroot5
+mipsel_wheezy
+mipsel_buildroot5
+mips64</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pandare.qcows_internal.Image"><code class="flex name class">
+<span>class <span class="ident">Image</span></span>
+<span>(</span><span>arch=None, os=None, prompt=None, cdrom=None, snapshot=None, url=None, alternate_urls=None, extra_files=None, qcow=None, default_mem=None, extra_args=None, hashes=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The Image class stores information about a supported PANDA image</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>arch</code></strong> :&ensp;<code>str</code></dt>
+<dd>Arch for the given architecture.</dd>
+<dt><strong><code>os</code></strong> :&ensp;<code>str</code></dt>
+<dd>an os string we can pass to panda with -os</dd>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>regex</code></dt>
+<dd>a regex to detect a bash prompt after loading the snapshot and sending commands</dd>
+<dt><strong><code>cdrom</code></strong> :&ensp;<code>str</code></dt>
+<dd>name to use for cd-drive when inserting an ISO via monitor</dd>
+<dt><strong><code>qcow</code></strong> :&ensp;<code>str</code></dt>
+<dd>optional name to save qcow as</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>url to download the qcow (e.g. https:// website.com/yourqcow.qcow2)</dd>
+<dt><strong><code>default_mem</code></strong> :&ensp;<code>str</code></dt>
+<dd>memory to use for the root snapshot (e.g. 1G)</dd>
+<dt><strong><code>extra_files</code></strong> :&ensp;<code>list</code></dt>
+<dd>other files (assumed to be in same directory on server) that we also need</dd>
+<dt><strong><code>extra_args</code></strong> :&ensp;<code>list</code></dt>
+<dd>Extra arguments to pass to PANDA (e.g. ['-display', 'none'])</dd>
+<dt><strong><code>hashes</code></strong> :&ensp;<code>dict</code>, optional</dt>
+<dd>Mapping between qcow filenames and SHA1hashes they should match upon download</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Image(namedtuple(&#39;Image&#39;, [&#39;arch&#39;, &#39;os&#39;, &#39;prompt&#39;, &#39;cdrom&#39;, &#39;snapshot&#39;, &#39;url&#39;, &#39;alternate_urls&#39;, &#39;extra_files&#39;, &#39;qcow&#39;, &#39;default_mem&#39;, &#39;extra_args&#39;, &#39;hashes&#39;])):
+    &#39;&#39;&#39;
+    The Image class stores information about a supported PANDA image
+
+    Args:
+        arch (str): Arch for the given architecture.
+        os (str): an os string we can pass to panda with -os
+        prompt (regex): a regex to detect a bash prompt after loading the snapshot and sending commands
+        cdrom (str): name to use for cd-drive when inserting an ISO via monitor
+        qcow (str): optional name to save qcow as
+        url (str): url to download the qcow (e.g. https:// website.com/yourqcow.qcow2)
+        default_mem (str): memory to use for the root snapshot (e.g. 1G)
+        extra_files (list): other files (assumed to be in same directory on server) that we also need
+        extra_args (list): Extra arguments to pass to PANDA (e.g. [&#39;-display&#39;, &#39;none&#39;])
+        hashes (dict, optional): Mapping between qcow filenames and SHA1hashes they should match upon download
+    &#39;&#39;&#39;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+</dd>
+<dt id="pandare.qcows_internal.Qcows"><code class="flex name class">
+<span>class <span class="ident">Qcows</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Helper library for managing qcows on your filesystem.
+Given an architecture, it can download a qcow from <code>panda.mit.edu</code> to <code>~/.panda/</code> and then use that.
+Alternatively, if a path to a qcow is provided, it can just use that.
+A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Qcows():
+    &#39;&#39;&#39;
+    Helper library for managing qcows on your filesystem.
+    Given an architecture, it can download a qcow from `panda.mit.edu` to `~/.panda/` and then use that.
+    Alternatively, if a path to a qcow is provided, it can just use that.
+    A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt.
+    &#39;&#39;&#39;
+
+    @staticmethod
+    def get_qcow_info(name=None):
+        &#39;&#39;&#39;
+        Get information about supported image as specified by name.
+
+        Args:
+            name (str): String idenfifying a qcow supported
+                
+        Returns:
+            Image: Instance of the Image class for a qcow
+        &#39;&#39;&#39;
+        if name is None:
+            logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
+            name = &#34;i386&#34;
+
+        if path.isfile(name):
+            raise RuntimeError(&#34;TODO: can&#39;t automatically determine system info from custom qcows. Use one of: {}&#34;.format(&#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
+
+        name = name.lower() # Case insensitive. Assumes supported_arches keys are lowercase
+        if name not in SUPPORTED_IMAGES.keys():
+            raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
+
+        r = SUPPORTED_IMAGES[name]
+        # Move properties in .arch to being in the main object
+        return r
+
+    @staticmethod
+    def get_qcow(name=None, download=True, _is_tty=True):
+        &#39;&#39;&#39;
+        Given a generic name of a qcow in `pandare.qcows.SUPPORTED_IMAGES` or a path to a qcow, return the path. Defaults to i386
+
+        Args:
+            name (str): generic name or path to qcow
+            download (bool, default True): should the qcow be downloaded if necessary
+                
+        Returns:
+            string: Path to qcow
+
+        Raises:
+            ValueError: if download is set to False and the qcow is not present
+            RuntimeError: if the architecture is unsupported or the necessary files could not be downloaded
+        &#39;&#39;&#39;
+        if name is None:
+            logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
+            name = &#34;i386&#34;
+
+        if path.isfile(name):
+            logger.debug(&#34;Provided qcow name appears to be a path, returning it directly: %s&#34;, name)
+            return name
+
+        name = name.lower() # Case insensitive. Assumes supported_images keys are lowercase
+        if name not in SUPPORTED_IMAGES.keys():
+            raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
+
+        image_data = SUPPORTED_IMAGES[name]
+        qc = image_data.qcow
+        if not qc: # Default, get name from url
+            qc = image_data.url.split(&#34;/&#34;)[-1]
+        qcow_path = path.join(VM_DIR,qc)
+        makedirs(VM_DIR, exist_ok=True)
+
+        # We need to downlaod if the QCOW or any extra files are missing
+        # If the files are present on disk, assume they&#39;re okay
+        needs_download = not path.isfile(qcow_path)
+
+        if not needs_download:
+            for extra_file in image_data.extra_files or []:
+                extra_file_path = path.join(VM_DIR, extra_file)
+                if not path.isfile(extra_file_path):
+                    needs_download = True
+                    break
+
+        if needs_download and download:
+            Qcows.download_qcow(image_data, qcow_path, _is_tty=_is_tty)
+        elif needs_download:
+            raise ValueError(&#34;Qcow is not on disk and download option is disabled&#34;)
+
+        return qcow_path
+
+    @staticmethod
+    def get_file(urls, output_path, sha1hash=None, do_retry=True, _is_tty=True):
+        assert len(urls) &gt; 0
+        url = random.choice([x for x in urls if x is not None])
+
+        if _is_tty:
+            print(f&#34;Downloading required file: {url}&#34;)
+            cmd = [&#34;wget&#34;, &#39;--show-progress&#39;, &#39;--quiet&#39;, url, &#34;-O&#34;, output_path+&#34;.tmp&#34;]
+        else:
+            print(f&#34;Please wait for download of required file: {url}&#34;, file=stderr)
+            cmd = [&#34;wget&#34;, &#34;--quiet&#34;, url, &#34;-O&#34;, output_path+&#34;.tmp&#34;]
+
+        try:
+            with Popen(cmd, stdout=PIPE, bufsize=1, universal_newlines=True) as p:
+                for line in p.stdout:
+                    print(line, end=&#39;&#39;)
+
+            if p.returncode != 0:
+                raise CalledProcessError(p.returncode, p.args)
+
+            # Check hash if we have one
+            if sha1hash is not None:
+                if _is_tty:
+                    print(f&#34;Validating file hash&#34;)
+                sha1 = hashlib.sha1()
+
+                with open(output_path+&#34;.tmp&#34;, &#39;rb&#39;) as f:
+                    while True:
+                        data = f.read(65536) #64kb chunks
+                        if not data:
+                            break
+                        sha1.update(data)
+                computed_hash = sha1.hexdigest()
+                if computed_hash != sha1hash:
+                    raise ValueError(f&#34;{url} has hash {computed_hash} vs expected hash {sha1hash}&#34;)
+                # Hash matches, move .tmp file to actual path
+                move(output_path+&#34;.tmp&#34;, output_path)
+
+        except Exception as e:
+            logger.info(&#34;Download failed, deleting partial file: %s&#34;, output_path)
+            remove(output_path+&#34;.tmp&#34;)
+
+            if do_retry:
+                if _is_tty and do_retry:
+                    print(&#34;Hash mismatch - retrying&#34;)
+                Qcows.get_file([url], output_path, sha1hash, do_retry=False, _is_tty=_is_tty)
+            else:
+                # Not retrying again, fatal - leave any partial files though
+                raise RuntimeError(f&#34;Unable to download expeted file from {url} even after retrying: {e}&#34;) from None
+        logger.debug(&#34;Downloaded %s to %s&#34;, url, output_path)
+
+    @staticmethod
+    def download_qcow(image_data, output_path, _is_retry=False, _is_tty=True):
+        &#39;&#39;&#39;
+        Download the qcow described in the Image object in image_data
+        Store to the output output_path.
+        If the Image includes SHA1 hashes, validate the file was downloaded correctly, otherwise retry once
+        &#39;&#39;&#39;
+
+        # Check if we have a hash for the base qcow. Then download and vlidate with that hash
+        qcow_base = image_data.url.split(&#34;/&#34;)[-1] if &#39;/&#39; in image_data.url else image_data.url
+        base_hash = None
+
+        if image_data.hashes is not None and qcow_base in image_data.hashes:
+            base_hash = image_data.hashes[qcow_base]
+
+        Qcows.get_file([image_data.url] + (image_data.alternate_urls if image_data.alternate_urls is not None else []), output_path, base_hash, _is_tty=_is_tty)
+
+        # Download all extra files out of the same directory
+        url_base = image_data.url[:image_data.url.rfind(&#34;/&#34;)] + &#34;/&#34;  # Truncate url to last /
+        for extra_file in image_data.extra_files or []:
+            extra_file_path = path.join(VM_DIR, extra_file)
+            extra_hash = None
+            if image_data.hashes is not None and extra_file in image_data.hashes:
+                extra_hash = image_data.hashes[extra_file]
+            Qcows.get_file([url_base + extra_file], extra_file_path, extra_hash, _is_tty=_is_tty) # TODO: support alternate URL here too? Won&#39;t work for some hosting options
+
+    @staticmethod
+    def qcow_from_arg(idx=1):
+        &#39;&#39;&#39;
+        Given an index into argv, call get_qcow with that arg if it exists, else with None
+
+        Args:
+            idx (int): an index into argv
+                
+        Returns:
+            string: Path to qcow
+        &#39;&#39;&#39;
+        from sys import argv
+
+        if len(argv) &gt; idx:
+            return Qcows.get_qcow(argv[idx])
+        else:
+            return Qcows.get_qcow()
+
+    @staticmethod
+    def remove_image(target):
+        try:
+            qcow = Qcows.get_qcow(target, download=False)
+        except ValueError:
+            # No QCOW, we&#39;re good!
+            return
+
+        try:
+            image_data = SUPPORTED_IMAGES[target]
+        except ValueError:
+            # Not a valid image? I guess we&#39;re good
+            return
+
+        qc = image_data.qcow
+        if not qc: # Default, get name from url
+            qc = image_data.url.split(&#34;/&#34;)[-1]
+        qcow_path = path.join(VM_DIR, qc)
+        remove(qcow_path)
+
+        for extra_file in image_data.extra_files or []:
+            extra_file_path = path.join(VM_DIR, extra_file)
+            if path.isfile(extra_file_path):
+                remove(extra_file_path)</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="pandare.qcows_internal.Qcows.download_qcow"><code class="name flex">
+<span>def <span class="ident">download_qcow</span></span>(<span>image_data, output_path)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Download the qcow described in the Image object in image_data
+Store to the output output_path.
+If the Image includes SHA1 hashes, validate the file was downloaded correctly, otherwise retry once</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def download_qcow(image_data, output_path, _is_retry=False, _is_tty=True):
+    &#39;&#39;&#39;
+    Download the qcow described in the Image object in image_data
+    Store to the output output_path.
+    If the Image includes SHA1 hashes, validate the file was downloaded correctly, otherwise retry once
+    &#39;&#39;&#39;
+
+    # Check if we have a hash for the base qcow. Then download and vlidate with that hash
+    qcow_base = image_data.url.split(&#34;/&#34;)[-1] if &#39;/&#39; in image_data.url else image_data.url
+    base_hash = None
+
+    if image_data.hashes is not None and qcow_base in image_data.hashes:
+        base_hash = image_data.hashes[qcow_base]
+
+    Qcows.get_file([image_data.url] + (image_data.alternate_urls if image_data.alternate_urls is not None else []), output_path, base_hash, _is_tty=_is_tty)
+
+    # Download all extra files out of the same directory
+    url_base = image_data.url[:image_data.url.rfind(&#34;/&#34;)] + &#34;/&#34;  # Truncate url to last /
+    for extra_file in image_data.extra_files or []:
+        extra_file_path = path.join(VM_DIR, extra_file)
+        extra_hash = None
+        if image_data.hashes is not None and extra_file in image_data.hashes:
+            extra_hash = image_data.hashes[extra_file]
+        Qcows.get_file([url_base + extra_file], extra_file_path, extra_hash, _is_tty=_is_tty) # TODO: support alternate URL here too? Won&#39;t work for some hosting options</code></pre>
+</details>
+</dd>
+<dt id="pandare.qcows_internal.Qcows.get_file"><code class="name flex">
+<span>def <span class="ident">get_file</span></span>(<span>urls, output_path, sha1hash=None, do_retry=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def get_file(urls, output_path, sha1hash=None, do_retry=True, _is_tty=True):
+    assert len(urls) &gt; 0
+    url = random.choice([x for x in urls if x is not None])
+
+    if _is_tty:
+        print(f&#34;Downloading required file: {url}&#34;)
+        cmd = [&#34;wget&#34;, &#39;--show-progress&#39;, &#39;--quiet&#39;, url, &#34;-O&#34;, output_path+&#34;.tmp&#34;]
+    else:
+        print(f&#34;Please wait for download of required file: {url}&#34;, file=stderr)
+        cmd = [&#34;wget&#34;, &#34;--quiet&#34;, url, &#34;-O&#34;, output_path+&#34;.tmp&#34;]
+
+    try:
+        with Popen(cmd, stdout=PIPE, bufsize=1, universal_newlines=True) as p:
+            for line in p.stdout:
+                print(line, end=&#39;&#39;)
+
+        if p.returncode != 0:
+            raise CalledProcessError(p.returncode, p.args)
+
+        # Check hash if we have one
+        if sha1hash is not None:
+            if _is_tty:
+                print(f&#34;Validating file hash&#34;)
+            sha1 = hashlib.sha1()
+
+            with open(output_path+&#34;.tmp&#34;, &#39;rb&#39;) as f:
+                while True:
+                    data = f.read(65536) #64kb chunks
+                    if not data:
+                        break
+                    sha1.update(data)
+            computed_hash = sha1.hexdigest()
+            if computed_hash != sha1hash:
+                raise ValueError(f&#34;{url} has hash {computed_hash} vs expected hash {sha1hash}&#34;)
+            # Hash matches, move .tmp file to actual path
+            move(output_path+&#34;.tmp&#34;, output_path)
+
+    except Exception as e:
+        logger.info(&#34;Download failed, deleting partial file: %s&#34;, output_path)
+        remove(output_path+&#34;.tmp&#34;)
+
+        if do_retry:
+            if _is_tty and do_retry:
+                print(&#34;Hash mismatch - retrying&#34;)
+            Qcows.get_file([url], output_path, sha1hash, do_retry=False, _is_tty=_is_tty)
+        else:
+            # Not retrying again, fatal - leave any partial files though
+            raise RuntimeError(f&#34;Unable to download expeted file from {url} even after retrying: {e}&#34;) from None
+    logger.debug(&#34;Downloaded %s to %s&#34;, url, output_path)</code></pre>
+</details>
+</dd>
+<dt id="pandare.qcows_internal.Qcows.get_qcow"><code class="name flex">
+<span>def <span class="ident">get_qcow</span></span>(<span>name=None, download=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given a generic name of a qcow in <code>pandare.qcows.SUPPORTED_IMAGES</code> or a path to a qcow, return the path. Defaults to i386</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>generic name or path to qcow</dd>
+<dt><strong><code>download</code></strong> :&ensp;<code>bool</code>, default <code>True</code></dt>
+<dd>should the qcow be downloaded if necessary</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>Path to qcow</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>if download is set to False and the qcow is not present</dd>
+<dt><code>RuntimeError</code></dt>
+<dd>if the architecture is unsupported or the necessary files could not be downloaded</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def get_qcow(name=None, download=True, _is_tty=True):
+    &#39;&#39;&#39;
+    Given a generic name of a qcow in `pandare.qcows.SUPPORTED_IMAGES` or a path to a qcow, return the path. Defaults to i386
+
+    Args:
+        name (str): generic name or path to qcow
+        download (bool, default True): should the qcow be downloaded if necessary
+            
+    Returns:
+        string: Path to qcow
+
+    Raises:
+        ValueError: if download is set to False and the qcow is not present
+        RuntimeError: if the architecture is unsupported or the necessary files could not be downloaded
+    &#39;&#39;&#39;
+    if name is None:
+        logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
+        name = &#34;i386&#34;
+
+    if path.isfile(name):
+        logger.debug(&#34;Provided qcow name appears to be a path, returning it directly: %s&#34;, name)
+        return name
+
+    name = name.lower() # Case insensitive. Assumes supported_images keys are lowercase
+    if name not in SUPPORTED_IMAGES.keys():
+        raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
+
+    image_data = SUPPORTED_IMAGES[name]
+    qc = image_data.qcow
+    if not qc: # Default, get name from url
+        qc = image_data.url.split(&#34;/&#34;)[-1]
+    qcow_path = path.join(VM_DIR,qc)
+    makedirs(VM_DIR, exist_ok=True)
+
+    # We need to downlaod if the QCOW or any extra files are missing
+    # If the files are present on disk, assume they&#39;re okay
+    needs_download = not path.isfile(qcow_path)
+
+    if not needs_download:
+        for extra_file in image_data.extra_files or []:
+            extra_file_path = path.join(VM_DIR, extra_file)
+            if not path.isfile(extra_file_path):
+                needs_download = True
+                break
+
+    if needs_download and download:
+        Qcows.download_qcow(image_data, qcow_path, _is_tty=_is_tty)
+    elif needs_download:
+        raise ValueError(&#34;Qcow is not on disk and download option is disabled&#34;)
+
+    return qcow_path</code></pre>
+</details>
+</dd>
+<dt id="pandare.qcows_internal.Qcows.get_qcow_info"><code class="name flex">
+<span>def <span class="ident">get_qcow_info</span></span>(<span>name=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get information about supported image as specified by name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>String idenfifying a qcow supported</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="pandare.qcows_internal.Image" href="#pandare.qcows_internal.Image">Image</a></code></dt>
+<dd>Instance of the Image class for a qcow</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def get_qcow_info(name=None):
+    &#39;&#39;&#39;
+    Get information about supported image as specified by name.
+
+    Args:
+        name (str): String idenfifying a qcow supported
+            
+    Returns:
+        Image: Instance of the Image class for a qcow
+    &#39;&#39;&#39;
+    if name is None:
+        logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
+        name = &#34;i386&#34;
+
+    if path.isfile(name):
+        raise RuntimeError(&#34;TODO: can&#39;t automatically determine system info from custom qcows. Use one of: {}&#34;.format(&#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
+
+    name = name.lower() # Case insensitive. Assumes supported_arches keys are lowercase
+    if name not in SUPPORTED_IMAGES.keys():
+        raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
+
+    r = SUPPORTED_IMAGES[name]
+    # Move properties in .arch to being in the main object
+    return r</code></pre>
+</details>
+</dd>
+<dt id="pandare.qcows_internal.Qcows.qcow_from_arg"><code class="name flex">
+<span>def <span class="ident">qcow_from_arg</span></span>(<span>idx=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given an index into argv, call get_qcow with that arg if it exists, else with None</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>idx</code></strong> :&ensp;<code>int</code></dt>
+<dd>an index into argv</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>Path to qcow</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def qcow_from_arg(idx=1):
+    &#39;&#39;&#39;
+    Given an index into argv, call get_qcow with that arg if it exists, else with None
+
+    Args:
+        idx (int): an index into argv
+            
+    Returns:
+        string: Path to qcow
+    &#39;&#39;&#39;
+    from sys import argv
+
+    if len(argv) &gt; idx:
+        return Qcows.get_qcow(argv[idx])
+    else:
+        return Qcows.get_qcow()</code></pre>
+</details>
+</dd>
+<dt id="pandare.qcows_internal.Qcows.remove_image"><code class="name flex">
+<span>def <span class="ident">remove_image</span></span>(<span>target)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def remove_image(target):
+    try:
+        qcow = Qcows.get_qcow(target, download=False)
+    except ValueError:
+        # No QCOW, we&#39;re good!
+        return
+
+    try:
+        image_data = SUPPORTED_IMAGES[target]
+    except ValueError:
+        # Not a valid image? I guess we&#39;re good
+        return
+
+    qc = image_data.qcow
+    if not qc: # Default, get name from url
+        qc = image_data.url.split(&#34;/&#34;)[-1]
+    qcow_path = path.join(VM_DIR, qc)
+    remove(qcow_path)
+
+    for extra_file in image_data.extra_files or []:
+        extra_file_path = path.join(VM_DIR, extra_file)
+        if path.isfile(extra_file_path):
+            remove(extra_file_path)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="panda.re Docs" href="/">
+<img src="//panda.re/img/logo.png" alt="logo"> PANDA.re Docs
+</a>
+</header>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pandare" href="index.html">pandare</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="pandare.qcows_internal.SUPPORTED_IMAGES" href="#pandare.qcows_internal.SUPPORTED_IMAGES">SUPPORTED_IMAGES</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pandare.qcows_internal.Image" href="#pandare.qcows_internal.Image">Image</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pandare.qcows_internal.Qcows" href="#pandare.qcows_internal.Qcows">Qcows</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pandare.qcows_internal.Qcows.download_qcow" href="#pandare.qcows_internal.Qcows.download_qcow">download_qcow</a></code></li>
+<li><code><a title="pandare.qcows_internal.Qcows.get_file" href="#pandare.qcows_internal.Qcows.get_file">get_file</a></code></li>
+<li><code><a title="pandare.qcows_internal.Qcows.get_qcow" href="#pandare.qcows_internal.Qcows.get_qcow">get_qcow</a></code></li>
+<li><code><a title="pandare.qcows_internal.Qcows.get_qcow_info" href="#pandare.qcows_internal.Qcows.get_qcow_info">get_qcow_info</a></code></li>
+<li><code><a title="pandare.qcows_internal.Qcows.qcow_from_arg" href="#pandare.qcows_internal.Qcows.qcow_from_arg">qcow_from_arg</a></code></li>
+<li><code><a title="pandare.qcows_internal.Qcows.remove_image" href="#pandare.qcows_internal.Qcows.remove_image">remove_image</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

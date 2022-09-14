@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>pandare.qcows API documentation</title>
-<meta name="description" content="Module for fetching generic PANDA images and managing their metadata." />
+<meta name="description" content="Module to simplify PANDA command line usage. Use python3 -m pandare.qcows to
+fetch files necessary to run various generic VMs and generate command …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -144,338 +145,89 @@ padding: .5rem 1rem;
 <h1 class="title">Module <code>pandare.qcows</code></h1>
 </header>
 <section id="section-intro">
-<p>Module for fetching generic PANDA images and managing their metadata.</p>
+<p>Module to simplify PANDA command line usage. Use python3 -m pandare.qcows to
+fetch files necessary to run various generic VMs and generate command lines to start them.
+Also supports deleting previously-fetched files.</p>
+<p>Most of the interesting logic fot his is contained in qcows_internal.py</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">#!/usr/bin/env python3
 &#39;&#39;&#39;
-Module for fetching generic PANDA images and managing their metadata.
+Module to simplify PANDA command line usage. Use python3 -m pandare.qcows to 
+fetch files necessary to run various generic VMs and generate command lines to start them.
+Also supports deleting previously-fetched files.
+
+Most of the interesting logic fot his is contained in qcows_internal.py
 &#39;&#39;&#39;
 
-import logging
-from os import path, remove, makedirs
-from subprocess import check_call
-from collections import namedtuple
+from os import path, remove
 from shlex import split as shlex_split
+from sys import exit, stderr
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+from .utils import find_build_dir
+from .panda import Panda
+from os import environ
+from .qcows_internal import Qcows, SUPPORTED_IMAGES
 
 VM_DIR = path.join(path.expanduser(&#34;~&#34;), &#34;.panda&#34;)
+class Qcows_cli():
+    @staticmethod
+    def _find_build_dir(arch):
+        try:
+            build_dir = find_build_dir(arch, find_executable=True)
+        except RuntimeError as e:
+            # Couldn&#39;t find this arch - can we find any?
+            try:
+                build_dir = find_build_dir(None, find_executable=True)
+                print(f&#34;WARNING: You do not appear to have panda-system-{arch}, please build it then try again\n&#34;,
+                      file=None if stdout.isatty() else stderr)
 
-class Image(namedtuple(&#39;Image&#39;, [&#39;arch&#39;, &#39;os&#39;, &#39;prompt&#39;, &#39;cdrom&#39;, &#39;snapshot&#39;, &#39;url&#39;, &#39;extra_files&#39;, &#39;qcow&#39;, &#39;default_mem&#39;, &#39;extra_args&#39;])):
-    &#39;&#39;&#39;
-    The Image class stores information about a supported PANDA image
-
-    Args:
-        arch (str): Arch for the given architecture.
-        os (str): an os string we can pass to panda with -os
-        prompt (regex): a regex to detect a bash prompt after loading the snapshot and sending commands
-        cdrom (str): name to use for cd-drive when inserting an ISO via monitor
-        qcow (str): optional name to save qcow as
-        url (str): url to download the qcow (e.g. https:// website.com/yourqcow.qcow2)
-        default_mem (str): memory to use for the root snapshot (e.g. 1G)
-        extra_files (list): other files (assumed to be in same directory on server) that we also need
-        extra_args (list): Extra arguments to pass to PANDA (e.g. [&#39;-display&#39;, &#39;none&#39;])
-    &#39;&#39;&#39;
-
-Image.__new__.__defaults__ = (None,) * len(Image._fields)
-
-SUPPORTED_IMAGES = {
-    # Debian: support for 4 arches on Wheezy
-    &#39;i386_wheezy&#39;: Image(
-            arch = &#39;i386&#39;,
-            os=&#34;linux-32-debian:3.2.0-4-686-pae&#34;,
-            prompt=rb&#34;root@debian-i386:.*# &#34;,
-            qcow=&#34;wheezy_panda2.qcow2&#34;, # Backwards compatability
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;128M&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/x86/debian_7.3_x86.qcow&#34;,
-            extra_args=&#34;-display none&#34;),
-
-    &#39;x86_64_wheezy&#39;: Image(
-            arch=&#39;x86_64&#39;,
-            os=&#34;linux-64-debian:3.2.0-4-amd64&#34;,
-            prompt=rb&#34;root@debian-amd64:.*# &#34;,
-            qcow=&#34;wheezy_x64.qcow2&#34;,# Backwards compatability 
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;128M&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/x86_64/debian_7.3_x86_64.qcow&#34;,
-            extra_args=&#34;-display none&#34;),
-
-    &#39;ppc_wheezy&#39;: Image(
-            arch=&#39;ppc&#39;,
-            os=&#34;linux-64-debian:3.2.0-4-ppc-pae&#34;,
-            prompt=rb&#34;root@debian-powerpc:.*# &#34;,
-            qcow=&#34;ppc_wheezy.qcow2&#34;,# Backwards compatability 
-            cdrom=&#34;ide1-cd0&#34;,
-            default_mem=&#39;128M&#39;,
-            snapshot=&#34;root&#34;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/ppc/debian_7.3_ppc.qcow&#34;,
-            extra_args=&#34;-display none&#34;),
-
-    &#39;arm_wheezy&#39;: Image(
-            arch=&#39;arm&#39;,
-            os=&#34;linux-32-debian:3.2.0-4-versatile-arm&#34;,
-            prompt=rb&#34;root@debian-armel:.*# &#34;,
-            qcow=&#34;arm_wheezy.qcow&#34;,# Backwards compatability 
-            cdrom=&#34;scsi0-cd2&#34;,
-            default_mem=&#39;128M&#39;,
-            snapshot=&#34;root&#34;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/arm/debian_7.3_arm.qcow&#34;,
-            extra_files=[&#39;vmlinuz-3.2.0-4-versatile&#39;, &#39;initrd.img-3.2.0-4-versatile&#39;],
-            extra_args=&#39;-display none -M versatilepb -append &#34;root=/dev/sda1&#34; -kernel {DOT_DIR}/vmlinuz-3.2.0-4-versatile -initrd {DOT_DIR}/initrd.img-3.2.0-4-versatile&#39;.format(DOT_DIR=VM_DIR)),
-
-    &#39;aarch64_focal&#39;: Image(
-            arch=&#39;aarch64&#39;,
-            os=&#34;linux-64-ubuntu:5.4.0-58-generic-arm64&#34;,
-            prompt=rb&#34;root@ubuntu-panda:.*# &#34;,
-            #cdrom=&#34;scsi0-cd2&#34;, # No idea what this should be
-            default_mem=&#39;1G&#39;,
-            snapshot=&#34;root&#34;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/2004/aarch64/ubuntu20_04-aarch64.qcow&#34;,
-            extra_files=[&#39;ubuntu20_04-aarch64-flash0.qcow&#39;],
-            extra_args=&#39;-nographic -machine virt -cpu cortex-a57 -drive file={DOT_DIR}/ubuntu20_04-aarch64-flash0.qcow,if=pflash,readonly=on&#39;.format(DOT_DIR=VM_DIR)),
-
-    &#39;mips64&#39;: Image(
-            arch=&#39;mips64&#39;,
-            os=&#34;linux-64-debian:4.14.0-3-5kc-malta&#34;, # XXX: NO OSI
-            prompt=rb&#34;root@debian-buster-mips:.*# &#34;,
-            cdrom=&#34;ide1-cd0&#34;, # not sure
-            snapshot=&#34;root&#34;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/10/mips64/debian-buster-mips.qcow2&#34;,
-            default_mem=&#39;2g&#39;,
-            extra_files=[&#39;vmlinux-4.14.0-3-5kc-malta.mips.buster&#39;, &#39;initrd.img-4.14.0-3-5kc-malta.mips.buster&#39;],
-            extra_args=&#39;-M malta -cpu MIPS64R2-generic -append &#34;root=/dev/vda console=ttyS0 mem=2048m net.ifnames=0 nokaslr&#34; -netdev user,id=user.0 -device virtio-net,netdev=user.0 -device usb-kbd -device usb-tablet -kernel {DOT_DIR}/vmlinux-4.14.0-3-5kc-malta.mips.buster -initrd {DOT_DIR}/initrd.img-4.14.0-3-5kc-malta.mips.buster -nographic&#39;.format(DOT_DIR=VM_DIR)),
-
-    &#39;mips_wheezy&#39;: Image(
-            arch=&#39;mips&#39;,
-            os=&#34;linux-32-debian:3.2.0-4-4kc-malta&#34;,
-            prompt=rb&#34;root@debian-mips:.*# &#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/mips/debian_7.3_mips.qcow&#34;,
-            default_mem=&#39;1g&#39;,
-            extra_files=[&#39;vmlinux-3.2.0-4-4kc-malta&#39;],
-            extra_args=&#39;-M malta -kernel {DOT_DIR}/vmlinux-3.2.0-4-4kc-malta -append &#34;root=/dev/sda1&#34; -nographic&#39;.format(DOT_DIR=VM_DIR)),
-
-    &#39;mipsel_wheezy&#39;:  Image(
-            arch=&#39;mipsel&#39;,
-            os = &#34;linux-32-debian:3.2.0-4-4kc-malta&#34;,
-            prompt=rb&#34;root@debian-mipsel:.*# &#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;1g&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/mipsel/debian_7.3_mipsel.qcow&#34;,
-            extra_files=[&#39;vmlinux-3.2.0-4-4kc-malta.mipsel&#39;,],
-            extra_args=&#39;-M malta -kernel {DOT_DIR}/vmlinux-3.2.0-4-4kc-malta.mipsel -append &#34;root=/dev/sda1&#34; -nographic&#39;.format(DOT_DIR=VM_DIR)),
-
-    &#39;mips_buildroot5&#39;:  Image(
-            arch=&#39;mips&#39;,
-            os = &#34;linux-32-buildroot:5.10.7-4kc-malta&#34;,
-            prompt=rb&#34;# &#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;1g&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/buildroot/5.10/mips/mips32_buildroot.qcow&#34;,
-            extra_files=[&#39;mips32_vmlinux-5.10.7-4kc-malta&#39;,],
-            extra_args=&#39;-M malta -kernel {DOT_DIR}/mips32_vmlinux-5.10.7-4kc-malta -net nic,model=pcnet -net user -append &#34;root=/dev/hda&#34; -nographic&#39;.format(DOT_DIR=VM_DIR)),
-
-
-    &#39;mipsel_buildroot5&#39;:  Image(
-            arch=&#39;mipsel&#39;,
-            os = &#34;linux-32-buildroot:5.10.7-4kc-malta-el&#34;,
-            prompt=rb&#34;# &#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;1g&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/buildroot/5.10/mipsel/mipsel32_buildroot.qcow&#34;,
-            extra_files=[&#39;mipsel32_vmlinux-5.10.7-4kc-malta-el&#39;,],
-            extra_args=&#39;-M malta -kernel {DOT_DIR}/mipsel32_vmlinux-5.10.7-4kc-malta-el -net nic,model=pcnet -net user -append &#34;root=/dev/hda&#34; -nographic&#39;.format(DOT_DIR=VM_DIR)),
-
-
-    # Ubuntu: x86/x86_64 support for 16.04, x86_64 support for 18.04
-    &#39;i386_ubuntu_1604&#39;: Image(
-            arch = &#39;i386&#39;,
-            os=&#34;linux-32-ubuntu:4.4.200-170-generic&#34;, # Version.c is 200 but name is 4.4.0. Not sure why
-            prompt=rb&#34;root@instance-1:.*#&#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;1024&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/1604/x86/ubuntu_1604_x86.qcow&#34;,
-            extra_args=&#34;-display none&#34;),
-
-    #&#39;x86_64_ubuntu_1604&#39;: Image( # XXX: This one is broken
-    #        arch=&#39;x86_64&#39;,
-    #        os=&#34;linux-64-ubuntu:4.4.0-180-pae&#34;,
-    #        prompt=rb&#34;root@instance-1:.*#&#34;,
-    #        cdrom=&#34;ide1-cd0&#34;,
-    #        snapshot=&#34;root&#34;,
-    #        default_mem=&#39;1024&#39;,
-    #        url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/1604/x86_64/ubuntu_1604_x86_64.qcow&#34;,
-    #        extra_files=[&#39;xenial-server-cloudimg-amd64-disk1.img&#39;,],
-    #        extra_args=&#34;-display none&#34;),
-
-    &#39;x86_64_ubuntu_1804&#39;: Image(
-            arch=&#39;x86_64&#39;,
-            os=&#34;linux-64-ubuntu:4.15.0-72-generic-noaslr-nokaslr&#34;,
-            prompt=rb&#34;root@ubuntu:.*#&#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;1024&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/1804/x86_64/bionic-server-cloudimg-amd64-noaslr-nokaslr.qcow2&#34;,
-            extra_args=&#34;-display none&#34;),
-}
-&#34;&#34;&#34;
-Dictionary of `Image` objects by name.
-Generic values (underlying OS version may change) include:
-    x86_64
-    i386
-    ppc
-    arm
-    aarch64
-    mips
-    mipsel
-    mips64
-
-You may also specify an exact arch/OS combination from the following exist:
-    x86_64_ubuntu_1804
-    i386_ubuntu_1604
-    ppc_wheezy
-    arm_wheezy
-    aarch64 _focal
-    mips_wheezy
-    mips_buildroot5
-    mipsel_wheezy
-    mipsel_buildroot5
-    mips64
-&#34;&#34;&#34; # TODO: autogenerate values here
-
-# Default values
-SUPPORTED_IMAGES[&#39;x86_64&#39;]  = SUPPORTED_IMAGES[&#39;x86_64_ubuntu_1804&#39;]
-SUPPORTED_IMAGES[&#39;i386&#39;]    = SUPPORTED_IMAGES[&#39;i386_ubuntu_1604&#39;]
-SUPPORTED_IMAGES[&#39;ppc&#39;]     = SUPPORTED_IMAGES[&#39;ppc_wheezy&#39;]
-SUPPORTED_IMAGES[&#39;arm&#39;]     = SUPPORTED_IMAGES[&#39;arm_wheezy&#39;]
-SUPPORTED_IMAGES[&#39;aarch64&#39;] = SUPPORTED_IMAGES[&#39;aarch64_focal&#39;]
-SUPPORTED_IMAGES[&#39;mips&#39;]    = SUPPORTED_IMAGES[&#39;mips_wheezy&#39;]
-SUPPORTED_IMAGES[&#39;mipsel&#39;]  = SUPPORTED_IMAGES[&#39;mipsel_wheezy&#39;]
-SUPPORTED_IMAGES[&#39;mips64&#39;]    = SUPPORTED_IMAGES[&#39;mips64&#39;]
-
-class Qcows():
-    &#39;&#39;&#39;
-    Helper library for managing qcows on your filesystem.
-    Given an architecture, it can download a qcow from `panda.mit.edu` to `~/.panda/` and then use that.
-    Alternatively, if a path to a qcow is provided, it can just use that.
-    A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt.
-    &#39;&#39;&#39;
+            except RuntimeError as e2:
+                print(f&#34;ERROR: Cannot find any version of PANDA on your system, please build and then try again\n&#34;,
+                      file=None if stdout.isatty() else stderr)
+                raise e
+        return build_dir
 
     @staticmethod
-    def get_qcow_info(name=None):
-        &#39;&#39;&#39;
-        Get information about supported image as specified by name.
+    def remove_image(target):
+        try:
+            qcow = Qcows.get_qcow(target, download=False, _is_tty=stdout.isatty())
+        except ValueError:
+            # No QCOW, we&#39;re good!
+            return
 
-        Args:
-            name (str): String idenfifying a qcow supported
-                
-        Returns:
-            Image: Instance of the Image class for a qcow
-        &#39;&#39;&#39;
-        if name is None:
-            logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
-            name = &#34;i386&#34;
+        try:
+            image_data = SUPPORTED_IMAGES[target]
+        except ValueError:
+            # Not a valid image? I guess we&#39;re good
+            return
 
-        if path.isfile(name):
-            raise RuntimeError(&#34;TODO: can&#39;t automatically determine system info from custom qcows. Use one of: {}&#34;.format(&#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
-
-        name = name.lower() # Case insensitive. Assumes supported_arches keys are lowercase
-        if name not in SUPPORTED_IMAGES.keys():
-            raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
-
-        r = SUPPORTED_IMAGES[name]
-        # Move properties in .arch to being in the main object
-        return r
-
-    @staticmethod
-    def get_qcow(name=None):
-        &#39;&#39;&#39;
-        Given a generic name of a qcow in `pandare.qcows.SUPPORTED_IMAGES` or a path to a qcow, return the path. Defaults to i386
-
-        Args:
-            name (str): generic name or path to qcow
-                
-        Returns:
-            string: Path to qcow
-        &#39;&#39;&#39;
-        if name is None:
-            logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
-            name = &#34;i386&#34;
-
-        if path.isfile(name):
-            logger.debug(&#34;Provided qcow name appears to be a path, returning it directly: %s&#34;, name)
-            return name
-
-        name = name.lower() # Case insensitive. Assumes supported_images keys are lowercase
-        if name not in SUPPORTED_IMAGES.keys():
-            raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
-
-        image_data = SUPPORTED_IMAGES[name]
         qc = image_data.qcow
         if not qc: # Default, get name from url
             qc = image_data.url.split(&#34;/&#34;)[-1]
-        qcow_path = path.join(VM_DIR,qc)
-        makedirs(VM_DIR, exist_ok=True)
+        qcow_path = path.join(VM_DIR, qc)
+        if path.isfile(qcow_path):
+            print(f&#34;Deleting {qcow_path}&#34;)
+            remove(qcow_path)
 
-        if not path.isfile(qcow_path):
-            print(&#34;\nQcow {} doesn&#39;t exist. Downloading from https://panda-re.mit.edu. Thanks MIT!\n&#34;.format(qc))
-            try:
-                check_call([&#34;wget&#34;, &#34;--quiet&#34;, image_data.url, &#34;-O&#34;, qcow_path])
-                for extra_file in image_data.extra_files or []:
-                    extra_file_path = path.join(VM_DIR, extra_file)
-                    url = image_data.url[:image_data.url.rfind(&#34;/&#34;)] + &#34;/&#34; + extra_file # Truncate url to last /, then add extra_file
-                    check_call([&#34;wget&#34;, &#34;--quiet&#34;, url, &#34;-O&#34;, extra_file_path])
-            except Exception as e:
-                logger.info(&#34;Download failed, deleting partial file(s): %s&#34;, qcow_path)
-                remove(qcow_path)
-                for extra_file in image_data.extra_files or []:
-                    try:
-                        remove(path.join(VM_DIR, extra_file))
-                    except: # Extra files might not exist
-                        pass
-                raise e # Reraise
-            logger.debug(&#34;Downloaded %s to %s&#34;, qc, qcow_path)
-        return qcow_path
-
-    @staticmethod
-    def qcow_from_arg(idx=1):
-        &#39;&#39;&#39;
-        Given an index into argv, call get_qcow with that arg if it exists, else with None
-
-        Args:
-            idx (int): an index into argv
-                
-        Returns:
-            string: Path to qcow
-        &#39;&#39;&#39;
-        from sys import argv
-
-        if len(argv) &gt; idx:
-            return Qcows.get_qcow(argv[idx])
-        else:
-            return Qcows.get_qcow()
-
+        for extra_file in image_data.extra_files or []:
+            extra_file_path = path.join(VM_DIR, extra_file)
+            if path.isfile(extra_file_path):
+                print(f&#34;Deleting {extra_file_path}&#34;)
+                remove(extra_file_path)
     @staticmethod
     def cli(target):
-        from .panda import Panda
-        from os import environ
         q = Qcows.get_qcow_info(target)
-        qcow = Qcows.get_qcow(target)
+        qcow = Qcows.get_qcow(target, _is_tty=stdout.isatty())
         arch = q.arch
-        build_dir = Panda._find_build_dir(arch, find_executable=True)
-        panda_args = [build_dir + f&#34;/{arch}-softmmu/panda-system-{arch}&#34;]
+        # User needs to have the specified arch in order to run the command.
+        # But if they just want to download/delete files and we find another arch
+        # we can fetch/delete the files print a warning about how the generatd command won&#39;t work.
+
+        build_dir = Qcows_cli._find_build_dir(arch)
+        panda_args = [path.join(build_dir, f&#34;{arch}-softmmu/panda-system-{arch}&#34;)]
         biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
         panda_args.extend([&#34;-L&#34;, biospath])
         panda_args.extend([&#34;-os&#34;, q.os])
@@ -502,236 +254,113 @@ class Qcows():
         if &#34;-display none&#34; in ret:
             ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
 
-        # Repalce /home/username with ~ when we can
-        if &#39;HOME&#39; in environ:
+        # Repalce /home/username with ~ when we can (TTYs)
+        if stdout.isatty() and &#39;HOME&#39; in environ:
             ret = ret.replace(environ[&#39;HOME&#39;], &#39;~&#39;)
         return ret
 
 if __name__ == &#34;__main__&#34;:
     from sys import argv, stdout
-    valid_names = &#34;, &#34;.join(SUPPORTED_IMAGES.keys())
+    valid_names = &#34;\n * &#34;.join(SUPPORTED_IMAGES.keys())
+
+    delete_mode = False
+    if len(argv) == 3 and argv[1] == &#39;delete&#39;:
+        delete_mode = True
+        argv.pop(1)
 
     if len(argv) != 2 or argv[1] not in SUPPORTED_IMAGES:
-        raise ValueError(f&#34;USAGE: {argv[0]}: target_arch where name is one of &#34; + valid_names)
+        print(&#34;\n&#34; + f&#34;USAGE: {argv[0]} [target_images]\n&#34; +
+                     f&#34;   or: {argv[0]} delete [target_image]\n\n&#34; +
+                      &#34;The required files for the specified images will be downloaded and the PANDA command line to emulate that guest will be printed.\n&#34; +
+                      &#34;If the \&#34;delete\&#34; argument is passed, any files related to the image will be deleted and no command line will be printed&#34;
+                     f&#34;Where target_images is one of:\n * {valid_names}\n&#34;)
+        exit(1)
 
-    cmd = Qcows.cli(argv[1])
-    if stdout.isatty():
-        print(f&#34;\nRun panda for {argv[1]} with:\n{cmd}&#34;)
+    if delete_mode:
+        Qcows_cli.remove_image(argv[1])
+
     else:
-        print(cmd)</code></pre>
+        cmd = Qcows_cli.cli(argv[1])
+        if stdout.isatty():
+            print(f&#34;Run the generic {argv[1]} PANDA guest interactively with the following command:\n{cmd}&#34;)
+        else:
+            print(cmd)</code></pre>
 </details>
 </section>
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-variables">Global variables</h2>
-<dl>
-<dt id="pandare.qcows.SUPPORTED_IMAGES"><code class="name">var <span class="ident">SUPPORTED_IMAGES</span></code></dt>
-<dd>
-<div class="desc"><p>Dictionary of <code><a title="pandare.qcows.Image" href="#pandare.qcows.Image">Image</a></code> objects by name.
-Generic values (underlying OS version may change) include:
-x86_64
-i386
-ppc
-arm
-aarch64
-mips
-mipsel
-mips64</p>
-<p>You may also specify an exact arch/OS combination from the following exist:
-x86_64_ubuntu_1804
-i386_ubuntu_1604
-ppc_wheezy
-arm_wheezy
-aarch64 _focal
-mips_wheezy
-mips_buildroot5
-mipsel_wheezy
-mipsel_buildroot5
-mips64</p></div>
-</dd>
-</dl>
 </section>
 <section>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="pandare.qcows.Image"><code class="flex name class">
-<span>class <span class="ident">Image</span></span>
-<span>(</span><span>arch=None, os=None, prompt=None, cdrom=None, snapshot=None, url=None, extra_files=None, qcow=None, default_mem=None, extra_args=None)</span>
+<dt id="pandare.qcows.Qcows_cli"><code class="flex name class">
+<span>class <span class="ident">Qcows_cli</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>The Image class stores information about a supported PANDA image</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>arch</code></strong> :&ensp;<code>str</code></dt>
-<dd>Arch for the given architecture.</dd>
-<dt><strong><code>os</code></strong> :&ensp;<code>str</code></dt>
-<dd>an os string we can pass to panda with -os</dd>
-<dt><strong><code>prompt</code></strong> :&ensp;<code>regex</code></dt>
-<dd>a regex to detect a bash prompt after loading the snapshot and sending commands</dd>
-<dt><strong><code>cdrom</code></strong> :&ensp;<code>str</code></dt>
-<dd>name to use for cd-drive when inserting an ISO via monitor</dd>
-<dt><strong><code>qcow</code></strong> :&ensp;<code>str</code></dt>
-<dd>optional name to save qcow as</dd>
-<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
-<dd>url to download the qcow (e.g. https:// website.com/yourqcow.qcow2)</dd>
-<dt><strong><code>default_mem</code></strong> :&ensp;<code>str</code></dt>
-<dd>memory to use for the root snapshot (e.g. 1G)</dd>
-<dt><strong><code>extra_files</code></strong> :&ensp;<code>list</code></dt>
-<dd>other files (assumed to be in same directory on server) that we also need</dd>
-<dt><strong><code>extra_args</code></strong> :&ensp;<code>list</code></dt>
-<dd>Extra arguments to pass to PANDA (e.g. ['-display', 'none'])</dd>
-</dl></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Image(namedtuple(&#39;Image&#39;, [&#39;arch&#39;, &#39;os&#39;, &#39;prompt&#39;, &#39;cdrom&#39;, &#39;snapshot&#39;, &#39;url&#39;, &#39;extra_files&#39;, &#39;qcow&#39;, &#39;default_mem&#39;, &#39;extra_args&#39;])):
-    &#39;&#39;&#39;
-    The Image class stores information about a supported PANDA image
+<pre><code class="python">class Qcows_cli():
+    @staticmethod
+    def _find_build_dir(arch):
+        try:
+            build_dir = find_build_dir(arch, find_executable=True)
+        except RuntimeError as e:
+            # Couldn&#39;t find this arch - can we find any?
+            try:
+                build_dir = find_build_dir(None, find_executable=True)
+                print(f&#34;WARNING: You do not appear to have panda-system-{arch}, please build it then try again\n&#34;,
+                      file=None if stdout.isatty() else stderr)
 
-    Args:
-        arch (str): Arch for the given architecture.
-        os (str): an os string we can pass to panda with -os
-        prompt (regex): a regex to detect a bash prompt after loading the snapshot and sending commands
-        cdrom (str): name to use for cd-drive when inserting an ISO via monitor
-        qcow (str): optional name to save qcow as
-        url (str): url to download the qcow (e.g. https:// website.com/yourqcow.qcow2)
-        default_mem (str): memory to use for the root snapshot (e.g. 1G)
-        extra_files (list): other files (assumed to be in same directory on server) that we also need
-        extra_args (list): Extra arguments to pass to PANDA (e.g. [&#39;-display&#39;, &#39;none&#39;])
-    &#39;&#39;&#39;</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>builtins.tuple</li>
-</ul>
-</dd>
-<dt id="pandare.qcows.Qcows"><code class="flex name class">
-<span>class <span class="ident">Qcows</span></span>
-</code></dt>
-<dd>
-<div class="desc"><p>Helper library for managing qcows on your filesystem.
-Given an architecture, it can download a qcow from <code>panda.mit.edu</code> to <code>~/.panda/</code> and then use that.
-Alternatively, if a path to a qcow is provided, it can just use that.
-A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Qcows():
-    &#39;&#39;&#39;
-    Helper library for managing qcows on your filesystem.
-    Given an architecture, it can download a qcow from `panda.mit.edu` to `~/.panda/` and then use that.
-    Alternatively, if a path to a qcow is provided, it can just use that.
-    A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt.
-    &#39;&#39;&#39;
+            except RuntimeError as e2:
+                print(f&#34;ERROR: Cannot find any version of PANDA on your system, please build and then try again\n&#34;,
+                      file=None if stdout.isatty() else stderr)
+                raise e
+        return build_dir
 
     @staticmethod
-    def get_qcow_info(name=None):
-        &#39;&#39;&#39;
-        Get information about supported image as specified by name.
+    def remove_image(target):
+        try:
+            qcow = Qcows.get_qcow(target, download=False, _is_tty=stdout.isatty())
+        except ValueError:
+            # No QCOW, we&#39;re good!
+            return
 
-        Args:
-            name (str): String idenfifying a qcow supported
-                
-        Returns:
-            Image: Instance of the Image class for a qcow
-        &#39;&#39;&#39;
-        if name is None:
-            logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
-            name = &#34;i386&#34;
+        try:
+            image_data = SUPPORTED_IMAGES[target]
+        except ValueError:
+            # Not a valid image? I guess we&#39;re good
+            return
 
-        if path.isfile(name):
-            raise RuntimeError(&#34;TODO: can&#39;t automatically determine system info from custom qcows. Use one of: {}&#34;.format(&#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
-
-        name = name.lower() # Case insensitive. Assumes supported_arches keys are lowercase
-        if name not in SUPPORTED_IMAGES.keys():
-            raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
-
-        r = SUPPORTED_IMAGES[name]
-        # Move properties in .arch to being in the main object
-        return r
-
-    @staticmethod
-    def get_qcow(name=None):
-        &#39;&#39;&#39;
-        Given a generic name of a qcow in `pandare.qcows.SUPPORTED_IMAGES` or a path to a qcow, return the path. Defaults to i386
-
-        Args:
-            name (str): generic name or path to qcow
-                
-        Returns:
-            string: Path to qcow
-        &#39;&#39;&#39;
-        if name is None:
-            logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
-            name = &#34;i386&#34;
-
-        if path.isfile(name):
-            logger.debug(&#34;Provided qcow name appears to be a path, returning it directly: %s&#34;, name)
-            return name
-
-        name = name.lower() # Case insensitive. Assumes supported_images keys are lowercase
-        if name not in SUPPORTED_IMAGES.keys():
-            raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
-
-        image_data = SUPPORTED_IMAGES[name]
         qc = image_data.qcow
         if not qc: # Default, get name from url
             qc = image_data.url.split(&#34;/&#34;)[-1]
-        qcow_path = path.join(VM_DIR,qc)
-        makedirs(VM_DIR, exist_ok=True)
+        qcow_path = path.join(VM_DIR, qc)
+        if path.isfile(qcow_path):
+            print(f&#34;Deleting {qcow_path}&#34;)
+            remove(qcow_path)
 
-        if not path.isfile(qcow_path):
-            print(&#34;\nQcow {} doesn&#39;t exist. Downloading from https://panda-re.mit.edu. Thanks MIT!\n&#34;.format(qc))
-            try:
-                check_call([&#34;wget&#34;, &#34;--quiet&#34;, image_data.url, &#34;-O&#34;, qcow_path])
-                for extra_file in image_data.extra_files or []:
-                    extra_file_path = path.join(VM_DIR, extra_file)
-                    url = image_data.url[:image_data.url.rfind(&#34;/&#34;)] + &#34;/&#34; + extra_file # Truncate url to last /, then add extra_file
-                    check_call([&#34;wget&#34;, &#34;--quiet&#34;, url, &#34;-O&#34;, extra_file_path])
-            except Exception as e:
-                logger.info(&#34;Download failed, deleting partial file(s): %s&#34;, qcow_path)
-                remove(qcow_path)
-                for extra_file in image_data.extra_files or []:
-                    try:
-                        remove(path.join(VM_DIR, extra_file))
-                    except: # Extra files might not exist
-                        pass
-                raise e # Reraise
-            logger.debug(&#34;Downloaded %s to %s&#34;, qc, qcow_path)
-        return qcow_path
-
-    @staticmethod
-    def qcow_from_arg(idx=1):
-        &#39;&#39;&#39;
-        Given an index into argv, call get_qcow with that arg if it exists, else with None
-
-        Args:
-            idx (int): an index into argv
-                
-        Returns:
-            string: Path to qcow
-        &#39;&#39;&#39;
-        from sys import argv
-
-        if len(argv) &gt; idx:
-            return Qcows.get_qcow(argv[idx])
-        else:
-            return Qcows.get_qcow()
-
+        for extra_file in image_data.extra_files or []:
+            extra_file_path = path.join(VM_DIR, extra_file)
+            if path.isfile(extra_file_path):
+                print(f&#34;Deleting {extra_file_path}&#34;)
+                remove(extra_file_path)
     @staticmethod
     def cli(target):
-        from .panda import Panda
-        from os import environ
         q = Qcows.get_qcow_info(target)
-        qcow = Qcows.get_qcow(target)
+        qcow = Qcows.get_qcow(target, _is_tty=stdout.isatty())
         arch = q.arch
-        build_dir = Panda._find_build_dir(arch, find_executable=True)
-        panda_args = [build_dir + f&#34;/{arch}-softmmu/panda-system-{arch}&#34;]
+        # User needs to have the specified arch in order to run the command.
+        # But if they just want to download/delete files and we find another arch
+        # we can fetch/delete the files print a warning about how the generatd command won&#39;t work.
+
+        build_dir = Qcows_cli._find_build_dir(arch)
+        panda_args = [path.join(build_dir, f&#34;{arch}-softmmu/panda-system-{arch}&#34;)]
         biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
         panda_args.extend([&#34;-L&#34;, biospath])
         panda_args.extend([&#34;-os&#34;, q.os])
@@ -758,14 +387,14 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
         if &#34;-display none&#34; in ret:
             ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
 
-        # Repalce /home/username with ~ when we can
-        if &#39;HOME&#39; in environ:
+        # Repalce /home/username with ~ when we can (TTYs)
+        if stdout.isatty() and &#39;HOME&#39; in environ:
             ret = ret.replace(environ[&#39;HOME&#39;], &#39;~&#39;)
         return ret</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="pandare.qcows.Qcows.cli"><code class="name flex">
+<dt id="pandare.qcows.Qcows_cli.cli"><code class="name flex">
 <span>def <span class="ident">cli</span></span>(<span>target)</span>
 </code></dt>
 <dd>
@@ -776,13 +405,15 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
 </summary>
 <pre><code class="python">@staticmethod
 def cli(target):
-    from .panda import Panda
-    from os import environ
     q = Qcows.get_qcow_info(target)
-    qcow = Qcows.get_qcow(target)
+    qcow = Qcows.get_qcow(target, _is_tty=stdout.isatty())
     arch = q.arch
-    build_dir = Panda._find_build_dir(arch, find_executable=True)
-    panda_args = [build_dir + f&#34;/{arch}-softmmu/panda-system-{arch}&#34;]
+    # User needs to have the specified arch in order to run the command.
+    # But if they just want to download/delete files and we find another arch
+    # we can fetch/delete the files print a warning about how the generatd command won&#39;t work.
+
+    build_dir = Qcows_cli._find_build_dir(arch)
+    panda_args = [path.join(build_dir, f&#34;{arch}-softmmu/panda-system-{arch}&#34;)]
     biospath = path.realpath(path.join(build_dir, &#34;pc-bios&#34;))
     panda_args.extend([&#34;-L&#34;, biospath])
     panda_args.extend([&#34;-os&#34;, q.os])
@@ -809,164 +440,48 @@ def cli(target):
     if &#34;-display none&#34; in ret:
         ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
 
-    # Repalce /home/username with ~ when we can
-    if &#39;HOME&#39; in environ:
+    # Repalce /home/username with ~ when we can (TTYs)
+    if stdout.isatty() and &#39;HOME&#39; in environ:
         ret = ret.replace(environ[&#39;HOME&#39;], &#39;~&#39;)
     return ret</code></pre>
 </details>
 </dd>
-<dt id="pandare.qcows.Qcows.get_qcow"><code class="name flex">
-<span>def <span class="ident">get_qcow</span></span>(<span>name=None)</span>
+<dt id="pandare.qcows.Qcows_cli.remove_image"><code class="name flex">
+<span>def <span class="ident">remove_image</span></span>(<span>target)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Given a generic name of a qcow in <code><a title="pandare.qcows.SUPPORTED_IMAGES" href="#pandare.qcows.SUPPORTED_IMAGES">SUPPORTED_IMAGES</a></code> or a path to a qcow, return the path. Defaults to i386</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
-<dd>generic name or path to qcow</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>string</code></dt>
-<dd>Path to qcow</dd>
-</dl></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def get_qcow(name=None):
-    &#39;&#39;&#39;
-    Given a generic name of a qcow in `pandare.qcows.SUPPORTED_IMAGES` or a path to a qcow, return the path. Defaults to i386
+def remove_image(target):
+    try:
+        qcow = Qcows.get_qcow(target, download=False, _is_tty=stdout.isatty())
+    except ValueError:
+        # No QCOW, we&#39;re good!
+        return
 
-    Args:
-        name (str): generic name or path to qcow
-            
-    Returns:
-        string: Path to qcow
-    &#39;&#39;&#39;
-    if name is None:
-        logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
-        name = &#34;i386&#34;
+    try:
+        image_data = SUPPORTED_IMAGES[target]
+    except ValueError:
+        # Not a valid image? I guess we&#39;re good
+        return
 
-    if path.isfile(name):
-        logger.debug(&#34;Provided qcow name appears to be a path, returning it directly: %s&#34;, name)
-        return name
-
-    name = name.lower() # Case insensitive. Assumes supported_images keys are lowercase
-    if name not in SUPPORTED_IMAGES.keys():
-        raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
-
-    image_data = SUPPORTED_IMAGES[name]
     qc = image_data.qcow
     if not qc: # Default, get name from url
         qc = image_data.url.split(&#34;/&#34;)[-1]
-    qcow_path = path.join(VM_DIR,qc)
-    makedirs(VM_DIR, exist_ok=True)
+    qcow_path = path.join(VM_DIR, qc)
+    if path.isfile(qcow_path):
+        print(f&#34;Deleting {qcow_path}&#34;)
+        remove(qcow_path)
 
-    if not path.isfile(qcow_path):
-        print(&#34;\nQcow {} doesn&#39;t exist. Downloading from https://panda-re.mit.edu. Thanks MIT!\n&#34;.format(qc))
-        try:
-            check_call([&#34;wget&#34;, &#34;--quiet&#34;, image_data.url, &#34;-O&#34;, qcow_path])
-            for extra_file in image_data.extra_files or []:
-                extra_file_path = path.join(VM_DIR, extra_file)
-                url = image_data.url[:image_data.url.rfind(&#34;/&#34;)] + &#34;/&#34; + extra_file # Truncate url to last /, then add extra_file
-                check_call([&#34;wget&#34;, &#34;--quiet&#34;, url, &#34;-O&#34;, extra_file_path])
-        except Exception as e:
-            logger.info(&#34;Download failed, deleting partial file(s): %s&#34;, qcow_path)
-            remove(qcow_path)
-            for extra_file in image_data.extra_files or []:
-                try:
-                    remove(path.join(VM_DIR, extra_file))
-                except: # Extra files might not exist
-                    pass
-            raise e # Reraise
-        logger.debug(&#34;Downloaded %s to %s&#34;, qc, qcow_path)
-    return qcow_path</code></pre>
-</details>
-</dd>
-<dt id="pandare.qcows.Qcows.get_qcow_info"><code class="name flex">
-<span>def <span class="ident">get_qcow_info</span></span>(<span>name=None)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get information about supported image as specified by name.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
-<dd>String idenfifying a qcow supported</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code><a title="pandare.qcows.Image" href="#pandare.qcows.Image">Image</a></code></dt>
-<dd>Instance of the Image class for a qcow</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@staticmethod
-def get_qcow_info(name=None):
-    &#39;&#39;&#39;
-    Get information about supported image as specified by name.
-
-    Args:
-        name (str): String idenfifying a qcow supported
-            
-    Returns:
-        Image: Instance of the Image class for a qcow
-    &#39;&#39;&#39;
-    if name is None:
-        logger.warning(&#34;No qcow name provided. Defaulting to i386&#34;)
-        name = &#34;i386&#34;
-
-    if path.isfile(name):
-        raise RuntimeError(&#34;TODO: can&#39;t automatically determine system info from custom qcows. Use one of: {}&#34;.format(&#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
-
-    name = name.lower() # Case insensitive. Assumes supported_arches keys are lowercase
-    if name not in SUPPORTED_IMAGES.keys():
-        raise RuntimeError(&#34;Architecture {} is not in list of supported names: {}&#34;.format(name, &#34;, &#34;.join(SUPPORTED_IMAGES.keys())))
-
-    r = SUPPORTED_IMAGES[name]
-    # Move properties in .arch to being in the main object
-    return r</code></pre>
-</details>
-</dd>
-<dt id="pandare.qcows.Qcows.qcow_from_arg"><code class="name flex">
-<span>def <span class="ident">qcow_from_arg</span></span>(<span>idx=1)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Given an index into argv, call get_qcow with that arg if it exists, else with None</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>idx</code></strong> :&ensp;<code>int</code></dt>
-<dd>an index into argv</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>string</code></dt>
-<dd>Path to qcow</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@staticmethod
-def qcow_from_arg(idx=1):
-    &#39;&#39;&#39;
-    Given an index into argv, call get_qcow with that arg if it exists, else with None
-
-    Args:
-        idx (int): an index into argv
-            
-    Returns:
-        string: Path to qcow
-    &#39;&#39;&#39;
-    from sys import argv
-
-    if len(argv) &gt; idx:
-        return Qcows.get_qcow(argv[idx])
-    else:
-        return Qcows.get_qcow()</code></pre>
+    for extra_file in image_data.extra_files or []:
+        extra_file_path = path.join(VM_DIR, extra_file)
+        if path.isfile(extra_file_path):
+            print(f&#34;Deleting {extra_file_path}&#34;)
+            remove(extra_file_path)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1036,23 +551,13 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare" href="index.html">pandare</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-variables">Global variables</a></h3>
-<ul class="">
-<li><code><a title="pandare.qcows.SUPPORTED_IMAGES" href="#pandare.qcows.SUPPORTED_IMAGES">SUPPORTED_IMAGES</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="pandare.qcows.Image" href="#pandare.qcows.Image">Image</a></code></h4>
-</li>
-<li>
-<h4><code><a title="pandare.qcows.Qcows" href="#pandare.qcows.Qcows">Qcows</a></code></h4>
+<h4><code><a title="pandare.qcows.Qcows_cli" href="#pandare.qcows.Qcows_cli">Qcows_cli</a></code></h4>
 <ul class="">
-<li><code><a title="pandare.qcows.Qcows.cli" href="#pandare.qcows.Qcows.cli">cli</a></code></li>
-<li><code><a title="pandare.qcows.Qcows.get_qcow" href="#pandare.qcows.Qcows.get_qcow">get_qcow</a></code></li>
-<li><code><a title="pandare.qcows.Qcows.get_qcow_info" href="#pandare.qcows.Qcows.get_qcow_info">get_qcow_info</a></code></li>
-<li><code><a title="pandare.qcows.Qcows.qcow_from_arg" href="#pandare.qcows.Qcows.qcow_from_arg">qcow_from_arg</a></code></li>
+<li><code><a title="pandare.qcows.Qcows_cli.cli" href="#pandare.qcows.Qcows_cli.cli">cli</a></code></li>
+<li><code><a title="pandare.qcows.Qcows_cli.remove_image" href="#pandare.qcows.Qcows_cli.remove_image">remove_image</a></code></li>
 </ul>
 </li>
 </ul>

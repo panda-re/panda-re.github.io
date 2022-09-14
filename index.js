@@ -16,6 +16,7 @@ URLS=[
 "pandare/extras/ioctlFaker.html",
 "pandare/extras/procWriteCapture.html",
 "pandare/extras/fileFaker.html",
+"pandare/qcows_internal.html",
 "pandare/pypluginmanager.html"
 ];
 INDEX=[
@@ -1437,6 +1438,12 @@ INDEX=[
 "ref":"pandare.utils.plugin_list",
 "url":3,
 "doc":"Wrapper class around list of active C plugins"
+},
+{
+"ref":"pandare.utils.find_build_dir",
+"url":3,
+"doc":"Find build directory (i.e., ~git/panda/build) containing the binaries we care about. If find_executable is False, we're looking for [arch]-softmmu/libpanda-[arch].so. If find_executable is True, we're looking for [arch]-softmmu/panda-system-[arhc] We do this by searching paths in the following order: 1) Check relative to file (in the case of installed packages) 2) Check in /  / / /build/ 2) Search path if user is looking for an executable instead of a library 3) Raise RuntimeError if we find nothing If arch_name is none, we'll search for any supported architecture and return the first one we find.",
+"func":1
 },
 {
 "ref":"pandare.pyplugin",
@@ -3102,43 +3109,21 @@ INDEX=[
 {
 "ref":"pandare.qcows",
 "url":9,
-"doc":"Module for fetching generic PANDA images and managing their metadata."
+"doc":"Module to simplify PANDA command line usage. Use python3 -m pandare.qcows to fetch files necessary to run various generic VMs and generate command lines to start them. Also supports deleting previously-fetched files. Most of the interesting logic fot his is contained in qcows_internal.py"
 },
 {
-"ref":"pandare.qcows.Image",
+"ref":"pandare.qcows.Qcows_cli",
 "url":9,
-"doc":"The Image class stores information about a supported PANDA image Args: arch (str): Arch for the given architecture. os (str): an os string we can pass to panda with -os prompt (regex): a regex to detect a bash prompt after loading the snapshot and sending commands cdrom (str): name to use for cd-drive when inserting an ISO via monitor qcow (str): optional name to save qcow as url (str): url to download the qcow (e.g. https: website.com/yourqcow.qcow2) default_mem (str): memory to use for the root snapshot (e.g. 1G) extra_files (list): other files (assumed to be in same directory on server) that we also need extra_args (list): Extra arguments to pass to PANDA (e.g. ['-display', 'none'])"
+"doc":""
 },
 {
-"ref":"pandare.qcows.SUPPORTED_IMAGES",
+"ref":"pandare.qcows.Qcows_cli.remove_image",
 "url":9,
-"doc":"Dictionary of  Image objects by name. Generic values (underlying OS version may change) include: x86_64 i386 ppc arm aarch64 mips mipsel mips64 You may also specify an exact arch/OS combination from the following exist: x86_64_ubuntu_1804 i386_ubuntu_1604 ppc_wheezy arm_wheezy aarch64 _focal mips_wheezy mips_buildroot5 mipsel_wheezy mipsel_buildroot5 mips64"
-},
-{
-"ref":"pandare.qcows.Qcows",
-"url":9,
-"doc":"Helper library for managing qcows on your filesystem. Given an architecture, it can download a qcow from  panda.mit.edu to  ~/.panda/ and then use that. Alternatively, if a path to a qcow is provided, it can just use that. A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt."
-},
-{
-"ref":"pandare.qcows.Qcows.get_qcow_info",
-"url":9,
-"doc":"Get information about supported image as specified by name. Args: name (str): String idenfifying a qcow supported Returns: Image: Instance of the Image class for a qcow",
+"doc":"",
 "func":1
 },
 {
-"ref":"pandare.qcows.Qcows.get_qcow",
-"url":9,
-"doc":"Given a generic name of a qcow in  pandare.qcows.SUPPORTED_IMAGES or a path to a qcow, return the path. Defaults to i386 Args: name (str): generic name or path to qcow Returns: string: Path to qcow",
-"func":1
-},
-{
-"ref":"pandare.qcows.Qcows.qcow_from_arg",
-"url":9,
-"doc":"Given an index into argv, call get_qcow with that arg if it exists, else with None Args: idx (int): an index into argv Returns: string: Path to qcow",
-"func":1
-},
-{
-"ref":"pandare.qcows.Qcows.cli",
+"ref":"pandare.qcows.Qcows_cli.cli",
 "url":9,
 "doc":"",
 "func":1
@@ -3627,77 +3612,133 @@ INDEX=[
 "func":1
 },
 {
-"ref":"pandare.pypluginmanager",
+"ref":"pandare.qcows_internal",
 "url":17,
+"doc":"Module for fetching generic PANDA images and managing their metadata."
+},
+{
+"ref":"pandare.qcows_internal.Image",
+"url":17,
+"doc":"The Image class stores information about a supported PANDA image Args: arch (str): Arch for the given architecture. os (str): an os string we can pass to panda with -os prompt (regex): a regex to detect a bash prompt after loading the snapshot and sending commands cdrom (str): name to use for cd-drive when inserting an ISO via monitor qcow (str): optional name to save qcow as url (str): url to download the qcow (e.g. https: website.com/yourqcow.qcow2) default_mem (str): memory to use for the root snapshot (e.g. 1G) extra_files (list): other files (assumed to be in same directory on server) that we also need extra_args (list): Extra arguments to pass to PANDA (e.g. ['-display', 'none']) hashes (dict, optional): Mapping between qcow filenames and SHA1hashes they should match upon download"
+},
+{
+"ref":"pandare.qcows_internal.SUPPORTED_IMAGES",
+"url":17,
+"doc":"Dictionary of  Image objects by name. Generic values (underlying OS version may change) include: x86_64 i386 ppc arm aarch64 mips mipsel mips64 You may also specify an exact arch/OS combination from the following exist: x86_64_ubuntu_1804 i386_ubuntu_1604 ppc_wheezy arm_wheezy aarch64 _focal mips_wheezy mips_buildroot5 mipsel_wheezy mipsel_buildroot5 mips64"
+},
+{
+"ref":"pandare.qcows_internal.Qcows",
+"url":17,
+"doc":"Helper library for managing qcows on your filesystem. Given an architecture, it can download a qcow from  panda.mit.edu to  ~/.panda/ and then use that. Alternatively, if a path to a qcow is provided, it can just use that. A qcow loaded by architecture can then be queried to get the name of the root snapshot or prompt."
+},
+{
+"ref":"pandare.qcows_internal.Qcows.get_qcow_info",
+"url":17,
+"doc":"Get information about supported image as specified by name. Args: name (str): String idenfifying a qcow supported Returns: Image: Instance of the Image class for a qcow",
+"func":1
+},
+{
+"ref":"pandare.qcows_internal.Qcows.get_qcow",
+"url":17,
+"doc":"Given a generic name of a qcow in  pandare.qcows.SUPPORTED_IMAGES or a path to a qcow, return the path. Defaults to i386 Args: name (str): generic name or path to qcow download (bool, default True): should the qcow be downloaded if necessary Returns: string: Path to qcow Raises: ValueError: if download is set to False and the qcow is not present RuntimeError: if the architecture is unsupported or the necessary files could not be downloaded",
+"func":1
+},
+{
+"ref":"pandare.qcows_internal.Qcows.get_file",
+"url":17,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.qcows_internal.Qcows.download_qcow",
+"url":17,
+"doc":"Download the qcow described in the Image object in image_data Store to the output output_path. If the Image includes SHA1 hashes, validate the file was downloaded correctly, otherwise retry once",
+"func":1
+},
+{
+"ref":"pandare.qcows_internal.Qcows.qcow_from_arg",
+"url":17,
+"doc":"Given an index into argv, call get_qcow with that arg if it exists, else with None Args: idx (int): an index into argv Returns: string: Path to qcow",
+"func":1
+},
+{
+"ref":"pandare.qcows_internal.Qcows.remove_image",
+"url":17,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.pypluginmanager",
+"url":18,
 "doc":"Class to manage loading Panda PyPlugins. See docs/pyplugins.md for details."
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager",
-"url":17,
+"url":18,
 "doc":"Set up an instance of PyPluginManager."
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.ppp",
-"url":17,
+"url":18,
 "doc":""
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.get_ppp_funcs",
-"url":17,
+"url":18,
 "doc":"",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.enable_flask",
-"url":17,
+"url":18,
 "doc":"Enable flask mode for this instance of the PyPlugin manager. Registered PyPlugins which support flask will be made available at the web interfaces.",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.load_plugin_class",
-"url":17,
+"url":18,
 "doc":"For backwards compatability with PyPlugins which subclass PyPlugin without importing it. Given a path to a python file which has a class that subclasses PyPlugin, set up the imports correctly such that we can generate an uninstantiated instance of that class and return that object. Note you can also just add  from pandare import PyPlugin to the plugin file and then just import the class(es) you want and pass them directly to panda.pyplugins.register() This avoids the  NameError: name 'PyPlugin' is not defined which you would get from directly doing  import [class_name] from [plugin_file] ",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.load",
-"url":17,
+"url":18,
 "doc":"Load (aka register) a PyPANDA plugin to run. It can later be unloaded by using panda.pyplugins.unload(name). pluginclasses can either be an uninstantiated python class, a list of such classes, or a tuple of (path_to_module.py, [classnames]) where classnames is a list of clases subclasses which subclass PyPlugin. Each plugin class will be stored in self.plugins under the class name",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.load_all",
-"url":17,
+"url":18,
 "doc":"Given a path to a python file, load every PyPlugin defind in that file by identifying all classes that subclass PyPlugin and passing them to self.load()",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.unload",
-"url":17,
+"url":18,
 "doc":"",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.unload_all",
-"url":17,
+"url":18,
 "doc":"",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.is_loaded",
-"url":17,
+"url":18,
 "doc":"",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.get_plugin",
-"url":17,
+"url":18,
 "doc":"",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.serve",
-"url":17,
+"url":18,
 "doc":"",
 "func":1
 }
