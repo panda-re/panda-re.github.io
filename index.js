@@ -177,13 +177,13 @@ INDEX=[
 {
 "ref":"pandare.Panda.physical_memory_write",
 "url":0,
-"doc":"Write guest physical memory. Args: addr (int): Address buf (bytestring): byte string to write into memory Returns: bool: error",
+"doc":"Write guest physical memory. Args: addr (int): Address buf (bytestring): byte string to write into memory Returns: None Raises: ValueError if the call to panda.physical_memory_write fails (e.g., if you pass a pointer to an invalid memory region)",
 "func":1
 },
 {
 "ref":"pandare.Panda.virtual_memory_write",
 "url":0,
-"doc":"Write guest virtual memory. Args: cpu (CPUState): CPUState structure address (int): Address buf (bytestr): byte string to write into memory Returns: bool: error",
+"doc":"Write guest virtual memory. Args: cpu (CPUState): CPUState structure address (int): Address buf (bytestr): byte string to write into memory Returns: None Raises: ValueError if the call to panda.virtual_memory_write fails (e.g., if you pass a pointer to an unmapped page)",
 "func":1
 },
 {
@@ -2274,13 +2274,13 @@ INDEX=[
 {
 "ref":"pandare.panda.Panda.physical_memory_write",
 "url":6,
-"doc":"Write guest physical memory. Args: addr (int): Address buf (bytestring): byte string to write into memory Returns: bool: error",
+"doc":"Write guest physical memory. Args: addr (int): Address buf (bytestring): byte string to write into memory Returns: None Raises: ValueError if the call to panda.physical_memory_write fails (e.g., if you pass a pointer to an invalid memory region)",
 "func":1
 },
 {
 "ref":"pandare.panda.Panda.virtual_memory_write",
 "url":6,
-"doc":"Write guest virtual memory. Args: cpu (CPUState): CPUState structure address (int): Address buf (bytestr): byte string to write into memory Returns: bool: error",
+"doc":"Write guest virtual memory. Args: cpu (CPUState): CPUState structure address (int): Address buf (bytestr): byte string to write into memory Returns: None Raises: ValueError if the call to panda.virtual_memory_write fails (e.g., if you pass a pointer to an unmapped page)",
 "func":1
 },
 {

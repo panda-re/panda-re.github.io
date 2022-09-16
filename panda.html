@@ -986,9 +986,12 @@ class Panda():
             buf (bytestring):  byte string to write into memory
 
         Returns:
-            bool: error
+            None
+
+        Raises:
+            ValueError if the call to panda.physical_memory_write fails (e.g., if you pass a pointer to an invalid memory region)
         &#39;&#39;&#39;
-        return self._memory_write(None, addr, buf, physical=True)
+        self._memory_write(None, addr, buf, physical=True)
 
     def virtual_memory_write(self, cpu, addr, buf):
         &#39;&#39;&#39;
@@ -1000,10 +1003,12 @@ class Panda():
             buf (bytestr): byte string to write into memory
 
         Returns:
-            bool: error
+            None
 
+        Raises:
+            ValueError if the call to panda.virtual_memory_write fails (e.g., if you pass a pointer to an unmapped page)
         &#39;&#39;&#39;
-        return self._memory_write(cpu, addr, buf, physical=False)
+        self._memory_write(cpu, addr, buf, physical=False)
 
     def _memory_write(self, cpu, addr, buf, physical=False):
         &#39;&#39;&#39;
@@ -1018,9 +1023,12 @@ class Panda():
             self.enable_memcb()
 
         if physical:
-            return self.libpanda.panda_physical_memory_write_external(addr, buf_a, length_a)
+            err = self.libpanda.panda_physical_memory_write_external(addr, buf_a, length_a)
         else:
-            return self.libpanda.panda_virtual_memory_write_external(cpu, addr, buf_a, length_a)
+            err = self.libpanda.panda_virtual_memory_write_external(cpu, addr, buf_a, length_a)
+
+        if err &lt; 0:
+            raise ValueError(f&#34;Memory write failed with err={err}&#34;) # TODO: make a PANDA Exn class
 
     def callstack_callers(self, lim, cpu): # XXX move into new directory, &#39;callstack&#39; ?
         &#39;&#39;&#39;
@@ -4250,9 +4258,12 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             buf (bytestring):  byte string to write into memory
 
         Returns:
-            bool: error
+            None
+
+        Raises:
+            ValueError if the call to panda.physical_memory_write fails (e.g., if you pass a pointer to an invalid memory region)
         &#39;&#39;&#39;
-        return self._memory_write(None, addr, buf, physical=True)
+        self._memory_write(None, addr, buf, physical=True)
 
     def virtual_memory_write(self, cpu, addr, buf):
         &#39;&#39;&#39;
@@ -4264,10 +4275,12 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             buf (bytestr): byte string to write into memory
 
         Returns:
-            bool: error
+            None
 
+        Raises:
+            ValueError if the call to panda.virtual_memory_write fails (e.g., if you pass a pointer to an unmapped page)
         &#39;&#39;&#39;
-        return self._memory_write(cpu, addr, buf, physical=False)
+        self._memory_write(cpu, addr, buf, physical=False)
 
     def _memory_write(self, cpu, addr, buf, physical=False):
         &#39;&#39;&#39;
@@ -4282,9 +4295,12 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.enable_memcb()
 
         if physical:
-            return self.libpanda.panda_physical_memory_write_external(addr, buf_a, length_a)
+            err = self.libpanda.panda_physical_memory_write_external(addr, buf_a, length_a)
         else:
-            return self.libpanda.panda_virtual_memory_write_external(cpu, addr, buf_a, length_a)
+            err = self.libpanda.panda_virtual_memory_write_external(cpu, addr, buf_a, length_a)
+
+        if err &lt; 0:
+            raise ValueError(f&#34;Memory write failed with err={err}&#34;) # TODO: make a PANDA Exn class
 
     def callstack_callers(self, lim, cpu): # XXX move into new directory, &#39;callstack&#39; ?
         &#39;&#39;&#39;
@@ -9558,10 +9574,9 @@ returns a list of integers, each of the specified architecture's pointer size.</
 <dd>byte string to write into memory</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>bool</code></dt>
-<dd>error</dd>
-</dl></div>
+<p>None</p>
+<h2 id="raises">Raises</h2>
+<p>ValueError if the call to panda.physical_memory_write fails (e.g., if you pass a pointer to an invalid memory region)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -9575,9 +9590,12 @@ returns a list of integers, each of the specified architecture's pointer size.</
         buf (bytestring):  byte string to write into memory
 
     Returns:
-        bool: error
+        None
+
+    Raises:
+        ValueError if the call to panda.physical_memory_write fails (e.g., if you pass a pointer to an invalid memory region)
     &#39;&#39;&#39;
-    return self._memory_write(None, addr, buf, physical=True)</code></pre>
+    self._memory_write(None, addr, buf, physical=True)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.ppp"><code class="name flex">
@@ -11426,10 +11444,9 @@ Returns true if the pyperipheral was successfully removed, else false.</p></div>
 <dd>byte string to write into memory</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>bool</code></dt>
-<dd>error</dd>
-</dl></div>
+<p>None</p>
+<h2 id="raises">Raises</h2>
+<p>ValueError if the call to panda.virtual_memory_write fails (e.g., if you pass a pointer to an unmapped page)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -11444,10 +11461,12 @@ Returns true if the pyperipheral was successfully removed, else false.</p></div>
         buf (bytestr): byte string to write into memory
 
     Returns:
-        bool: error
+        None
 
+    Raises:
+        ValueError if the call to panda.virtual_memory_write fails (e.g., if you pass a pointer to an unmapped page)
     &#39;&#39;&#39;
-    return self._memory_write(cpu, addr, buf, physical=False)</code></pre>
+    self._memory_write(cpu, addr, buf, physical=False)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.vm_stop"><code class="name flex">
