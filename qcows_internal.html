@@ -498,6 +498,10 @@ class Qcows():
                     raise ValueError(f&#34;{url} has hash {computed_hash} vs expected hash {sha1hash}&#34;)
                 # Hash matches, move .tmp file to actual path
                 move(output_path+&#34;.tmp&#34;, output_path)
+            else:
+                # No hash, move .tmp file to actual path
+                move(output_path+&#34;.tmp&#34;, output_path)
+                
 
         except Exception as e:
             logger.info(&#34;Download failed, deleting partial file: %s&#34;, output_path)
@@ -809,6 +813,10 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
                     raise ValueError(f&#34;{url} has hash {computed_hash} vs expected hash {sha1hash}&#34;)
                 # Hash matches, move .tmp file to actual path
                 move(output_path+&#34;.tmp&#34;, output_path)
+            else:
+                # No hash, move .tmp file to actual path
+                move(output_path+&#34;.tmp&#34;, output_path)
+                
 
         except Exception as e:
             logger.info(&#34;Download failed, deleting partial file: %s&#34;, output_path)
@@ -978,6 +986,10 @@ def get_file(urls, output_path, sha1hash=None, do_retry=True, _is_tty=True):
                 raise ValueError(f&#34;{url} has hash {computed_hash} vs expected hash {sha1hash}&#34;)
             # Hash matches, move .tmp file to actual path
             move(output_path+&#34;.tmp&#34;, output_path)
+        else:
+            # No hash, move .tmp file to actual path
+            move(output_path+&#34;.tmp&#34;, output_path)
+            
 
     except Exception as e:
         logger.info(&#34;Download failed, deleting partial file: %s&#34;, output_path)
