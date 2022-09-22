@@ -145,7 +145,7 @@ padding: .5rem 1rem;
 </header>
 <section id="section-intro">
 <p>This module contains architecture-specific code.</p>
-<p>When the <code><a title="pandare.panda" href="panda.html">pandare.panda</a></code> class is initialized it will automatically
+<p>When the <code><a title="pandare.panda" href="panda.html">pandare.panda</a></code> class is initialized, it will automatically
 initialize a PandaArch class for the specified architecture in the variable
 <code>panda.arch</code>.</p>
 <details class="source">
@@ -155,7 +155,7 @@ initialize a PandaArch class for the specified architecture in the variable
 <pre><code class="python">&#39;&#39;&#39;
 This module contains architecture-specific code.
 
-When the `pandare.panda` class is initialized it will automatically
+When the `pandare.panda` class is initialized, it will automatically
 initialize a PandaArch class for the specified architecture in the variable
 `panda.arch`.
 
@@ -503,7 +503,7 @@ class ArmArch(PandaArch):
 
     def get_return_address(self, cpu):
         &#39;&#39;&#39;
-        looks up where ret will go
+        Looks up where ret will go
         &#39;&#39;&#39;
         return self.get_reg(cpu, &#34;LR&#34;)
 
@@ -538,7 +538,7 @@ class Aarch64Arch(PandaArch):
     def get_pc(self, cpu):
         &#39;&#39;&#39;
         Overloaded function to get aarch64 program counter.
-        Note the PC is not stored in a general purpose reg
+        Note the PC is not stored in a general purpose register.
         &#39;&#39;&#39;
         return cpu.env_ptr.pc
 
@@ -573,7 +573,7 @@ class Aarch64Arch(PandaArch):
 
     def get_return_address(self, cpu):
         &#39;&#39;&#39;
-        looks up where ret will go
+        Looks up where ret will go
         &#39;&#39;&#39;
         return self.get_reg(cpu, &#34;LR&#34;)
 
@@ -682,10 +682,10 @@ class MipsArch(PandaArch):
         &#39;&#39;&#39;
         Overloaded function so when convention is syscall, user can control
         the A3 register (which indicates syscall success/failure) in addition
-        to syscall return value.
+        to the syscall return value.
 
-        When convention == &#39;syscall&#39;, failure = False means A3 will bet set to 0,
-        otherwise it will be set to 1
+        When convention == &#39;syscall&#39;, failure = False means A3 will bet set to 0.
+        Otherwise, it will be set to 1
 
         &#39;&#39;&#39;
         if convention == &#39;syscall&#39;:
@@ -914,7 +914,7 @@ class X86_64Arch(PandaArch):
     def get_pc(self, cpu):
         &#39;&#39;&#39;
         Overloaded function to get aarch64 program counter.
-        Note the PC is not stored in a general purpose reg
+        Note the PC is not stored in a general purpose register.
         &#39;&#39;&#39;
         return cpu.env_ptr.pc
 
@@ -949,7 +949,7 @@ class X86_64Arch(PandaArch):
 
     def get_return_address(self, cpu):
         &#39;&#39;&#39;
-        looks up where ret will go
+        Looks up where ret will go
         &#39;&#39;&#39;
         return self.get_reg(cpu, &#34;LR&#34;)</code></pre>
 </details>
@@ -964,7 +964,7 @@ class X86_64Arch(PandaArch):
 </code></dt>
 <dd>
 <div class="desc"><p>Overloaded function to get aarch64 program counter.
-Note the PC is not stored in a general purpose reg</p></div>
+Note the PC is not stored in a general purpose register.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -972,7 +972,7 @@ Note the PC is not stored in a general purpose reg</p></div>
 <pre><code class="python">def get_pc(self, cpu):
     &#39;&#39;&#39;
     Overloaded function to get aarch64 program counter.
-    Note the PC is not stored in a general purpose reg
+    Note the PC is not stored in a general purpose register.
     &#39;&#39;&#39;
     return cpu.env_ptr.pc</code></pre>
 </details>
@@ -981,14 +981,14 @@ Note the PC is not stored in a general purpose reg</p></div>
 <span>def <span class="ident">get_return_address</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>looks up where ret will go</p></div>
+<div class="desc"><p>Looks up where ret will go</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_return_address(self, cpu):
     &#39;&#39;&#39;
-    looks up where ret will go
+    Looks up where ret will go
     &#39;&#39;&#39;
     return self.get_reg(cpu, &#34;LR&#34;)</code></pre>
 </details>
@@ -1103,7 +1103,7 @@ Note the PC is not stored in a general purpose reg</p></div>
 
     def get_return_address(self, cpu):
         &#39;&#39;&#39;
-        looks up where ret will go
+        Looks up where ret will go
         &#39;&#39;&#39;
         return self.get_reg(cpu, &#34;LR&#34;)</code></pre>
 </details>
@@ -1117,14 +1117,14 @@ Note the PC is not stored in a general purpose reg</p></div>
 <span>def <span class="ident">get_return_address</span></span>(<span>self, cpu)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>looks up where ret will go</p></div>
+<div class="desc"><p>Looks up where ret will go</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_return_address(self, cpu):
     &#39;&#39;&#39;
-    looks up where ret will go
+    Looks up where ret will go
     &#39;&#39;&#39;
     return self.get_reg(cpu, &#34;LR&#34;)</code></pre>
 </details>
@@ -1351,10 +1351,10 @@ except the register name and call conventions.</p>
         &#39;&#39;&#39;
         Overloaded function so when convention is syscall, user can control
         the A3 register (which indicates syscall success/failure) in addition
-        to syscall return value.
+        to the syscall return value.
 
-        When convention == &#39;syscall&#39;, failure = False means A3 will bet set to 0,
-        otherwise it will be set to 1
+        When convention == &#39;syscall&#39;, failure = False means A3 will bet set to 0.
+        Otherwise, it will be set to 1
 
         &#39;&#39;&#39;
         if convention == &#39;syscall&#39;:
@@ -1496,9 +1496,9 @@ on error)</p></div>
 <dd>
 <div class="desc"><p>Overloaded function so when convention is syscall, user can control
 the A3 register (which indicates syscall success/failure) in addition
-to syscall return value.</p>
-<p>When convention == 'syscall', failure = False means A3 will bet set to 0,
-otherwise it will be set to 1</p></div>
+to the syscall return value.</p>
+<p>When convention == 'syscall', failure = False means A3 will bet set to 0.
+Otherwise, it will be set to 1</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1507,10 +1507,10 @@ otherwise it will be set to 1</p></div>
     &#39;&#39;&#39;
     Overloaded function so when convention is syscall, user can control
     the A3 register (which indicates syscall success/failure) in addition
-    to syscall return value.
+    to the syscall return value.
 
-    When convention == &#39;syscall&#39;, failure = False means A3 will bet set to 0,
-    otherwise it will be set to 1
+    When convention == &#39;syscall&#39;, failure = False means A3 will bet set to 0.
+    Otherwise, it will be set to 1
 
     &#39;&#39;&#39;
     if convention == &#39;syscall&#39;:

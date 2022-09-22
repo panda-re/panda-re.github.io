@@ -148,7 +148,7 @@ padding: .5rem 1rem;
 <p>Module to simplify PANDA command line usage. Use python3 -m pandare.qcows to
 fetch files necessary to run various generic VMs and generate command lines to start them.
 Also supports deleting previously-fetched files.</p>
-<p>Most of the interesting logic fot his is contained in qcows_internal.py</p>
+<p>Most of the interesting logic for this is contained in qcows_internal.py.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -159,7 +159,7 @@ Module to simplify PANDA command line usage. Use python3 -m pandare.qcows to
 fetch files necessary to run various generic VMs and generate command lines to start them.
 Also supports deleting previously-fetched files.
 
-Most of the interesting logic fot his is contained in qcows_internal.py
+Most of the interesting logic for this is contained in qcows_internal.py.
 &#39;&#39;&#39;
 
 from os import path, remove
@@ -254,7 +254,7 @@ class Qcows_cli():
         if &#34;-display none&#34; in ret:
             ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
 
-        # Repalce /home/username with ~ when we can (TTYs)
+        # Replace /home/username with ~ when we can (TTYs)
         if stdout.isatty() and &#39;HOME&#39; in environ:
             ret = ret.replace(environ[&#39;HOME&#39;], &#39;~&#39;)
         return ret
@@ -387,7 +387,7 @@ if __name__ == &#34;__main__&#34;:
         if &#34;-display none&#34; in ret:
             ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
 
-        # Repalce /home/username with ~ when we can (TTYs)
+        # Replace /home/username with ~ when we can (TTYs)
         if stdout.isatty() and &#39;HOME&#39; in environ:
             ret = ret.replace(environ[&#39;HOME&#39;], &#39;~&#39;)
         return ret</code></pre>
@@ -440,7 +440,7 @@ def cli(target):
     if &#34;-display none&#34; in ret:
         ret = ret.replace(&#34;-display none&#34;, &#34;-nographic&#34;)
 
-    # Repalce /home/username with ~ when we can (TTYs)
+    # Replace /home/username with ~ when we can (TTYs)
     if stdout.isatty() and &#39;HOME&#39; in environ:
         ret = ret.replace(environ[&#39;HOME&#39;], &#39;~&#39;)
     return ret</code></pre>

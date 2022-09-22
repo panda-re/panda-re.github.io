@@ -1493,7 +1493,7 @@ INDEX=[
 {
 "ref":"pandare.arch",
 "url":5,
-"doc":"This module contains architecture-specific code. When the  pandare.panda class is initialized it will automatically initialize a PandaArch class for the specified architecture in the variable  panda.arch ."
+"doc":"This module contains architecture-specific code. When the  pandare.panda class is initialized, it will automatically initialize a PandaArch class for the specified architecture in the variable  panda.arch ."
 },
 {
 "ref":"pandare.arch.PandaArch",
@@ -1591,7 +1591,7 @@ INDEX=[
 {
 "ref":"pandare.arch.ArmArch.get_return_address",
 "url":5,
-"doc":"looks up where ret will go",
+"doc":"Looks up where ret will go",
 "func":1
 },
 {
@@ -1673,7 +1673,7 @@ INDEX=[
 {
 "ref":"pandare.arch.Aarch64Arch.get_pc",
 "url":5,
-"doc":"Overloaded function to get aarch64 program counter. Note the PC is not stored in a general purpose reg",
+"doc":"Overloaded function to get aarch64 program counter. Note the PC is not stored in a general purpose register.",
 "func":1
 },
 {
@@ -1691,7 +1691,7 @@ INDEX=[
 {
 "ref":"pandare.arch.Aarch64Arch.get_return_address",
 "url":5,
-"doc":"looks up where ret will go",
+"doc":"Looks up where ret will go",
 "func":1
 },
 {
@@ -1797,7 +1797,7 @@ INDEX=[
 {
 "ref":"pandare.arch.MipsArch.set_retval",
 "url":5,
-"doc":"Overloaded function so when convention is syscall, user can control the A3 register (which indicates syscall success/failure) in addition to syscall return value. When convention  'syscall', failure = False means A3 will bet set to 0, otherwise it will be set to 1",
+"doc":"Overloaded function so when convention is syscall, user can control the A3 register (which indicates syscall success/failure) in addition to the syscall return value. When convention  'syscall', failure = False means A3 will bet set to 0. Otherwise, it will be set to 1",
 "func":1
 },
 {
@@ -1891,7 +1891,7 @@ INDEX=[
 {
 "ref":"pandare.arch.Mips64Arch.set_retval",
 "url":5,
-"doc":"Overloaded function so when convention is syscall, user can control the A3 register (which indicates syscall success/failure) in addition to syscall return value. When convention  'syscall', failure = False means A3 will bet set to 0, otherwise it will be set to 1",
+"doc":"Overloaded function so when convention is syscall, user can control the A3 register (which indicates syscall success/failure) in addition to the syscall return value. When convention  'syscall', failure = False means A3 will bet set to 0. Otherwise, it will be set to 1",
 "func":1
 },
 {
@@ -2120,7 +2120,7 @@ INDEX=[
 {
 "ref":"pandare.panda",
 "url":6,
-"doc":"This module simply contains the Panda class"
+"doc":"This module simply contains the Panda class."
 },
 {
 "ref":"pandare.panda.Panda",
@@ -3109,7 +3109,7 @@ INDEX=[
 {
 "ref":"pandare.qcows",
 "url":9,
-"doc":"Module to simplify PANDA command line usage. Use python3 -m pandare.qcows to fetch files necessary to run various generic VMs and generate command lines to start them. Also supports deleting previously-fetched files. Most of the interesting logic fot his is contained in qcows_internal.py"
+"doc":"Module to simplify PANDA command line usage. Use python3 -m pandare.qcows to fetch files necessary to run various generic VMs and generate command lines to start them. Also supports deleting previously-fetched files. Most of the interesting logic for this is contained in qcows_internal.py."
 },
 {
 "ref":"pandare.qcows.Qcows_cli",
