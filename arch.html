@@ -478,9 +478,11 @@ class ArmArch(PandaArch):
                                  &#34;syscall&#34;: [&#34;R7&#34;, &#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;, &#34;R4&#34;, &#34;R5&#34;], # EABI
                                  }
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;arm32&#39;]
+        self.call_conventions[&#39;linux_kernel&#39;] = self.call_conventions[&#39;arm32&#39;]
 
         self.reg_retval = {&#34;default&#34;:    &#34;R0&#34;,
-                           &#34;syscall&#34;:    &#34;R0&#34;}
+                           &#34;syscall&#34;:    &#34;R0&#34;,
+                           &#34;linux_kernel&#34;:    &#34;R0&#34;}
         self.reg_pc = regnames.index(&#34;IP&#34;)
 
     def _get_reg_val(self, cpu, reg):
@@ -531,9 +533,11 @@ class Aarch64Arch(PandaArch):
         self.call_conventions = {&#34;arm64&#34;:         [&#34;X0&#34;, &#34;X1&#34;, &#34;X2&#34;, &#34;X3&#34;, &#34;X4&#34;, &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;],
                                  &#34;syscall&#34;: [&#34;XR&#34;, &#34;X0&#34;, &#34;X1&#34;, &#34;X2&#34;, &#34;X3&#34;, &#34;X4&#34;, &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;arm64&#39;]
+        self.call_conventions[&#39;linux_kernel&#39;] = self.call_conventions[&#39;arm64&#39;]
 
         self.reg_retval = {&#34;default&#34;:    &#34;X0&#34;,
-                           &#34;syscall&#34;:    &#34;X0&#34;}
+                           &#34;syscall&#34;:    &#34;X0&#34;,
+                           &#34;linux_kernel&#34;:    &#34;X0&#34;}
 
     def get_pc(self, cpu):
         &#39;&#39;&#39;
@@ -612,9 +616,11 @@ class MipsArch(PandaArch):
         self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;],
                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]} # XXX: Note it&#39;s not 0-indexed for stack args, I guess the syscall pushes stuff too
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
+        self.call_conventions[&#39;linux_kernel&#39;] = self.call_conventions[&#39;mips&#39;]
 
         self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
-                            &#34;syscall&#34;:    &#39;V0&#39;}
+                            &#34;syscall&#34;:    &#39;V0&#39;,
+                            &#34;linux_kernel&#34;:    &#39;V0&#39;}
 
 
         # note names must be stored uppercase for get/set reg to work case-insensitively
@@ -718,6 +724,7 @@ class Mips64Arch(MipsArch):
         self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;], # XXX Unsure?
                                  &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;A4&#34;, &#34;A5&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
+        self.call_conventions[&#39;linux_kernel&#39;] = self.call_conventions[&#39;mips&#39;]
 
         self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
                             &#34;syscall&#34;:    &#39;V0&#39;}
@@ -739,10 +746,12 @@ class X86Arch(PandaArch):
         # Note we don&#39;t set self.call_conventions because stack-based arg get/set is
         # not yet supported
         self.reg_retval = {&#34;default&#34;:    &#34;EAX&#34;,
-                           &#34;syscall&#34;:    &#34;EAX&#34;}
+                           &#34;syscall&#34;:    &#34;EAX&#34;,
+                           &#34;linux_kernel&#34;:    &#34;EAX&#34;}
         
         self.call_conventions = {&#34;cdecl&#34;: [&#34;stack_{x}&#34; for x in range(20)], # 20: arbitrary but big
-                                 &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;]}
+                                 &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;],
+                                 &#34;linux_kernel&#34;: [&#34;EAX&#34;, &#34;EDX&#34;, &#34;ECX&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;cdecl&#39;]
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)
@@ -802,10 +811,12 @@ class X86_64Arch(PandaArch):
                                  &#39;syscall&#39;: [&#39;RAX&#39;, &#39;RDI&#39;, &#39;RSI&#39;, &#39;RDX&#39;, &#39;R10&#39;, &#39;R8&#39;, &#39;R9&#39;]}
 
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;sysv&#39;]
+        self.call_conventions[&#39;linux_kernel&#39;] = self.call_conventions[&#39;sysv&#39;]
 
         self.reg_sp = regnames.index(&#39;RSP&#39;)
         self.reg_retval = {&#39;sysv&#39;: &#39;RAX&#39;,
-                           &#39;syscall&#39;: &#39;RAX&#39;}
+                           &#39;syscall&#39;: &#39;RAX&#39;,
+                           &#39;linux_kernel&#39;: &#39;RAX&#39;}
         self.reg_retval[&#39;default&#39;] = self.reg_retval[&#39;sysv&#39;]
 
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
@@ -907,9 +918,11 @@ class X86_64Arch(PandaArch):
         self.call_conventions = {&#34;arm64&#34;:         [&#34;X0&#34;, &#34;X1&#34;, &#34;X2&#34;, &#34;X3&#34;, &#34;X4&#34;, &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;],
                                  &#34;syscall&#34;: [&#34;XR&#34;, &#34;X0&#34;, &#34;X1&#34;, &#34;X2&#34;, &#34;X3&#34;, &#34;X4&#34;, &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;arm64&#39;]
+        self.call_conventions[&#39;linux_kernel&#39;] = self.call_conventions[&#39;arm64&#39;]
 
         self.reg_retval = {&#34;default&#34;:    &#34;X0&#34;,
-                           &#34;syscall&#34;:    &#34;X0&#34;}
+                           &#34;syscall&#34;:    &#34;X0&#34;,
+                           &#34;linux_kernel&#34;:    &#34;X0&#34;}
 
     def get_pc(self, cpu):
         &#39;&#39;&#39;
@@ -1078,9 +1091,11 @@ Note the PC is not stored in a general purpose register.</p></div>
                                  &#34;syscall&#34;: [&#34;R7&#34;, &#34;R0&#34;, &#34;R1&#34;, &#34;R2&#34;, &#34;R3&#34;, &#34;R4&#34;, &#34;R5&#34;], # EABI
                                  }
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;arm32&#39;]
+        self.call_conventions[&#39;linux_kernel&#39;] = self.call_conventions[&#39;arm32&#39;]
 
         self.reg_retval = {&#34;default&#34;:    &#34;R0&#34;,
-                           &#34;syscall&#34;:    &#34;R0&#34;}
+                           &#34;syscall&#34;:    &#34;R0&#34;,
+                           &#34;linux_kernel&#34;:    &#34;R0&#34;}
         self.reg_pc = regnames.index(&#34;IP&#34;)
 
     def _get_reg_val(self, cpu, reg):
@@ -1199,6 +1214,7 @@ except the register name and call conventions.</p>
         self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;], # XXX Unsure?
                                  &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;A4&#34;, &#34;A5&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
+        self.call_conventions[&#39;linux_kernel&#39;] = self.call_conventions[&#39;mips&#39;]
 
         self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
                             &#34;syscall&#34;:    &#39;V0&#39;}
@@ -1281,9 +1297,11 @@ except the register name and call conventions.</p>
         self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;],
                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]} # XXX: Note it&#39;s not 0-indexed for stack args, I guess the syscall pushes stuff too
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;mips&#39;]
+        self.call_conventions[&#39;linux_kernel&#39;] = self.call_conventions[&#39;mips&#39;]
 
         self.reg_retval =  {&#34;default&#34;:    &#34;V0&#34;,
-                            &#34;syscall&#34;:    &#39;V0&#39;}
+                            &#34;syscall&#34;:    &#39;V0&#39;,
+                            &#34;linux_kernel&#34;:    &#39;V0&#39;}
 
 
         # note names must be stored uppercase for get/set reg to work case-insensitively
@@ -2182,10 +2200,12 @@ in the signature here so it can be set by a caller without regard for the guest 
         # Note we don&#39;t set self.call_conventions because stack-based arg get/set is
         # not yet supported
         self.reg_retval = {&#34;default&#34;:    &#34;EAX&#34;,
-                           &#34;syscall&#34;:    &#34;EAX&#34;}
+                           &#34;syscall&#34;:    &#34;EAX&#34;,
+                           &#34;linux_kernel&#34;:    &#34;EAX&#34;}
         
         self.call_conventions = {&#34;cdecl&#34;: [&#34;stack_{x}&#34; for x in range(20)], # 20: arbitrary but big
-                                 &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;]}
+                                 &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;],
+                                 &#34;linux_kernel&#34;: [&#34;EAX&#34;, &#34;EDX&#34;, &#34;ECX&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;cdecl&#39;]
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)
@@ -2348,10 +2368,12 @@ in the signature here so it can be set by a caller without regard for the guest 
                                  &#39;syscall&#39;: [&#39;RAX&#39;, &#39;RDI&#39;, &#39;RSI&#39;, &#39;RDX&#39;, &#39;R10&#39;, &#39;R8&#39;, &#39;R9&#39;]}
 
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;sysv&#39;]
+        self.call_conventions[&#39;linux_kernel&#39;] = self.call_conventions[&#39;sysv&#39;]
 
         self.reg_sp = regnames.index(&#39;RSP&#39;)
         self.reg_retval = {&#39;sysv&#39;: &#39;RAX&#39;,
-                           &#39;syscall&#39;: &#39;RAX&#39;}
+                           &#39;syscall&#39;: &#39;RAX&#39;,
+                           &#39;linux_kernel&#39;: &#39;RAX&#39;}
         self.reg_retval[&#39;default&#39;] = self.reg_retval[&#39;sysv&#39;]
 
         self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
