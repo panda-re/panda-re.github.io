@@ -3721,7 +3721,7 @@ INDEX=[
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.load_all",
 "url":18,
-"doc":"Given a path to a python file, load every PyPlugin defind in that file by identifying all classes that subclass PyPlugin and passing them to self.load()",
+"doc":"Given a path to a python file, load every PyPlugin defined in that file by identifying all classes that subclass PyPlugin and passing them to self.load() Args: plugin_file (str): A path specifying a Python file from which PyPlugin classes should be loaded args (dict): Optional. A dictionary of arguments to pass to the PyPlugin template_dir (string): Optional. A directory for template files, passed through to  self.load . Returns: String list of PyPlugin class names loaded from the plugin_file",
 "func":1
 },
 {
