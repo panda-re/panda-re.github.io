@@ -912,6 +912,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Panda.hook_symbol_resolution",
+"url":0,
+"doc":"Decorate a function to setup a hook: when a guest process resolves a symbol the function will be called with args (CPUState, struct hook_symbol_resolve, struct symbol, OsiModule) Args: libraryname (string): Name of library containing symbol to be hooked. May be None to match any. symbol (string, int): Name of symbol or offset into library to hook name (string): name of hook, defaults to function name Returns: None: Decorated function is called when guest resolves the specified symbol in the specified library.",
+"func":1
+},
+{
 "ref":"pandare.Panda.hook_symbol",
 "url":0,
 "doc":"Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr, the function will be called with args (CPUState, TranslationBlock) Args: libraryname (string): Name of library containing symbol to be hooked. May be None to match any. symbol (string, int): Name of symbol or offset into library to hook kernel (bool): if hook should be applied exclusively in kernel mode name (string): name of hook, defaults to function name cb_type (string): callback-type, defaults to start_block_exec Returns: None: Decorated function is called when (before/after is determined by cb_type) guest goes to call the specified symbol in the specified library.",
@@ -3006,6 +3012,12 @@ INDEX=[
 "ref":"pandare.panda.Panda.hook",
 "url":6,
 "doc":"Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr, the function will be called with args (CPUState, TranslationBlock)",
+"func":1
+},
+{
+"ref":"pandare.panda.Panda.hook_symbol_resolution",
+"url":6,
+"doc":"Decorate a function to setup a hook: when a guest process resolves a symbol the function will be called with args (CPUState, struct hook_symbol_resolve, struct symbol, OsiModule) Args: libraryname (string): Name of library containing symbol to be hooked. May be None to match any. symbol (string, int): Name of symbol or offset into library to hook name (string): name of hook, defaults to function name Returns: None: Decorated function is called when guest resolves the specified symbol in the specified library.",
 "func":1
 },
 {
