@@ -160,9 +160,12 @@ from os import devnull
 from subprocess import check_call, STDOUT
 from sys import platform, stdout
 from threading import current_thread, main_thread
+
 #for _find_build_path
 from os import dup, getenv, environ, path
 from os.path import realpath, isfile, dirname, join as pjoin
+# for rr2 format
+import  tarfile
 
 # Set to enable pypanda debugging
 debug = False
@@ -255,6 +258,32 @@ def blocking(func):
     wrapper.__blocking__ = True
     wrapper.__name__ = func.__name__ + &#34; (with async thread)&#34;
     return wrapper
+
+
+def rr2_name(name):
+    return name if name.endswith(&#34;.rr2&#34;) else name + &#34;.rr2&#34;
+
+def rr2_recording(name):
+    def is_gzip(name):
+        rr = open(name, &#34;rb&#34;)
+        return rr.read(2) == b&#39;\x1f\x8b&#39;
+
+    rr2_filename = rr2_name(name)
+    if isfile(rr2_filename) and is_gzip(rr2_filename):
+        return True
+    return False
+
+def rr2_contains_member(name, member):
+    rr2_filename = rr2_name(name)
+    contains_member = False
+    if rr2_recording(rr2_filename):
+        try:
+            tar = tarfile.open(rr2_filename)
+            tar.getmember(member)
+            contains_member = True
+        except (KeyError, IsADirectoryError, FileNotFoundError, tarfile.ReadError):
+            pass
+    return contains_member
 
 class GArrayIterator():
     &#39;&#39;&#39;
@@ -488,6 +517,61 @@ otherwise just print the message</p></div>
         print(f&#34;[PYPANDA] {msg}&#34;)</code></pre>
 </details>
 </dd>
+<dt id="pandare.utils.rr2_contains_member"><code class="name flex">
+<span>def <span class="ident">rr2_contains_member</span></span>(<span>name, member)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rr2_contains_member(name, member):
+    rr2_filename = rr2_name(name)
+    contains_member = False
+    if rr2_recording(rr2_filename):
+        try:
+            tar = tarfile.open(rr2_filename)
+            tar.getmember(member)
+            contains_member = True
+        except (KeyError, IsADirectoryError, FileNotFoundError, tarfile.ReadError):
+            pass
+    return contains_member</code></pre>
+</details>
+</dd>
+<dt id="pandare.utils.rr2_name"><code class="name flex">
+<span>def <span class="ident">rr2_name</span></span>(<span>name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rr2_name(name):
+    return name if name.endswith(&#34;.rr2&#34;) else name + &#34;.rr2&#34;</code></pre>
+</details>
+</dd>
+<dt id="pandare.utils.rr2_recording"><code class="name flex">
+<span>def <span class="ident">rr2_recording</span></span>(<span>name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rr2_recording(name):
+    def is_gzip(name):
+        rr = open(name, &#34;rb&#34;)
+        return rr.read(2) == b&#39;\x1f\x8b&#39;
+
+    rr2_filename = rr2_name(name)
+    if isfile(rr2_filename) and is_gzip(rr2_filename):
+        return True
+    return False</code></pre>
+</details>
+</dd>
 <dt id="pandare.utils.telescope"><code class="name flex">
 <span>def <span class="ident">telescope</span></span>(<span>panda, cpu, val)</span>
 </code></dt>
@@ -713,6 +797,9 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.utils.find_build_dir" href="#pandare.utils.find_build_dir">find_build_dir</a></code></li>
 <li><code><a title="pandare.utils.make_iso" href="#pandare.utils.make_iso">make_iso</a></code></li>
 <li><code><a title="pandare.utils.progress" href="#pandare.utils.progress">progress</a></code></li>
+<li><code><a title="pandare.utils.rr2_contains_member" href="#pandare.utils.rr2_contains_member">rr2_contains_member</a></code></li>
+<li><code><a title="pandare.utils.rr2_name" href="#pandare.utils.rr2_name">rr2_name</a></code></li>
+<li><code><a title="pandare.utils.rr2_recording" href="#pandare.utils.rr2_recording">rr2_recording</a></code></li>
 <li><code><a title="pandare.utils.telescope" href="#pandare.utils.telescope">telescope</a></code></li>
 <li><code><a title="pandare.utils.warn" href="#pandare.utils.warn">warn</a></code></li>
 </ul>

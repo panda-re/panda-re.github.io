@@ -183,7 +183,7 @@ from shlex import quote as shlex_quote, split as shlex_split
 from time import sleep
 from cffi import FFI
 
-from .utils import progress, warn, make_iso, debug, blocking, GArrayIterator, plugin_list, find_build_dir
+from .utils import progress, warn, make_iso, debug, blocking, GArrayIterator, plugin_list, find_build_dir, rr2_recording, rr2_contains_member
 from .taint import TaintQuery
 from .panda_expect import Expect
 from .asyncthread import AsyncThread
@@ -713,7 +713,7 @@ class Panda():
         res_string_enum = self.ffi.string(self.ffi.cast(&#34;RRCTRL_ret&#34;,result))
         if res_string_enum != &#34;RRCTRL_OK&#34;:
            raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;)
-    
+
     def recording_exists(self, name):
         &#39;&#39;&#39;
         Checks if a recording file exists on disk.
@@ -724,7 +724,7 @@ class Panda():
         Returns:
             boolean: true if file exists, false otherwise
         &#39;&#39;&#39;
-        if exists(name + &#34;-rr-snp&#34;):
+        if exists(name + &#34;-rr-snp&#34;) or rr2_contains_member(name, &#34;snapshot&#34;):
             return True
 
     def run_replay(self, replaypfx):
@@ -737,7 +737,7 @@ class Panda():
         Returns:
             None
         &#39;&#39;&#39;
-        if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
+        if (not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;)) and not rr2_recording(replaypfx):
             raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
 
         self.ending = False
@@ -4047,7 +4047,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         res_string_enum = self.ffi.string(self.ffi.cast(&#34;RRCTRL_ret&#34;,result))
         if res_string_enum != &#34;RRCTRL_OK&#34;:
            raise Exception(f&#34;record method failed with RTCTL_ret {res_string_enum} ({result})&#34;)
-    
+
     def recording_exists(self, name):
         &#39;&#39;&#39;
         Checks if a recording file exists on disk.
@@ -4058,7 +4058,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         Returns:
             boolean: true if file exists, false otherwise
         &#39;&#39;&#39;
-        if exists(name + &#34;-rr-snp&#34;):
+        if exists(name + &#34;-rr-snp&#34;) or rr2_contains_member(name, &#34;snapshot&#34;):
             return True
 
     def run_replay(self, replaypfx):
@@ -4071,7 +4071,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         Returns:
             None
         &#39;&#39;&#39;
-        if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
+        if (not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;)) and not rr2_recording(replaypfx):
             raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
 
         self.ending = False
@@ -10263,7 +10263,7 @@ def record_cmd(self, guest_command, copy_directory=None, iso_name=None, setup_co
     Returns:
         boolean: true if file exists, false otherwise
     &#39;&#39;&#39;
-    if exists(name + &#34;-rr-snp&#34;):
+    if exists(name + &#34;-rr-snp&#34;) or rr2_contains_member(name, &#34;snapshot&#34;):
         return True</code></pre>
 </details>
 </dd>
@@ -10635,7 +10635,7 @@ def run_monitor_cmd(self, cmd):
     Returns:
         None
     &#39;&#39;&#39;
-    if not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;):
+    if (not isfile(replaypfx+&#34;-rr-snp&#34;) or not isfile(replaypfx+&#34;-rr-nondet.log&#34;)) and not rr2_recording(replaypfx):
         raise ValueError(&#34;Replay files not present to run replay of {}&#34;.format(replaypfx))
 
     self.ending = False

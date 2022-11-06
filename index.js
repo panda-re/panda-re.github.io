@@ -1436,6 +1436,24 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.utils.rr2_name",
+"url":3,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.utils.rr2_recording",
+"url":3,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.utils.rr2_contains_member",
+"url":3,
+"doc":"",
+"func":1
+},
+{
 "ref":"pandare.utils.GArrayIterator",
 "url":3,
 "doc":"Iterator which will run a function on each iteration incrementing the second argument. Useful for GArrays with an accessor function that takes arguments of the GArray and list index. e.g., osi's get_one_module."
