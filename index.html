@@ -2846,7 +2846,8 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             err = self.libpanda.panda_virtual_memory_read_external(env, addr_u, buf_a, length_a)
 
         if err &lt; 0:
-            raise ValueError(f&#34;Memory access failed with err={err}&#34;) # TODO: make a PANDA Exn class
+            # TODO: We should support a custom error class instead of a generic ValueError
+            raise ValueError(f&#34;Failed to read guest memory at {addr:x} got err={err}&#34;)
 
         r = self.ffi.unpack(buf, length)
         if fmt == &#39;bytearray&#39;:
