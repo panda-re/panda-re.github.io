@@ -157,6 +157,7 @@ Module for fetching generic PANDA images and managing their metadata.
 import logging
 import random
 import hashlib
+import json
 from os import path, remove, makedirs
 from subprocess import Popen, PIPE, CalledProcessError
 from collections import namedtuple
@@ -188,157 +189,13 @@ class Image(namedtuple(&#39;Image&#39;, [&#39;arch&#39;, &#39;os&#39;, &#39;prom
 
 Image.__new__.__defaults__ = (None,) * len(Image._fields)
 
-SUPPORTED_IMAGES = {
-    # Debian: support for 4 arches on Wheezy
-    &#39;i386_wheezy&#39;: Image(
-            arch = &#39;i386&#39;,
-            os=&#34;linux-32-debian:3.2.0-4-686-pae&#34;,
-            prompt=rb&#34;root@debian-i386:.*# &#34;,
-            qcow=&#34;wheezy_panda2.qcow2&#34;, # Backwards compatability
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;128M&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/x86/debian_7.3_x86.qcow&#34;,
-            extra_args=&#34;-display none&#34;),
+json_path = path.join(*[path.dirname(__file__), &#34;qcows.json&#34;])
+with open(json_path, &#39;r&#39;) as f:
+    images = json.load(f)
 
-    &#39;x86_64_wheezy&#39;: Image(
-            arch=&#39;x86_64&#39;,
-            os=&#34;linux-64-debian:3.2.0-4-amd64&#34;,
-            prompt=rb&#34;root@debian-amd64:.*# &#34;,
-            qcow=&#34;wheezy_x64.qcow2&#34;,# Backwards compatability 
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;128M&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/x86_64/debian_7.3_x86_64.qcow&#34;,
-            extra_args=&#34;-display none&#34;),
-
-    &#39;ppc_wheezy&#39;: Image(
-            arch=&#39;ppc&#39;,
-            os=&#34;linux-64-debian:3.2.0-4-ppc-pae&#34;,
-            prompt=rb&#34;root@debian-powerpc:.*# &#34;,
-            qcow=&#34;ppc_wheezy.qcow2&#34;,# Backwards compatability 
-            cdrom=&#34;ide1-cd0&#34;,
-            default_mem=&#39;128M&#39;,
-            snapshot=&#34;root&#34;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/ppc/debian_7.3_ppc.qcow&#34;,
-            extra_args=&#34;-display none&#34;),
-
-    &#39;arm_wheezy&#39;: Image(
-            arch=&#39;arm&#39;,
-            os=&#34;linux-32-debian:3.2.0-4-versatile-arm&#34;,
-            prompt=rb&#34;root@debian-armel:.*# &#34;,
-            qcow=&#34;arm_wheezy.qcow&#34;,# Backwards compatability 
-            cdrom=&#34;scsi0-cd2&#34;,
-            default_mem=&#39;128M&#39;,
-            snapshot=&#34;root&#34;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/arm/debian_7.3_arm.qcow&#34;,
-            extra_files=[&#39;vmlinuz-3.2.0-4-versatile&#39;, &#39;initrd.img-3.2.0-4-versatile&#39;],
-            extra_args=&#39;-display none -M versatilepb -append &#34;root=/dev/sda1&#34; -kernel {DOT_DIR}/vmlinuz-3.2.0-4-versatile -initrd {DOT_DIR}/initrd.img-3.2.0-4-versatile&#39;.format(DOT_DIR=VM_DIR)),
-
-    &#39;aarch64_focal&#39;: Image(
-            arch=&#39;aarch64&#39;,
-            os=&#34;linux-64-ubuntu:5.4.0-58-generic-arm64&#34;,
-            prompt=rb&#34;root@ubuntu-panda:.*# &#34;,
-            #cdrom=&#34;scsi0-cd2&#34;, # No idea what this should be
-            default_mem=&#39;1G&#39;,
-            snapshot=&#34;root&#34;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/2004/aarch64/ubuntu20_04-aarch64.qcow&#34;,
-            extra_files=[&#39;ubuntu20_04-aarch64-flash0.qcow&#39;],
-            extra_args=&#39;-nographic -machine virt -cpu cortex-a57 -drive file={DOT_DIR}/ubuntu20_04-aarch64-flash0.qcow,if=pflash,readonly=on&#39;.format(DOT_DIR=VM_DIR)),
-
-    &#39;mips64&#39;: Image(
-            arch=&#39;mips64&#39;,
-            os=&#34;linux-64-debian:4.14.0-3-5kc-malta&#34;, # XXX: NO OSI
-            prompt=rb&#34;root@debian-buster-mips:.*# &#34;,
-            cdrom=&#34;ide1-cd0&#34;, # not sure
-            snapshot=&#34;root&#34;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/10/mips64/debian-buster-mips.qcow2&#34;,
-            default_mem=&#39;2g&#39;,
-            extra_files=[&#39;vmlinux-4.14.0-3-5kc-malta.mips.buster&#39;, &#39;initrd.img-4.14.0-3-5kc-malta.mips.buster&#39;],
-            extra_args=&#39;-M malta -cpu MIPS64R2-generic -append &#34;root=/dev/vda console=ttyS0 mem=2048m net.ifnames=0 nokaslr&#34; -netdev user,id=user.0 -device virtio-net,netdev=user.0 -device usb-kbd -device usb-tablet -kernel {DOT_DIR}/vmlinux-4.14.0-3-5kc-malta.mips.buster -initrd {DOT_DIR}/initrd.img-4.14.0-3-5kc-malta.mips.buster -nographic&#39;.format(DOT_DIR=VM_DIR)),
-
-    &#39;mips_wheezy&#39;: Image(
-            arch=&#39;mips&#39;,
-            os=&#34;linux-32-debian:3.2.0-4-4kc-malta&#34;,
-            prompt=rb&#34;root@debian-mips:.*# &#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/mips/debian_7.3_mips.qcow&#34;,
-            default_mem=&#39;1g&#39;,
-            extra_files=[&#39;vmlinux-3.2.0-4-4kc-malta&#39;],
-            extra_args=&#39;-M malta -kernel {DOT_DIR}/vmlinux-3.2.0-4-4kc-malta -append &#34;root=/dev/sda1&#34; -nographic&#39;.format(DOT_DIR=VM_DIR)),
-
-    &#39;mipsel_wheezy&#39;:  Image(
-            arch=&#39;mipsel&#39;,
-            os = &#34;linux-32-debian:3.2.0-4-4kc-malta&#34;,
-            prompt=rb&#34;root@debian-mipsel:.*# &#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;1g&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/debian/7.3/mipsel/debian_7.3_mipsel.qcow&#34;,
-            extra_files=[&#39;vmlinux-3.2.0-4-4kc-malta.mipsel&#39;,],
-            extra_args=&#39;-M malta -kernel {DOT_DIR}/vmlinux-3.2.0-4-4kc-malta.mipsel -append &#34;root=/dev/sda1&#34; -nographic&#39;.format(DOT_DIR=VM_DIR),
-            hashes={&#39;vmlinux-3.2.0-4-4kc-malta&#39;: &#39;592e384a4edc16dade52a6cd5c785c637bcbc9ad&#39;,
-                    &#39;debian_7.3_mipsel.qcow&#39;: &#39;eeb5de0128a95c5f0d76c4f2161afd1bb320d85b&#39;}),
-
-    &#39;mips_buildroot5&#39;:  Image(
-            arch=&#39;mips&#39;,
-            os = &#34;linux-32-buildroot:5.10.7-4kc-malta&#34;,
-            prompt=rb&#34;# &#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;1g&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/buildroot/5.10/mips/mips32_buildroot.qcow&#34;,
-            extra_files=[&#39;mips32_vmlinux-5.10.7-4kc-malta&#39;,],
-            extra_args=&#39;-M malta -kernel {DOT_DIR}/mips32_vmlinux-5.10.7-4kc-malta -net nic,model=pcnet -net user -append &#34;root=/dev/hda&#34; -nographic&#39;.format(DOT_DIR=VM_DIR)),
-
-
-    &#39;mipsel_buildroot5&#39;:  Image(
-            arch=&#39;mipsel&#39;,
-            os = &#34;linux-32-buildroot:5.10.7-4kc-malta-el&#34;,
-            prompt=rb&#34;# &#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;1g&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/buildroot/5.10/mipsel/mipsel32_buildroot.qcow&#34;,
-            extra_files=[&#39;mipsel32_vmlinux-5.10.7-4kc-malta-el&#39;,],
-            extra_args=&#39;-M malta -kernel {DOT_DIR}/mipsel32_vmlinux-5.10.7-4kc-malta-el -net nic,model=pcnet -net user -append &#34;root=/dev/hda&#34; -nographic&#39;.format(DOT_DIR=VM_DIR)),
-
-
-    # Ubuntu: x86/x86_64 support for 16.04, x86_64 support for 18.04
-    &#39;i386_ubuntu_1604&#39;: Image(
-            arch = &#39;i386&#39;,
-            os=&#34;linux-32-ubuntu:4.4.200-170-generic&#34;, # Version.c is 200 but name is 4.4.0. Not sure why
-            prompt=rb&#34;root@instance-1:.*#&#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;1024&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/1604/x86/ubuntu_1604_x86.qcow&#34;,
-            extra_args=&#34;-display none&#34;),
-
-    #&#39;x86_64_ubuntu_1604&#39;: Image( # XXX: This one is broken
-    #        arch=&#39;x86_64&#39;,
-    #        os=&#34;linux-64-ubuntu:4.4.0-180-pae&#34;,
-    #        prompt=rb&#34;root@instance-1:.*#&#34;,
-    #        cdrom=&#34;ide1-cd0&#34;,
-    #        snapshot=&#34;root&#34;,
-    #        default_mem=&#39;1024&#39;,
-    #        url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/1604/x86_64/ubuntu_1604_x86_64.qcow&#34;,
-    #        extra_files=[&#39;xenial-server-cloudimg-amd64-disk1.img&#39;,],
-    #        extra_args=&#34;-display none&#34;),
-
-    &#39;x86_64_ubuntu_1804&#39;: Image(
-            arch=&#39;x86_64&#39;,
-            os=&#34;linux-64-ubuntu:4.15.0-72-generic-noaslr-nokaslr&#34;,
-            prompt=rb&#34;root@ubuntu:.*#&#34;,
-            cdrom=&#34;ide1-cd0&#34;,
-            snapshot=&#34;root&#34;,
-            default_mem=&#39;1024&#39;,
-            url=&#34;https://panda-re.mit.edu/qcows/linux/ubuntu/1804/x86_64/bionic-server-cloudimg-amd64-noaslr-nokaslr.qcow2&#34;,
-            alternate_urls=[&#34;https://www.dropbox.com/s/4avqfxqemd29i5j/bionic-server-cloudimg-amd64-noaslr-nokaslr.qcow2?dl=1&#34;],
-            extra_args=&#34;-display none&#34;,
-            hashes={&#34;bionic-server-cloudimg-amd64-noaslr-nokaslr.qcow2&#34;: &#34;556305921c8250537bbbfbb57cb56f9ef07f4d63&#34;}),
-}
+SUPPORTED_IMAGES = dict([
+    (k, Image(**v)) for k, v in images.items()
+])
 &#34;&#34;&#34;
 Dictionary of `Image` objects by name.
 Generic values (underlying OS version may change) include:
@@ -363,16 +220,6 @@ You may also specify an exact arch/OS combination from the following exist:
     mipsel_buildroot5
     mips64
 &#34;&#34;&#34; # TODO: autogenerate values here
-
-# Default values
-SUPPORTED_IMAGES[&#39;x86_64&#39;]  = SUPPORTED_IMAGES[&#39;x86_64_ubuntu_1804&#39;]
-SUPPORTED_IMAGES[&#39;i386&#39;]    = SUPPORTED_IMAGES[&#39;i386_ubuntu_1604&#39;]
-SUPPORTED_IMAGES[&#39;ppc&#39;]     = SUPPORTED_IMAGES[&#39;ppc_wheezy&#39;]
-SUPPORTED_IMAGES[&#39;arm&#39;]     = SUPPORTED_IMAGES[&#39;arm_wheezy&#39;]
-SUPPORTED_IMAGES[&#39;aarch64&#39;] = SUPPORTED_IMAGES[&#39;aarch64_focal&#39;]
-SUPPORTED_IMAGES[&#39;mips&#39;]    = SUPPORTED_IMAGES[&#39;mips_wheezy&#39;]
-SUPPORTED_IMAGES[&#39;mipsel&#39;]  = SUPPORTED_IMAGES[&#39;mipsel_wheezy&#39;]
-SUPPORTED_IMAGES[&#39;mips64&#39;]    = SUPPORTED_IMAGES[&#39;mips64&#39;]
 
 class Qcows():
     &#39;&#39;&#39;
