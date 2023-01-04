@@ -749,7 +749,7 @@ class X86Arch(PandaArch):
                            &#34;syscall&#34;:    &#34;EAX&#34;,
                            &#34;linux_kernel&#34;:    &#34;EAX&#34;}
         
-        self.call_conventions = {&#34;cdecl&#34;: [&#34;stack_{x}&#34; for x in range(20)], # 20: arbitrary but big
+        self.call_conventions = {&#34;cdecl&#34;: [f&#34;stack_{x}&#34; for x in range(20)], # 20: arbitrary but big
                                  &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;],
                                  &#34;linux_kernel&#34;: [&#34;EAX&#34;, &#34;EDX&#34;, &#34;ECX&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;cdecl&#39;]
@@ -2203,7 +2203,7 @@ in the signature here so it can be set by a caller without regard for the guest 
                            &#34;syscall&#34;:    &#34;EAX&#34;,
                            &#34;linux_kernel&#34;:    &#34;EAX&#34;}
         
-        self.call_conventions = {&#34;cdecl&#34;: [&#34;stack_{x}&#34; for x in range(20)], # 20: arbitrary but big
+        self.call_conventions = {&#34;cdecl&#34;: [f&#34;stack_{x}&#34; for x in range(20)], # 20: arbitrary but big
                                  &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;],
                                  &#34;linux_kernel&#34;: [&#34;EAX&#34;, &#34;EDX&#34;, &#34;ECX&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]}
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;cdecl&#39;]
