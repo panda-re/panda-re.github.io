@@ -190,6 +190,7 @@ class Image(namedtuple(&#39;Image&#39;, [&#39;arch&#39;, &#39;os&#39;, &#39;prom
 Image.__new__.__defaults__ = (None,) * len(Image._fields)
 
 json_path = path.join(*[path.dirname(__file__), &#34;qcows.json&#34;])
+
 with open(json_path, &#39;r&#39;) as f:
     images = json.load(f)
 
@@ -245,7 +246,7 @@ class Qcows():
 
         Args:
             name (str): String idenfifying a qcow supported
-                
+
         Returns:
             Image: Instance of the Image class for a qcow
         &#39;&#39;&#39;
@@ -272,7 +273,7 @@ class Qcows():
         Args:
             name (str): generic name or path to qcow
             download (bool, default True): should the qcow be downloaded if necessary
-                
+
         Returns:
             string: Path to qcow
 
@@ -357,7 +358,7 @@ class Qcows():
             else:
                 # No hash, move .tmp file to actual path
                 move(output_path+&#34;.tmp&#34;, output_path)
-                
+
 
         except Exception as e:
             logger.info(&#34;Download failed, deleting partial file: %s&#34;, output_path)
@@ -405,7 +406,7 @@ class Qcows():
 
         Args:
             idx (int): an index into argv
-                
+
         Returns:
             string: Path to qcow
         &#39;&#39;&#39;
@@ -560,7 +561,7 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
 
         Args:
             name (str): String idenfifying a qcow supported
-                
+
         Returns:
             Image: Instance of the Image class for a qcow
         &#39;&#39;&#39;
@@ -587,7 +588,7 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
         Args:
             name (str): generic name or path to qcow
             download (bool, default True): should the qcow be downloaded if necessary
-                
+
         Returns:
             string: Path to qcow
 
@@ -672,7 +673,7 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
             else:
                 # No hash, move .tmp file to actual path
                 move(output_path+&#34;.tmp&#34;, output_path)
-                
+
 
         except Exception as e:
             logger.info(&#34;Download failed, deleting partial file: %s&#34;, output_path)
@@ -720,7 +721,7 @@ A qcow loaded by architecture can then be queried to get the name of the root sn
 
         Args:
             idx (int): an index into argv
-                
+
         Returns:
             string: Path to qcow
         &#39;&#39;&#39;
@@ -845,7 +846,7 @@ def get_file(urls, output_path, sha1hash=None, do_retry=True, _is_tty=True):
         else:
             # No hash, move .tmp file to actual path
             move(output_path+&#34;.tmp&#34;, output_path)
-            
+
 
     except Exception as e:
         logger.info(&#34;Download failed, deleting partial file: %s&#34;, output_path)
@@ -897,7 +898,7 @@ def get_qcow(name=None, download=True, _is_tty=True):
     Args:
         name (str): generic name or path to qcow
         download (bool, default True): should the qcow be downloaded if necessary
-            
+
     Returns:
         string: Path to qcow
 
@@ -969,7 +970,7 @@ def get_qcow_info(name=None):
 
     Args:
         name (str): String idenfifying a qcow supported
-            
+
     Returns:
         Image: Instance of the Image class for a qcow
     &#39;&#39;&#39;
@@ -1015,7 +1016,7 @@ def qcow_from_arg(idx=1):
 
     Args:
         idx (int): an index into argv
-            
+
     Returns:
         string: Path to qcow
     &#39;&#39;&#39;
