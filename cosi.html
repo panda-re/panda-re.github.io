@@ -1,0 +1,3213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>pandare.cosi API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<!-- Bootstrap core CSS -->
+<!--
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+-->
+<!-- hand-crafted bootstrap navbar -->
+<style>
+.bg-light {
+background-color: #f8f9fa!important;
+}
+.navbar {
+position: relative;
+display: -ms-flexbox;
+display: flex;
+-ms-flex-wrap: wrap;
+flex-wrap: wrap;
+-ms-flex-align: center;
+align-items: center;
+-ms-flex-pack: justify;
+justify-content: space-between;
+padding: .5rem 1rem;
+}
+.navbar-expand-lg {
+-ms-flex-direction: row;
+flex-direction: row;
+-ms-flex-wrap: nowrap;
+flex-wrap: nowrap;
+-ms-flex-pack: start;
+justify-content: flex-start;
+}
+navbar-light .navbar-brand {
+color: rgba(0,0,0,.9);
+}
+.navbar-brand {
+display: inline-block;
+padding-top: .3125rem;
+padding-bottom: .3125rem;
+margin-right: 1rem;
+font-size: 1.25rem;
+line-height: inherit;
+white-space: nowrap;
+}
+.navbar-nav {
+display: -ms-flexbox;
+display: flex;
+-ms-flex-direction: column;
+flex-direction: column;
+padding-left: 0;
+margin-bottom: 0;
+list-style: none;
+}
+.navbar-expand-lg .navbar-nav {
+-ms-flex-direction: row;
+flex-direction: row;
+}
+.mr-auto {
+margin-right: auto!important;
+}
+.navbar-expand-lg .navbar-collapse {
+display: -ms-flexbox!important;
+display: flex!important;
+}
+.navbar-collapse {
+-ms-flex-preferred-size: 100%;
+flex-basis: 100%;
+-ms-flex-align: center;
+align-items: center;
+}
+.navbar-light .navbar-brand {
+color: rgba(0,0,0,.9);
+}
+.navbar a {
+color: #007bff;
+text-decoration: none;
+background-color: transparent;
+-webkit-text-decoration-skip: objects;
+}
+.navbar-expand-lg .navbar-nav .nav-link {
+padding-right: .5rem;
+padding-left: .5rem;
+}
+.navbar .navbar-nav {
+margin: 0;
+font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+font-size: 1rem;
+font-weight: 400;
+line-height: 1.5;
+color: #212529;
+}
+.navbar-light .navbar-nav .active>.nav-link, .navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .nav-link.show, .navbar-light .navbar-nav .show>.nav-link {
+color: rgba(0,0,0,.9);
+}
+.navbar-light .navbar-nav .nav-link {
+color: rgba(0,0,0,.5);
+}
+.nav-link {
+display: block;
+padding: .5rem 1rem;
+}
+</style>
+<style>.homelink{display:block;font-size:2em;font-weight:bold;color:#555;padding-bottom:.5em;border-bottom:1px solid silver}.homelink:hover{color:inherit}.homelink img{max-width:20%;max-height:5em;margin:auto;margin-bottom:.3em}</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<a class="navbar-brand" href="/">PANDA.re</a>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a class="nav-link" href="//panda.re/">Home</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" target="_new" href="https://github.com/panda-re/panda">Github</a>
+</li>
+<li class="nav-item ">
+<a class="nav-link" href="//panda.re/blog/">Blog</a>
+</li>
+<li class="nav-item ">
+<a class="nav-link active" href="//docs.panda.re">Python Docs</a>
+</li>
+<li class="nav-item ">
+<a class="nav-link" href="//panda.re/invite.php">Slack</a>
+</li>
+<!-- No resources tab here because we don't have real bootstrap -->
+</div>
+</nav>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pandare.cosi</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># TODO: rename to cosi
+COSI = &#39;cosi&#39;
+
+from dataclasses import dataclass
+
+class VolatilitySymbol:
+    &#39;&#39;&#39;
+    A reference to an entry in the volatility symbol table
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, raw_ptr):
+        self.panda = panda
+        self.inner = raw_ptr
+
+    def addr(self) -&gt; int:
+        &#39;&#39;&#39;
+        Get the address of the symbol in memory, accounting for KASLR
+        &#39;&#39;&#39;
+
+        return self.panda.plugins[COSI].addr_of_symbol(self.inner)
+
+    def value(self) -&gt; int:
+        &#39;&#39;&#39;
+        Get the raw value for the symbol from the volatility symbol table
+        &#39;&#39;&#39;
+
+        return self.panda.plugins[COSI].value_of_symbol(self.inner)
+
+    def name(self) -&gt; str:
+        &#39;&#39;&#39;
+        Get the name for the given symbol
+        &#39;&#39;&#39;
+
+        name_ptr = self.panda.plugins[COSI].name_of_symbol(self.inner)
+        name = self.panda.ffi.string(name_ptr).decode(&#39;utf8&#39;)
+        self.panda.plugins[COSI].free_cosi_str(name_ptr)
+
+        return name
+
+@dataclass
+class VolatilityStructField:
+    &#39;&#39;&#39;
+    A single field in a volatility struct
+    &#39;&#39;&#39;
+
+    name: str
+    offset: int
+    type_name: str
+
+class VolatilityStruct:
+    &#39;&#39;&#39;
+    A reference to a struct in the volatility symbol table
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, raw_ptr):
+        self.panda = panda
+        self.inner = raw_ptr
+
+    def __getitem__(self, item):
+        if type(item) is int:
+            name = self.get_field_by_index(item)
+            if name:
+                offset = self.offset_of_field(name)
+                type_name = self.type_of_field(name)
+
+                return VolatilityStructField(
+                    name=name,
+                    offset=offset,
+                    type_name=type_name
+                )
+            else:
+                raise IndexError(&#34;Index {item} is out of range of the length of the struct fields&#34;)
+        elif type(item) is str:
+            name = item
+            offset = self.offset_of_field(name)
+            type_name = self.type_of_field(name)
+
+            return VolatilityStructField(
+                name=name,
+                offset=offset,
+                type_name=type_name
+            )
+        else:
+            raise Exception(f&#34;Invalid type {type(item)} for indexing VolatilityStruct&#34;)
+
+    def get_field_by_index(self, index: int) -&gt; str:
+        &#39;&#39;&#39;
+        Return the name of the field at a given index, returning `None` past the end
+        of the fields.
+        &#39;&#39;&#39;
+
+        field_name = self.panda.plugins[COSI].get_field_by_index(self.inner, index)
+
+        if field_name == self.panda.ffi.NULL:
+            return None
+        else:
+            return self.panda.ffi.string(field_name).decode(&#39;utf8&#39;)
+
+    def name(self) -&gt; str:
+        &#39;&#39;&#39;
+        Get the name of the given struct
+        &#39;&#39;&#39;
+
+        name_ptr = self.panda.plugins[COSI].name_of_struct(self.inner)
+        name = self.panda.ffi.string(name_ptr).decode(&#39;utf8&#39;)
+        self.panda.plugins[COSI].free_cosi_str(name_ptr)
+
+        return name
+
+    def offset_of_field(self, name: str) -&gt; int:
+        &#39;&#39;&#39;
+        Get the offset of a given field from the field name
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        return self.panda.plugins[COSI].offset_of_field(self.inner, name)
+
+    def type_of_field(self, name: str) -&gt; str:
+        &#39;&#39;&#39;
+        Get the type of a given field from the field name
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        type_name = self.panda.plugins[COSI].type_of_field(self.inner, name)
+        type_name = self.panda.ffi.string(type_name).decode(&#39;utf8&#39;)
+
+        return type_name
+
+    def size(self) -&gt; int:
+        &#39;&#39;&#39;
+        Get the total size of the given struct in bytes
+        &#39;&#39;&#39;
+
+        return self.panda.plugins[COSI].size_of_struct(self.inner)
+
+    def fields(self):
+        &#39;&#39;&#39;
+        Iterate over the fields of the structure, yielding tuples in the form of
+        (offset, type, field_name)
+        &#39;&#39;&#39;
+        i = 0
+
+        while True:
+            field = self.get_field_by_index(i)
+
+            if not field:
+                break
+
+            name = field
+            offset = self.offset_of_field(field)
+            type_name = self.type_of_field(field)
+
+            yield (offset, type_name, name)
+
+            i += 1
+
+    def at(self, ptr):
+        &#39;&#39;&#39;
+        Get a CosiGuestPointer of this type
+        &#39;&#39;&#39;
+
+        type_name = self.name()
+        return CosiGuestPointer(self.panda, type_name, ptr)
+
+class VolatilityBaseType:
+    &#39;&#39;&#39;
+    A reference to a base type in the volatility symbol table
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, raw_ptr):
+        self.panda = panda
+        self.inner = raw_ptr
+
+    def name(self) -&gt; str:
+        &#39;&#39;&#39;
+        Get the name for the given base type
+        &#39;&#39;&#39;
+
+        name_ptr = self.panda.plugins[COSI].name_of_base_type(self.inner)
+        name = self.panda.ffi.string(name_ptr).decode(&#39;utf8&#39;)
+        self.panda.plugins[COSI].free_cosi_str(name_ptr)
+
+        return name
+
+    def size(self) -&gt; int:
+        &#39;&#39;&#39;
+        Get the size of the given base type in bytes
+        &#39;&#39;&#39;
+
+        return self.panda.plugins[COSI].size_of_base_type(self.inner)
+
+    def is_signed(self) -&gt; bool:
+        &#39;&#39;&#39;
+        Get whether an integer base type is signed or not
+        &#39;&#39;&#39;
+
+        return self.panda.plugins[COSI].is_base_type_signed(self.inner)
+
+class Cosi:
+    &#39;&#39;&#39;
+    Object to interact with the `cosi` PANDA plugin. An instance can be foudn at
+    `panda.cosi`, where `panda` is a `Panda` object.
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        self.panda = panda
+
+    def symbol_addr_from_name(self, name: str) -&gt; int:
+        &#39;&#39;&#39;
+        Given a symbol `name`, return the address in memory where it is located,
+        accounting for KASLR as needed.
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        addr = self.panda.plugins[COSI].symbol_addr_from_name(name)
+        return addr
+
+    def symbol_value_from_name(self, name: str) -&gt; int:
+        &#39;&#39;&#39;
+        Given a symbol `name`, return the corresponding value in the volatility symbol
+        table, not accounting for KASLR.
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        addr = self.panda.plugins[COSI].symbol_value_from_name(name)
+        return addr
+
+    def kaslr_offset(self):
+        &#39;&#39;&#39;
+        Get the KASLR offset for the given system
+        &#39;&#39;&#39;
+
+        cpu = self.panda.get_cpu()
+        offset = self.panda.plugins[COSI].kaslr_offset(cpu)
+
+        return offset
+
+    def symbol_from_name(self, name: str) -&gt; VolatilitySymbol:
+        &#39;&#39;&#39;
+        Get a reference to a given symbol given the name of the symbol
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        symbol = self.panda.plugins[COSI].symbol_from_name(name)
+
+        return VolatilitySymbol(self.panda, symbol)
+
+    def base_type_from_name(self, name: str) -&gt; VolatilityBaseType:
+        &#39;&#39;&#39;
+        Get a reference to a given base type from the volatility symbol table
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        base_type = self.panda.plugins[COSI].base_type_from_name(name)
+
+        if base_type == self.panda.ffi.NULL:
+            return None
+
+        return VolatilityBaseType(self.panda, base_type)
+
+    def type_from_name(self, name: str) -&gt; VolatilityStruct:
+        &#39;&#39;&#39;
+        Get a reference to a given struct from the volatility symbol table
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        struct = self.panda.plugins[COSI].type_from_name(name)
+
+        if struct == self.panda.ffi.NULL:
+            return None
+
+        return VolatilityStruct(self.panda, struct)
+
+    def per_cpu_offset(self) -&gt; int:
+        &#39;&#39;&#39;
+        Gets the offset for per cpu variable pointers
+        &#39;&#39;&#39;
+
+        cpu = self.panda.get_cpu()
+        return self.panda.plugins[COSI].current_cpu_offset(cpu)
+
+    def find_per_cpu_address(self, symbol: str) -&gt; int:
+        &#39;&#39;&#39;
+        Get the address for a symbol given that it is a per-cpu variable
+        &#39;&#39;&#39;
+        panda = self.panda
+
+        symbol_offset = self.symbol_value_from_name(symbol)
+        ptr_to_ptr = self.per_cpu_offset() + symbol_offset
+
+        ptr_size = panda.bits // 8
+
+        ptr = panda.virtual_memory_read(panda.get_cpu(), ptr_to_ptr, ptr_size, fmt=&#39;int&#39;) &amp; ((1 &lt;&lt; panda.bits) - 1)
+
+        return ptr
+
+    def get(self, global_type, symbol, per_cpu=False):
+        if per_cpu:
+            addr = self.find_per_cpu_address(symbol)
+        else:
+            addr = self.symbol_addr_from_name(symbol)
+
+        return self.panda.cosi.type_from_name(global_type).at(addr)
+
+    # ============= Task API ============= 
+
+    def current_process(self):
+        &#39;&#39;&#39;
+        Get info about the current process
+        &#39;&#39;&#39;
+
+        proc = self.panda.plugins[COSI].get_current_cosiproc(self.panda.get_cpu())
+
+        if proc == self.panda.ffi.NULL:
+            return None
+
+        return CosiProcess(self.panda, proc)
+
+    def process_list(self):
+        &#39;&#39;&#39;
+        Get a list of the current processes
+        &#39;&#39;&#39;
+
+        proc_list = self.panda.plugins[COSI].cosi_get_proc_list(self.panda.get_cpu())
+
+        if proc_list == self.panda.ffi.NULL:
+            return []
+        else:
+            return CosiProcList(self.panda, proc_list)
+
+    def current_thread(self):
+        &#39;&#39;&#39;
+        Get info about the current thread
+        &#39;&#39;&#39;
+
+        thread = self.panda.plugins[COSI].get_current_cosithread(self.panda.get_cpu())
+
+        if thread == self.panda.ffi.NULL:
+            return None
+
+        return CosiThread(self.panda, thread)
+
+    def current_files(self):
+        &#39;&#39;&#39;
+        Get information about the files open in the current process
+        &#39;&#39;&#39;
+
+        files = self.panda.plugins[COSI].get_current_files(self.panda.get_cpu())
+
+        if files == self.panda.ffi.NULL:
+            return []
+
+        return CosiFiles(self.panda, files)
+
+class CosiFiles:
+    def __init__(self, panda, files):
+        self.inner = files
+        self.panda = panda
+
+    def __del__(self):
+        self.panda.plugins[COSI].free_cosi_files(self.inner)
+        self.inner = None
+
+    def __len__(self) -&gt; int:
+        return self.panda.plugins[COSI].cosi_files_len(self.inner)
+
+    def __getitem__(self, key: int):
+        if not type(key) is int:
+            raise TypeError(&#34;CosiFiles must be indexed with an integer&#34;)
+
+        file_ptr = self.panda.plugins[COSI].cosi_files_get(self.inner, key)
+
+        if file_ptr == self.panda.ffi.NULL:
+            raise IndexError(&#34;Integer {} out of bounds of CosiFiles len&#34;)
+
+        return CosiFile(self.panda, file_ptr, hold_ref=self)
+
+    def __iter__(self):
+        for i in range(len(self)):
+            yield self[i]
+
+    def get_from_fd(self, fd: int):
+        &#39;&#39;&#39;
+        Gets a CosiFile from this set of files based on the file descriptor.
+
+        Returns None if the fd could not be found.
+        &#39;&#39;&#39;
+
+        file_ptr = self.panda.plugins[&#39;COSI&#39;].cosi_files_file_from_fd(self.inner, fd)
+
+        if file_ptr == self.panda.ffi.NULL:
+            return None
+        else:
+            return CosiFile(self.panda, file_ptr)
+
+class CosiFile:
+    def __init__(self, panda, file_ptr, hold_ref=None):
+        self.inner = file_ptr
+        self.panda = panda
+        self.hold_ref = hold_ref
+
+    def get_name(self) -&gt; str:
+        &#39;&#39;&#39;
+        Get the name/path from which this file was accessed
+        &#39;&#39;&#39;
+
+        cstr_name = self.panda.plugins[COSI].cosi_file_name(self.inner)
+        name = self.panda.ffi.string(cstr_name)
+        self.panda.plugins[COSI].free_cosi_str(cstr_name)
+        return name.decode(&#39;utf8&#39;)
+
+    def __getattr__(self, key):
+        if key == &#34;name&#34;:
+            return self.get_name()
+
+        attr = getattr(self.inner, key, None)
+        if not attr is None:
+            return attr
+
+        return getattr(self.inner.file_struct, key)
+
+class CosiThread:
+    def __init__(self, panda, thread):
+        self.inner = thread
+        self.panda = panda
+
+    def __del__(self):
+        self.panda.plugins[COSI].free_thread(self.inner)
+        self.inner = None
+
+    def __getattr__(self, key):
+        return getattr(self.inner, key)
+
+class CosiProcess:
+    def __init__(self, panda, proc, hold_ref=None):
+        self.panda = panda
+        self.inner = proc
+        self.hold_ref = hold_ref
+
+    def __del__(self):
+        if self.hold_ref is None:
+            self.panda.plugins[COSI].free_process(self.inner)
+        self.inner = None
+
+    def get_name(self):
+        cstr_name = self.panda.plugins[COSI].cosi_proc_name(self.inner)
+        name = self.panda.ffi.string(cstr_name)
+        self.panda.plugins[COSI].free_cosi_str(cstr_name)
+        return name.decode(&#39;utf8&#39;)
+
+    def __getattr__(self, key):
+        if key == &#34;name&#34;:
+            return self.get_name()
+
+        attr = getattr(self.inner, key, None)
+        if not attr is None:
+            return attr
+
+        return getattr(self.inner.task, key)
+
+    def open_files(self):
+        &#39;&#39;&#39;
+        Returns information about all the files open in this process
+        &#39;&#39;&#39;
+
+        files = self.panda.plugins[COSI].cosi_proc_files(self.inner)
+        return CosiFiles(self.panda, files)
+
+    def children(self):
+        &#39;&#39;&#39;
+        Returns a list of this process&#39; children
+        &#39;&#39;&#39;
+
+        children = self.panda.plugins[COSI].cosi_proc_children(
+            self.panda.get_cpu(),
+            self.inner
+        )
+
+        if children == self.panda.ffi.NULL:
+            return []
+
+        return CosiProcList(self.panda, children)
+
+    def mappings(self):
+        &#39;&#39;&#39;
+        Returns a list of the mappings of the process
+        &#39;&#39;&#39;
+
+        mappings = self.panda.plugins[COSI].cosi_proc_get_mappings(
+            self.panda.get_cpu(),
+            self.inner
+        )
+
+        if mappings == self.panda.ffi.NULL:
+            return []
+
+        return CosiMappings(self.panda, mappings)
+
+class CosiProcList:
+    def __init__(self, panda, inner):
+        self.inner = inner
+        self.panda = panda
+
+    def __del__(self):
+        self.panda.plugins[COSI].cosi_free_proc_list(self.inner)
+        self.inner = None
+
+    def __len__(self) -&gt; int:
+        return self.panda.plugins[COSI].cosi_proc_list_len(self.inner)
+
+    def __getitem__(self, key: int):
+        if not type(key) is int:
+            raise TypeError(&#34;CosiProcList must be indexed with an integer&#34;)
+
+        file_ptr = self.panda.plugins[COSI].cosi_proc_list_get(self.inner, key)
+
+        if file_ptr == self.panda.ffi.NULL:
+            raise IndexError(&#34;Integer {} out of bounds of CosiProcList length&#34;)
+
+        return CosiProcess(self.panda, file_ptr, hold_ref=self)
+
+    def __iter__(self):
+        for i in range(len(self)):
+            yield self[i]
+
+class CosiModule:
+    def __init__(self, panda, proc, hold_ref=None):
+        self.panda = panda
+        self.inner = proc
+        self.hold_ref = hold_ref
+
+    def __del__(self):
+        if self.hold_ref is None:
+            pass # TODO: free module if it&#39;s not a reference
+        self.inner = None
+
+    def get_name(self):
+        cstr_name = self.panda.plugins[COSI].cosi_module_name(self.inner)
+        name = self.panda.ffi.string(cstr_name)
+        self.panda.plugins[COSI].free_cosi_str(cstr_name)
+        return name.decode(&#39;utf8&#39;)
+
+    def get_file(self):
+        cstr_name = self.panda.plugins[COSI].cosi_module_file(self.inner)
+        name = self.panda.ffi.string(cstr_name)
+        self.panda.plugins[COSI].free_cosi_str(cstr_name)
+        return name.decode(&#39;utf8&#39;)
+
+    def __getattr__(self, key):
+        if key == &#34;name&#34;:
+            return self.get_name()
+        elif key == &#34;file&#34;:
+            return self.get_file()
+
+        attr = getattr(self.inner, key, None)
+        if not attr is None:
+            return attr
+
+        return getattr(self.inner.task, key)
+
+class CosiMappings:
+    def __init__(self, panda, inner):
+        self.inner = inner
+        self.panda = panda
+
+    def __del__(self):
+        self.panda.plugins[COSI].cosi_free_mappings(self.inner)
+        self.inner = None
+
+    def __len__(self) -&gt; int:
+        return self.panda.plugins[COSI].cosi_mappings_len(self.inner)
+
+    def __getitem__(self, key: int):
+        if not type(key) is int:
+            raise TypeError(&#34;CosiMappings must be indexed with an integer&#34;)
+
+        file_ptr = self.panda.plugins[COSI].cosi_mappings_get(self.inner, key)
+
+        if file_ptr == self.panda.ffi.NULL:
+            raise IndexError(&#34;Integer {} out of bounds of CosiProcList length&#34;)
+
+        return CosiModule(self.panda, file_ptr, hold_ref=self)
+
+    def __iter__(self):
+        for i in range(len(self)):
+            yield self[i]
+
+import struct
+
+struct_types = {
+    &#39;float&#39;: (&#39;f&#39;, 4),
+    &#39;double&#39;: (&#39;d&#39;, 8),
+    &#39;char&#39;: (&#39;c&#39;, 1),
+    &#39;_Bool&#39;: (&#39;?&#39;, 1),
+    &#39;short&#39;: (&#39;h&#39;, 2),
+    &#39;unsigned short&#39;: (&#39;H&#39;, 2),
+    &#39;int&#39;: (&#39;i&#39;, 4),
+    &#39;unsigned int&#39;: (&#39;I&#39;, 4),
+    &#39;long&#39;: (&#39;l&#39;, 4),
+    &#39;unsigned long&#39;: (&#39;L&#39;, 4),
+    &#39;long long&#39;: (&#39;q&#39;, 8),
+    &#39;unsigned long long&#39;: (&#39;Q&#39;, 8),
+}
+
+types_from_size = {
+    1: &#39;b&#39;,
+    2: &#39;h&#39;,
+    4: &#39;i&#39;,
+    8: &#39;q&#39;
+}
+
+class CosiIntrusiveListAccessor:
+    def __init__(self, panda, ptr):
+        self._panda = panda
+        self._ptr = ptr
+
+    def __getattr__(self, name):
+        list_head = getattr(self._ptr, name)
+        if list_head._type_name != &#39;list_head&#39;:
+            raise Exception(f&#34;Field {self._ptr._type_name}.{name} not a list_head*&#34;)
+
+        field_offset = self._ptr._type[name].offset
+
+        ptrs = []
+        head = list_head.next.prev
+        current = list_head.next
+        while head._ptr != current._ptr:
+            addr = current._ptr - field_offset
+            ptrs.append(CosiGuestPointer(self._panda, self._ptr._type_name, addr))
+            current = current.next
+
+        return ptrs
+
+class CosiGuestPointer:
+    &#39;&#39;&#39;
+    A type representing a pointer for a data structure in the kernel
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, type_name, ptr, parent=None):
+        self._panda = panda
+        self._type_name = type_name
+        self._ptr = ptr
+        self._type = panda.cosi.type_from_name(type_name)
+        self._parent = parent
+
+    def __repr__(self):
+        return f&#39;&lt;CosiGuestPointer of type {self._type_name} at {hex(self._ptr)}&gt;&#39;
+
+    def _read_type(self, field_ptr: int, field_type: str, fallback=False):
+        panda = self._panda
+        cpu = panda.get_cpu()
+
+        # pointer
+        if field_type[-1] == &#39;*&#39;:
+            pointer = panda.virtual_memory_read(cpu, field_ptr, panda.bits // 8, fmt=&#39;int&#39;)
+
+            inner_type = field_type[:-1]
+            if inner_type.startswith(&#39;struct &#39;):
+                inner_type = inner_type[len(&#39;struct &#39;):]
+            return CosiGuestPointer(panda, inner_type, pointer, parent=self)
+        # inline struct
+        elif field_type.startswith(&#39;struct &#39;):
+            field_type_inner = field_type[len(&#39;struct &#39;):]
+
+            return CosiGuestPointer(panda, field_type_inner, field_ptr, parent=self)
+        # char array
+        elif field_type.startswith(&#39;char[&#39;) and field_type[-1] == &#39;]&#39;:
+            length = int(field_type[len(&#39;char[&#39;):-1])
+            data = panda.virtual_memory_read(cpu, field_ptr, length)
+
+            try:
+                length = data.index(b&#39;\0&#39;)
+                data = data[:length]
+            except ValueError:
+                pass
+
+            return data.decode(&#39;utf8&#39;)
+
+        # non-char array
+        elif field_type[-1] == &#39;]&#39;:
+            return CosiGuestPointer(panda, field_type, field_ptr, parent=self)
+
+        # basic type
+        elif field_type in struct_types:
+            specifier, size = struct_types[field_type]
+
+            val_bytes = panda.virtual_memory_read(cpu, field_ptr, size)
+            return struct.unpack(
+                (&#39;&lt;&#39; if panda.endianness == &#39;little&#39; else &#39;&gt;&#39;) + specifier, val_bytes
+            )[0]
+        # platform-specific base types
+        elif base_type := panda.cosi.base_type_from_name(field_type):
+            size = base_type.size()
+            is_signed = base_type.is_signed()
+
+            specifier = types_from_size[size]
+            if not is_signed:
+                specifier = specifier.upper()
+
+            val_bytes = panda.virtual_memory_read(cpu, field_ptr, size)
+
+            return struct.unpack(
+                (&#39;&lt;&#39; if panda.endianness == &#39;little&#39; else &#39;&gt;&#39;) + specifier, val_bytes
+            )[0]
+
+        elif fallback:
+            inner_type = field_type
+            if inner_type.startswith(&#39;struct &#39;):
+                inner_type = inner_type[len(&#39;struct &#39;):]
+            return CosiGuestPointer(panda, inner_type, field_ptr, parent=self)
+        else:
+            raise Exception(f&#34;Dereferencing type {field_type} is unsupported&#34;)
+
+    def _type_len(self, inner_type):
+        panda = self._panda
+
+        # array of pointer
+        if inner_type[-1] == &#39;*&#39;:
+            inner_type_size = panda.bits // 8
+
+        # array of primitive
+        elif inner_type in struct_types:
+            inner_type_size = struct_types[inner_type][1]
+
+        # array of platform-specific base types
+        elif base_type := panda.cosi.base_type_from_name(inner_type):
+            inner_type_size = base_type.size()
+
+        # array of structs
+        elif struct_type := panda.cosi.type_from_name(inner_type):
+            inner_type_size = struct_type.size()
+
+        else:
+            raise ValueError(f&#39;sizeof({inner_type}) cannot be determined&#39;)
+
+        return inner_type_size
+
+    def __getattr__(self, name):
+        field = self._type[name]
+        field_ptr = self._ptr + field.offset
+        field_type = field.type_name
+
+        return self._read_type(field_ptr, field_type)
+
+    def __getitem__(self, item):
+        panda = self._panda
+
+        # pointer to array
+        if self._type_name[-1] == &#39;]&#39;:
+            inner_type, count = self._type_name[:-1].split(&#39;[&#39;)
+            length = int(count)
+
+            inner_type_size = self._type_len(inner_type)
+
+            # indexing a single field
+            if type(item) is int:
+                index = item
+                offset = inner_type_size * index
+
+                return self._read_type(self._ptr + offset, inner_type, fallback=True)
+
+            # slicing the array
+            elif type(item) is slice:
+                out = []
+                for i in range(0, length)[item]:
+                    offset = inner_type_size * i
+                    item = self._read_type(self._ptr + offset, inner_type, fallback=True)
+                    out.append(item)
+                return out
+            else:
+                raise ValueError(f&#39;CosiGuestPointer cannot be sliced with type of {type(item)}&#39;)
+
+        # indexing pointer
+        elif type(item) is int:
+            index = item
+            inner_type_size = self._type_len(self._type_name)
+            offset = inner_type_size * index
+
+            return self._read_type(self._ptr + offset, self._type_name, fallback=True)
+
+        # slicing pointer
+        elif type(item) is slice:
+            if item.stop is None or item.stop &lt; 0:
+                raise ValueError(&#34;Cannot slice a pointer without an end&#34;)
+
+            inner_type_size = self._type_len(self._type_name)
+
+            out = []
+            for i in range(item.start or 0, item.stop, item.step or 1):
+                offset = inner_type_size * i
+                item = self._read_type(self._ptr + offset, self._type_name, fallback=True)
+                out.append(item)
+            return out
+
+        # accessing field
+        else:
+            return self.__getattr__(item)
+
+    def __dir__(self):
+        if self._type is None:
+            return [&#39;null_terminated&#39;, &#39;get_raw_ptr&#39;, &#39;cast&#39;]
+        else:
+            return [field[2] for field in self._type.fields()]
+
+    def before(self, type_name: str):
+        &#39;&#39;&#39;
+        Returns a pointer to the data following the current pointer of type `type_name`
+        &#39;&#39;&#39;
+
+        size = self._panda.cosi.type_from_name(type_name).size()
+        print(size)
+        ptr = self._ptr - size
+
+        return CosiGuestPointer(self._panda, type_name, ptr)
+
+    def after(self, type_name: str):
+        &#39;&#39;&#39;
+        Returns a pointer to the data following the current pointer of type `type_name`
+        &#39;&#39;&#39;
+
+        ptr = self._ptr + self._type.size()
+
+        return CosiGuestPointer(self._panda, type_name, ptr)
+
+    def as_linux_list(self, sibling: str, list_entry_type=None) -&gt; list:
+        &#39;&#39;&#39;
+        Takes a list_head* and reads it into a list. If no `list_entry_type` is provided,
+        it is assumed to be equivelant to the parent struct the `list_head*` came from.
+
+        For example, if current_task.children is a `list_head*`, the parent would be
+        `current_task` (of type `task_struct`), so the list would default to being a list of
+        `task_struct` (of which `sibling` should be passed a value of `&#34;sibling&#34;`).
+
+        So if one does `current_task.children.as_linux_list(&#34;sibling&#34;)` it will return
+        a list of `CosiGuestPointer`s pointing to `task_struct`s.
+        &#39;&#39;&#39;
+
+        if type(list_entry_type) is str:
+            list_type_name = list_entry_type
+            list_entry_type = self._panda.cosi.type_from_name(list_entry_type)
+        elif list_entry_type is None:
+            parent = self._parent
+            if parent is None:
+                raise ValueError(&#34;The list_head has no parent and `list_entry_type` was not provided&#34;)
+            list_entry_type = parent._type
+            list_type_name = parent._type_name
+
+        field_offset = list_entry_type.offset_of_field(sibling)
+
+        ptrs = []
+        head = self.next
+        current = head
+        while head._ptr != current.next._ptr and current._ptr != self._ptr:
+            addr = current._ptr - field_offset
+            ptrs.append(CosiGuestPointer(self._panda, list_type_name, addr))
+            current = current.next
+
+        return ptrs
+
+    def deref(self):
+        return self[0]
+
+    def null_terminated(self) -&gt; str:
+        &#39;&#39;&#39;
+        Read a CosiGuestPointer for a `char*` as a null-terminated string
+        &#39;&#39;&#39;
+
+        panda = self._panda
+        inner_type = self._type_name
+        cpu = panda.get_cpu()
+
+        if inner_type == &#39;char&#39; or inner_type == &#39;unsigned char&#39;:
+            return panda.read_str(cpu, self._ptr)
+        else:
+            raise ValueError(&#34;Cannot call read_null_terminated on {inner_type}*&#34;)
+
+    def get_raw_ptr(self) -&gt; int:
+        &#39;&#39;&#39;
+        Get the address in memory this points to
+        &#39;&#39;&#39;
+
+        return self._ptr
+
+    def cast(self, cast_to: str):
+        &#39;&#39;&#39;
+        Cast to a pointer of another type
+        &#39;&#39;&#39;
+
+        return CosiGuestPointer(self._panda, cast_to, self._ptr, parent=self._parent)
+
+    def container_of(self, type_name: str, field_name: str):
+        &#39;&#39;&#39;
+        Get a pointer to the struct containing this type
+        &#39;&#39;&#39;
+
+        container_type = self._panda.cosi.type_from_name(type_name)
+        offset_in_container = container_type.offset_of_field(field_name)
+
+        return container_type.at(self._ptr - offset_in_container)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pandare.cosi.Cosi"><code class="flex name class">
+<span>class <span class="ident">Cosi</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Object to interact with the <code>cosi</code> PANDA plugin. An instance can be foudn at
+<code>panda.cosi</code>, where <code>panda</code> is a <code>Panda</code> object.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Cosi:
+    &#39;&#39;&#39;
+    Object to interact with the `cosi` PANDA plugin. An instance can be foudn at
+    `panda.cosi`, where `panda` is a `Panda` object.
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        self.panda = panda
+
+    def symbol_addr_from_name(self, name: str) -&gt; int:
+        &#39;&#39;&#39;
+        Given a symbol `name`, return the address in memory where it is located,
+        accounting for KASLR as needed.
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        addr = self.panda.plugins[COSI].symbol_addr_from_name(name)
+        return addr
+
+    def symbol_value_from_name(self, name: str) -&gt; int:
+        &#39;&#39;&#39;
+        Given a symbol `name`, return the corresponding value in the volatility symbol
+        table, not accounting for KASLR.
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        addr = self.panda.plugins[COSI].symbol_value_from_name(name)
+        return addr
+
+    def kaslr_offset(self):
+        &#39;&#39;&#39;
+        Get the KASLR offset for the given system
+        &#39;&#39;&#39;
+
+        cpu = self.panda.get_cpu()
+        offset = self.panda.plugins[COSI].kaslr_offset(cpu)
+
+        return offset
+
+    def symbol_from_name(self, name: str) -&gt; VolatilitySymbol:
+        &#39;&#39;&#39;
+        Get a reference to a given symbol given the name of the symbol
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        symbol = self.panda.plugins[COSI].symbol_from_name(name)
+
+        return VolatilitySymbol(self.panda, symbol)
+
+    def base_type_from_name(self, name: str) -&gt; VolatilityBaseType:
+        &#39;&#39;&#39;
+        Get a reference to a given base type from the volatility symbol table
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        base_type = self.panda.plugins[COSI].base_type_from_name(name)
+
+        if base_type == self.panda.ffi.NULL:
+            return None
+
+        return VolatilityBaseType(self.panda, base_type)
+
+    def type_from_name(self, name: str) -&gt; VolatilityStruct:
+        &#39;&#39;&#39;
+        Get a reference to a given struct from the volatility symbol table
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        struct = self.panda.plugins[COSI].type_from_name(name)
+
+        if struct == self.panda.ffi.NULL:
+            return None
+
+        return VolatilityStruct(self.panda, struct)
+
+    def per_cpu_offset(self) -&gt; int:
+        &#39;&#39;&#39;
+        Gets the offset for per cpu variable pointers
+        &#39;&#39;&#39;
+
+        cpu = self.panda.get_cpu()
+        return self.panda.plugins[COSI].current_cpu_offset(cpu)
+
+    def find_per_cpu_address(self, symbol: str) -&gt; int:
+        &#39;&#39;&#39;
+        Get the address for a symbol given that it is a per-cpu variable
+        &#39;&#39;&#39;
+        panda = self.panda
+
+        symbol_offset = self.symbol_value_from_name(symbol)
+        ptr_to_ptr = self.per_cpu_offset() + symbol_offset
+
+        ptr_size = panda.bits // 8
+
+        ptr = panda.virtual_memory_read(panda.get_cpu(), ptr_to_ptr, ptr_size, fmt=&#39;int&#39;) &amp; ((1 &lt;&lt; panda.bits) - 1)
+
+        return ptr
+
+    def get(self, global_type, symbol, per_cpu=False):
+        if per_cpu:
+            addr = self.find_per_cpu_address(symbol)
+        else:
+            addr = self.symbol_addr_from_name(symbol)
+
+        return self.panda.cosi.type_from_name(global_type).at(addr)
+
+    # ============= Task API ============= 
+
+    def current_process(self):
+        &#39;&#39;&#39;
+        Get info about the current process
+        &#39;&#39;&#39;
+
+        proc = self.panda.plugins[COSI].get_current_cosiproc(self.panda.get_cpu())
+
+        if proc == self.panda.ffi.NULL:
+            return None
+
+        return CosiProcess(self.panda, proc)
+
+    def process_list(self):
+        &#39;&#39;&#39;
+        Get a list of the current processes
+        &#39;&#39;&#39;
+
+        proc_list = self.panda.plugins[COSI].cosi_get_proc_list(self.panda.get_cpu())
+
+        if proc_list == self.panda.ffi.NULL:
+            return []
+        else:
+            return CosiProcList(self.panda, proc_list)
+
+    def current_thread(self):
+        &#39;&#39;&#39;
+        Get info about the current thread
+        &#39;&#39;&#39;
+
+        thread = self.panda.plugins[COSI].get_current_cosithread(self.panda.get_cpu())
+
+        if thread == self.panda.ffi.NULL:
+            return None
+
+        return CosiThread(self.panda, thread)
+
+    def current_files(self):
+        &#39;&#39;&#39;
+        Get information about the files open in the current process
+        &#39;&#39;&#39;
+
+        files = self.panda.plugins[COSI].get_current_files(self.panda.get_cpu())
+
+        if files == self.panda.ffi.NULL:
+            return []
+
+        return CosiFiles(self.panda, files)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.cosi.Cosi.base_type_from_name"><code class="name flex">
+<span>def <span class="ident">base_type_from_name</span></span>(<span>self, name: str) ‑> <a title="pandare.cosi.VolatilityBaseType" href="#pandare.cosi.VolatilityBaseType">VolatilityBaseType</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get a reference to a given base type from the volatility symbol table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def base_type_from_name(self, name: str) -&gt; VolatilityBaseType:
+    &#39;&#39;&#39;
+    Get a reference to a given base type from the volatility symbol table
+    &#39;&#39;&#39;
+
+    name = name.encode(&#39;utf8&#39;)
+    name = self.panda.ffi.new(&#34;char[]&#34;, name)
+    base_type = self.panda.plugins[COSI].base_type_from_name(name)
+
+    if base_type == self.panda.ffi.NULL:
+        return None
+
+    return VolatilityBaseType(self.panda, base_type)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.current_files"><code class="name flex">
+<span>def <span class="ident">current_files</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get information about the files open in the current process</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def current_files(self):
+    &#39;&#39;&#39;
+    Get information about the files open in the current process
+    &#39;&#39;&#39;
+
+    files = self.panda.plugins[COSI].get_current_files(self.panda.get_cpu())
+
+    if files == self.panda.ffi.NULL:
+        return []
+
+    return CosiFiles(self.panda, files)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.current_process"><code class="name flex">
+<span>def <span class="ident">current_process</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get info about the current process</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def current_process(self):
+    &#39;&#39;&#39;
+    Get info about the current process
+    &#39;&#39;&#39;
+
+    proc = self.panda.plugins[COSI].get_current_cosiproc(self.panda.get_cpu())
+
+    if proc == self.panda.ffi.NULL:
+        return None
+
+    return CosiProcess(self.panda, proc)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.current_thread"><code class="name flex">
+<span>def <span class="ident">current_thread</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get info about the current thread</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def current_thread(self):
+    &#39;&#39;&#39;
+    Get info about the current thread
+    &#39;&#39;&#39;
+
+    thread = self.panda.plugins[COSI].get_current_cosithread(self.panda.get_cpu())
+
+    if thread == self.panda.ffi.NULL:
+        return None
+
+    return CosiThread(self.panda, thread)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.find_per_cpu_address"><code class="name flex">
+<span>def <span class="ident">find_per_cpu_address</span></span>(<span>self, symbol: str) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the address for a symbol given that it is a per-cpu variable</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_per_cpu_address(self, symbol: str) -&gt; int:
+    &#39;&#39;&#39;
+    Get the address for a symbol given that it is a per-cpu variable
+    &#39;&#39;&#39;
+    panda = self.panda
+
+    symbol_offset = self.symbol_value_from_name(symbol)
+    ptr_to_ptr = self.per_cpu_offset() + symbol_offset
+
+    ptr_size = panda.bits // 8
+
+    ptr = panda.virtual_memory_read(panda.get_cpu(), ptr_to_ptr, ptr_size, fmt=&#39;int&#39;) &amp; ((1 &lt;&lt; panda.bits) - 1)
+
+    return ptr</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, global_type, symbol, per_cpu=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get(self, global_type, symbol, per_cpu=False):
+    if per_cpu:
+        addr = self.find_per_cpu_address(symbol)
+    else:
+        addr = self.symbol_addr_from_name(symbol)
+
+    return self.panda.cosi.type_from_name(global_type).at(addr)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.kaslr_offset"><code class="name flex">
+<span>def <span class="ident">kaslr_offset</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the KASLR offset for the given system</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def kaslr_offset(self):
+    &#39;&#39;&#39;
+    Get the KASLR offset for the given system
+    &#39;&#39;&#39;
+
+    cpu = self.panda.get_cpu()
+    offset = self.panda.plugins[COSI].kaslr_offset(cpu)
+
+    return offset</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.per_cpu_offset"><code class="name flex">
+<span>def <span class="ident">per_cpu_offset</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the offset for per cpu variable pointers</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def per_cpu_offset(self) -&gt; int:
+    &#39;&#39;&#39;
+    Gets the offset for per cpu variable pointers
+    &#39;&#39;&#39;
+
+    cpu = self.panda.get_cpu()
+    return self.panda.plugins[COSI].current_cpu_offset(cpu)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.process_list"><code class="name flex">
+<span>def <span class="ident">process_list</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get a list of the current processes</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_list(self):
+    &#39;&#39;&#39;
+    Get a list of the current processes
+    &#39;&#39;&#39;
+
+    proc_list = self.panda.plugins[COSI].cosi_get_proc_list(self.panda.get_cpu())
+
+    if proc_list == self.panda.ffi.NULL:
+        return []
+    else:
+        return CosiProcList(self.panda, proc_list)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.symbol_addr_from_name"><code class="name flex">
+<span>def <span class="ident">symbol_addr_from_name</span></span>(<span>self, name: str) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given a symbol <code>name</code>, return the address in memory where it is located,
+accounting for KASLR as needed.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def symbol_addr_from_name(self, name: str) -&gt; int:
+    &#39;&#39;&#39;
+    Given a symbol `name`, return the address in memory where it is located,
+    accounting for KASLR as needed.
+    &#39;&#39;&#39;
+
+    name = name.encode(&#39;utf8&#39;)
+    name = self.panda.ffi.new(&#34;char[]&#34;, name)
+    addr = self.panda.plugins[COSI].symbol_addr_from_name(name)
+    return addr</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.symbol_from_name"><code class="name flex">
+<span>def <span class="ident">symbol_from_name</span></span>(<span>self, name: str) ‑> <a title="pandare.cosi.VolatilitySymbol" href="#pandare.cosi.VolatilitySymbol">VolatilitySymbol</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get a reference to a given symbol given the name of the symbol</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def symbol_from_name(self, name: str) -&gt; VolatilitySymbol:
+    &#39;&#39;&#39;
+    Get a reference to a given symbol given the name of the symbol
+    &#39;&#39;&#39;
+
+    name = name.encode(&#39;utf8&#39;)
+    name = self.panda.ffi.new(&#34;char[]&#34;, name)
+    symbol = self.panda.plugins[COSI].symbol_from_name(name)
+
+    return VolatilitySymbol(self.panda, symbol)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.symbol_value_from_name"><code class="name flex">
+<span>def <span class="ident">symbol_value_from_name</span></span>(<span>self, name: str) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given a symbol <code>name</code>, return the corresponding value in the volatility symbol
+table, not accounting for KASLR.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def symbol_value_from_name(self, name: str) -&gt; int:
+    &#39;&#39;&#39;
+    Given a symbol `name`, return the corresponding value in the volatility symbol
+    table, not accounting for KASLR.
+    &#39;&#39;&#39;
+
+    name = name.encode(&#39;utf8&#39;)
+    name = self.panda.ffi.new(&#34;char[]&#34;, name)
+    addr = self.panda.plugins[COSI].symbol_value_from_name(name)
+    return addr</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.Cosi.type_from_name"><code class="name flex">
+<span>def <span class="ident">type_from_name</span></span>(<span>self, name: str) ‑> <a title="pandare.cosi.VolatilityStruct" href="#pandare.cosi.VolatilityStruct">VolatilityStruct</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get a reference to a given struct from the volatility symbol table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def type_from_name(self, name: str) -&gt; VolatilityStruct:
+    &#39;&#39;&#39;
+    Get a reference to a given struct from the volatility symbol table
+    &#39;&#39;&#39;
+
+    name = name.encode(&#39;utf8&#39;)
+    name = self.panda.ffi.new(&#34;char[]&#34;, name)
+    struct = self.panda.plugins[COSI].type_from_name(name)
+
+    if struct == self.panda.ffi.NULL:
+        return None
+
+    return VolatilityStruct(self.panda, struct)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.cosi.CosiFile"><code class="flex name class">
+<span>class <span class="ident">CosiFile</span></span>
+<span>(</span><span>panda, file_ptr, hold_ref=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CosiFile:
+    def __init__(self, panda, file_ptr, hold_ref=None):
+        self.inner = file_ptr
+        self.panda = panda
+        self.hold_ref = hold_ref
+
+    def get_name(self) -&gt; str:
+        &#39;&#39;&#39;
+        Get the name/path from which this file was accessed
+        &#39;&#39;&#39;
+
+        cstr_name = self.panda.plugins[COSI].cosi_file_name(self.inner)
+        name = self.panda.ffi.string(cstr_name)
+        self.panda.plugins[COSI].free_cosi_str(cstr_name)
+        return name.decode(&#39;utf8&#39;)
+
+    def __getattr__(self, key):
+        if key == &#34;name&#34;:
+            return self.get_name()
+
+        attr = getattr(self.inner, key, None)
+        if not attr is None:
+            return attr
+
+        return getattr(self.inner.file_struct, key)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.cosi.CosiFile.get_name"><code class="name flex">
+<span>def <span class="ident">get_name</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the name/path from which this file was accessed</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_name(self) -&gt; str:
+    &#39;&#39;&#39;
+    Get the name/path from which this file was accessed
+    &#39;&#39;&#39;
+
+    cstr_name = self.panda.plugins[COSI].cosi_file_name(self.inner)
+    name = self.panda.ffi.string(cstr_name)
+    self.panda.plugins[COSI].free_cosi_str(cstr_name)
+    return name.decode(&#39;utf8&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.cosi.CosiFiles"><code class="flex name class">
+<span>class <span class="ident">CosiFiles</span></span>
+<span>(</span><span>panda, files)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CosiFiles:
+    def __init__(self, panda, files):
+        self.inner = files
+        self.panda = panda
+
+    def __del__(self):
+        self.panda.plugins[COSI].free_cosi_files(self.inner)
+        self.inner = None
+
+    def __len__(self) -&gt; int:
+        return self.panda.plugins[COSI].cosi_files_len(self.inner)
+
+    def __getitem__(self, key: int):
+        if not type(key) is int:
+            raise TypeError(&#34;CosiFiles must be indexed with an integer&#34;)
+
+        file_ptr = self.panda.plugins[COSI].cosi_files_get(self.inner, key)
+
+        if file_ptr == self.panda.ffi.NULL:
+            raise IndexError(&#34;Integer {} out of bounds of CosiFiles len&#34;)
+
+        return CosiFile(self.panda, file_ptr, hold_ref=self)
+
+    def __iter__(self):
+        for i in range(len(self)):
+            yield self[i]
+
+    def get_from_fd(self, fd: int):
+        &#39;&#39;&#39;
+        Gets a CosiFile from this set of files based on the file descriptor.
+
+        Returns None if the fd could not be found.
+        &#39;&#39;&#39;
+
+        file_ptr = self.panda.plugins[&#39;COSI&#39;].cosi_files_file_from_fd(self.inner, fd)
+
+        if file_ptr == self.panda.ffi.NULL:
+            return None
+        else:
+            return CosiFile(self.panda, file_ptr)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.cosi.CosiFiles.get_from_fd"><code class="name flex">
+<span>def <span class="ident">get_from_fd</span></span>(<span>self, fd: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets a CosiFile from this set of files based on the file descriptor.</p>
+<p>Returns None if the fd could not be found.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_from_fd(self, fd: int):
+    &#39;&#39;&#39;
+    Gets a CosiFile from this set of files based on the file descriptor.
+
+    Returns None if the fd could not be found.
+    &#39;&#39;&#39;
+
+    file_ptr = self.panda.plugins[&#39;COSI&#39;].cosi_files_file_from_fd(self.inner, fd)
+
+    if file_ptr == self.panda.ffi.NULL:
+        return None
+    else:
+        return CosiFile(self.panda, file_ptr)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.cosi.CosiGuestPointer"><code class="flex name class">
+<span>class <span class="ident">CosiGuestPointer</span></span>
+<span>(</span><span>panda, type_name, ptr, parent=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A type representing a pointer for a data structure in the kernel</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CosiGuestPointer:
+    &#39;&#39;&#39;
+    A type representing a pointer for a data structure in the kernel
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, type_name, ptr, parent=None):
+        self._panda = panda
+        self._type_name = type_name
+        self._ptr = ptr
+        self._type = panda.cosi.type_from_name(type_name)
+        self._parent = parent
+
+    def __repr__(self):
+        return f&#39;&lt;CosiGuestPointer of type {self._type_name} at {hex(self._ptr)}&gt;&#39;
+
+    def _read_type(self, field_ptr: int, field_type: str, fallback=False):
+        panda = self._panda
+        cpu = panda.get_cpu()
+
+        # pointer
+        if field_type[-1] == &#39;*&#39;:
+            pointer = panda.virtual_memory_read(cpu, field_ptr, panda.bits // 8, fmt=&#39;int&#39;)
+
+            inner_type = field_type[:-1]
+            if inner_type.startswith(&#39;struct &#39;):
+                inner_type = inner_type[len(&#39;struct &#39;):]
+            return CosiGuestPointer(panda, inner_type, pointer, parent=self)
+        # inline struct
+        elif field_type.startswith(&#39;struct &#39;):
+            field_type_inner = field_type[len(&#39;struct &#39;):]
+
+            return CosiGuestPointer(panda, field_type_inner, field_ptr, parent=self)
+        # char array
+        elif field_type.startswith(&#39;char[&#39;) and field_type[-1] == &#39;]&#39;:
+            length = int(field_type[len(&#39;char[&#39;):-1])
+            data = panda.virtual_memory_read(cpu, field_ptr, length)
+
+            try:
+                length = data.index(b&#39;\0&#39;)
+                data = data[:length]
+            except ValueError:
+                pass
+
+            return data.decode(&#39;utf8&#39;)
+
+        # non-char array
+        elif field_type[-1] == &#39;]&#39;:
+            return CosiGuestPointer(panda, field_type, field_ptr, parent=self)
+
+        # basic type
+        elif field_type in struct_types:
+            specifier, size = struct_types[field_type]
+
+            val_bytes = panda.virtual_memory_read(cpu, field_ptr, size)
+            return struct.unpack(
+                (&#39;&lt;&#39; if panda.endianness == &#39;little&#39; else &#39;&gt;&#39;) + specifier, val_bytes
+            )[0]
+        # platform-specific base types
+        elif base_type := panda.cosi.base_type_from_name(field_type):
+            size = base_type.size()
+            is_signed = base_type.is_signed()
+
+            specifier = types_from_size[size]
+            if not is_signed:
+                specifier = specifier.upper()
+
+            val_bytes = panda.virtual_memory_read(cpu, field_ptr, size)
+
+            return struct.unpack(
+                (&#39;&lt;&#39; if panda.endianness == &#39;little&#39; else &#39;&gt;&#39;) + specifier, val_bytes
+            )[0]
+
+        elif fallback:
+            inner_type = field_type
+            if inner_type.startswith(&#39;struct &#39;):
+                inner_type = inner_type[len(&#39;struct &#39;):]
+            return CosiGuestPointer(panda, inner_type, field_ptr, parent=self)
+        else:
+            raise Exception(f&#34;Dereferencing type {field_type} is unsupported&#34;)
+
+    def _type_len(self, inner_type):
+        panda = self._panda
+
+        # array of pointer
+        if inner_type[-1] == &#39;*&#39;:
+            inner_type_size = panda.bits // 8
+
+        # array of primitive
+        elif inner_type in struct_types:
+            inner_type_size = struct_types[inner_type][1]
+
+        # array of platform-specific base types
+        elif base_type := panda.cosi.base_type_from_name(inner_type):
+            inner_type_size = base_type.size()
+
+        # array of structs
+        elif struct_type := panda.cosi.type_from_name(inner_type):
+            inner_type_size = struct_type.size()
+
+        else:
+            raise ValueError(f&#39;sizeof({inner_type}) cannot be determined&#39;)
+
+        return inner_type_size
+
+    def __getattr__(self, name):
+        field = self._type[name]
+        field_ptr = self._ptr + field.offset
+        field_type = field.type_name
+
+        return self._read_type(field_ptr, field_type)
+
+    def __getitem__(self, item):
+        panda = self._panda
+
+        # pointer to array
+        if self._type_name[-1] == &#39;]&#39;:
+            inner_type, count = self._type_name[:-1].split(&#39;[&#39;)
+            length = int(count)
+
+            inner_type_size = self._type_len(inner_type)
+
+            # indexing a single field
+            if type(item) is int:
+                index = item
+                offset = inner_type_size * index
+
+                return self._read_type(self._ptr + offset, inner_type, fallback=True)
+
+            # slicing the array
+            elif type(item) is slice:
+                out = []
+                for i in range(0, length)[item]:
+                    offset = inner_type_size * i
+                    item = self._read_type(self._ptr + offset, inner_type, fallback=True)
+                    out.append(item)
+                return out
+            else:
+                raise ValueError(f&#39;CosiGuestPointer cannot be sliced with type of {type(item)}&#39;)
+
+        # indexing pointer
+        elif type(item) is int:
+            index = item
+            inner_type_size = self._type_len(self._type_name)
+            offset = inner_type_size * index
+
+            return self._read_type(self._ptr + offset, self._type_name, fallback=True)
+
+        # slicing pointer
+        elif type(item) is slice:
+            if item.stop is None or item.stop &lt; 0:
+                raise ValueError(&#34;Cannot slice a pointer without an end&#34;)
+
+            inner_type_size = self._type_len(self._type_name)
+
+            out = []
+            for i in range(item.start or 0, item.stop, item.step or 1):
+                offset = inner_type_size * i
+                item = self._read_type(self._ptr + offset, self._type_name, fallback=True)
+                out.append(item)
+            return out
+
+        # accessing field
+        else:
+            return self.__getattr__(item)
+
+    def __dir__(self):
+        if self._type is None:
+            return [&#39;null_terminated&#39;, &#39;get_raw_ptr&#39;, &#39;cast&#39;]
+        else:
+            return [field[2] for field in self._type.fields()]
+
+    def before(self, type_name: str):
+        &#39;&#39;&#39;
+        Returns a pointer to the data following the current pointer of type `type_name`
+        &#39;&#39;&#39;
+
+        size = self._panda.cosi.type_from_name(type_name).size()
+        print(size)
+        ptr = self._ptr - size
+
+        return CosiGuestPointer(self._panda, type_name, ptr)
+
+    def after(self, type_name: str):
+        &#39;&#39;&#39;
+        Returns a pointer to the data following the current pointer of type `type_name`
+        &#39;&#39;&#39;
+
+        ptr = self._ptr + self._type.size()
+
+        return CosiGuestPointer(self._panda, type_name, ptr)
+
+    def as_linux_list(self, sibling: str, list_entry_type=None) -&gt; list:
+        &#39;&#39;&#39;
+        Takes a list_head* and reads it into a list. If no `list_entry_type` is provided,
+        it is assumed to be equivelant to the parent struct the `list_head*` came from.
+
+        For example, if current_task.children is a `list_head*`, the parent would be
+        `current_task` (of type `task_struct`), so the list would default to being a list of
+        `task_struct` (of which `sibling` should be passed a value of `&#34;sibling&#34;`).
+
+        So if one does `current_task.children.as_linux_list(&#34;sibling&#34;)` it will return
+        a list of `CosiGuestPointer`s pointing to `task_struct`s.
+        &#39;&#39;&#39;
+
+        if type(list_entry_type) is str:
+            list_type_name = list_entry_type
+            list_entry_type = self._panda.cosi.type_from_name(list_entry_type)
+        elif list_entry_type is None:
+            parent = self._parent
+            if parent is None:
+                raise ValueError(&#34;The list_head has no parent and `list_entry_type` was not provided&#34;)
+            list_entry_type = parent._type
+            list_type_name = parent._type_name
+
+        field_offset = list_entry_type.offset_of_field(sibling)
+
+        ptrs = []
+        head = self.next
+        current = head
+        while head._ptr != current.next._ptr and current._ptr != self._ptr:
+            addr = current._ptr - field_offset
+            ptrs.append(CosiGuestPointer(self._panda, list_type_name, addr))
+            current = current.next
+
+        return ptrs
+
+    def deref(self):
+        return self[0]
+
+    def null_terminated(self) -&gt; str:
+        &#39;&#39;&#39;
+        Read a CosiGuestPointer for a `char*` as a null-terminated string
+        &#39;&#39;&#39;
+
+        panda = self._panda
+        inner_type = self._type_name
+        cpu = panda.get_cpu()
+
+        if inner_type == &#39;char&#39; or inner_type == &#39;unsigned char&#39;:
+            return panda.read_str(cpu, self._ptr)
+        else:
+            raise ValueError(&#34;Cannot call read_null_terminated on {inner_type}*&#34;)
+
+    def get_raw_ptr(self) -&gt; int:
+        &#39;&#39;&#39;
+        Get the address in memory this points to
+        &#39;&#39;&#39;
+
+        return self._ptr
+
+    def cast(self, cast_to: str):
+        &#39;&#39;&#39;
+        Cast to a pointer of another type
+        &#39;&#39;&#39;
+
+        return CosiGuestPointer(self._panda, cast_to, self._ptr, parent=self._parent)
+
+    def container_of(self, type_name: str, field_name: str):
+        &#39;&#39;&#39;
+        Get a pointer to the struct containing this type
+        &#39;&#39;&#39;
+
+        container_type = self._panda.cosi.type_from_name(type_name)
+        offset_in_container = container_type.offset_of_field(field_name)
+
+        return container_type.at(self._ptr - offset_in_container)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.cosi.CosiGuestPointer.after"><code class="name flex">
+<span>def <span class="ident">after</span></span>(<span>self, type_name: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a pointer to the data following the current pointer of type <code>type_name</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def after(self, type_name: str):
+    &#39;&#39;&#39;
+    Returns a pointer to the data following the current pointer of type `type_name`
+    &#39;&#39;&#39;
+
+    ptr = self._ptr + self._type.size()
+
+    return CosiGuestPointer(self._panda, type_name, ptr)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiGuestPointer.as_linux_list"><code class="name flex">
+<span>def <span class="ident">as_linux_list</span></span>(<span>self, sibling: str, list_entry_type=None) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Takes a list_head* and reads it into a list. If no <code>list_entry_type</code> is provided,
+it is assumed to be equivelant to the parent struct the <code>list_head*</code> came from.</p>
+<p>For example, if current_task.children is a <code>list_head*</code>, the parent would be
+<code>current_task</code> (of type <code>task_struct</code>), so the list would default to being a list of
+<code>task_struct</code> (of which <code>sibling</code> should be passed a value of <code>"sibling"</code>).</p>
+<p>So if one does <code>current_task.children.as_linux_list("sibling")</code> it will return
+a list of <code><a title="pandare.cosi.CosiGuestPointer" href="#pandare.cosi.CosiGuestPointer">CosiGuestPointer</a></code>s pointing to <code>task_struct</code>s.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def as_linux_list(self, sibling: str, list_entry_type=None) -&gt; list:
+    &#39;&#39;&#39;
+    Takes a list_head* and reads it into a list. If no `list_entry_type` is provided,
+    it is assumed to be equivelant to the parent struct the `list_head*` came from.
+
+    For example, if current_task.children is a `list_head*`, the parent would be
+    `current_task` (of type `task_struct`), so the list would default to being a list of
+    `task_struct` (of which `sibling` should be passed a value of `&#34;sibling&#34;`).
+
+    So if one does `current_task.children.as_linux_list(&#34;sibling&#34;)` it will return
+    a list of `CosiGuestPointer`s pointing to `task_struct`s.
+    &#39;&#39;&#39;
+
+    if type(list_entry_type) is str:
+        list_type_name = list_entry_type
+        list_entry_type = self._panda.cosi.type_from_name(list_entry_type)
+    elif list_entry_type is None:
+        parent = self._parent
+        if parent is None:
+            raise ValueError(&#34;The list_head has no parent and `list_entry_type` was not provided&#34;)
+        list_entry_type = parent._type
+        list_type_name = parent._type_name
+
+    field_offset = list_entry_type.offset_of_field(sibling)
+
+    ptrs = []
+    head = self.next
+    current = head
+    while head._ptr != current.next._ptr and current._ptr != self._ptr:
+        addr = current._ptr - field_offset
+        ptrs.append(CosiGuestPointer(self._panda, list_type_name, addr))
+        current = current.next
+
+    return ptrs</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiGuestPointer.before"><code class="name flex">
+<span>def <span class="ident">before</span></span>(<span>self, type_name: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a pointer to the data following the current pointer of type <code>type_name</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def before(self, type_name: str):
+    &#39;&#39;&#39;
+    Returns a pointer to the data following the current pointer of type `type_name`
+    &#39;&#39;&#39;
+
+    size = self._panda.cosi.type_from_name(type_name).size()
+    print(size)
+    ptr = self._ptr - size
+
+    return CosiGuestPointer(self._panda, type_name, ptr)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiGuestPointer.cast"><code class="name flex">
+<span>def <span class="ident">cast</span></span>(<span>self, cast_to: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Cast to a pointer of another type</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cast(self, cast_to: str):
+    &#39;&#39;&#39;
+    Cast to a pointer of another type
+    &#39;&#39;&#39;
+
+    return CosiGuestPointer(self._panda, cast_to, self._ptr, parent=self._parent)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiGuestPointer.container_of"><code class="name flex">
+<span>def <span class="ident">container_of</span></span>(<span>self, type_name: str, field_name: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get a pointer to the struct containing this type</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def container_of(self, type_name: str, field_name: str):
+    &#39;&#39;&#39;
+    Get a pointer to the struct containing this type
+    &#39;&#39;&#39;
+
+    container_type = self._panda.cosi.type_from_name(type_name)
+    offset_in_container = container_type.offset_of_field(field_name)
+
+    return container_type.at(self._ptr - offset_in_container)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiGuestPointer.deref"><code class="name flex">
+<span>def <span class="ident">deref</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def deref(self):
+    return self[0]</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiGuestPointer.get_raw_ptr"><code class="name flex">
+<span>def <span class="ident">get_raw_ptr</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the address in memory this points to</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_raw_ptr(self) -&gt; int:
+    &#39;&#39;&#39;
+    Get the address in memory this points to
+    &#39;&#39;&#39;
+
+    return self._ptr</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiGuestPointer.null_terminated"><code class="name flex">
+<span>def <span class="ident">null_terminated</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Read a CosiGuestPointer for a <code>char*</code> as a null-terminated string</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def null_terminated(self) -&gt; str:
+    &#39;&#39;&#39;
+    Read a CosiGuestPointer for a `char*` as a null-terminated string
+    &#39;&#39;&#39;
+
+    panda = self._panda
+    inner_type = self._type_name
+    cpu = panda.get_cpu()
+
+    if inner_type == &#39;char&#39; or inner_type == &#39;unsigned char&#39;:
+        return panda.read_str(cpu, self._ptr)
+    else:
+        raise ValueError(&#34;Cannot call read_null_terminated on {inner_type}*&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.cosi.CosiIntrusiveListAccessor"><code class="flex name class">
+<span>class <span class="ident">CosiIntrusiveListAccessor</span></span>
+<span>(</span><span>panda, ptr)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CosiIntrusiveListAccessor:
+    def __init__(self, panda, ptr):
+        self._panda = panda
+        self._ptr = ptr
+
+    def __getattr__(self, name):
+        list_head = getattr(self._ptr, name)
+        if list_head._type_name != &#39;list_head&#39;:
+            raise Exception(f&#34;Field {self._ptr._type_name}.{name} not a list_head*&#34;)
+
+        field_offset = self._ptr._type[name].offset
+
+        ptrs = []
+        head = list_head.next.prev
+        current = list_head.next
+        while head._ptr != current._ptr:
+            addr = current._ptr - field_offset
+            ptrs.append(CosiGuestPointer(self._panda, self._ptr._type_name, addr))
+            current = current.next
+
+        return ptrs</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiMappings"><code class="flex name class">
+<span>class <span class="ident">CosiMappings</span></span>
+<span>(</span><span>panda, inner)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CosiMappings:
+    def __init__(self, panda, inner):
+        self.inner = inner
+        self.panda = panda
+
+    def __del__(self):
+        self.panda.plugins[COSI].cosi_free_mappings(self.inner)
+        self.inner = None
+
+    def __len__(self) -&gt; int:
+        return self.panda.plugins[COSI].cosi_mappings_len(self.inner)
+
+    def __getitem__(self, key: int):
+        if not type(key) is int:
+            raise TypeError(&#34;CosiMappings must be indexed with an integer&#34;)
+
+        file_ptr = self.panda.plugins[COSI].cosi_mappings_get(self.inner, key)
+
+        if file_ptr == self.panda.ffi.NULL:
+            raise IndexError(&#34;Integer {} out of bounds of CosiProcList length&#34;)
+
+        return CosiModule(self.panda, file_ptr, hold_ref=self)
+
+    def __iter__(self):
+        for i in range(len(self)):
+            yield self[i]</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiModule"><code class="flex name class">
+<span>class <span class="ident">CosiModule</span></span>
+<span>(</span><span>panda, proc, hold_ref=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CosiModule:
+    def __init__(self, panda, proc, hold_ref=None):
+        self.panda = panda
+        self.inner = proc
+        self.hold_ref = hold_ref
+
+    def __del__(self):
+        if self.hold_ref is None:
+            pass # TODO: free module if it&#39;s not a reference
+        self.inner = None
+
+    def get_name(self):
+        cstr_name = self.panda.plugins[COSI].cosi_module_name(self.inner)
+        name = self.panda.ffi.string(cstr_name)
+        self.panda.plugins[COSI].free_cosi_str(cstr_name)
+        return name.decode(&#39;utf8&#39;)
+
+    def get_file(self):
+        cstr_name = self.panda.plugins[COSI].cosi_module_file(self.inner)
+        name = self.panda.ffi.string(cstr_name)
+        self.panda.plugins[COSI].free_cosi_str(cstr_name)
+        return name.decode(&#39;utf8&#39;)
+
+    def __getattr__(self, key):
+        if key == &#34;name&#34;:
+            return self.get_name()
+        elif key == &#34;file&#34;:
+            return self.get_file()
+
+        attr = getattr(self.inner, key, None)
+        if not attr is None:
+            return attr
+
+        return getattr(self.inner.task, key)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.cosi.CosiModule.get_file"><code class="name flex">
+<span>def <span class="ident">get_file</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_file(self):
+    cstr_name = self.panda.plugins[COSI].cosi_module_file(self.inner)
+    name = self.panda.ffi.string(cstr_name)
+    self.panda.plugins[COSI].free_cosi_str(cstr_name)
+    return name.decode(&#39;utf8&#39;)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiModule.get_name"><code class="name flex">
+<span>def <span class="ident">get_name</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_name(self):
+    cstr_name = self.panda.plugins[COSI].cosi_module_name(self.inner)
+    name = self.panda.ffi.string(cstr_name)
+    self.panda.plugins[COSI].free_cosi_str(cstr_name)
+    return name.decode(&#39;utf8&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.cosi.CosiProcList"><code class="flex name class">
+<span>class <span class="ident">CosiProcList</span></span>
+<span>(</span><span>panda, inner)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CosiProcList:
+    def __init__(self, panda, inner):
+        self.inner = inner
+        self.panda = panda
+
+    def __del__(self):
+        self.panda.plugins[COSI].cosi_free_proc_list(self.inner)
+        self.inner = None
+
+    def __len__(self) -&gt; int:
+        return self.panda.plugins[COSI].cosi_proc_list_len(self.inner)
+
+    def __getitem__(self, key: int):
+        if not type(key) is int:
+            raise TypeError(&#34;CosiProcList must be indexed with an integer&#34;)
+
+        file_ptr = self.panda.plugins[COSI].cosi_proc_list_get(self.inner, key)
+
+        if file_ptr == self.panda.ffi.NULL:
+            raise IndexError(&#34;Integer {} out of bounds of CosiProcList length&#34;)
+
+        return CosiProcess(self.panda, file_ptr, hold_ref=self)
+
+    def __iter__(self):
+        for i in range(len(self)):
+            yield self[i]</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiProcess"><code class="flex name class">
+<span>class <span class="ident">CosiProcess</span></span>
+<span>(</span><span>panda, proc, hold_ref=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CosiProcess:
+    def __init__(self, panda, proc, hold_ref=None):
+        self.panda = panda
+        self.inner = proc
+        self.hold_ref = hold_ref
+
+    def __del__(self):
+        if self.hold_ref is None:
+            self.panda.plugins[COSI].free_process(self.inner)
+        self.inner = None
+
+    def get_name(self):
+        cstr_name = self.panda.plugins[COSI].cosi_proc_name(self.inner)
+        name = self.panda.ffi.string(cstr_name)
+        self.panda.plugins[COSI].free_cosi_str(cstr_name)
+        return name.decode(&#39;utf8&#39;)
+
+    def __getattr__(self, key):
+        if key == &#34;name&#34;:
+            return self.get_name()
+
+        attr = getattr(self.inner, key, None)
+        if not attr is None:
+            return attr
+
+        return getattr(self.inner.task, key)
+
+    def open_files(self):
+        &#39;&#39;&#39;
+        Returns information about all the files open in this process
+        &#39;&#39;&#39;
+
+        files = self.panda.plugins[COSI].cosi_proc_files(self.inner)
+        return CosiFiles(self.panda, files)
+
+    def children(self):
+        &#39;&#39;&#39;
+        Returns a list of this process&#39; children
+        &#39;&#39;&#39;
+
+        children = self.panda.plugins[COSI].cosi_proc_children(
+            self.panda.get_cpu(),
+            self.inner
+        )
+
+        if children == self.panda.ffi.NULL:
+            return []
+
+        return CosiProcList(self.panda, children)
+
+    def mappings(self):
+        &#39;&#39;&#39;
+        Returns a list of the mappings of the process
+        &#39;&#39;&#39;
+
+        mappings = self.panda.plugins[COSI].cosi_proc_get_mappings(
+            self.panda.get_cpu(),
+            self.inner
+        )
+
+        if mappings == self.panda.ffi.NULL:
+            return []
+
+        return CosiMappings(self.panda, mappings)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.cosi.CosiProcess.children"><code class="name flex">
+<span>def <span class="ident">children</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a list of this process' children</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def children(self):
+    &#39;&#39;&#39;
+    Returns a list of this process&#39; children
+    &#39;&#39;&#39;
+
+    children = self.panda.plugins[COSI].cosi_proc_children(
+        self.panda.get_cpu(),
+        self.inner
+    )
+
+    if children == self.panda.ffi.NULL:
+        return []
+
+    return CosiProcList(self.panda, children)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiProcess.get_name"><code class="name flex">
+<span>def <span class="ident">get_name</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_name(self):
+    cstr_name = self.panda.plugins[COSI].cosi_proc_name(self.inner)
+    name = self.panda.ffi.string(cstr_name)
+    self.panda.plugins[COSI].free_cosi_str(cstr_name)
+    return name.decode(&#39;utf8&#39;)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiProcess.mappings"><code class="name flex">
+<span>def <span class="ident">mappings</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a list of the mappings of the process</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mappings(self):
+    &#39;&#39;&#39;
+    Returns a list of the mappings of the process
+    &#39;&#39;&#39;
+
+    mappings = self.panda.plugins[COSI].cosi_proc_get_mappings(
+        self.panda.get_cpu(),
+        self.inner
+    )
+
+    if mappings == self.panda.ffi.NULL:
+        return []
+
+    return CosiMappings(self.panda, mappings)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.CosiProcess.open_files"><code class="name flex">
+<span>def <span class="ident">open_files</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns information about all the files open in this process</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def open_files(self):
+    &#39;&#39;&#39;
+    Returns information about all the files open in this process
+    &#39;&#39;&#39;
+
+    files = self.panda.plugins[COSI].cosi_proc_files(self.inner)
+    return CosiFiles(self.panda, files)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.cosi.CosiThread"><code class="flex name class">
+<span>class <span class="ident">CosiThread</span></span>
+<span>(</span><span>panda, thread)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CosiThread:
+    def __init__(self, panda, thread):
+        self.inner = thread
+        self.panda = panda
+
+    def __del__(self):
+        self.panda.plugins[COSI].free_thread(self.inner)
+        self.inner = None
+
+    def __getattr__(self, key):
+        return getattr(self.inner, key)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilityBaseType"><code class="flex name class">
+<span>class <span class="ident">VolatilityBaseType</span></span>
+<span>(</span><span>panda, raw_ptr)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A reference to a base type in the volatility symbol table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class VolatilityBaseType:
+    &#39;&#39;&#39;
+    A reference to a base type in the volatility symbol table
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, raw_ptr):
+        self.panda = panda
+        self.inner = raw_ptr
+
+    def name(self) -&gt; str:
+        &#39;&#39;&#39;
+        Get the name for the given base type
+        &#39;&#39;&#39;
+
+        name_ptr = self.panda.plugins[COSI].name_of_base_type(self.inner)
+        name = self.panda.ffi.string(name_ptr).decode(&#39;utf8&#39;)
+        self.panda.plugins[COSI].free_cosi_str(name_ptr)
+
+        return name
+
+    def size(self) -&gt; int:
+        &#39;&#39;&#39;
+        Get the size of the given base type in bytes
+        &#39;&#39;&#39;
+
+        return self.panda.plugins[COSI].size_of_base_type(self.inner)
+
+    def is_signed(self) -&gt; bool:
+        &#39;&#39;&#39;
+        Get whether an integer base type is signed or not
+        &#39;&#39;&#39;
+
+        return self.panda.plugins[COSI].is_base_type_signed(self.inner)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.cosi.VolatilityBaseType.is_signed"><code class="name flex">
+<span>def <span class="ident">is_signed</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get whether an integer base type is signed or not</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_signed(self) -&gt; bool:
+    &#39;&#39;&#39;
+    Get whether an integer base type is signed or not
+    &#39;&#39;&#39;
+
+    return self.panda.plugins[COSI].is_base_type_signed(self.inner)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilityBaseType.name"><code class="name flex">
+<span>def <span class="ident">name</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the name for the given base type</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def name(self) -&gt; str:
+    &#39;&#39;&#39;
+    Get the name for the given base type
+    &#39;&#39;&#39;
+
+    name_ptr = self.panda.plugins[COSI].name_of_base_type(self.inner)
+    name = self.panda.ffi.string(name_ptr).decode(&#39;utf8&#39;)
+    self.panda.plugins[COSI].free_cosi_str(name_ptr)
+
+    return name</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilityBaseType.size"><code class="name flex">
+<span>def <span class="ident">size</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the size of the given base type in bytes</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def size(self) -&gt; int:
+    &#39;&#39;&#39;
+    Get the size of the given base type in bytes
+    &#39;&#39;&#39;
+
+    return self.panda.plugins[COSI].size_of_base_type(self.inner)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.cosi.VolatilityStruct"><code class="flex name class">
+<span>class <span class="ident">VolatilityStruct</span></span>
+<span>(</span><span>panda, raw_ptr)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A reference to a struct in the volatility symbol table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class VolatilityStruct:
+    &#39;&#39;&#39;
+    A reference to a struct in the volatility symbol table
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, raw_ptr):
+        self.panda = panda
+        self.inner = raw_ptr
+
+    def __getitem__(self, item):
+        if type(item) is int:
+            name = self.get_field_by_index(item)
+            if name:
+                offset = self.offset_of_field(name)
+                type_name = self.type_of_field(name)
+
+                return VolatilityStructField(
+                    name=name,
+                    offset=offset,
+                    type_name=type_name
+                )
+            else:
+                raise IndexError(&#34;Index {item} is out of range of the length of the struct fields&#34;)
+        elif type(item) is str:
+            name = item
+            offset = self.offset_of_field(name)
+            type_name = self.type_of_field(name)
+
+            return VolatilityStructField(
+                name=name,
+                offset=offset,
+                type_name=type_name
+            )
+        else:
+            raise Exception(f&#34;Invalid type {type(item)} for indexing VolatilityStruct&#34;)
+
+    def get_field_by_index(self, index: int) -&gt; str:
+        &#39;&#39;&#39;
+        Return the name of the field at a given index, returning `None` past the end
+        of the fields.
+        &#39;&#39;&#39;
+
+        field_name = self.panda.plugins[COSI].get_field_by_index(self.inner, index)
+
+        if field_name == self.panda.ffi.NULL:
+            return None
+        else:
+            return self.panda.ffi.string(field_name).decode(&#39;utf8&#39;)
+
+    def name(self) -&gt; str:
+        &#39;&#39;&#39;
+        Get the name of the given struct
+        &#39;&#39;&#39;
+
+        name_ptr = self.panda.plugins[COSI].name_of_struct(self.inner)
+        name = self.panda.ffi.string(name_ptr).decode(&#39;utf8&#39;)
+        self.panda.plugins[COSI].free_cosi_str(name_ptr)
+
+        return name
+
+    def offset_of_field(self, name: str) -&gt; int:
+        &#39;&#39;&#39;
+        Get the offset of a given field from the field name
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        return self.panda.plugins[COSI].offset_of_field(self.inner, name)
+
+    def type_of_field(self, name: str) -&gt; str:
+        &#39;&#39;&#39;
+        Get the type of a given field from the field name
+        &#39;&#39;&#39;
+
+        name = name.encode(&#39;utf8&#39;)
+        name = self.panda.ffi.new(&#34;char[]&#34;, name)
+        type_name = self.panda.plugins[COSI].type_of_field(self.inner, name)
+        type_name = self.panda.ffi.string(type_name).decode(&#39;utf8&#39;)
+
+        return type_name
+
+    def size(self) -&gt; int:
+        &#39;&#39;&#39;
+        Get the total size of the given struct in bytes
+        &#39;&#39;&#39;
+
+        return self.panda.plugins[COSI].size_of_struct(self.inner)
+
+    def fields(self):
+        &#39;&#39;&#39;
+        Iterate over the fields of the structure, yielding tuples in the form of
+        (offset, type, field_name)
+        &#39;&#39;&#39;
+        i = 0
+
+        while True:
+            field = self.get_field_by_index(i)
+
+            if not field:
+                break
+
+            name = field
+            offset = self.offset_of_field(field)
+            type_name = self.type_of_field(field)
+
+            yield (offset, type_name, name)
+
+            i += 1
+
+    def at(self, ptr):
+        &#39;&#39;&#39;
+        Get a CosiGuestPointer of this type
+        &#39;&#39;&#39;
+
+        type_name = self.name()
+        return CosiGuestPointer(self.panda, type_name, ptr)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.cosi.VolatilityStruct.at"><code class="name flex">
+<span>def <span class="ident">at</span></span>(<span>self, ptr)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get a CosiGuestPointer of this type</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def at(self, ptr):
+    &#39;&#39;&#39;
+    Get a CosiGuestPointer of this type
+    &#39;&#39;&#39;
+
+    type_name = self.name()
+    return CosiGuestPointer(self.panda, type_name, ptr)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilityStruct.fields"><code class="name flex">
+<span>def <span class="ident">fields</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Iterate over the fields of the structure, yielding tuples in the form of
+(offset, type, field_name)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fields(self):
+    &#39;&#39;&#39;
+    Iterate over the fields of the structure, yielding tuples in the form of
+    (offset, type, field_name)
+    &#39;&#39;&#39;
+    i = 0
+
+    while True:
+        field = self.get_field_by_index(i)
+
+        if not field:
+            break
+
+        name = field
+        offset = self.offset_of_field(field)
+        type_name = self.type_of_field(field)
+
+        yield (offset, type_name, name)
+
+        i += 1</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilityStruct.get_field_by_index"><code class="name flex">
+<span>def <span class="ident">get_field_by_index</span></span>(<span>self, index: int) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the name of the field at a given index, returning <code>None</code> past the end
+of the fields.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_field_by_index(self, index: int) -&gt; str:
+    &#39;&#39;&#39;
+    Return the name of the field at a given index, returning `None` past the end
+    of the fields.
+    &#39;&#39;&#39;
+
+    field_name = self.panda.plugins[COSI].get_field_by_index(self.inner, index)
+
+    if field_name == self.panda.ffi.NULL:
+        return None
+    else:
+        return self.panda.ffi.string(field_name).decode(&#39;utf8&#39;)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilityStruct.name"><code class="name flex">
+<span>def <span class="ident">name</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the name of the given struct</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def name(self) -&gt; str:
+    &#39;&#39;&#39;
+    Get the name of the given struct
+    &#39;&#39;&#39;
+
+    name_ptr = self.panda.plugins[COSI].name_of_struct(self.inner)
+    name = self.panda.ffi.string(name_ptr).decode(&#39;utf8&#39;)
+    self.panda.plugins[COSI].free_cosi_str(name_ptr)
+
+    return name</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilityStruct.offset_of_field"><code class="name flex">
+<span>def <span class="ident">offset_of_field</span></span>(<span>self, name: str) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the offset of a given field from the field name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def offset_of_field(self, name: str) -&gt; int:
+    &#39;&#39;&#39;
+    Get the offset of a given field from the field name
+    &#39;&#39;&#39;
+
+    name = name.encode(&#39;utf8&#39;)
+    name = self.panda.ffi.new(&#34;char[]&#34;, name)
+    return self.panda.plugins[COSI].offset_of_field(self.inner, name)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilityStruct.size"><code class="name flex">
+<span>def <span class="ident">size</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the total size of the given struct in bytes</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def size(self) -&gt; int:
+    &#39;&#39;&#39;
+    Get the total size of the given struct in bytes
+    &#39;&#39;&#39;
+
+    return self.panda.plugins[COSI].size_of_struct(self.inner)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilityStruct.type_of_field"><code class="name flex">
+<span>def <span class="ident">type_of_field</span></span>(<span>self, name: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the type of a given field from the field name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def type_of_field(self, name: str) -&gt; str:
+    &#39;&#39;&#39;
+    Get the type of a given field from the field name
+    &#39;&#39;&#39;
+
+    name = name.encode(&#39;utf8&#39;)
+    name = self.panda.ffi.new(&#34;char[]&#34;, name)
+    type_name = self.panda.plugins[COSI].type_of_field(self.inner, name)
+    type_name = self.panda.ffi.string(type_name).decode(&#39;utf8&#39;)
+
+    return type_name</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.cosi.VolatilityStructField"><code class="flex name class">
+<span>class <span class="ident">VolatilityStructField</span></span>
+<span>(</span><span>name: str, offset: int, type_name: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A single field in a volatility struct</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class VolatilityStructField:
+    &#39;&#39;&#39;
+    A single field in a volatility struct
+    &#39;&#39;&#39;
+
+    name: str
+    offset: int
+    type_name: str</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="pandare.cosi.VolatilityStructField.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pandare.cosi.VolatilityStructField.offset"><code class="name">var <span class="ident">offset</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pandare.cosi.VolatilityStructField.type_name"><code class="name">var <span class="ident">type_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="pandare.cosi.VolatilitySymbol"><code class="flex name class">
+<span>class <span class="ident">VolatilitySymbol</span></span>
+<span>(</span><span>panda, raw_ptr)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A reference to an entry in the volatility symbol table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class VolatilitySymbol:
+    &#39;&#39;&#39;
+    A reference to an entry in the volatility symbol table
+    &#39;&#39;&#39;
+
+    def __init__(self, panda, raw_ptr):
+        self.panda = panda
+        self.inner = raw_ptr
+
+    def addr(self) -&gt; int:
+        &#39;&#39;&#39;
+        Get the address of the symbol in memory, accounting for KASLR
+        &#39;&#39;&#39;
+
+        return self.panda.plugins[COSI].addr_of_symbol(self.inner)
+
+    def value(self) -&gt; int:
+        &#39;&#39;&#39;
+        Get the raw value for the symbol from the volatility symbol table
+        &#39;&#39;&#39;
+
+        return self.panda.plugins[COSI].value_of_symbol(self.inner)
+
+    def name(self) -&gt; str:
+        &#39;&#39;&#39;
+        Get the name for the given symbol
+        &#39;&#39;&#39;
+
+        name_ptr = self.panda.plugins[COSI].name_of_symbol(self.inner)
+        name = self.panda.ffi.string(name_ptr).decode(&#39;utf8&#39;)
+        self.panda.plugins[COSI].free_cosi_str(name_ptr)
+
+        return name</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.cosi.VolatilitySymbol.addr"><code class="name flex">
+<span>def <span class="ident">addr</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the address of the symbol in memory, accounting for KASLR</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def addr(self) -&gt; int:
+    &#39;&#39;&#39;
+    Get the address of the symbol in memory, accounting for KASLR
+    &#39;&#39;&#39;
+
+    return self.panda.plugins[COSI].addr_of_symbol(self.inner)</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilitySymbol.name"><code class="name flex">
+<span>def <span class="ident">name</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the name for the given symbol</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def name(self) -&gt; str:
+    &#39;&#39;&#39;
+    Get the name for the given symbol
+    &#39;&#39;&#39;
+
+    name_ptr = self.panda.plugins[COSI].name_of_symbol(self.inner)
+    name = self.panda.ffi.string(name_ptr).decode(&#39;utf8&#39;)
+    self.panda.plugins[COSI].free_cosi_str(name_ptr)
+
+    return name</code></pre>
+</details>
+</dd>
+<dt id="pandare.cosi.VolatilitySymbol.value"><code class="name flex">
+<span>def <span class="ident">value</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the raw value for the symbol from the volatility symbol table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def value(self) -&gt; int:
+    &#39;&#39;&#39;
+    Get the raw value for the symbol from the volatility symbol table
+    &#39;&#39;&#39;
+
+    return self.panda.plugins[COSI].value_of_symbol(self.inner)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="panda.re Docs" href="/">
+<img src="//panda.re/img/logo.png" alt="logo"> PANDA.re Docs
+</a>
+</header>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pandare" href="index.html">pandare</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pandare.cosi.Cosi" href="#pandare.cosi.Cosi">Cosi</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.cosi.Cosi.base_type_from_name" href="#pandare.cosi.Cosi.base_type_from_name">base_type_from_name</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.current_files" href="#pandare.cosi.Cosi.current_files">current_files</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.current_process" href="#pandare.cosi.Cosi.current_process">current_process</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.current_thread" href="#pandare.cosi.Cosi.current_thread">current_thread</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.find_per_cpu_address" href="#pandare.cosi.Cosi.find_per_cpu_address">find_per_cpu_address</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.get" href="#pandare.cosi.Cosi.get">get</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.kaslr_offset" href="#pandare.cosi.Cosi.kaslr_offset">kaslr_offset</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.per_cpu_offset" href="#pandare.cosi.Cosi.per_cpu_offset">per_cpu_offset</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.process_list" href="#pandare.cosi.Cosi.process_list">process_list</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.symbol_addr_from_name" href="#pandare.cosi.Cosi.symbol_addr_from_name">symbol_addr_from_name</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.symbol_from_name" href="#pandare.cosi.Cosi.symbol_from_name">symbol_from_name</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.symbol_value_from_name" href="#pandare.cosi.Cosi.symbol_value_from_name">symbol_value_from_name</a></code></li>
+<li><code><a title="pandare.cosi.Cosi.type_from_name" href="#pandare.cosi.Cosi.type_from_name">type_from_name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.CosiFile" href="#pandare.cosi.CosiFile">CosiFile</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.cosi.CosiFile.get_name" href="#pandare.cosi.CosiFile.get_name">get_name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.CosiFiles" href="#pandare.cosi.CosiFiles">CosiFiles</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.cosi.CosiFiles.get_from_fd" href="#pandare.cosi.CosiFiles.get_from_fd">get_from_fd</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.CosiGuestPointer" href="#pandare.cosi.CosiGuestPointer">CosiGuestPointer</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pandare.cosi.CosiGuestPointer.after" href="#pandare.cosi.CosiGuestPointer.after">after</a></code></li>
+<li><code><a title="pandare.cosi.CosiGuestPointer.as_linux_list" href="#pandare.cosi.CosiGuestPointer.as_linux_list">as_linux_list</a></code></li>
+<li><code><a title="pandare.cosi.CosiGuestPointer.before" href="#pandare.cosi.CosiGuestPointer.before">before</a></code></li>
+<li><code><a title="pandare.cosi.CosiGuestPointer.cast" href="#pandare.cosi.CosiGuestPointer.cast">cast</a></code></li>
+<li><code><a title="pandare.cosi.CosiGuestPointer.container_of" href="#pandare.cosi.CosiGuestPointer.container_of">container_of</a></code></li>
+<li><code><a title="pandare.cosi.CosiGuestPointer.deref" href="#pandare.cosi.CosiGuestPointer.deref">deref</a></code></li>
+<li><code><a title="pandare.cosi.CosiGuestPointer.get_raw_ptr" href="#pandare.cosi.CosiGuestPointer.get_raw_ptr">get_raw_ptr</a></code></li>
+<li><code><a title="pandare.cosi.CosiGuestPointer.null_terminated" href="#pandare.cosi.CosiGuestPointer.null_terminated">null_terminated</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.CosiIntrusiveListAccessor" href="#pandare.cosi.CosiIntrusiveListAccessor">CosiIntrusiveListAccessor</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.CosiMappings" href="#pandare.cosi.CosiMappings">CosiMappings</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.CosiModule" href="#pandare.cosi.CosiModule">CosiModule</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.cosi.CosiModule.get_file" href="#pandare.cosi.CosiModule.get_file">get_file</a></code></li>
+<li><code><a title="pandare.cosi.CosiModule.get_name" href="#pandare.cosi.CosiModule.get_name">get_name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.CosiProcList" href="#pandare.cosi.CosiProcList">CosiProcList</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.CosiProcess" href="#pandare.cosi.CosiProcess">CosiProcess</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.cosi.CosiProcess.children" href="#pandare.cosi.CosiProcess.children">children</a></code></li>
+<li><code><a title="pandare.cosi.CosiProcess.get_name" href="#pandare.cosi.CosiProcess.get_name">get_name</a></code></li>
+<li><code><a title="pandare.cosi.CosiProcess.mappings" href="#pandare.cosi.CosiProcess.mappings">mappings</a></code></li>
+<li><code><a title="pandare.cosi.CosiProcess.open_files" href="#pandare.cosi.CosiProcess.open_files">open_files</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.CosiThread" href="#pandare.cosi.CosiThread">CosiThread</a></code></h4>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.VolatilityBaseType" href="#pandare.cosi.VolatilityBaseType">VolatilityBaseType</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.cosi.VolatilityBaseType.is_signed" href="#pandare.cosi.VolatilityBaseType.is_signed">is_signed</a></code></li>
+<li><code><a title="pandare.cosi.VolatilityBaseType.name" href="#pandare.cosi.VolatilityBaseType.name">name</a></code></li>
+<li><code><a title="pandare.cosi.VolatilityBaseType.size" href="#pandare.cosi.VolatilityBaseType.size">size</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.VolatilityStruct" href="#pandare.cosi.VolatilityStruct">VolatilityStruct</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pandare.cosi.VolatilityStruct.at" href="#pandare.cosi.VolatilityStruct.at">at</a></code></li>
+<li><code><a title="pandare.cosi.VolatilityStruct.fields" href="#pandare.cosi.VolatilityStruct.fields">fields</a></code></li>
+<li><code><a title="pandare.cosi.VolatilityStruct.get_field_by_index" href="#pandare.cosi.VolatilityStruct.get_field_by_index">get_field_by_index</a></code></li>
+<li><code><a title="pandare.cosi.VolatilityStruct.name" href="#pandare.cosi.VolatilityStruct.name">name</a></code></li>
+<li><code><a title="pandare.cosi.VolatilityStruct.offset_of_field" href="#pandare.cosi.VolatilityStruct.offset_of_field">offset_of_field</a></code></li>
+<li><code><a title="pandare.cosi.VolatilityStruct.size" href="#pandare.cosi.VolatilityStruct.size">size</a></code></li>
+<li><code><a title="pandare.cosi.VolatilityStruct.type_of_field" href="#pandare.cosi.VolatilityStruct.type_of_field">type_of_field</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.VolatilityStructField" href="#pandare.cosi.VolatilityStructField">VolatilityStructField</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.cosi.VolatilityStructField.name" href="#pandare.cosi.VolatilityStructField.name">name</a></code></li>
+<li><code><a title="pandare.cosi.VolatilityStructField.offset" href="#pandare.cosi.VolatilityStructField.offset">offset</a></code></li>
+<li><code><a title="pandare.cosi.VolatilityStructField.type_name" href="#pandare.cosi.VolatilityStructField.type_name">type_name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.cosi.VolatilitySymbol" href="#pandare.cosi.VolatilitySymbol">VolatilitySymbol</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.cosi.VolatilitySymbol.addr" href="#pandare.cosi.VolatilitySymbol.addr">addr</a></code></li>
+<li><code><a title="pandare.cosi.VolatilitySymbol.name" href="#pandare.cosi.VolatilitySymbol.name">name</a></code></li>
+<li><code><a title="pandare.cosi.VolatilitySymbol.value" href="#pandare.cosi.VolatilitySymbol.value">value</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

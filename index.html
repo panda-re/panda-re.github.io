@@ -447,6 +447,10 @@ for cb_name, (rv, args, docstring) in cb_docs._asdict().items():
 <dd>
 <div class="desc"><p>This module contains architecture-specific code …</p></div>
 </dd>
+<dt><code class="name"><a title="pandare.cosi" href="cosi.html">pandare.cosi</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt><code class="name"><a title="pandare.extras" href="extras/index.html">pandare.extras</a></code></dt>
 <dd>
 <div class="desc"><p>Extras are PyPANDA plugins which you can import into other python analyses. Typically
@@ -2278,6 +2282,9 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         # Shutdown stuff
         self.exception = None # When set to an exn, we&#39;ll raise and exit
         self._in_replay = False
+
+        # cosi
+        self.cosi = Cosi(self)
 
         # main_loop_wait functions and callbacks
         self.main_loop_wait_fnargs = [] # [(fn, args), ...]
@@ -10723,6 +10730,7 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
 <li><code><a title="pandare.arch" href="arch.html">pandare.arch</a></code></li>
+<li><code><a title="pandare.cosi" href="cosi.html">pandare.cosi</a></code></li>
 <li><code><a title="pandare.extras" href="extras/index.html">pandare.extras</a></code></li>
 <li><code><a title="pandare.panda" href="panda.html">pandare.panda</a></code></li>
 <li><code><a title="pandare.panda_expect" href="panda_expect.html">pandare.panda_expect</a></code></li>

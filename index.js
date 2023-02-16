@@ -17,6 +17,7 @@ URLS=[
 "pandare/extras/procWriteCapture.html",
 "pandare/extras/fileFaker.html",
 "pandare/qcows_internal.html",
+"pandare/cosi.html",
 "pandare/pypluginmanager.html"
 ];
 INDEX=[
@@ -3698,77 +3699,419 @@ INDEX=[
 "func":1
 },
 {
-"ref":"pandare.pypluginmanager",
-"url":18,
-"doc":"Class to manage loading Panda PyPlugins. See docs/pyplugins.md for details."
-},
-{
-"ref":"pandare.pypluginmanager.PyPluginManager",
-"url":18,
-"doc":"Set up an instance of PyPluginManager."
-},
-{
-"ref":"pandare.pypluginmanager.PyPluginManager.ppp",
+"ref":"pandare.cosi",
 "url":18,
 "doc":""
 },
 {
-"ref":"pandare.pypluginmanager.PyPluginManager.get_ppp_funcs",
+"ref":"pandare.cosi.VolatilitySymbol",
 "url":18,
+"doc":"A reference to an entry in the volatility symbol table"
+},
+{
+"ref":"pandare.cosi.VolatilitySymbol.addr",
+"url":18,
+"doc":"Get the address of the symbol in memory, accounting for KASLR",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilitySymbol.value",
+"url":18,
+"doc":"Get the raw value for the symbol from the volatility symbol table",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilitySymbol.name",
+"url":18,
+"doc":"Get the name for the given symbol",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilityStructField",
+"url":18,
+"doc":"A single field in a volatility struct"
+},
+{
+"ref":"pandare.cosi.VolatilityStructField.name",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.VolatilityStructField.offset",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.VolatilityStructField.type_name",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.VolatilityStruct",
+"url":18,
+"doc":"A reference to a struct in the volatility symbol table"
+},
+{
+"ref":"pandare.cosi.VolatilityStruct.get_field_by_index",
+"url":18,
+"doc":"Return the name of the field at a given index, returning  None past the end of the fields.",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilityStruct.name",
+"url":18,
+"doc":"Get the name of the given struct",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilityStruct.offset_of_field",
+"url":18,
+"doc":"Get the offset of a given field from the field name",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilityStruct.type_of_field",
+"url":18,
+"doc":"Get the type of a given field from the field name",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilityStruct.size",
+"url":18,
+"doc":"Get the total size of the given struct in bytes",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilityStruct.fields",
+"url":18,
+"doc":"Iterate over the fields of the structure, yielding tuples in the form of (offset, type, field_name)",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilityStruct.at",
+"url":18,
+"doc":"Get a CosiGuestPointer of this type",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilityBaseType",
+"url":18,
+"doc":"A reference to a base type in the volatility symbol table"
+},
+{
+"ref":"pandare.cosi.VolatilityBaseType.name",
+"url":18,
+"doc":"Get the name for the given base type",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilityBaseType.size",
+"url":18,
+"doc":"Get the size of the given base type in bytes",
+"func":1
+},
+{
+"ref":"pandare.cosi.VolatilityBaseType.is_signed",
+"url":18,
+"doc":"Get whether an integer base type is signed or not",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi",
+"url":18,
+"doc":"Object to interact with the  cosi PANDA plugin. An instance can be foudn at  panda.cosi , where  panda is a  Panda object."
+},
+{
+"ref":"pandare.cosi.Cosi.symbol_addr_from_name",
+"url":18,
+"doc":"Given a symbol  name , return the address in memory where it is located, accounting for KASLR as needed.",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.symbol_value_from_name",
+"url":18,
+"doc":"Given a symbol  name , return the corresponding value in the volatility symbol table, not accounting for KASLR.",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.kaslr_offset",
+"url":18,
+"doc":"Get the KASLR offset for the given system",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.symbol_from_name",
+"url":18,
+"doc":"Get a reference to a given symbol given the name of the symbol",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.base_type_from_name",
+"url":18,
+"doc":"Get a reference to a given base type from the volatility symbol table",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.type_from_name",
+"url":18,
+"doc":"Get a reference to a given struct from the volatility symbol table",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.per_cpu_offset",
+"url":18,
+"doc":"Gets the offset for per cpu variable pointers",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.find_per_cpu_address",
+"url":18,
+"doc":"Get the address for a symbol given that it is a per-cpu variable",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.get",
+"url":18,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.current_process",
+"url":18,
+"doc":"Get info about the current process",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.process_list",
+"url":18,
+"doc":"Get a list of the current processes",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.current_thread",
+"url":18,
+"doc":"Get info about the current thread",
+"func":1
+},
+{
+"ref":"pandare.cosi.Cosi.current_files",
+"url":18,
+"doc":"Get information about the files open in the current process",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiFiles",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.CosiFiles.get_from_fd",
+"url":18,
+"doc":"Gets a CosiFile from this set of files based on the file descriptor. Returns None if the fd could not be found.",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiFile",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.CosiFile.get_name",
+"url":18,
+"doc":"Get the name/path from which this file was accessed",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiThread",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.CosiProcess",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.CosiProcess.get_name",
+"url":18,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiProcess.open_files",
+"url":18,
+"doc":"Returns information about all the files open in this process",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiProcess.children",
+"url":18,
+"doc":"Returns a list of this process' children",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiProcess.mappings",
+"url":18,
+"doc":"Returns a list of the mappings of the process",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiProcList",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.CosiModule",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.CosiModule.get_name",
+"url":18,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiModule.get_file",
+"url":18,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiMappings",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.CosiIntrusiveListAccessor",
+"url":18,
+"doc":""
+},
+{
+"ref":"pandare.cosi.CosiGuestPointer",
+"url":18,
+"doc":"A type representing a pointer for a data structure in the kernel"
+},
+{
+"ref":"pandare.cosi.CosiGuestPointer.before",
+"url":18,
+"doc":"Returns a pointer to the data following the current pointer of type  type_name ",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiGuestPointer.after",
+"url":18,
+"doc":"Returns a pointer to the data following the current pointer of type  type_name ",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiGuestPointer.as_linux_list",
+"url":18,
+"doc":"Takes a list_head and reads it into a list. If no  list_entry_type is provided, it is assumed to be equivelant to the parent struct the  list_head came from. For example, if current_task.children is a  list_head , the parent would be  current_task (of type  task_struct ), so the list would default to being a list of  task_struct (of which  sibling should be passed a value of  \"sibling\" ). So if one does  current_task.children.as_linux_list(\"sibling\") it will return a list of  CosiGuestPointer s pointing to  task_struct s.",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiGuestPointer.deref",
+"url":18,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiGuestPointer.null_terminated",
+"url":18,
+"doc":"Read a CosiGuestPointer for a  char as a null-terminated string",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiGuestPointer.get_raw_ptr",
+"url":18,
+"doc":"Get the address in memory this points to",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiGuestPointer.cast",
+"url":18,
+"doc":"Cast to a pointer of another type",
+"func":1
+},
+{
+"ref":"pandare.cosi.CosiGuestPointer.container_of",
+"url":18,
+"doc":"Get a pointer to the struct containing this type",
+"func":1
+},
+{
+"ref":"pandare.pypluginmanager",
+"url":19,
+"doc":"Class to manage loading Panda PyPlugins. See docs/pyplugins.md for details."
+},
+{
+"ref":"pandare.pypluginmanager.PyPluginManager",
+"url":19,
+"doc":"Set up an instance of PyPluginManager."
+},
+{
+"ref":"pandare.pypluginmanager.PyPluginManager.ppp",
+"url":19,
+"doc":""
+},
+{
+"ref":"pandare.pypluginmanager.PyPluginManager.get_ppp_funcs",
+"url":19,
 "doc":"",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.enable_flask",
-"url":18,
+"url":19,
 "doc":"Enable flask mode for this instance of the PyPlugin manager. Registered PyPlugins which support flask will be made available at the web interfaces.",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.load_plugin_class",
-"url":18,
+"url":19,
 "doc":"For backwards compatability with PyPlugins which subclass PyPlugin without importing it. Given a path to a python file which has a class that subclasses PyPlugin, set up the imports correctly such that we can generate an uninstantiated instance of that class and return that object. Note you can also just add  from pandare import PyPlugin to the plugin file and then just import the class(es) you want and pass them directly to panda.pyplugins.register() This avoids the  NameError: name 'PyPlugin' is not defined which you would get from directly doing  import [class_name] from [plugin_file] ",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.load",
-"url":18,
+"url":19,
 "doc":"Load (aka register) a PyPANDA plugin to run. It can later be unloaded by using panda.pyplugins.unload(name). pluginclasses can either be an uninstantiated python class, a list of such classes, or a tuple of (path_to_module.py, [classnames]) where classnames is a list of clases subclasses which subclass PyPlugin. Each plugin class will be stored in self.plugins under the class name",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.load_all",
-"url":18,
+"url":19,
 "doc":"Given a path to a python file, load every PyPlugin defined in that file by identifying all classes that subclass PyPlugin and passing them to self.load() Args: plugin_file (str): A path specifying a Python file from which PyPlugin classes should be loaded args (dict): Optional. A dictionary of arguments to pass to the PyPlugin template_dir (string): Optional. A directory for template files, passed through to  self.load . Returns: String list of PyPlugin class names loaded from the plugin_file",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.unload",
-"url":18,
+"url":19,
 "doc":"",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.unload_all",
-"url":18,
+"url":19,
 "doc":"",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.is_loaded",
-"url":18,
+"url":19,
 "doc":"",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.get_plugin",
-"url":18,
+"url":19,
 "doc":"",
 "func":1
 },
 {
 "ref":"pandare.pypluginmanager.PyPluginManager.serve",
-"url":18,
+"url":19,
 "doc":"",
 "func":1
 }
