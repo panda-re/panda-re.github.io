@@ -565,6 +565,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Panda.get_file_name",
+"url":0,
+"doc":"Get the name of a file from a file descriptor. Returns: string: file name None: on failure",
+"func":1
+},
+{
 "ref":"pandare.Panda.get_mappings",
 "url":0,
 "doc":"Get all active memory mappings in the system. Requires: OSI Args: cpu: CPUState struct Returns: pandare.utils.GArrayIterator: iterator of OsiModule structures",
@@ -2683,6 +2689,12 @@ INDEX=[
 "ref":"pandare.panda.Panda.get_os_family",
 "url":6,
 "doc":"Get the current OS family name. Valid values are the entries in  OSFamilyEnum Returns: string: one of OS_UNKNOWN, OS_WINDOWS, OS_LINUX, OS_FREEBSD",
+"func":1
+},
+{
+"ref":"pandare.panda.Panda.get_file_name",
+"url":6,
+"doc":"Get the name of a file from a file descriptor. Returns: string: file name None: on failure",
 "func":1
 },
 {

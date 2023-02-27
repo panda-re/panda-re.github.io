@@ -1801,6 +1801,25 @@ class Panda():
         family_num = self.libpanda.panda_os_familyno
         family_name = self.ffi.string(self.ffi.cast(&#34;PandaOsFamily&#34;, family_num))
         return family_name
+    
+    def get_file_name(self, cpu, fd):
+        &#39;&#39;&#39;
+        Get the name of a file from a file descriptor.
+
+        Returns:
+            string: file name
+            None: on failure
+        &#39;&#39;&#39;
+        proc = self.plugins[&#39;osi&#39;].get_current_process(cpu)
+        if proc == self.ffi.NULL:
+            return None
+        try:
+            fname_ptr = self.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, fd)
+        except OverflowError:
+            return None
+        if fname_ptr == self.ffi.NULL:
+            return None
+        return self.ffi.string(fname_ptr)
 
     def get_mappings(self, cpu):
         &#39;&#39;&#39;
@@ -5139,6 +5158,25 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         family_num = self.libpanda.panda_os_familyno
         family_name = self.ffi.string(self.ffi.cast(&#34;PandaOsFamily&#34;, family_num))
         return family_name
+    
+    def get_file_name(self, cpu, fd):
+        &#39;&#39;&#39;
+        Get the name of a file from a file descriptor.
+
+        Returns:
+            string: file name
+            None: on failure
+        &#39;&#39;&#39;
+        proc = self.plugins[&#39;osi&#39;].get_current_process(cpu)
+        if proc == self.ffi.NULL:
+            return None
+        try:
+            fname_ptr = self.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, fd)
+        except OverflowError:
+            return None
+        if fname_ptr == self.ffi.NULL:
+            return None
+        return self.ffi.string(fname_ptr)
 
     def get_mappings(self, cpu):
         &#39;&#39;&#39;
@@ -8161,6 +8199,42 @@ XXX: You rarely want this</p>
         CPUState: cpu
     &#39;&#39;&#39;
     return self.libpanda.get_cpu()</code></pre>
+</details>
+</dd>
+<dt id="pandare.panda.Panda.get_file_name"><code class="name flex">
+<span>def <span class="ident">get_file_name</span></span>(<span>self, cpu, fd)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the name of a file from a file descriptor.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>file name</dd>
+<dt><code>None</code></dt>
+<dd>on failure</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_file_name(self, cpu, fd):
+    &#39;&#39;&#39;
+    Get the name of a file from a file descriptor.
+
+    Returns:
+        string: file name
+        None: on failure
+    &#39;&#39;&#39;
+    proc = self.plugins[&#39;osi&#39;].get_current_process(cpu)
+    if proc == self.ffi.NULL:
+        return None
+    try:
+        fname_ptr = self.plugins[&#39;osi_linux&#39;].osi_linux_fd_to_filename(cpu, proc, fd)
+    except OverflowError:
+        return None
+    if fname_ptr == self.ffi.NULL:
+        return None
+    return self.ffi.string(fname_ptr)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.get_id"><code class="name flex">
@@ -11845,6 +11919,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.panda.Panda.garray_len" href="#pandare.panda.Panda.garray_len">garray_len</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_best_matching_symbol" href="#pandare.panda.Panda.get_best_matching_symbol">get_best_matching_symbol</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_cpu" href="#pandare.panda.Panda.get_cpu">get_cpu</a></code></li>
+<li><code><a title="pandare.panda.Panda.get_file_name" href="#pandare.panda.Panda.get_file_name">get_file_name</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_id" href="#pandare.panda.Panda.get_id">get_id</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_mappings" href="#pandare.panda.Panda.get_mappings">get_mappings</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_os_family" href="#pandare.panda.Panda.get_os_family">get_os_family</a></code></li>
