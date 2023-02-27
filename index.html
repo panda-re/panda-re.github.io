@@ -4927,7 +4927,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
             self.ppp_registered_cbs[local_name] = (cast_rc, plugin_name, attr)
 
-            eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(cast_rc) # All PPP  cbs start with this string. XXX insecure eval
+            getattr(self.plugins[plugin_name], f&#39;ppp_add_cb_{attr}&#39;)(cast_rc) # All PPP  cbs start with this string.
             return cast_rc
         return decorator
 
@@ -4958,7 +4958,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         &#39;&#39;&#39;
 
         (f, plugin_name, attr) = self.ppp_registered_cbs[name]
-        eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_remove_cb_{attr}&#34;)(f) # All PPP cbs start with this string. XXX insecure eval
+        getattr(self.plugins[plugin_name], f&#39;ppp_remove_cb_{attr}&#39;)(f) # All PPP cbs start with this string.
         del self.ppp_registered_cbs[name] # It&#39;s now safe to be garbage collected
 
     ########## GDB MIXINS ##############
@@ -6098,7 +6098,7 @@ def my_fun(cpu, pc, filename, flags, mode):
     &#39;&#39;&#39;
 
     (f, plugin_name, attr) = self.ppp_registered_cbs[name]
-    eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_remove_cb_{attr}&#34;)(f) # All PPP cbs start with this string. XXX insecure eval
+    getattr(self.plugins[plugin_name], f&#39;ppp_remove_cb_{attr}&#39;)(f) # All PPP cbs start with this string.
     del self.ppp_registered_cbs[name] # It&#39;s now safe to be garbage collected</code></pre>
 </details>
 </dd>
@@ -8505,7 +8505,7 @@ def my_fun(cpu, pc, filename, flags, mode):
         # Ensure function isn&#39;t garbage collected, and keep the name-&gt;(fn, plugin_name, attr) map for disabling
         self.ppp_registered_cbs[local_name] = (cast_rc, plugin_name, attr)
 
-        eval(f&#34;self.plugins[&#39;{plugin_name}&#39;].ppp_add_cb_{attr}&#34;)(cast_rc) # All PPP  cbs start with this string. XXX insecure eval
+        getattr(self.plugins[plugin_name], f&#39;ppp_add_cb_{attr}&#39;)(cast_rc) # All PPP  cbs start with this string.
         return cast_rc
     return decorator</code></pre>
 </details>
