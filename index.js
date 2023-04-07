@@ -571,9 +571,21 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Panda.get_current_process",
+"url":0,
+"doc":"Get the current process as an OsiProc struct. Returns: string: process name None: on failure",
+"func":1
+},
+{
 "ref":"pandare.Panda.get_mappings",
 "url":0,
 "doc":"Get all active memory mappings in the system. Requires: OSI Args: cpu: CPUState struct Returns: pandare.utils.GArrayIterator: iterator of OsiModule structures",
+"func":1
+},
+{
+"ref":"pandare.Panda.get_mapping_by_addr",
+"url":0,
+"doc":"Return the OSI mapping that matches the address specified. Requires: OSI Args: cpu: CPUState struct addr: int Returns: OsiModule: dataclass representation of OsiModule structure with strings converted to python strings Note that the strings will be None if their pointer was null None: on failure",
 "func":1
 },
 {
@@ -927,7 +939,7 @@ INDEX=[
 {
 "ref":"pandare.Panda.hook_symbol",
 "url":0,
-"doc":"Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr, the function will be called with args (CPUState, TranslationBlock) Args: libraryname (string): Name of library containing symbol to be hooked. May be None to match any. symbol (string, int): Name of symbol or offset into library to hook kernel (bool): if hook should be applied exclusively in kernel mode name (string): name of hook, defaults to function name cb_type (string): callback-type, defaults to start_block_exec Returns: None: Decorated function is called when (before/after is determined by cb_type) guest goes to call the specified symbol in the specified library.",
+"doc":"Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr, the function will be called with args (CPUState, TranslationBlock, struct hook) Args: libraryname (string): Name of library containing symbol to be hooked. May be None to match any. symbol (string, int): Name of symbol or offset into library to hook kernel (bool): if hook should be applied exclusively in kernel mode name (string): name of hook, defaults to function name cb_type (string): callback-type, defaults to start_block_exec Returns: None: Decorated function is called when (before/after is determined by cb_type) guest goes to call the specified symbol in the specified library.",
 "func":1
 },
 {
@@ -2698,9 +2710,21 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.panda.Panda.get_current_process",
+"url":6,
+"doc":"Get the current process as an OsiProc struct. Returns: string: process name None: on failure",
+"func":1
+},
+{
 "ref":"pandare.panda.Panda.get_mappings",
 "url":6,
 "doc":"Get all active memory mappings in the system. Requires: OSI Args: cpu: CPUState struct Returns: pandare.utils.GArrayIterator: iterator of OsiModule structures",
+"func":1
+},
+{
+"ref":"pandare.panda.Panda.get_mapping_by_addr",
+"url":6,
+"doc":"Return the OSI mapping that matches the address specified. Requires: OSI Args: cpu: CPUState struct addr: int Returns: OsiModule: dataclass representation of OsiModule structure with strings converted to python strings Note that the strings will be None if their pointer was null None: on failure",
 "func":1
 },
 {
@@ -3054,7 +3078,7 @@ INDEX=[
 {
 "ref":"pandare.panda.Panda.hook_symbol",
 "url":6,
-"doc":"Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr, the function will be called with args (CPUState, TranslationBlock) Args: libraryname (string): Name of library containing symbol to be hooked. May be None to match any. symbol (string, int): Name of symbol or offset into library to hook kernel (bool): if hook should be applied exclusively in kernel mode name (string): name of hook, defaults to function name cb_type (string): callback-type, defaults to start_block_exec Returns: None: Decorated function is called when (before/after is determined by cb_type) guest goes to call the specified symbol in the specified library.",
+"doc":"Decorate a function to setup a hook: when a guest goes to execute a basic block beginning with addr, the function will be called with args (CPUState, TranslationBlock, struct hook) Args: libraryname (string): Name of library containing symbol to be hooked. May be None to match any. symbol (string, int): Name of symbol or offset into library to hook kernel (bool): if hook should be applied exclusively in kernel mode name (string): name of hook, defaults to function name cb_type (string): callback-type, defaults to start_block_exec Returns: None: Decorated function is called when (before/after is determined by cb_type) guest goes to call the specified symbol in the specified library.",
 "func":1
 },
 {
