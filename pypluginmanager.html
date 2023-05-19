@@ -176,6 +176,13 @@ class _DotGetter(object):
         raise NotImplementedError(&#34;Subclass must implement this virtual method&#34;)
 
 class _PppFuncs(_DotGetter):
+    def __enter__(self):
+        self.data[&#39;__enter__&#39;]()
+        return self
+
+    def __exit__(self, *exc):
+        return self.data[&#39;__exit__&#39;](*exc)
+
     def __getattr__(self, name):
         method = self.data.get(name, None)
         if method is None:
@@ -186,7 +193,7 @@ class _PppPlugins(_DotGetter):
     def __getattr__(self, name):
         plugin = self.data.get(name, None)
         if plugin is None:
-            raise AttributeError(f&#34;No plugin named {plugin}&#34;)
+            raise AttributeError(f&#34;No plugin named {name}&#34;)
         return plugin
 
     def add(self, plugin_name, func_name, func):
@@ -197,7 +204,11 @@ class _PppPlugins(_DotGetter):
             self.set(plugin_name, _PppFuncs())
             plugin = self.data.get(plugin_name, None)
 
-        plugin.set(func_name, func)
+        # If the function is a context manager, store the original method
+        if func_name in (&#34;__enter__&#34;, &#34;__exit__&#34;) and hasattr(func, &#34;__original_method&#34;):
+            plugin.set(func_name, func.__original_method)
+        else:
+            plugin.set(func_name, func)
 
 class PyPluginManager:
     def __init__(self, panda, flask=False, host=&#39;127.0.0.1&#39;, port=8080, silence_warning=False):
