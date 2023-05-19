@@ -5154,7 +5154,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                             raise e
                         return None
 
-            sr_hook_cb_type = self.ffi.callback(&#34;void (CPUState *cpu, struct hook_symbol_resolve *sh, struct symbol s, OsiModule* m)&#34;)
+            sr_hook_cb_type = self.ffi.callback(&#34;void (struct hook_symbol_resolve *sh, struct symbol s, target_ulong asid)&#34;)
             sr_hook_cb_ptr = sr_hook_cb_type(_run_and_catch)
             sh.cb = sr_hook_cb_ptr
             hook_ptr = self.plugins[&#39;dynamic_symbols&#39;].hook_symbol_resolution(sh)
@@ -7597,7 +7597,7 @@ the function will be called with args (CPUState, struct hook_symbol_resolve, str
                         raise e
                     return None
 
-        sr_hook_cb_type = self.ffi.callback(&#34;void (CPUState *cpu, struct hook_symbol_resolve *sh, struct symbol s, OsiModule* m)&#34;)
+        sr_hook_cb_type = self.ffi.callback(&#34;void (struct hook_symbol_resolve *sh, struct symbol s, target_ulong asid)&#34;)
         sr_hook_cb_ptr = sr_hook_cb_type(_run_and_catch)
         sh.cb = sr_hook_cb_ptr
         hook_ptr = self.plugins[&#39;dynamic_symbols&#39;].hook_symbol_resolution(sh)
