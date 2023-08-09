@@ -507,7 +507,7 @@ class ArmArch(PandaArch):
         &#39;&#39;&#39;
         Looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(cpu, &#34;LR&#34;)
+        return self.get_reg(cpu, &#34;LR&#34;) &amp; 0xFFFF_FFFE
 
 class Aarch64Arch(PandaArch):
     &#39;&#39;&#39;
@@ -1120,7 +1120,7 @@ Note the PC is not stored in a general purpose register.</p></div>
         &#39;&#39;&#39;
         Looks up where ret will go
         &#39;&#39;&#39;
-        return self.get_reg(cpu, &#34;LR&#34;)</code></pre>
+        return self.get_reg(cpu, &#34;LR&#34;) &amp; 0xFFFF_FFFE</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1141,7 +1141,7 @@ Note the PC is not stored in a general purpose register.</p></div>
     &#39;&#39;&#39;
     Looks up where ret will go
     &#39;&#39;&#39;
-    return self.get_reg(cpu, &#34;LR&#34;)</code></pre>
+    return self.get_reg(cpu, &#34;LR&#34;) &amp; 0xFFFF_FFFE</code></pre>
 </details>
 </dd>
 <dt id="pandare.arch.ArmArch.get_return_value"><code class="name flex">
