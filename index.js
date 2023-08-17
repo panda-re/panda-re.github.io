@@ -2110,7 +2110,7 @@ INDEX=[
 {
 "ref":"pandare.arch.X86_64Arch.get_reg",
 "url":5,
-"doc":"Return value in a  reg which is either a register name or index (e.g., \"R0\" or 0)",
+"doc":"X86_64 has a bunch of different ways to access registers. We support the regular names, the 32 and 16 bit varations (e.g., EAX, AX, AL), segment registers, and D/W/B style accesses to R8-R15",
 "func":1
 },
 {
