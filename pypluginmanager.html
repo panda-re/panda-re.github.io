@@ -156,6 +156,8 @@ Class to manage loading Panda PyPlugins. See docs/pyplugins.md for details.
 &#34;&#34;&#34;
 from pathlib import Path
 from pandare import PyPlugin
+import inspect
+import importlib.util
 
 class _DotGetter(object):
     &#39;&#39;&#39;
@@ -277,7 +279,6 @@ class PyPluginManager:
         This avoids the `NameError: name &#39;PyPlugin&#39; is not defined` which
         you would get from directly doing `import [class_name] from [plugin_file]`
         &#39;&#39;&#39;
-        import importlib.util
         spec = importlib.util.spec_from_file_location(plugin_file.split(&#34;/&#34;)[-1], plugin_file)
         if spec is None:
             raise ValueError(f&#34;Unable to resolve plugin {plugin_file}&#34;)
@@ -381,7 +382,6 @@ class PyPluginManager:
         Returns:
             String list of PyPlugin class names loaded from the plugin_file
         &#39;&#39;&#39;
-        import inspect, importlib
         spec = importlib.util.spec_from_file_location(&#34;plugin_file&#34;, plugin_file)
         if spec is None:
             # Likely an invalid path
@@ -588,7 +588,6 @@ if __name__ == &#39;__main__&#39;:
         This avoids the `NameError: name &#39;PyPlugin&#39; is not defined` which
         you would get from directly doing `import [class_name] from [plugin_file]`
         &#39;&#39;&#39;
-        import importlib.util
         spec = importlib.util.spec_from_file_location(plugin_file.split(&#34;/&#34;)[-1], plugin_file)
         if spec is None:
             raise ValueError(f&#34;Unable to resolve plugin {plugin_file}&#34;)
@@ -692,7 +691,6 @@ if __name__ == &#39;__main__&#39;:
         Returns:
             String list of PyPlugin class names loaded from the plugin_file
         &#39;&#39;&#39;
-        import inspect, importlib
         spec = importlib.util.spec_from_file_location(&#34;plugin_file&#34;, plugin_file)
         if spec is None:
             # Likely an invalid path
@@ -983,7 +981,6 @@ self.load()</p>
     Returns:
         String list of PyPlugin class names loaded from the plugin_file
     &#39;&#39;&#39;
-    import inspect, importlib
     spec = importlib.util.spec_from_file_location(&#34;plugin_file&#34;, plugin_file)
     if spec is None:
         # Likely an invalid path
@@ -1038,7 +1035,6 @@ you would get from directly doing <code>import [class_name] from [plugin_file]</
     This avoids the `NameError: name &#39;PyPlugin&#39; is not defined` which
     you would get from directly doing `import [class_name] from [plugin_file]`
     &#39;&#39;&#39;
-    import importlib.util
     spec = importlib.util.spec_from_file_location(plugin_file.split(&#34;/&#34;)[-1], plugin_file)
     if spec is None:
         raise ValueError(f&#34;Unable to resolve plugin {plugin_file}&#34;)

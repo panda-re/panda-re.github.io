@@ -226,6 +226,8 @@ class PandaArch():
         &#39;&#39;&#39;
         if isinstance(reg, str):
             reg = reg.upper()
+            if reg == &#39;PC&#39;:
+                return self.get_pc(cpu)
             if reg not in self.registers.keys():
                 raise ValueError(f&#34;Invalid register name {reg}&#34;)
             else:
@@ -604,13 +606,13 @@ class MipsArch(PandaArch):
 
     def __init__(self, panda):
         super().__init__(panda)
-        regnames = [&#39;zero&#39;, &#39;at&#39;, &#39;v0&#39;, &#39;v1&#39;, &#39;a0&#39;, &#39;a1&#39;, &#39;a2&#39;, &#39;a3&#39;,
-                    &#39;t0&#39;, &#39;t1&#39;, &#39;t2&#39;, &#39;t3&#39;, &#39;t4&#39;, &#39;t5&#39;, &#39;t6&#39;, &#39;t7&#39;,
-                    &#39;s0&#39;, &#39;s1&#39;, &#39;s2&#39;, &#39;s3&#39;, &#39;s4&#39;, &#39;s5&#39;, &#39;s6&#39;, &#39;s7&#39;,
-                    &#39;t8&#39;, &#39;t9&#39;, &#39;k0&#39;, &#39;k1&#39;, &#39;gp&#39;, &#39;sp&#39;, &#39;fp&#39;, &#39;ra&#39;]
+        regnames = [&#39;ZERO&#39;, &#39;AT&#39;, &#39;V0&#39;, &#39;V1&#39;, &#39;A0&#39;, &#39;A1&#39;, &#39;A2&#39;, &#39;A3&#39;,
+                    &#39;T0&#39;, &#39;T1&#39;, &#39;T2&#39;, &#39;T3&#39;, &#39;T4&#39;, &#39;T5&#39;, &#39;T6&#39;, &#39;T7&#39;,
+                    &#39;S0&#39;, &#39;S1&#39;, &#39;S2&#39;, &#39;S3&#39;, &#39;S4&#39;, &#39;S5&#39;, &#39;S6&#39;, &#39;S7&#39;,
+                    &#39;T8&#39;, &#39;T9&#39;, &#39;K0&#39;, &#39;K1&#39;, &#39;GP&#39;, &#39;SP&#39;, &#39;FP&#39;, &#39;RA&#39;]
 
-        self.reg_sp = regnames.index(&#39;sp&#39;)
-        self.reg_retaddr = regnames.index(&#34;ra&#34;)
+        self.reg_sp = regnames.index(&#39;SP&#39;)
+        self.reg_retaddr = regnames.index(&#39;RA&#39;)
         # Default syscall/args are for mips o32
         self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;],
                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]} # XXX: Note it&#39;s not 0-indexed for stack args, I guess the syscall pushes stuff too
@@ -624,6 +626,33 @@ class MipsArch(PandaArch):
 
         # note names must be stored uppercase for get/set reg to work case-insensitively
         self.registers = {regnames[idx].upper(): idx for idx in range(len(regnames)) }
+        self.registers[&#39;R30&#39;] = 30
+
+    def get_reg(self, cpu, reg):
+        &#39;&#39;&#39;
+        Overloaded function for a few mips specific registers
+        &#39;&#39;&#39;
+
+        if isinstance(reg, str):
+            env = cpu.env_ptr
+            reg = reg.upper()
+            if reg == &#39;HI&#39;:
+                return env.CP0_EntryHi
+            elif reg == &#39;LO&#39;:
+                return env.CP0_EntryLo0
+            elif reg.startswith(&#39;F&#39;) and reg[1:].isnumeric():
+                num = int(reg[1:])
+                _, endianness, _ = self._determine_bits()
+                return int.from_bytes(bytes(env.fpus[0].fpr[num]), byteorder=endianness)
+            elif reg == &#39;FCCR&#39;:
+                return env.fpus[0].fcr0
+            elif reg == &#39;DSPCONTROL&#39;:
+                return env.active_tc.DSPControl
+            elif reg == &#39;CP0_STATUS&#39;:
+                return env.CP0_Status
+
+
+        return super().get_reg(cpu, reg)
 
     def get_pc(self, cpu):
         &#39;&#39;&#39;
@@ -1359,7 +1388,7 @@ except the register name and call conventions.</p>
 <li><code><a title="pandare.arch.MipsArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_call_return" href="#pandare.arch.MipsArch.get_call_return">get_call_return</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_pc" href="#pandare.arch.MipsArch.get_pc">get_pc</a></code></li>
-<li><code><a title="pandare.arch.MipsArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_reg" href="#pandare.arch.MipsArch.get_reg">get_reg</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_return_address" href="#pandare.arch.MipsArch.get_return_address">get_return_address</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_return_value" href="#pandare.arch.MipsArch.get_return_value">get_return_value</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_retval" href="#pandare.arch.MipsArch.get_retval">get_retval</a></code></li>
@@ -1407,13 +1436,13 @@ except the register name and call conventions.</p>
 
     def __init__(self, panda):
         super().__init__(panda)
-        regnames = [&#39;zero&#39;, &#39;at&#39;, &#39;v0&#39;, &#39;v1&#39;, &#39;a0&#39;, &#39;a1&#39;, &#39;a2&#39;, &#39;a3&#39;,
-                    &#39;t0&#39;, &#39;t1&#39;, &#39;t2&#39;, &#39;t3&#39;, &#39;t4&#39;, &#39;t5&#39;, &#39;t6&#39;, &#39;t7&#39;,
-                    &#39;s0&#39;, &#39;s1&#39;, &#39;s2&#39;, &#39;s3&#39;, &#39;s4&#39;, &#39;s5&#39;, &#39;s6&#39;, &#39;s7&#39;,
-                    &#39;t8&#39;, &#39;t9&#39;, &#39;k0&#39;, &#39;k1&#39;, &#39;gp&#39;, &#39;sp&#39;, &#39;fp&#39;, &#39;ra&#39;]
+        regnames = [&#39;ZERO&#39;, &#39;AT&#39;, &#39;V0&#39;, &#39;V1&#39;, &#39;A0&#39;, &#39;A1&#39;, &#39;A2&#39;, &#39;A3&#39;,
+                    &#39;T0&#39;, &#39;T1&#39;, &#39;T2&#39;, &#39;T3&#39;, &#39;T4&#39;, &#39;T5&#39;, &#39;T6&#39;, &#39;T7&#39;,
+                    &#39;S0&#39;, &#39;S1&#39;, &#39;S2&#39;, &#39;S3&#39;, &#39;S4&#39;, &#39;S5&#39;, &#39;S6&#39;, &#39;S7&#39;,
+                    &#39;T8&#39;, &#39;T9&#39;, &#39;K0&#39;, &#39;K1&#39;, &#39;GP&#39;, &#39;SP&#39;, &#39;FP&#39;, &#39;RA&#39;]
 
-        self.reg_sp = regnames.index(&#39;sp&#39;)
-        self.reg_retaddr = regnames.index(&#34;ra&#34;)
+        self.reg_sp = regnames.index(&#39;SP&#39;)
+        self.reg_retaddr = regnames.index(&#39;RA&#39;)
         # Default syscall/args are for mips o32
         self.call_conventions = {&#34;mips&#34;:          [&#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;],
                 &#34;syscall&#34;: [&#34;V0&#34;, &#34;A0&#34;, &#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]} # XXX: Note it&#39;s not 0-indexed for stack args, I guess the syscall pushes stuff too
@@ -1427,6 +1456,33 @@ except the register name and call conventions.</p>
 
         # note names must be stored uppercase for get/set reg to work case-insensitively
         self.registers = {regnames[idx].upper(): idx for idx in range(len(regnames)) }
+        self.registers[&#39;R30&#39;] = 30
+
+    def get_reg(self, cpu, reg):
+        &#39;&#39;&#39;
+        Overloaded function for a few mips specific registers
+        &#39;&#39;&#39;
+
+        if isinstance(reg, str):
+            env = cpu.env_ptr
+            reg = reg.upper()
+            if reg == &#39;HI&#39;:
+                return env.CP0_EntryHi
+            elif reg == &#39;LO&#39;:
+                return env.CP0_EntryLo0
+            elif reg.startswith(&#39;F&#39;) and reg[1:].isnumeric():
+                num = int(reg[1:])
+                _, endianness, _ = self._determine_bits()
+                return int.from_bytes(bytes(env.fpus[0].fpr[num]), byteorder=endianness)
+            elif reg == &#39;FCCR&#39;:
+                return env.fpus[0].fcr0
+            elif reg == &#39;DSPCONTROL&#39;:
+                return env.active_tc.DSPControl
+            elif reg == &#39;CP0_STATUS&#39;:
+                return env.CP0_Status
+
+
+        return super().get_reg(cpu, reg)
 
     def get_pc(self, cpu):
         &#39;&#39;&#39;
@@ -1551,6 +1607,42 @@ except the register name and call conventions.</p>
     return cpu.env_ptr.active_tc.PC</code></pre>
 </details>
 </dd>
+<dt id="pandare.arch.MipsArch.get_reg"><code class="name flex">
+<span>def <span class="ident">get_reg</span></span>(<span>self, cpu, reg)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function for a few mips specific registers</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_reg(self, cpu, reg):
+    &#39;&#39;&#39;
+    Overloaded function for a few mips specific registers
+    &#39;&#39;&#39;
+
+    if isinstance(reg, str):
+        env = cpu.env_ptr
+        reg = reg.upper()
+        if reg == &#39;HI&#39;:
+            return env.CP0_EntryHi
+        elif reg == &#39;LO&#39;:
+            return env.CP0_EntryLo0
+        elif reg.startswith(&#39;F&#39;) and reg[1:].isnumeric():
+            num = int(reg[1:])
+            _, endianness, _ = self._determine_bits()
+            return int.from_bytes(bytes(env.fpus[0].fpr[num]), byteorder=endianness)
+        elif reg == &#39;FCCR&#39;:
+            return env.fpus[0].fcr0
+        elif reg == &#39;DSPCONTROL&#39;:
+            return env.active_tc.DSPControl
+        elif reg == &#39;CP0_STATUS&#39;:
+            return env.CP0_Status
+
+
+    return super().get_reg(cpu, reg)</code></pre>
+</details>
+</dd>
 <dt id="pandare.arch.MipsArch.get_return_address"><code class="name flex">
 <span>def <span class="ident">get_return_address</span></span>(<span>self, cpu)</span>
 </code></dt>
@@ -1673,7 +1765,6 @@ Otherwise, it will be set to 1</p></div>
 <li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
 <li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
@@ -1754,6 +1845,8 @@ Otherwise, it will be set to 1</p></div>
         &#39;&#39;&#39;
         if isinstance(reg, str):
             reg = reg.upper()
+            if reg == &#39;PC&#39;:
+                return self.get_pc(cpu)
             if reg not in self.registers.keys():
                 raise ValueError(f&#34;Invalid register name {reg}&#34;)
             else:
@@ -2158,6 +2251,8 @@ read fails (i.e., paged out, invalid address).</p>
     &#39;&#39;&#39;
     if isinstance(reg, str):
         reg = reg.upper()
+        if reg == &#39;PC&#39;:
+            return self.get_pc(cpu)
         if reg not in self.registers.keys():
             raise ValueError(f&#34;Invalid register name {reg}&#34;)
         else:
@@ -2954,6 +3049,7 @@ setTimeout(() => input.focus(), 100);
 <ul class="two-column">
 <li><code><a title="pandare.arch.MipsArch.get_call_return" href="#pandare.arch.MipsArch.get_call_return">get_call_return</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_pc" href="#pandare.arch.MipsArch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.MipsArch.get_reg" href="#pandare.arch.MipsArch.get_reg">get_reg</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_return_address" href="#pandare.arch.MipsArch.get_return_address">get_return_address</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_return_value" href="#pandare.arch.MipsArch.get_return_value">get_return_value</a></code></li>
 <li><code><a title="pandare.arch.MipsArch.get_retval" href="#pandare.arch.MipsArch.get_retval">get_retval</a></code></li>

@@ -1802,6 +1802,12 @@ INDEX=[
 "doc":"Register names and accessors for 32-bit MIPS Initialize a PANDA-supported architecture and hold a handle on the PANDA object"
 },
 {
+"ref":"pandare.arch.MipsArch.get_reg",
+"url":5,
+"doc":"Overloaded function for a few mips specific registers",
+"func":1
+},
+{
 "ref":"pandare.arch.MipsArch.get_pc",
 "url":5,
 "doc":"Overloaded function to return the MIPS current program counter",
@@ -1841,12 +1847,6 @@ INDEX=[
 "ref":"pandare.arch.MipsArch.set_retval",
 "url":5,
 "doc":"Overloaded function so when convention is syscall, user can control the A3 register (which indicates syscall success/failure) in addition to the syscall return value. When convention  'syscall', failure = False means A3 will bet set to 0. Otherwise, it will be set to 1",
-"func":1
-},
-{
-"ref":"pandare.arch.MipsArch.get_reg",
-"url":5,
-"doc":"Return value in a  reg which is either a register name or index (e.g., \"R0\" or 0)",
 "func":1
 },
 {
@@ -1896,6 +1896,12 @@ INDEX=[
 "doc":"Register names and accessors for MIPS64. Inherits from MipsArch for everything except the register name and call conventions. Initialize a PANDA-supported architecture and hold a handle on the PANDA object"
 },
 {
+"ref":"pandare.arch.Mips64Arch.get_reg",
+"url":5,
+"doc":"Overloaded function for a few mips specific registers",
+"func":1
+},
+{
 "ref":"pandare.arch.Mips64Arch.get_pc",
 "url":5,
 "doc":"Overloaded function to return the MIPS current program counter",
@@ -1935,12 +1941,6 @@ INDEX=[
 "ref":"pandare.arch.Mips64Arch.set_retval",
 "url":5,
 "doc":"Overloaded function so when convention is syscall, user can control the A3 register (which indicates syscall success/failure) in addition to the syscall return value. When convention  'syscall', failure = False means A3 will bet set to 0. Otherwise, it will be set to 1",
-"func":1
-},
-{
-"ref":"pandare.arch.Mips64Arch.get_reg",
-"url":5,
-"doc":"Return value in a  reg which is either a register name or index (e.g., \"R0\" or 0)",
 "func":1
 },
 {
