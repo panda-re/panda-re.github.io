@@ -3021,6 +3021,10 @@ class Panda():
         while len(self.registered_callbacks.keys()) &gt; 0:
             self.delete_callback(list(self.registered_callbacks.keys())[0])
 
+        # Disable PPP callbacks
+        for name in list(self.ppp_registered_cbs) if hasattr(self, &#39;ppp_registered_cbs&#39;) else []:
+            self.disable_ppp(name)
+
     ###########################
     ### PPP-style callbacks ###
     ###########################
@@ -6432,6 +6436,10 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         while len(self.registered_callbacks.keys()) &gt; 0:
             self.delete_callback(list(self.registered_callbacks.keys())[0])
 
+        # Disable PPP callbacks
+        for name in list(self.ppp_registered_cbs) if hasattr(self, &#39;ppp_registered_cbs&#39;) else []:
+            self.disable_ppp(name)
+
     ###########################
     ### PPP-style callbacks ###
     ###########################
@@ -7428,7 +7436,11 @@ Calls cpu_class_by_name QEMU function.</p>
 <pre><code class="python">def delete_callbacks(self):
     #for name in self.registered_callbacks.keys():
     while len(self.registered_callbacks.keys()) &gt; 0:
-        self.delete_callback(list(self.registered_callbacks.keys())[0])</code></pre>
+        self.delete_callback(list(self.registered_callbacks.keys())[0])
+
+    # Disable PPP callbacks
+    for name in list(self.ppp_registered_cbs) if hasattr(self, &#39;ppp_registered_cbs&#39;) else []:
+        self.disable_ppp(name)</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.delvm"><code class="name flex">

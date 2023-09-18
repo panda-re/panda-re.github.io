@@ -163,10 +163,11 @@ from .fileHook import FileHook
 from .ioctlFaker import IoctlFaker
 from .modeFilter import ModeFilter
 from .procWriteCapture import ProcWriteCapture
+from .procTrace import ProcGraph
 
 
 __all__ = [&#39;FakeFile&#39;, &#39;FileFaker&#39;, &#39;FileHook&#39;, &#39;IoctlFaker&#39;, &#39;ModeFilter&#39;, &#39;ProcWriteCapture&#39;,
-           &#39;Snake&#39;]</code></pre>
+           &#39;Snake&#39;, &#39;ProcGraph&#39;]</code></pre>
 </details>
 </section>
 <section>
@@ -189,6 +190,10 @@ descriptors …</p></div>
 <dt><code class="name"><a title="pandare.extras.modeFilter" href="modeFilter.html">pandare.extras.modeFilter</a></code></dt>
 <dd>
 <div class="desc"><p>Simple helper and example to selectively execute callbacks based on a mode string</p></div>
+</dd>
+<dt><code class="name"><a title="pandare.extras.procTrace" href="procTrace.html">pandare.extras.procTrace</a></code></dt>
+<dd>
+<div class="desc"><p>Create a graph of which processes run/ran over time …</p></div>
 </dd>
 <dt><code class="name"><a title="pandare.extras.procWriteCapture" href="procWriteCapture.html">pandare.extras.procWriteCapture</a></code></dt>
 <dd>
@@ -1237,6 +1242,133 @@ mc.run()</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="pandare.extras.ProcGraph"><code class="flex name class">
+<span>class <span class="ident">ProcGraph</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class which PyPANDA plugins should inherit. Subclasses may
+register callbacks using the provided panda object and use the
+PyPlugin APIs:</p>
+<ul>
+<li>self.get_args or self.get_arg_bool to check argument values</li>
+<li>self.ppp to interact with other PyPlugins via PPP interfaces</li>
+<li>self.ppp_cb_boilerplate('cb_name') to register a ppp-style callback</li>
+<li>self.ppp_run_cb('cb_name') to run a previously-registered ppp-style callback</li>
+<li>@PyPlugin.ppp_export to mark a class method as ppp-exported</li>
+</ul>
+<p>For more information, check out the pyplugin documentation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ProcGraph(PyPlugin):
+    def __init__(self, panda):
+        # Data collection
+        self.procinfo = {} # PID: info
+        self.time_data = [] # [(PID, #blocks)]
+        self.total_insns = 0
+        self.n_insns = 0
+        self.last_pid = None
+        self.show_ranges = not self.get_arg(&#34;hide_ranges&#34;)
+        self.show_graph = not self.get_arg(&#34;hide_graph&#34;)
+        self.panda = panda
+
+        # config option: number of columns
+        self.n_cols = self.get_arg(&#34;cols&#34;) or 120
+
+        @panda.cb_start_block_exec
+        def sbe(cpu, tb):
+            self.n_insns += tb.icount
+            self.total_insns += tb.icount
+
+        @panda.ppp(&#34;osi&#34;, &#34;on_task_change&#34;)
+        def task_change(cpu):
+            proc = panda.plugins[&#39;osi&#39;].get_current_process(cpu)
+            thread = panda.plugins[&#39;osi&#39;].get_current_thread(cpu)
+
+            if proc == panda.ffi.NULL:
+                print(f&#34;Warning: Unable to identify process at {self.n_insns}&#34;)
+                return
+            if thread == panda.ffi.NULL:
+                print(f&#34;Warning: Unable to identify thread at {self.n_insns}&#34;)
+                return
+
+            proc_key = (proc.pid, thread.tid)
+            if proc_key not in self.procinfo:
+                self.procinfo[proc_key] = {&#34;names&#34;: set(), #&#34;tids&#34;: set(),
+                                      &#34;first&#34;: self.total_insns, &#34;last&#34;: None,
+                                      &#34;count&#34;: 0}
+
+            name = panda.ffi.string(proc.name)  if proc.name != panda.ffi.NULL else &#34;(error)&#34;
+            self.procinfo[proc_key][&#34;names&#34;].add(name)
+
+            # Update insn count for last process and indicate it (maybe) ends at total_insns-1
+            if self.last_pid:
+                # count since we last ran is it&#39;s old end value, minus where it just ended
+                self.procinfo[self.last_pid][&#34;count&#34;] += (self.total_insns-1) - self.procinfo[self.last_pid][&#34;last&#34;]  \
+                                                if self.procinfo[self.last_pid][&#34;last&#34;] is not None \
+                                                else (self.total_insns-1) - self.procinfo[self.last_pid][&#34;first&#34;]
+                self.procinfo[self.last_pid][&#34;last&#34;] = self.total_insns-1
+
+            self.last_pid = proc_key
+
+            self.time_data.append((proc_key, self.n_insns))
+            self.n_insns = 0
+
+    def uninit(self):
+        render_graph(self.procinfo, self.time_data, self.total_insns, n_cols=self.n_cols, show_ranges=self.show_ranges, show_graph=self.show_graph)
+
+        # Fully reset state
+        self.panda.disable_ppp(&#34;task_change&#34;)
+        self.procinfo = {} # PID: info
+        self.time_data = [] # [(PID, #blocks)]
+        self.total_insns = 0
+        self.n_insns = 0
+        self.last_pid = None</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="pandare.pyplugin.PyPlugin" href="../pyplugin.html#pandare.pyplugin.PyPlugin">PyPlugin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.extras.ProcGraph.uninit"><code class="name flex">
+<span>def <span class="ident">uninit</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def uninit(self):
+    render_graph(self.procinfo, self.time_data, self.total_insns, n_cols=self.n_cols, show_ranges=self.show_ranges, show_graph=self.show_graph)
+
+    # Fully reset state
+    self.panda.disable_ppp(&#34;task_change&#34;)
+    self.procinfo = {} # PID: info
+    self.time_data = [] # [(PID, #blocks)]
+    self.total_insns = 0
+    self.n_insns = 0
+    self.last_pid = None</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="pandare.pyplugin.PyPlugin" href="../pyplugin.html#pandare.pyplugin.PyPlugin">PyPlugin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="pandare.pyplugin.PyPlugin.get_arg" href="../pyplugin.html#pandare.pyplugin.PyPlugin.get_arg">get_arg</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.get_arg_bool" href="../pyplugin.html#pandare.pyplugin.PyPlugin.get_arg_bool">get_arg_bool</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.ppp" href="../pyplugin.html#pandare.pyplugin.PyPlugin.ppp">ppp</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.ppp_cb_boilerplate" href="../pyplugin.html#pandare.pyplugin.PyPlugin.ppp_cb_boilerplate">ppp_cb_boilerplate</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.ppp_export" href="../pyplugin.html#pandare.pyplugin.PyPlugin.ppp_export">ppp_export</a></code></li>
+<li><code><a title="pandare.pyplugin.PyPlugin.ppp_run_cb" href="../pyplugin.html#pandare.pyplugin.PyPlugin.ppp_run_cb">ppp_run_cb</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
 <dt id="pandare.extras.ProcWriteCapture"><code class="flex name class">
 <span>class <span class="ident">ProcWriteCapture</span></span>
 <span>(</span><span>panda, console_capture=False, proc_name=None, log_dir=None, rm_existing_logs=False)</span>
@@ -1642,6 +1774,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.extras.fileHook" href="fileHook.html">pandare.extras.fileHook</a></code></li>
 <li><code><a title="pandare.extras.ioctlFaker" href="ioctlFaker.html">pandare.extras.ioctlFaker</a></code></li>
 <li><code><a title="pandare.extras.modeFilter" href="modeFilter.html">pandare.extras.modeFilter</a></code></li>
+<li><code><a title="pandare.extras.procTrace" href="procTrace.html">pandare.extras.procTrace</a></code></li>
 <li><code><a title="pandare.extras.procWriteCapture" href="procWriteCapture.html">pandare.extras.procWriteCapture</a></code></li>
 </ul>
 </li>
@@ -1683,6 +1816,12 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.extras.ModeFilter.mode" href="#pandare.extras.ModeFilter.mode">mode</a></code></li>
 <li><code><a title="pandare.extras.ModeFilter.mode_filter" href="#pandare.extras.ModeFilter.mode_filter">mode_filter</a></code></li>
 <li><code><a title="pandare.extras.ModeFilter.set_mode" href="#pandare.extras.ModeFilter.set_mode">set_mode</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pandare.extras.ProcGraph" href="#pandare.extras.ProcGraph">ProcGraph</a></code></h4>
+<ul class="">
+<li><code><a title="pandare.extras.ProcGraph.uninit" href="#pandare.extras.ProcGraph.uninit">uninit</a></code></li>
 </ul>
 </li>
 <li>

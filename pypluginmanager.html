@@ -400,24 +400,41 @@ class PyPluginManager:
         return names
 
     def unload(self, pluginclass, do_del=True):
-        name = pluginclass if isinstance(pluginclass, str) else pluginclass.__name__
-        if callable(getattr(self.plugins[name], &#34;uninit&#34;, None)):
-            self.plugins[name].uninit()
+        &#39;&#39;&#39;
+        Given an instance of a PyPlugin or its name, unload it
+        &#39;&#39;&#39;
 
+        if isinstance(pluginclass, str) and pluginclass in self.plugins:
+            pluginclass = self.plugins[pluginclass]
+
+        if not isinstance(pluginclass, PyPlugin):
+            raise ValueError(f&#34;Unload expects a name of a loaded pyplugin or a PyPlugin instance. Got {pluginclass} with plugin list: {self.plugins}&#34;)
+
+        # Call uninit method if it&#39;s present
+        if callable(getattr(pluginclass, &#34;uninit&#34;, None)):
+            pluginclass.uninit()
+
+        # Remove by name
         if do_del:
+            name = pluginclass.__class__.__name__
             del self.plugins[name]
 
     def unload_all(self):
+        &#39;&#39;&#39;
+        Unload all PyPlugins
+        &#39;&#39;&#39;
         while self.plugins:
-            name, _ = self.plugins.popitem()
-            self.unload(name, do_del=False)
+            name, cls = self.plugins.popitem()
+            self.unload(cls, do_del=False)
 
     def is_loaded(self, pluginclass):
+        # XXX should this end with .class.__name__?
         name = pluginclass if isinstance(pluginclass, str) else pluginclass.__name__
         return name in self.plugins
 
     def get_plugin(self, pluginclass):
         # Lookup name
+        # XXX should this end with .class.__name__?
         name = pluginclass if isinstance(pluginclass, str) else pluginclass.__name__
         if not self.is_loaded(pluginclass, name):
             raise ValueError(f&#34;Plugin {name} is not loaded&#34;)
@@ -699,24 +716,41 @@ if __name__ == &#39;__main__&#39;:
         return names
 
     def unload(self, pluginclass, do_del=True):
-        name = pluginclass if isinstance(pluginclass, str) else pluginclass.__name__
-        if callable(getattr(self.plugins[name], &#34;uninit&#34;, None)):
-            self.plugins[name].uninit()
+        &#39;&#39;&#39;
+        Given an instance of a PyPlugin or its name, unload it
+        &#39;&#39;&#39;
 
+        if isinstance(pluginclass, str) and pluginclass in self.plugins:
+            pluginclass = self.plugins[pluginclass]
+
+        if not isinstance(pluginclass, PyPlugin):
+            raise ValueError(f&#34;Unload expects a name of a loaded pyplugin or a PyPlugin instance. Got {pluginclass} with plugin list: {self.plugins}&#34;)
+
+        # Call uninit method if it&#39;s present
+        if callable(getattr(pluginclass, &#34;uninit&#34;, None)):
+            pluginclass.uninit()
+
+        # Remove by name
         if do_del:
+            name = pluginclass.__class__.__name__
             del self.plugins[name]
 
     def unload_all(self):
+        &#39;&#39;&#39;
+        Unload all PyPlugins
+        &#39;&#39;&#39;
         while self.plugins:
-            name, _ = self.plugins.popitem()
-            self.unload(name, do_del=False)
+            name, cls = self.plugins.popitem()
+            self.unload(cls, do_del=False)
 
     def is_loaded(self, pluginclass):
+        # XXX should this end with .class.__name__?
         name = pluginclass if isinstance(pluginclass, str) else pluginclass.__name__
         return name in self.plugins
 
     def get_plugin(self, pluginclass):
         # Lookup name
+        # XXX should this end with .class.__name__?
         name = pluginclass if isinstance(pluginclass, str) else pluginclass.__name__
         if not self.is_loaded(pluginclass, name):
             raise ValueError(f&#34;Plugin {name} is not loaded&#34;)
@@ -797,6 +831,7 @@ which support flask will be made available at the web interfaces.</p></div>
 </summary>
 <pre><code class="python">def get_plugin(self, pluginclass):
     # Lookup name
+    # XXX should this end with .class.__name__?
     name = pluginclass if isinstance(pluginclass, str) else pluginclass.__name__
     if not self.is_loaded(pluginclass, name):
         raise ValueError(f&#34;Plugin {name} is not loaded&#34;)
@@ -832,6 +867,7 @@ which support flask will be made available at the web interfaces.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def is_loaded(self, pluginclass):
+    # XXX should this end with .class.__name__?
     name = pluginclass if isinstance(pluginclass, str) else pluginclass.__name__
     return name in self.plugins</code></pre>
 </details>
@@ -1053,17 +1089,29 @@ you would get from directly doing <code>import [class_name] from [plugin_file]</
 <span>def <span class="ident">unload</span></span>(<span>self, pluginclass, do_del=True)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Given an instance of a PyPlugin or its name, unload it</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def unload(self, pluginclass, do_del=True):
-    name = pluginclass if isinstance(pluginclass, str) else pluginclass.__name__
-    if callable(getattr(self.plugins[name], &#34;uninit&#34;, None)):
-        self.plugins[name].uninit()
+    &#39;&#39;&#39;
+    Given an instance of a PyPlugin or its name, unload it
+    &#39;&#39;&#39;
 
+    if isinstance(pluginclass, str) and pluginclass in self.plugins:
+        pluginclass = self.plugins[pluginclass]
+
+    if not isinstance(pluginclass, PyPlugin):
+        raise ValueError(f&#34;Unload expects a name of a loaded pyplugin or a PyPlugin instance. Got {pluginclass} with plugin list: {self.plugins}&#34;)
+
+    # Call uninit method if it&#39;s present
+    if callable(getattr(pluginclass, &#34;uninit&#34;, None)):
+        pluginclass.uninit()
+
+    # Remove by name
     if do_del:
+        name = pluginclass.__class__.__name__
         del self.plugins[name]</code></pre>
 </details>
 </dd>
@@ -1071,15 +1119,18 @@ you would get from directly doing <code>import [class_name] from [plugin_file]</
 <span>def <span class="ident">unload_all</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Unload all PyPlugins</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def unload_all(self):
+    &#39;&#39;&#39;
+    Unload all PyPlugins
+    &#39;&#39;&#39;
     while self.plugins:
-        name, _ = self.plugins.popitem()
-        self.unload(name, do_del=False)</code></pre>
+        name, cls = self.plugins.popitem()
+        self.unload(cls, do_del=False)</code></pre>
 </details>
 </dd>
 </dl>
