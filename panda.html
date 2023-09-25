@@ -212,7 +212,9 @@ class Panda():
             raw_monitor=False, # When set, don&#39;t specify a -monitor. arg Allows for use of -nographic in args with ctrl-A+C for interactive qemu prompt.
             extra_args=None,
             catch_exceptions=True, # Should we catch and end_analysis() when python code raises an exception?
-            libpanda_path=None):
+            libpanda_path=None,
+            biospath=None,
+            plugin_path=None):
         &#39;&#39;&#39;
         Construct a new `Panda` object.  Note that multiple Panda objects cannot coexist in the same Python instance.
         Args:
@@ -234,6 +236,9 @@ class Panda():
                     -nographic in args with ctrl-A+C for interactive qemu prompt. Experts only!
             extra_args: extra arguments to pass to PANDA as either a string or an
                     array. (e.g. &#34;-nographic&#34; or [&#34;-nographic&#34;, &#34;-net&#34;, &#34;none&#34;])
+            libpanda_path: path to panda shared object to load
+            biospath: directory that contains &#34;pc-bios&#34; files
+            plugin_path: directory that contains panda plugins
         Returns:
             Panda: the created panda object
         &#39;&#39;&#39;
@@ -250,6 +255,8 @@ class Panda():
         self.cdrom = None
         self.catch_exceptions=catch_exceptions
         self.qlog = QEMU_Log_Manager(self)
+        self.build_dir = None
+        self.plugin_path = plugin_path
 
         self.serial_unconsumed_data = b&#39;&#39;
 
@@ -298,13 +305,10 @@ class Panda():
             raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
         self.bits, self.endianness, self.register_size = self.arch._determine_bits()
 
-        self.build_dir  = find_build_dir(self.arch_name)
-        environ[&#34;PANDA_DIR&#34;] = self.build_dir
-
         if libpanda_path:
-            self.libpanda_path = libpanda_path
+            environ[&#34;PANDA_LIB&#34;] = self.libpanda_path = libpanda_path
         else:
-            self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
+            self.libpanda_path = pjoin(self.get_build_dir(), &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
         self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
 
         self.ffi = self._do_types_import()
@@ -318,7 +322,9 @@ class Panda():
 
         # Setup argv for panda
         self.panda_args = [self.panda]
-        biospath = realpath(pjoin(self.build_dir, &#34;pc-bios&#34;)) # XXX: necessary for network drivers for arm/mips, so &#39;pc-bios&#39; is a misleading name
+
+        if biospath is None:
+            biospath = realpath(pjoin(self.get_build_dir(), &#34;pc-bios&#34;)) # XXX: necessary for network drivers for arm/mips, so &#39;pc-bios&#39; is a misleading name
         self.panda_args.append(&#34;-L&#34;)
         self.panda_args.append(biospath)
 
@@ -394,6 +400,17 @@ class Panda():
         self.main_loop_wait_fnargs = [] # [(fn, args), ...]
         progress (&#34;Panda args: [&#34; + (&#34; &#34;.join(self.panda_args)) + &#34;]&#34;)
     # /__init__
+
+    def get_plugin_path(self):
+        if self.plugin_path is None:
+            self.plugin_path = pjoin(*[self.get_build_dir(), self.arch_name+&#34;-softmmu&#34;, &#34;panda&#34;, &#34;plugins&#34;])
+        return self.plugin_path
+
+    def get_build_dir(self):
+        if self.build_dir is None:
+            self.build_dir  = find_build_dir(self.arch_name)
+            environ[&#34;PANDA_DIR&#34;] = self.build_dir
+        return self.build_dir
 
     def _do_types_import(self):
         &#39;&#39;&#39;
@@ -1059,9 +1076,9 @@ class Panda():
             libpanda_path_chr = self.ffi.new(&#34;char[]&#34;,bytes(self.libpanda_path, &#34;UTF-8&#34;))
             self.__did_load_libpanda = self.libpanda.panda_load_libpanda(libpanda_path_chr)
         if not name in self.plugins.keys():
-            assert(isfile(pjoin(*[self.build_dir, self.arch_name+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)])))
-            library = self.ffi.dlopen(pjoin(*[self.build_dir, self.arch_name+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)]))
-            self.plugins[name] = library
+            plugin = pjoin(*[self.get_plugin_path(), f&#34;panda_{name}.so&#34;])
+            assert(isfile(plugin))
+            self.plugins[name] = self.ffi.dlopen(plugin)
 
     def queue_async(self, f, internal=False):
         &#39;&#39;&#39;
@@ -3565,7 +3582,7 @@ class Panda():
 <dl>
 <dt id="pandare.panda.Panda"><code class="flex name class">
 <span>class <span class="ident">Panda</span></span>
-<span>(</span><span>arch='i386', mem='128M', expect_prompt=None, serial_kwargs=None, os_version=None, qcow=None, os='linux', generic=None, raw_monitor=False, extra_args=None, catch_exceptions=True, libpanda_path=None)</span>
+<span>(</span><span>arch='i386', mem='128M', expect_prompt=None, serial_kwargs=None, os_version=None, qcow=None, os='linux', generic=None, raw_monitor=False, extra_args=None, catch_exceptions=True, libpanda_path=None, biospath=None, plugin_path=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This is the object used to interact with PANDA. Initializing it creates a virtual machine to interact with.</p>
@@ -3602,6 +3619,12 @@ remove command strings repeated by the shell from the shell output).</dd>
 <dt><strong><code>extra_args</code></strong></dt>
 <dd>extra arguments to pass to PANDA as either a string or an
 array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
+<dt><strong><code>libpanda_path</code></strong></dt>
+<dd>path to panda shared object to load</dd>
+<dt><strong><code>biospath</code></strong></dt>
+<dd>directory that contains "pc-bios" files</dd>
+<dt><strong><code>plugin_path</code></strong></dt>
+<dd>directory that contains panda plugins</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -3627,7 +3650,9 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             raw_monitor=False, # When set, don&#39;t specify a -monitor. arg Allows for use of -nographic in args with ctrl-A+C for interactive qemu prompt.
             extra_args=None,
             catch_exceptions=True, # Should we catch and end_analysis() when python code raises an exception?
-            libpanda_path=None):
+            libpanda_path=None,
+            biospath=None,
+            plugin_path=None):
         &#39;&#39;&#39;
         Construct a new `Panda` object.  Note that multiple Panda objects cannot coexist in the same Python instance.
         Args:
@@ -3649,6 +3674,9 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                     -nographic in args with ctrl-A+C for interactive qemu prompt. Experts only!
             extra_args: extra arguments to pass to PANDA as either a string or an
                     array. (e.g. &#34;-nographic&#34; or [&#34;-nographic&#34;, &#34;-net&#34;, &#34;none&#34;])
+            libpanda_path: path to panda shared object to load
+            biospath: directory that contains &#34;pc-bios&#34; files
+            plugin_path: directory that contains panda plugins
         Returns:
             Panda: the created panda object
         &#39;&#39;&#39;
@@ -3665,6 +3693,8 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         self.cdrom = None
         self.catch_exceptions=catch_exceptions
         self.qlog = QEMU_Log_Manager(self)
+        self.build_dir = None
+        self.plugin_path = plugin_path
 
         self.serial_unconsumed_data = b&#39;&#39;
 
@@ -3713,13 +3743,10 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
         self.bits, self.endianness, self.register_size = self.arch._determine_bits()
 
-        self.build_dir  = find_build_dir(self.arch_name)
-        environ[&#34;PANDA_DIR&#34;] = self.build_dir
-
         if libpanda_path:
-            self.libpanda_path = libpanda_path
+            environ[&#34;PANDA_LIB&#34;] = self.libpanda_path = libpanda_path
         else:
-            self.libpanda_path = pjoin(self.build_dir, &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
+            self.libpanda_path = pjoin(self.get_build_dir(), &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
         self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
 
         self.ffi = self._do_types_import()
@@ -3733,7 +3760,9 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
         # Setup argv for panda
         self.panda_args = [self.panda]
-        biospath = realpath(pjoin(self.build_dir, &#34;pc-bios&#34;)) # XXX: necessary for network drivers for arm/mips, so &#39;pc-bios&#39; is a misleading name
+
+        if biospath is None:
+            biospath = realpath(pjoin(self.get_build_dir(), &#34;pc-bios&#34;)) # XXX: necessary for network drivers for arm/mips, so &#39;pc-bios&#39; is a misleading name
         self.panda_args.append(&#34;-L&#34;)
         self.panda_args.append(biospath)
 
@@ -3809,6 +3838,17 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         self.main_loop_wait_fnargs = [] # [(fn, args), ...]
         progress (&#34;Panda args: [&#34; + (&#34; &#34;.join(self.panda_args)) + &#34;]&#34;)
     # /__init__
+
+    def get_plugin_path(self):
+        if self.plugin_path is None:
+            self.plugin_path = pjoin(*[self.get_build_dir(), self.arch_name+&#34;-softmmu&#34;, &#34;panda&#34;, &#34;plugins&#34;])
+        return self.plugin_path
+
+    def get_build_dir(self):
+        if self.build_dir is None:
+            self.build_dir  = find_build_dir(self.arch_name)
+            environ[&#34;PANDA_DIR&#34;] = self.build_dir
+        return self.build_dir
 
     def _do_types_import(self):
         &#39;&#39;&#39;
@@ -4474,9 +4514,9 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             libpanda_path_chr = self.ffi.new(&#34;char[]&#34;,bytes(self.libpanda_path, &#34;UTF-8&#34;))
             self.__did_load_libpanda = self.libpanda.panda_load_libpanda(libpanda_path_chr)
         if not name in self.plugins.keys():
-            assert(isfile(pjoin(*[self.build_dir, self.arch_name+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)])))
-            library = self.ffi.dlopen(pjoin(*[self.build_dir, self.arch_name+&#34;-softmmu&#34;, &#34;panda/plugins/panda_{}.so&#34;.format(name)]))
-            self.plugins[name] = library
+            plugin = pjoin(*[self.get_plugin_path(), f&#34;panda_{name}.so&#34;])
+            assert(isfile(plugin))
+            self.plugins[name] = self.ffi.dlopen(plugin)
 
     def queue_async(self, f, internal=False):
         &#39;&#39;&#39;
@@ -8295,6 +8335,22 @@ Flushing the translation block cache is additionally necessary if the plugin mak
     return self.plugins[&#39;dynamic_symbols&#39;].get_best_matching_symbol(cpu, pc, asid)</code></pre>
 </details>
 </dd>
+<dt id="pandare.panda.Panda.get_build_dir"><code class="name flex">
+<span>def <span class="ident">get_build_dir</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_build_dir(self):
+    if self.build_dir is None:
+        self.build_dir  = find_build_dir(self.arch_name)
+        environ[&#34;PANDA_DIR&#34;] = self.build_dir
+    return self.build_dir</code></pre>
+</details>
+</dd>
 <dt id="pandare.panda.Panda.get_cpu"><code class="name flex">
 <span>def <span class="ident">get_cpu</span></span>(<span>self)</span>
 </code></dt>
@@ -8547,6 +8603,21 @@ Note that the strings will be None if their pointer was null</dd>
     family_num = self.libpanda.panda_os_familyno
     family_name = self.ffi.string(self.ffi.cast(&#34;PandaOsFamily&#34;, family_num))
     return family_name</code></pre>
+</details>
+</dd>
+<dt id="pandare.panda.Panda.get_plugin_path"><code class="name flex">
+<span>def <span class="ident">get_plugin_path</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_plugin_path(self):
+    if self.plugin_path is None:
+        self.plugin_path = pjoin(*[self.get_build_dir(), self.arch_name+&#34;-softmmu&#34;, &#34;panda&#34;, &#34;plugins&#34;])
+    return self.plugin_path</code></pre>
 </details>
 </dd>
 <dt id="pandare.panda.Panda.get_process_name"><code class="name flex">
@@ -12135,6 +12206,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.panda.Panda.g_malloc0" href="#pandare.panda.Panda.g_malloc0">g_malloc0</a></code></li>
 <li><code><a title="pandare.panda.Panda.garray_len" href="#pandare.panda.Panda.garray_len">garray_len</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_best_matching_symbol" href="#pandare.panda.Panda.get_best_matching_symbol">get_best_matching_symbol</a></code></li>
+<li><code><a title="pandare.panda.Panda.get_build_dir" href="#pandare.panda.Panda.get_build_dir">get_build_dir</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_cpu" href="#pandare.panda.Panda.get_cpu">get_cpu</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_current_process" href="#pandare.panda.Panda.get_current_process">get_current_process</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_file_name" href="#pandare.panda.Panda.get_file_name">get_file_name</a></code></li>
@@ -12142,6 +12214,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.panda.Panda.get_mapping_by_addr" href="#pandare.panda.Panda.get_mapping_by_addr">get_mapping_by_addr</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_mappings" href="#pandare.panda.Panda.get_mappings">get_mappings</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_os_family" href="#pandare.panda.Panda.get_os_family">get_os_family</a></code></li>
+<li><code><a title="pandare.panda.Panda.get_plugin_path" href="#pandare.panda.Panda.get_plugin_path">get_plugin_path</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_process_name" href="#pandare.panda.Panda.get_process_name">get_process_name</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_processes" href="#pandare.panda.Panda.get_processes">get_processes</a></code></li>
 <li><code><a title="pandare.panda.Panda.get_processes_dict" href="#pandare.panda.Panda.get_processes_dict">get_processes_dict</a></code></li>
