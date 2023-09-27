@@ -704,6 +704,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Panda.address_to_ram_offset",
+"url":0,
+"doc":"Convert physical address to ram offset Args: hwaddr (int): physical address is_write (bool): boolean representing if this is a write Returns: ram offset (int) Raises: ValueError if memory access fails or fmt is unsupported",
+"func":1
+},
+{
 "ref":"pandare.Panda.taint_sym_enable",
 "url":0,
 "doc":"Inform python that taint is enabled.",
@@ -2852,6 +2858,12 @@ INDEX=[
 "ref":"pandare.panda.Panda.taint_get_laddr",
 "url":6,
 "doc":"returns array of results, one for each byte in this laddr None if no taint. QueryResult struct otherwise",
+"func":1
+},
+{
+"ref":"pandare.panda.Panda.address_to_ram_offset",
+"url":6,
+"doc":"Convert physical address to ram offset Args: hwaddr (int): physical address is_write (bool): boolean representing if this is a write Returns: ram offset (int) Raises: ValueError if memory access fails or fmt is unsupported",
 "func":1
 },
 {
