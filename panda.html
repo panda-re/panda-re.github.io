@@ -2785,7 +2785,7 @@ class Panda():
         interface after this returns
         &#39;&#39;&#39;
         print(&#34;PANDA: entering interactive mode. Type pandaquit to exit&#34;)
-        prompt = self.expect_prompt.decode(&#34;utf8&#34;) if self.expect_prompt  else &#34;$ &#34;
+        prompt = self.expect_prompt.decode(&#34;utf8&#34;) if self.expect_prompt and isinstance(self.expect_prompt, bytes) else &#34;$ &#34;
         if not prompt.endswith(&#34; &#34;): prompt += &#34; &#34;
         while True:
             cmd = input(prompt) # TODO: Strip all control characters - Ctrl-L breaks things
@@ -6250,7 +6250,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         interface after this returns
         &#39;&#39;&#39;
         print(&#34;PANDA: entering interactive mode. Type pandaquit to exit&#34;)
-        prompt = self.expect_prompt.decode(&#34;utf8&#34;) if self.expect_prompt  else &#34;$ &#34;
+        prompt = self.expect_prompt.decode(&#34;utf8&#34;) if self.expect_prompt and isinstance(self.expect_prompt, bytes) else &#34;$ &#34;
         if not prompt.endswith(&#34; &#34;): prompt += &#34; &#34;
         while True:
             cmd = input(prompt) # TODO: Strip all control characters - Ctrl-L breaks things
@@ -9447,7 +9447,7 @@ def interact(self, confirm_quit=True):
     interface after this returns
     &#39;&#39;&#39;
     print(&#34;PANDA: entering interactive mode. Type pandaquit to exit&#34;)
-    prompt = self.expect_prompt.decode(&#34;utf8&#34;) if self.expect_prompt  else &#34;$ &#34;
+    prompt = self.expect_prompt.decode(&#34;utf8&#34;) if self.expect_prompt and isinstance(self.expect_prompt, bytes) else &#34;$ &#34;
     if not prompt.endswith(&#34; &#34;): prompt += &#34; &#34;
     while True:
         cmd = input(prompt) # TODO: Strip all control characters - Ctrl-L breaks things
