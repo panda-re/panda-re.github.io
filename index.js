@@ -1181,6 +1181,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Callbacks.@panda.cb_qmp",
+"url":0,
+"doc":"Called when someone sends an unhandled QMP command Args: char : command: the command string as json char : args: the arguments string as json char :  result: pointer to a json result or NULL Returns: bool: the type your callback must return",
+"func":1
+},
+{
 "ref":"pandare.Callbacks.@panda.cb_cpu_restore_state",
 "url":0,
 "doc":"Called inside of cpu_restore_state(), when there is a CPU fault/exception. Args: CPUState : env: the current CPU state TranslationBlock : tb: the current translation block Returns: void: none ",

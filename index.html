@@ -1435,6 +1435,33 @@ Notes: The command is passed as a single string. No parsing is performed on the 
 <pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
 </details>
 </dd>
+<dt id="pandare.Callbacks.@panda.cb_qmp"><code class="name flex">
+<span>def <span class="ident">@panda.cb_qmp</span></span>(<span>Your_Function)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when someone sends an unhandled QMP command
+</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>char*</code></strong></dt>
+<dd>command: the command string as json</dd>
+<dt><strong><code>char*</code></strong></dt>
+<dd>args: the arguments string as json</dd>
+<dt><strong><code>char*</code></strong></dt>
+<dd>*result: pointer to a json result or NULL</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>the type your callback must return</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">setattr(Callbacks, fakename, lambda Your_Function: None)</code></pre>
+</details>
+</dd>
 <dt id="pandare.Callbacks.@panda.cb_replay_after_dma"><code class="name flex">
 <span>def <span class="ident">@panda.cb_replay_after_dma</span></span>(<span>Your_Function)</span>
 </code></dt>
@@ -11137,6 +11164,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.Callbacks.@panda.cb_phys_mem_before_read" href="#pandare.Callbacks.@panda.cb_phys_mem_before_read">@panda.cb_phys_mem_before_read</a></code></li>
 <li><code><a title="pandare.Callbacks.@panda.cb_phys_mem_before_write" href="#pandare.Callbacks.@panda.cb_phys_mem_before_write">@panda.cb_phys_mem_before_write</a></code></li>
 <li><code><a title="pandare.Callbacks.@panda.cb_pre_shutdown" href="#pandare.Callbacks.@panda.cb_pre_shutdown">@panda.cb_pre_shutdown</a></code></li>
+<li><code><a title="pandare.Callbacks.@panda.cb_qmp" href="#pandare.Callbacks.@panda.cb_qmp">@panda.cb_qmp</a></code></li>
 <li><code><a title="pandare.Callbacks.@panda.cb_replay_after_dma" href="#pandare.Callbacks.@panda.cb_replay_after_dma">@panda.cb_replay_after_dma</a></code></li>
 <li><code><a title="pandare.Callbacks.@panda.cb_replay_before_dma" href="#pandare.Callbacks.@panda.cb_replay_before_dma">@panda.cb_replay_before_dma</a></code></li>
 <li><code><a title="pandare.Callbacks.@panda.cb_replay_handle_packet" href="#pandare.Callbacks.@panda.cb_replay_handle_packet">@panda.cb_replay_handle_packet</a></code></li>
