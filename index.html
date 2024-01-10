@@ -321,7 +321,7 @@ try:
     from .plog_reader import PLogReader
 except ImportError:
     # plog reader isn&#39;t widely used - let&#39;s make this optional
-    PlogReader = None
+    PLogReader = None
 
 __all__ = [&#39;Panda&#39;, &#39;PLogReader&#39;, &#39;Callbacks&#39;, &#39;PyPlugin&#39;]
 
@@ -2246,7 +2246,16 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         if libpanda_path:
             environ[&#34;PANDA_LIB&#34;] = self.libpanda_path = libpanda_path
         else:
-            self.libpanda_path = pjoin(self.get_build_dir(), &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name))
+            build_dir = self.get_build_dir()
+            lib_paths = [&#34;libpanda-{0}.so&#34;.format(self.arch_name), &#34;{0}-softmmu/libpanda-{0}.so&#34;.format(self.arch_name)]
+            # Select the first path that exists - we&#39;ll have libpanda-{arch}.so for a system install versus arch-softmmu/libpanda-arch.so for a build
+            for p in lib_paths:
+                if isfile(pjoin(build_dir, p)):
+                    self.libpanda_path = pjoin(build_dir, p)
+                    break
+            else:
+                raise RuntimeError(&#34;Couldn&#39;t find libpanda-{0}.so in {1} (in either root or {0}-libpanda directory)&#34;.format(self.arch_name, build_dir))
+
         self.panda = self.libpanda_path # Necessary for realpath to work inside core-panda, may cause issues?
 
         self.ffi = self._do_types_import()
@@ -2341,7 +2350,16 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
 
     def get_plugin_path(self):
         if self.plugin_path is None:
-            self.plugin_path = pjoin(*[self.get_build_dir(), self.arch_name+&#34;-softmmu&#34;, &#34;panda&#34;, &#34;plugins&#34;])
+            build_dir = self.get_build_dir()
+            rel_dir = pjoin(*[build_dir, self.arch_name+&#34;-softmmu&#34;, &#34;panda&#34;, &#34;plugins&#34;])
+
+            if build_dir == &#34;/usr/local/bin/&#34;:
+                # Installed - use /usr/local/lib/panda/plugins
+                self.plugin_path = f&#34;/usr/local/lib/panda/{self.arch_name}&#34;
+            elif isdir(rel_dir):
+                self.plugin_path = rel_dir
+            else:
+                raise ValueError(f&#34;Could not find plugin path. Build dir={build_dir}&#34;)
         return self.plugin_path
 
     def get_build_dir(self):
@@ -7185,7 +7203,16 @@ Note that the strings will be None if their pointer was null</dd>
 </summary>
 <pre><code class="python">def get_plugin_path(self):
     if self.plugin_path is None:
-        self.plugin_path = pjoin(*[self.get_build_dir(), self.arch_name+&#34;-softmmu&#34;, &#34;panda&#34;, &#34;plugins&#34;])
+        build_dir = self.get_build_dir()
+        rel_dir = pjoin(*[build_dir, self.arch_name+&#34;-softmmu&#34;, &#34;panda&#34;, &#34;plugins&#34;])
+
+        if build_dir == &#34;/usr/local/bin/&#34;:
+            # Installed - use /usr/local/lib/panda/plugins
+            self.plugin_path = f&#34;/usr/local/lib/panda/{self.arch_name}&#34;
+        elif isdir(rel_dir):
+            self.plugin_path = rel_dir
+        else:
+            raise ValueError(f&#34;Could not find plugin path. Build dir={build_dir}&#34;)
     return self.plugin_path</code></pre>
 </details>
 </dd>
