@@ -2831,6 +2831,19 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         name_ffi = self.ffi.new(&#34;char[]&#34;, bytes(name,&#34;utf-8&#34;))
         self.libpanda.panda_unload_plugin_by_name(name_ffi)
 
+    def _unload_pyplugins(self):
+        # First unload python plugins, should be safe to do anytime
+        while len(list(self.registered_callbacks)) &gt; 0:
+            try:
+                self.delete_callback(list(self.registered_callbacks.keys())[0])
+            except IndexError:
+                continue
+            #self.disable_callback(name)
+
+        # Next, unload any pyplugins
+        if hasattr(self, &#34;_pyplugin_manager&#34;):
+            self.pyplugins.unload_all()
+
     def unload_plugins(self):
         &#39;&#39;&#39;
         Disable all python plugins and request to unload all c plugins
@@ -2843,18 +2856,8 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         if debug:
             progress (&#34;Disabling all python plugins, unloading all C plugins&#34;)
 
-        # First unload python plugins, should be safe to do anytime
-        #for name in self.registered_callbacks.keys():
-        while len(list(self.registered_callbacks)) &gt; 0:
-            try:
-                self.delete_callback(list(self.registered_callbacks.keys())[0])
-            except IndexError:
-                continue
-            #self.disable_callback(name)
-
-        # Next, unload any pyplugins
-        if hasattr(self, &#34;_pyplugin_manager&#34;):
-            self.pyplugins.unload_all()
+        # In next main loop wait, unload all python plugin
+        self.queue_main_loop_wait_fn(self._unload_pyplugins)
 
         # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
         self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)
@@ -10474,18 +10477,8 @@ panda.panda_finish directly (which is done at the end of panda.run())</p></div>
     if debug:
         progress (&#34;Disabling all python plugins, unloading all C plugins&#34;)
 
-    # First unload python plugins, should be safe to do anytime
-    #for name in self.registered_callbacks.keys():
-    while len(list(self.registered_callbacks)) &gt; 0:
-        try:
-            self.delete_callback(list(self.registered_callbacks.keys())[0])
-        except IndexError:
-            continue
-        #self.disable_callback(name)
-
-    # Next, unload any pyplugins
-    if hasattr(self, &#34;_pyplugin_manager&#34;):
-        self.pyplugins.unload_all()
+    # In next main loop wait, unload all python plugin
+    self.queue_main_loop_wait_fn(self._unload_pyplugins)
 
     # Then unload C plugins. May be unsafe to do except from the top of the main loop (taint segfaults otherwise)
     self.queue_main_loop_wait_fn(self.libpanda.panda_unload_plugins)</code></pre>
