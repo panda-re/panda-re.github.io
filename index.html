@@ -4822,7 +4822,12 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                         #print(pandatype, type(r)) # XXX Can we use pandatype to determine requried return and assert if incorrect
                         #assert(isinstance(r, int)), &#34;Invalid return type?&#34;
                         #print(fun, r) # Stuck with TypeError in _run_and_catch? Enable this to find where the bug is.
-                        return r
+                        if return_type:
+                            try:
+                                return self.ffi.cast(return_type, r)
+                            except TypeError:
+                                # consider throwing an exception
+                                return self.ffi.cast(return_type, 0)
                     except Exception as e:
                         # exceptions wont work in our thread. Therefore we print it here and then throw it after the
                         # machine exits.
@@ -4831,13 +4836,14 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                             self.end_analysis()
                         else:
                             raise e
-                        return return_from_exception
+                        if return_type is not None:
+                            return self.ffi.cast(return_type, 0)
 
             cast_rc = pandatype(_run_and_catch)
-            cast_rc_string = str(self.ffi.typeof(cast_rc))
-            return_from_exception = 0
-            if &#34;void(*)(&#34; in cast_rc_string:
-                return_from_exception = None
+            return_type = self.ffi.typeof(cast_rc).result
+            
+            if return_type.cname == &#34;void&#34;:
+                return_type = None
 
             self.register_callback(pandatype, cast_rc, local_name, enabled=enabled, procname=procname)
             def wrapper(*args, **kw):
@@ -5067,7 +5073,12 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                         r = fun(*args, **kwargs)
                         #print(pandatype, type(r)) # XXX Can we use pandatype to determine requried return and assert if incorrect
                         #assert(isinstance(r, int)), &#34;Invalid return type?&#34;
-                        return r
+                        if return_type is not None:
+                            try:
+                                return self.ffi.cast(return_type, r)
+                            except TypeError:
+                                # consider throwing an exception
+                                return self.ffi.cast(return_type, 0)
                     except Exception as e:
                         # exceptions wont work in our thread. Therefore we print it here and then throw it after the
                         # machine exits.
@@ -5077,8 +5088,15 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
                         else:
                             raise e
                         # this works in all current callback cases. CFFI auto-converts to void, bool, int, and int32_t
+                        if return_type is not None:
+                            return self.ffi.cast(return_type, 0)
 
             cast_rc = self.ffi.callback(attr+&#34;_t&#34;)(_run_and_catch)  # Wrap the python fn in a c-callback.
+            return_type = self.ffi.typeof(cast_rc).result
+            
+            if return_type.cname == &#34;void&#34;:
+                return_type = None
+
             if local_name == &#34;&lt;lambda&gt;&#34;:
                 local_name = f&#34;&lt;lambda_{self.lambda_cnt}&gt;&#34;
                 self.lambda_cnt += 1
@@ -8826,7 +8844,12 @@ def my_fun(cpu, pc, filename, flags, mode):
                     r = fun(*args, **kwargs)
                     #print(pandatype, type(r)) # XXX Can we use pandatype to determine requried return and assert if incorrect
                     #assert(isinstance(r, int)), &#34;Invalid return type?&#34;
-                    return r
+                    if return_type is not None:
+                        try:
+                            return self.ffi.cast(return_type, r)
+                        except TypeError:
+                            # consider throwing an exception
+                            return self.ffi.cast(return_type, 0)
                 except Exception as e:
                     # exceptions wont work in our thread. Therefore we print it here and then throw it after the
                     # machine exits.
@@ -8836,8 +8859,15 @@ def my_fun(cpu, pc, filename, flags, mode):
                     else:
                         raise e
                     # this works in all current callback cases. CFFI auto-converts to void, bool, int, and int32_t
+                    if return_type is not None:
+                        return self.ffi.cast(return_type, 0)
 
         cast_rc = self.ffi.callback(attr+&#34;_t&#34;)(_run_and_catch)  # Wrap the python fn in a c-callback.
+        return_type = self.ffi.typeof(cast_rc).result
+        
+        if return_type.cname == &#34;void&#34;:
+            return_type = None
+
         if local_name == &#34;&lt;lambda&gt;&#34;:
             local_name = f&#34;&lt;lambda_{self.lambda_cnt}&gt;&#34;
             self.lambda_cnt += 1
