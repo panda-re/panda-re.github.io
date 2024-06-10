@@ -1022,6 +1022,18 @@ INDEX=[
 "func":1
 },
 {
+"ref":"pandare.Panda.hypercall",
+"url":0,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.Panda.disable_hypercall",
+"url":0,
+"doc":"",
+"func":1
+},
+{
 "ref":"pandare.Panda.arch",
 "url":0,
 "doc":"A reference to an auto-instantiated  pandare.arch.PandaArch subclass (e.g.,  pandare.arch.X86Arch )"
@@ -4290,6 +4302,18 @@ INDEX=[
 "ref":"pandare.panda.Panda.hook_virt_mem_write",
 "url":20,
 "doc":"Decorator to hook virtual memory writes with the mem_hooks plugin",
+"func":1
+},
+{
+"ref":"pandare.panda.Panda.hypercall",
+"url":20,
+"doc":"",
+"func":1
+},
+{
+"ref":"pandare.panda.Panda.disable_hypercall",
+"url":20,
+"doc":"",
 "func":1
 },
 {

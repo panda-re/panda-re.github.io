@@ -2331,6 +2331,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         self.hook_list2 = {}
         self.mem_hooks = {}
         self.sr_hooks = []
+        self.hypercalls = {}
 
         # Asid stuff
         self.current_asid_name = None
@@ -5570,7 +5571,57 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         &#39;&#39;&#39;
         Decorator to hook virtual memory writes with the mem_hooks plugin
         &#39;&#39;&#39;
-        return self._hook_mem(start_address,end_address,on_before,on_after, False, True, True, False, True)</code></pre>
+        return self._hook_mem(start_address,end_address,on_before,on_after, False, True, True, False, True)
+    
+    # HYPERCALLS
+    def hypercall(self, magic):
+        def decorator(fun):
+            hypercall_cb_type = self.ffi.callback(&#34;hypercall_t&#34;)
+            
+            def _run_and_catch(*args, **kwargs): # Run function but if it raises an exception, stop panda and raise it
+                if not hasattr(self, &#34;exit_exception&#34;):
+                    try:
+                        r = fun(*args, **kwargs)
+                        return r
+                    except Exception as e:
+                        # exceptions wont work in our thread. Therefore we print it here and then throw it after the
+                        # machine exits.
+                        if self.catch_exceptions:
+                            self.exit_exception = e
+                            self.end_analysis()
+                        else:
+                            raise e
+                        return None
+
+            hook_cb_passed = hypercall_cb_type(_run_and_catch)
+            if type(magic) is int:
+                self.plugins[&#39;hypercaller&#39;].register_hypercall(magic, hook_cb_passed)
+            elif type(magic) is list:
+                for m in magic:
+                    if type(m) is int:
+                        self.plugins[&#39;hypercaller&#39;].register_hypercall(m, hook_cb_passed)
+                    else:
+                        raise TypeError(&#34;Magic list must consist of integers&#34;)
+            else:
+                raise TypeError(&#34;Magics must be either an int or list of ints&#34;)
+
+            def wrapper(*args, **kw):
+                _run_and_catch(args,kw)
+            self.hypercalls[wrapper] = [hook_cb_passed,magic]
+            return wrapper
+        return decorator
+    
+    def disable_hypercall(self, fn):
+        if fn in self.hypercalls:
+            magic = self.hypercalls[fn][1]
+            if type(magic) is int:
+                self.plugins[&#39;hypercaller&#39;].unregister_hypercall(magic)
+            elif type(magic) is list:
+                for m in magic:
+                    self.plugins[&#39;hypercaller&#39;].unregister_hypercall(m)
+        else:
+            breakpoint()
+            print(&#34;ERROR: Your hypercall was not in the hook list&#34;)</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -6196,6 +6247,28 @@ you want to really turn off something with a procname filter.</p></div>
         self.plugins[&#39;hooks2&#39;].disable_hooks2(self.hook_list2[hook_name])
     else:
         print(&#34;ERROR: Your hook name was not in the hook list&#34;)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Panda.disable_hypercall"><code class="name flex">
+<span>def <span class="ident">disable_hypercall</span></span>(<span>self, fn)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disable_hypercall(self, fn):
+    if fn in self.hypercalls:
+        magic = self.hypercalls[fn][1]
+        if type(magic) is int:
+            self.plugins[&#39;hypercaller&#39;].unregister_hypercall(magic)
+        elif type(magic) is list:
+            for m in magic:
+                self.plugins[&#39;hypercaller&#39;].unregister_hypercall(m)
+    else:
+        breakpoint()
+        print(&#34;ERROR: Your hypercall was not in the hook list&#34;)</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.disable_llvm"><code class="name flex">
@@ -7856,6 +7929,53 @@ the function will be called with args (CPUState, struct hook_symbol_resolve, str
     Decorator to hook virtual memory writes with the mem_hooks plugin
     &#39;&#39;&#39;
     return self._hook_mem(start_address,end_address,on_before,on_after, False, True, True, False, True)</code></pre>
+</details>
+</dd>
+<dt id="pandare.Panda.hypercall"><code class="name flex">
+<span>def <span class="ident">hypercall</span></span>(<span>self, magic)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def hypercall(self, magic):
+    def decorator(fun):
+        hypercall_cb_type = self.ffi.callback(&#34;hypercall_t&#34;)
+        
+        def _run_and_catch(*args, **kwargs): # Run function but if it raises an exception, stop panda and raise it
+            if not hasattr(self, &#34;exit_exception&#34;):
+                try:
+                    r = fun(*args, **kwargs)
+                    return r
+                except Exception as e:
+                    # exceptions wont work in our thread. Therefore we print it here and then throw it after the
+                    # machine exits.
+                    if self.catch_exceptions:
+                        self.exit_exception = e
+                        self.end_analysis()
+                    else:
+                        raise e
+                    return None
+
+        hook_cb_passed = hypercall_cb_type(_run_and_catch)
+        if type(magic) is int:
+            self.plugins[&#39;hypercaller&#39;].register_hypercall(magic, hook_cb_passed)
+        elif type(magic) is list:
+            for m in magic:
+                if type(m) is int:
+                    self.plugins[&#39;hypercaller&#39;].register_hypercall(m, hook_cb_passed)
+                else:
+                    raise TypeError(&#34;Magic list must consist of integers&#34;)
+        else:
+            raise TypeError(&#34;Magics must be either an int or list of ints&#34;)
+
+        def wrapper(*args, **kw):
+            _run_and_catch(args,kw)
+        self.hypercalls[wrapper] = [hook_cb_passed,magic]
+        return wrapper
+    return decorator</code></pre>
 </details>
 </dd>
 <dt id="pandare.Panda.in_kernel"><code class="name flex">
@@ -11263,6 +11383,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.Panda.delvm_sync" href="#pandare.Panda.delvm_sync">delvm_sync</a></code></li>
 <li><code><a title="pandare.Panda.disable_callback" href="#pandare.Panda.disable_callback">disable_callback</a></code></li>
 <li><code><a title="pandare.Panda.disable_hook2" href="#pandare.Panda.disable_hook2">disable_hook2</a></code></li>
+<li><code><a title="pandare.Panda.disable_hypercall" href="#pandare.Panda.disable_hypercall">disable_hypercall</a></code></li>
 <li><code><a title="pandare.Panda.disable_llvm" href="#pandare.Panda.disable_llvm">disable_llvm</a></code></li>
 <li><code><a title="pandare.Panda.disable_llvm_helpers" href="#pandare.Panda.disable_llvm_helpers">disable_llvm_helpers</a></code></li>
 <li><code><a title="pandare.Panda.disable_memcb" href="#pandare.Panda.disable_memcb">disable_memcb</a></code></li>
@@ -11318,6 +11439,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="pandare.Panda.hook_symbol_resolution" href="#pandare.Panda.hook_symbol_resolution">hook_symbol_resolution</a></code></li>
 <li><code><a title="pandare.Panda.hook_virt_mem_read" href="#pandare.Panda.hook_virt_mem_read">hook_virt_mem_read</a></code></li>
 <li><code><a title="pandare.Panda.hook_virt_mem_write" href="#pandare.Panda.hook_virt_mem_write">hook_virt_mem_write</a></code></li>
+<li><code><a title="pandare.Panda.hypercall" href="#pandare.Panda.hypercall">hypercall</a></code></li>
 <li><code><a title="pandare.Panda.in_kernel" href="#pandare.Panda.in_kernel">in_kernel</a></code></li>
 <li><code><a title="pandare.Panda.in_kernel_code_linux" href="#pandare.Panda.in_kernel_code_linux">in_kernel_code_linux</a></code></li>
 <li><code><a title="pandare.Panda.in_kernel_mode" href="#pandare.Panda.in_kernel_mode">in_kernel_mode</a></code></li>
