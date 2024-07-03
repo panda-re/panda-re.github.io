@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.0" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>pandare.panda_expect API documentation</title>
 <meta name="description" content="Custom library for interacting/expecting data via serial-like FDs" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
@@ -1088,12 +1088,31 @@ class Expect(object):
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def abort(self):
+    self.running = False</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.connect"><code class="name flex">
 <span>def <span class="ident">connect</span></span>(<span>self, filelike)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def connect(self, filelike):
+    if type(filelike) == int:
+        self.fd = filelike
+    else:
+        self.fd = filelike.fileno()
+    self.poller = select.poll()
+    self.poller.register(self.fd, select.POLLIN)</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.consume_partial"><code class="name flex">
 <span>def <span class="ident">consume_partial</span></span>(<span>self)</span>
@@ -1101,6 +1120,19 @@ class Expect(object):
 <dd>
 <div class="desc"><p>Get the message so far and reset.
 To ensure that we're not consuming the final line at we just don't clear</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def consume_partial(self):
+    &#39;&#39;&#39;
+    Get the message so far and reset.
+    To ensure that we&#39;re not consuming the final line at we just don&#39;t clear
+    &#39;&#39;&#39;
+    result = self.get_partial()
+    self.prior_lines = []
+    return result</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.expect"><code class="name flex">
 <span>def <span class="ident">expect</span></span>(<span>self, expectation=None, timeout=30)</span>
@@ -1113,42 +1145,209 @@ The epxectation value will show up on the start of a line.</p>
 1) Render ANSI control characters in current line (may affect prior lines)
 2) Check if the line we just parsed matches the provided expectation (if so we're done)
 3) Append current_line into prior_lines</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def expect(self, expectation=None, timeout=30):
+    &#39;&#39;&#39;
+    Assumptions: as you send a command, the guest may send back
+        The same command + ansi control codes.
+        The epxectation value will show up on the start of a line.
+
+
+    We add characters into current_line as we recv them. At each newline we
+    1) Render ANSI control characters in current line (may affect prior lines)
+    2) Check if the line we just parsed matches the provided expectation (if so we&#39;re done)
+    3) Append current_line into prior_lines
+    &#39;&#39;&#39;
+
+    if expectation:
+        raise ValueError(&#34;Deprecated interface - must set expectation in class init&#34;)
+
+    if self.fd is None:
+        raise RuntimeError(&#34;Must connect() prior to expect()&#34;)
+
+    self.current_line = bytearray()
+    start_time = monotonic()
+    time_passed = 0
+    while (timeout is None or time_passed &lt; timeout) and self.running:
+        if timeout is not None:
+            time_passed = (monotonic() - start_time)
+            time_left = timeout - time_passed
+        else:
+            time_left = float(&#34;inf&#34;)
+        ready = self.poller.poll(min(time_left, 1))
+
+        # Debug - flush debug logs
+        if self.logfile:
+            self.logfile.flush()
+
+        if self.fd in [fd for (fd, _) in ready]:
+            try:
+                char = os.read(self.fd, 1)
+            except OSError as e:
+                if e.errno in [EAGAIN, EWOULDBLOCK]:
+                    continue
+                else: raise
+
+            self.current_line.extend(char)
+
+            # Debugging - log current line to file
+            if self.logfile:
+                self.logfile.write((&#34;\n\n&#34; + repr(self.prior_lines) + &#34; Current line = &#34; + repr(self.current_line)).encode())
+
+            # Translate the current_line buffer into plaintext, then determine if we&#39;re finished (bc we see new prompt)
+            # note this drops the echo&#39;d command
+            if self.current_line.endswith(b&#34;\n&#34;):
+                # End of line - need to potentially unansi and move into prior_lines
+                if self.use_unansi:
+                    self.unansi()
+                else:
+                    self.prior_lines.append(self.current_line[:-1].decode(errors=&#39;ignore&#39;))
+                    self.current_line = bytearray()
+
+                # Now we have command\nresults..........\nprompt
+                #self.logfile.write(b&#34;\n UNANSIs to: &#34; + repr(self.prior_lines).encode()+b&#34;\n&#34;)
+
+
+            #lines = [x.replace(&#34;\r&#34;, &#34;&#34;) for x in plaintext.split(&#34;\n&#34;)]
+            # Check current line to see if it ends with prompt (indicating we finished)
+            # current_line is a bytearray. Need it as a string
+            current_line_s = self.current_line.decode(errors=&#39;ignore&#39;)
+
+            end_match = self.expectation_ends_re.match(current_line_s)
+            if end_match is not None:
+                # This line matches the end regex - it&#39;s either like root@host:... or it&#39;s [output]root@host:...
+                # We&#39;ll use self.expectation_re on the current line to identify where the prompt is and grab any final output
+                final_output = end_match.groups(1)[0]
+                if len(final_output):
+                    self.prior_lines.append(final_output)
+                    current_line_s = current_line_s[len(final_output):]
+
+                # Note we may have a line like [output]root@.... in which case we need to identify where the prompt was
+                self.last_prompt = current_line_s
+
+                # Drop command we sent - note it won&#39;t be a direct match with last_cmd because of weird escape codes
+                # which are based on guest line position when printed - i.e., it would only be an exact
+                # match if we knew and included the prompt when the command was run. Let&#39;s just always drop it
+                if len(self.prior_lines) &gt; 1:
+                    self.prior_lines = self.prior_lines[1:]
+                else:
+                    self.prior_lines = []
+
+                plaintext = &#34;\n&#34;.join(self.prior_lines)
+                self.prior_lines = []
+                return plaintext
+
+    if not self.running: # Aborted
+        return None
+
+    if self.logfile:
+        self.logfile.flush()
+
+    full_buffer = self.prior_lines + [self.current_line]
+    raise TimeoutExpired(f&#34;{self.name} Read message \n{full_buffer}\n&#34;)</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.get_partial"><code class="name flex">
 <span>def <span class="ident">get_partial</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the message</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_partial(self):
+    &#39;&#39;&#39;
+    Get the message
+    &#39;&#39;&#39;
+    if len(self.prior_lines):
+        return &#34;\n&#34;.join(self.prior_lines)
+    return &#34;&#34;</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.is_connected"><code class="name flex">
 <span>def <span class="ident">is_connected</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_connected(self):
+    return self.fd != None</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.send"><code class="name flex">
 <span>def <span class="ident">send</span></span>(<span>self, msg)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def send(self, msg):
+    if not self.consumed_first: # Before we send anything, consume header
+        pre = self.expect(&#34;&#34;)
+        self.consumed_first = True
+
+    # Newlines will call problems
+    assert len(msg.decode(errors=&#39;ignore&#39;).split(&#34;\n&#34;)) &lt;= 2, &#34;Multiline cmds unsupported&#34;
+    self.last_msg = msg.decode(errors=&#39;ignore&#39;).replace(&#34;\n&#34;, &#34;&#34;)
+    os.write(self.fd, msg)
+    if self.logfile:
+        self.logfile.write(msg)
+        self.logfile.flush()</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.send_eol"><code class="name flex">
 <span>def <span class="ident">send_eol</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def send_eol(self): # Just send an EOL
+    if self.last_msg:
+        self.last_msg+=&#34;\n&#34;
+    os.write(self.fd, b&#34;\n&#34;)
+    if self.logfile:
+        self.logfile.write(b&#34;\n&#34;)
+        self.logfile.flush()</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.sendline"><code class="name flex">
 <span>def <span class="ident">sendline</span></span>(<span>self, msg=b'')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sendline(self, msg=b&#34;&#34;):
+    assert(self.fd is not None), &#34;Must connect before sending&#34;
+    self.send(msg + b&#34;\n&#34;)</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.set_logging"><code class="name flex">
 <span>def <span class="ident">set_logging</span></span>(<span>self, name)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_logging(self, name):
+    self.logfile = open(name, &#34;wb&#34;)</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.unansi"><code class="name flex">
 <span>def <span class="ident">unansi</span></span>(<span>self)</span>
@@ -1161,12 +1360,269 @@ prior lines should be plain strings while current_line may contain escapes</p>
 evaluate the commands to render real text output</p>
 <p>See <a href="https://notes.burke.libbey.me/ansi-escape-codes/">https://notes.burke.libbey.me/ansi-escape-codes/</a> and
 <a href="http://ascii-table.com/ansi-escape-sequences-vt-100.php">http://ascii-table.com/ansi-escape-sequences-vt-100.php</a> for ansi escape code details</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unansi(self):
+    &#39;&#39;&#39;
+    Take the string in self.current_line and any prior lines in self.prior_lines and render ANSI.
+    prior lines should be plain strings while current_line may contain escapes
+
+    Given a string with ansi control codes, emulate behavior to generate the resulting string. 
+
+    First we split input into a list of (&#39;fn&#39;, [args]) / (&#39;text&#39;, [&#39;foo&#39;]) ansi commands then
+    evaluate the commands to render real text output
+
+    See https://notes.burke.libbey.me/ansi-escape-codes/ and
+    http://ascii-table.com/ansi-escape-sequences-vt-100.php for ansi escape code details
+    &#39;&#39;&#39;
+
+    # Join prior lines into a single text element in our reformatted list
+    reformatted = []
+    if len(self.prior_lines):
+        reformatted = [(&#39;text&#39;, [&#39;\n&#39;.join(self.prior_lines)])]
+
+    # Then split current line into the tuple format describe above
+    msg = self.current_line
+
+    if isinstance(msg, str):
+        msg = msg.encode()
+
+    # Check for simple case where no ansi is in line - if so just copy into prior_lines
+    if b&#39;\x1b&#39; not in msg:
+        text = &#34;&#34;.join([chr(x) for x in msg]).strip()
+        self.prior_lines.append(text)
+        self.current_line = bytearray()
+        return
+
+    start_args = re.compile(br&#34;^(\d+);&#34;)
+    last_arg = re.compile(rb&#34;^(\d+)&#34;)
+
+    last_text = &#34;&#34;
+    idx = 0 # XXX: mutates during loop
+    while idx &lt; len(msg):
+        if msg[idx] != 0x1b:
+            last_text += chr(msg[idx])
+        else:
+            if len(last_text):
+                reformatted.append((&#39;text&#39;, [last_text]))
+                last_text = &#34;&#34;
+
+            if idx+3 &lt;= len(msg) and msg[idx+1] == ord(&#39;[&#39;):
+                args = []
+                shift = idx+2
+                arg_s = msg[shift:]
+                while start_args.match(arg_s):
+                    arg = start_args.match(arg_s).groups()[0].decode()
+                    args.append(arg)
+                    shift += len(arg)+1 # for ;
+                    arg_s = msg[shift:]
+
+                # Last arg is just #
+                if last_arg.match(arg_s):
+                    arg = last_arg.match(arg_s).groups()[0].decode()
+                    shift += len(arg)
+                    args.append(arg)
+                    arg_s = msg[shift:]
+
+                # Next is one char for cmd
+                cmd = chr(msg[shift])
+                reformatted.append((cmd, args))
+
+                idx = shift # final char
+        idx += 1
+    if len(last_text):
+        reformatted.append((&#39;text&#39;, [last_text]))
+
+    # Now render it!
+    # Note the very first line will \r to beginning, then &#39;C&#39; forward to go past expect prompt
+
+    lines_out = [&#34; &#34;*len(self.last_prompt)] # Starting point - it&#39;s an approximation since we don&#39;t know real current prompt
+    cur_line = 0
+    line_pos = len(self.last_prompt)
+    store_ptr = (0, 0)
+
+    def _dump(lines_out, cur_line, line_pos):
+        print(&#34;-&#34;*100)
+        for idx, line in enumerate(lines_out):
+            print(&#34;&#39;&#34;, line, &#34;&#39;&#34;)
+            if cur_line == idx:
+                print((&#34; &#34;*(line_pos-1) if line_pos &gt; 0 else &#34;&#34;) + &#34;^&#34;)
+        print(&#34;=&#34;*100)
+
+    for idx, (typ, args) in enumerate(reformatted):
+        #print(typ, args)
+        if typ == &#39;text&#39;:
+            n = args[0]
+            for idx, char in enumerate(n):
+                if char == &#39;\n&#39;:
+                    cur_line += 1 
+                    while cur_line &gt;= len(lines_out):
+                        lines_out.append(&#34;&#34;)
+                if char == &#39;\r&#39;:
+                    line_pos = 0
+                    continue # Don&#39;t clobber old char
+
+                line = list(lines_out[cur_line])
+                if (line_pos) &gt;= len(line):
+                    line.append(char)
+                else:
+                    #if line[line_pos] != &#39; &#39;:
+                    #    print(&#34;Replace&#34;, repr(line[line_pos]) , &#34;with&#34;, repr(char))
+                    line[line_pos] = char
+                lines_out[cur_line] = &#34;&#34;.join(line)
+
+                if char not in [&#39;\n&#39;, &#39;\r&#39;]:
+                    line_pos += 1
+
+        else:
+            args[:] = [int(x) for x in args]
+
+            if typ == &#39;A&#39;:
+                if not len(args):
+                    # Incomplete
+                    continue
+
+                n = args[0]
+
+                if cur_line - n &lt; 0: # Need to shift
+                    cur_line = 0
+                else:
+                    cur_line -= n
+                assert(cur_line &gt;= 0)
+
+            elif typ == &#39;B&#39;:
+                if not len(args):
+                    # Incomplete
+                    continue
+                n = args[0]
+                cur_line += n
+                while cur_line &gt;= len(lines_out):
+                    lines_out.append(&#34; &#34;*100)
+
+            elif typ == &#39;D&#39;:
+                n = 1 # Default move left 1
+                if len(args):
+                    n = args[0]
+
+                line_pos -= n
+                if line_pos &lt; 0:
+                    line_pos = 0
+                assert(line_pos &gt;= 0)
+
+            elif typ == &#39;C&#39;: # Move right
+                n = 1 # Default move 1
+                if len(args):
+                    n = args[0]
+
+                line_pos += n
+                if line_pos &gt; len(lines_out[cur_line])-1:
+                    line_pos = len(lines_out)-1
+                assert(line_pos &gt;= 0)
+
+            elif typ == &#39;J&#39;:
+                # Optional arg 0, 1, 2
+                n = 0 # default
+                if len(args):
+                    n = args[0]
+                if n == 0:
+                    # clear down
+                    lines_out = lines_out[:cur_line+1]
+                elif n == 1:
+                    # clear up
+                    lines_out = lines_out[cur_line:]
+                elif n == 2:
+                    # clear everything
+                    lines_out = [&#34;&#34;]
+                    cur_line = 0
+                    line_pos = 0
+                    store_ptr = (0, 0)
+
+            elif typ == &#39;K&#39;:
+                # Optional arg 0, 1, 2
+                n = 0 # default
+                if len(args):
+                    n = args[0]
+
+                # HURISTIC-y hack: linux loves to have a line 123456 then do K(0) 6\r\n
+                # so if the next line is text and the text is [eol]\r\n where [eol] matches the end of this
+                # line - align cur_pos
+                if len(reformatted) &gt; idx+1: # Have another message
+                    (next_typ, next_args) = reformatted[idx+1]
+                    if next_typ == &#39;text&#39;:
+                        if &#39;\r\n&#39; in next_args[0]:
+                            next_lines = next_args[0].split(&#34;\r\n&#34;)
+                            if lines_out[cur_line].strip().endswith(next_lines[0]):
+                                # Its the buggy case. Just align it such that we clear the text
+                                # that&#39;s about to get echoed
+                                line_pos = line_pos - len(next_lines[0])
+
+                if n == 0:
+                    # clear right of cursor
+                    lines_out[cur_line] = lines_out[cur_line][:line_pos]
+                elif n == 1:
+                    # clear left of cursor
+                    lines_out[cur_line] = (&#34; &#34;*line_pos)+lines_out[cur_line][line_pos:]
+                elif n == 2:
+                    # clear whole line
+                    lines_out[cur_line] = &#34; &#34;*len(lines_out[cur_line])
+
+            elif typ == &#39;H&#39;:
+                n = args[0]-1
+                m = args[1]-1
+                cur_line = n
+                line_pos = m
+
+                while cur_line &gt;= len(lines_out):
+                    lines_out.append(&#34;&#34;)
+
+                while line_pos &gt; len(lines_out[cur_line]):
+                    lines_out[cur_line] += &#34; &#34;
+
+            elif typ == &#39;T&#39;:
+                # Scroll window down
+                pass
+            elif typ == &#39;S&#39;:
+                # Scroll window up
+                pass
+
+            elif typ == &#39;s&#39;:
+                store_ptr = (cur_line, line_pos)
+            elif typ == &#39;u&#39;:
+                (cur_line, line_pos) = store_ptr
+
+            elif typ == &#39;m&#39;:
+                # alter character attributes - just ignore
+                pass
+
+            else:
+                raise ValueError(f&#34;Unsupported ANSI command {typ}&#34;)
+        #_dump(lines_out, cur_line, line_pos)
+
+    # Done processing - update variables
+    self.prior_lines = lines_out[:-1] # Strings
+    self.current_line = bytearray() # Bytearray
+    if len(lines_out[-1].strip()):
+        self.current_line.append(lines_out[-1])</code></pre>
+</details>
 </dd>
 <dt id="pandare.panda_expect.Expect.update_expectation"><code class="name flex">
 <span>def <span class="ident">update_expectation</span></span>(<span>self, expectation)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_expectation(self, expectation):
+    if isinstance(expectation, bytes):
+        expectation = expectation.decode()
+    self.last_prompt = expectation # approximation
+    self.expectation_re = re.compile(expectation)
+    self.expectation_ends_re = re.compile(r&#39;(.*)&#39; + expectation)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -1201,8 +1657,8 @@ evaluate the commands to render real text output</p>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
 disabled minlength="2">
 </form>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
 <style>
 .modal-dialog iframe {
 width: 100vw;
@@ -1281,7 +1737,7 @@ setTimeout(() => input.focus(), 100);
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>

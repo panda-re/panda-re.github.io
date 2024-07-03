@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.0" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>pandare.utils API documentation</title>
 <meta name="description" content="Misc helper functions" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
@@ -409,6 +409,22 @@ def find_build_dir(arch_name=None, find_executable=False):
 </code></dt>
 <dd>
 <div class="desc"><p>Decorator to ensure a function isn't run in the main thread</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def blocking(func):
+    &#34;&#34;&#34;
+    Decorator to ensure a function isn&#39;t run in the main thread
+    &#34;&#34;&#34;
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        assert (current_thread() is not main_thread()), &#34;Blocking function run in main thread&#34;
+        return func(*args, **kwargs)
+    wrapper.__blocking__ = True
+    wrapper.__name__ = func.__name__ + &#34; (with async thread)&#34;
+    return wrapper</code></pre>
+</details>
 </dd>
 <dt id="pandare.utils.find_build_dir"><code class="name flex">
 <span>def <span class="ident">find_build_dir</span></span>(<span>arch_name=None, find_executable=False)</span>
@@ -425,12 +441,68 @@ the parent dir of the executable (i.e., ~/git/panda/build/x86_64-softmmu/)</p>
 3) Raise RuntimeError if we find nothing</p>
 <p>If arch_name is none, we'll search for any supported architecture and return the first
 one we find.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_build_dir(arch_name=None, find_executable=False):
+    &#39;&#39;&#39;
+    Find directory containing the binaries we care about (i.e., ~git/panda/build). If
+    find_executable is False, we&#39;re looking for [arch]-softmmu/libpanda-[arch].so. If
+    find_executable is True, we&#39;re looking for [arch]-softmmu/panda-system-[arch] and we&#39;ll return
+    the parent dir of the executable (i.e., ~/git/panda/build/x86_64-softmmu/)
+
+    We do this by searching paths in the following order:
+        1) Check relative to file (in the case of installed packages)
+        2) Check in../ ../../../build/
+        2) Search path if user is looking for an executable instead of a library
+        3) Raise RuntimeError if we find nothing
+
+    If arch_name is none, we&#39;ll search for any supported architecture and return the first
+    one we find.
+    &#39;&#39;&#39;
+    arches = [&#39;i386&#39;, &#39;x86_64&#39;, &#39;arm&#39;, &#39;aarch64&#39;, &#39;ppc&#39;, &#39;mips&#39;, &#39;mipsel&#39;, &#39;mips64&#39;]
+
+    if arch_name is None:
+        e = None
+        for arch in arches:
+            try:
+                return _find_build_dir(arch, find_executable)
+            except RuntimeError as _e:
+                e = _e
+        if e:
+            raise e
+
+    elif arch_name not in arches:
+        raise ValueError(f&#34;Unsupported architecture name: {arch_name}, allowed values are: {arches}&#34;)
+    return _find_build_dir(arch_name, find_executable)</code></pre>
+</details>
 </dd>
 <dt id="pandare.utils.make_iso"><code class="name flex">
 <span>def <span class="ident">make_iso</span></span>(<span>directory, iso_path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate an iso from a directory</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_iso(directory, iso_path):
+    &#39;&#39;&#39;
+    Generate an iso from a directory
+    &#39;&#39;&#39;
+    with open(devnull, &#34;w&#34;) as DEVNULL:
+        if platform.startswith(&#39;linux&#39;):
+            check_call([
+                &#39;genisoimage&#39;, &#39;-RJ&#39;, &#39;-max-iso9660-filenames&#39;, &#39;-o&#39;, iso_path, directory
+            ], stderr=STDOUT if debug else DEVNULL)
+        elif platform == &#39;darwin&#39;:
+            check_call([
+                &#39;hdiutil&#39;, &#39;makehybrid&#39;, &#39;-hfs&#39;, &#39;-joliet&#39;, &#39;-iso&#39;, &#39;-o&#39;, iso_path, directory
+            ], stderr=STDOUT if debug else DEVNULL)
+        else:
+            raise NotImplementedError(&#34;Unsupported operating system!&#34;)</code></pre>
+</details>
 </dd>
 <dt id="pandare.utils.progress"><code class="name flex">
 <span>def <span class="ident">progress</span></span>(<span>msg)</span>
@@ -438,24 +510,75 @@ one we find.</p></div>
 <dd>
 <div class="desc"><p>Print a message with a green "[PYPANDA]" prefix if in a tty
 otherwise just print the message</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def progress(msg):
+    &#34;&#34;&#34;
+    Print a message with a green &#34;[PYPANDA]&#34; prefix if in a tty
+    otherwise just print the message
+    &#34;&#34;&#34;
+    if stdout.isatty():
+        print(Fore.GREEN + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
+    else:
+        print(f&#34;[PYPANDA] {msg}&#34;)</code></pre>
+</details>
 </dd>
 <dt id="pandare.utils.rr2_contains_member"><code class="name flex">
 <span>def <span class="ident">rr2_contains_member</span></span>(<span>name, member)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rr2_contains_member(name, member):
+    rr2_filename = rr2_name(name)
+    contains_member = False
+    if rr2_recording(rr2_filename):
+        try:
+            tar = tarfile.open(rr2_filename)
+            tar.getmember(member)
+            contains_member = True
+        except (KeyError, IsADirectoryError, FileNotFoundError, tarfile.ReadError):
+            pass
+    return contains_member</code></pre>
+</details>
 </dd>
 <dt id="pandare.utils.rr2_name"><code class="name flex">
 <span>def <span class="ident">rr2_name</span></span>(<span>name)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rr2_name(name):
+    return name if name.endswith(&#34;.rr2&#34;) else name + &#34;.rr2&#34;</code></pre>
+</details>
 </dd>
 <dt id="pandare.utils.rr2_recording"><code class="name flex">
 <span>def <span class="ident">rr2_recording</span></span>(<span>name)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rr2_recording(name):
+    def is_gzip(name):
+        rr = open(name, &#34;rb&#34;)
+        return rr.read(2) == b&#39;\x1f\x8b&#39;
+
+    rr2_filename = rr2_name(name)
+    if isfile(rr2_filename) and is_gzip(rr2_filename):
+        return True
+    return False</code></pre>
+</details>
 </dd>
 <dt id="pandare.utils.telescope"><code class="name flex">
 <span>def <span class="ident">telescope</span></span>(<span>panda, cpu, val)</span>
@@ -469,6 +592,51 @@ to until
 3) It's an invalid pointer
 4) It's the 5th time we've done this, break</p>
 <p>TODO Should use memory protections to determine string/code/data</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def telescope(panda, cpu, val):
+    &#39;&#39;&#39;
+    Given a value, check if it&#39;s a pointer by seeing if we can map it to physical memory.
+    If so, recursively print where it points
+    to until
+    1) It points to a string (then print the string)
+    2) It&#39;s code (then disassembly the insn)
+    3) It&#39;s an invalid pointer
+    4) It&#39;s the 5th time we&#39;ve done this, break
+
+    TODO Should use memory protections to determine string/code/data
+    &#39;&#39;&#39;
+    for _ in range(5): # Max chain of 5
+        print(&#34;-&gt; 0x{:0&gt;8x}&#34;.format(val), end=&#34;\t&#34;)
+
+        if val == 0:
+            print()
+            return
+        # Consider that val points to a string. Test and print
+        try:
+            str_data = panda.virtual_memory_read(cpu, val, 16)
+        except ValueError:
+            print()
+            return
+
+        str_val = &#34;&#34;
+        for d in str_data:
+            if d &gt;= 0x20 and d &lt; 0x7F:
+                str_val += chr(d)
+            else:
+                break
+        if len(str_val) &gt; 2:
+            print(&#34;== \&#34;{}\&#34;&#34;.format(str_val))
+            return
+
+
+        data = str_data[:4] # Truncate to 4 bytes
+        val = int.from_bytes(data, byteorder=&#39;little&#39;)
+
+    print(&#34;-&gt; ...&#34;)</code></pre>
+</details>
 </dd>
 <dt id="pandare.utils.warn"><code class="name flex">
 <span>def <span class="ident">warn</span></span>(<span>msg)</span>
@@ -476,6 +644,20 @@ to until
 <dd>
 <div class="desc"><p>Print a message with a red "[PYPANDA]" prefix if in a tty
 otherwise just print the message</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def warn(msg):
+    &#34;&#34;&#34;
+    Print a message with a red &#34;[PYPANDA]&#34; prefix if in a tty
+    otherwise just print the message
+    &#34;&#34;&#34;
+    if stdout.isatty():
+        print(Fore.RED + &#39;[PYPANDA] &#39; + Fore.RESET + Style.BRIGHT + msg +Style.RESET_ALL)
+    else:
+        print(f&#34;[PYPANDA] {msg}&#34;)</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -565,8 +747,8 @@ get_one_module.</p></div>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
 disabled minlength="2">
 </form>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
 <style>
 .modal-dialog iframe {
 width: 100vw;
@@ -644,7 +826,7 @@ setTimeout(() => input.focus(), 100);
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>
