@@ -539,6 +539,25 @@ class Aarch64Arch(PandaArch):
         self.reg_retval = {&#34;default&#34;:    &#34;X0&#34;,
                            &#34;syscall&#34;:    &#34;X0&#34;,
                            &#34;linux_kernel&#34;:    &#34;X0&#34;}
+        self.arm32 = ArmArch(panda)
+        
+        def arm32_dec(f, name):
+            def wrap(*args, **kwargs):
+                # first check that we have an arg
+                if len(args) &gt; 0:
+                    # double check that it&#39;s a cpustate
+                    cpu = args[0]
+                    if &#34;_cffi_backend&#34; in str(type(cpu)):
+                        # check if we&#39;re in arm32 mode
+                        if cpu.env_ptr.aarch64 == 0:
+                            func = getattr(self.arm32, name)
+                            return func(*args, **kwargs)
+                return f(*args, **kwargs)
+            return wrap
+
+        for attr in dir(self):
+            if callable(getattr(self, attr)) and not attr.startswith(&#39;_&#39;):
+                setattr(self, attr, arm32_dec(getattr(self, attr), attr))
 
     def get_pc(self, cpu):
         &#39;&#39;&#39;
@@ -1073,6 +1092,25 @@ class X86_64Arch(PandaArch):
         self.reg_retval = {&#34;default&#34;:    &#34;X0&#34;,
                            &#34;syscall&#34;:    &#34;X0&#34;,
                            &#34;linux_kernel&#34;:    &#34;X0&#34;}
+        self.arm32 = ArmArch(panda)
+        
+        def arm32_dec(f, name):
+            def wrap(*args, **kwargs):
+                # first check that we have an arg
+                if len(args) &gt; 0:
+                    # double check that it&#39;s a cpustate
+                    cpu = args[0]
+                    if &#34;_cffi_backend&#34; in str(type(cpu)):
+                        # check if we&#39;re in arm32 mode
+                        if cpu.env_ptr.aarch64 == 0:
+                            func = getattr(self.arm32, name)
+                            return func(*args, **kwargs)
+                return f(*args, **kwargs)
+            return wrap
+
+        for attr in dir(self):
+            if callable(getattr(self, attr)) and not attr.startswith(&#39;_&#39;):
+                setattr(self, attr, arm32_dec(getattr(self, attr), attr))
 
     def get_pc(self, cpu):
         &#39;&#39;&#39;
