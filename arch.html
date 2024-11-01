@@ -214,6 +214,9 @@ class PandaArch():
         elif self.panda.arch_name == &#34;mips64&#34;:
             bits = 64
             endianness = &#34;big&#34;
+        elif self.panda.arch_name == &#34;mips64el&#34;:
+            bits = 64
+            endianness = &#34;big&#34;
 
         assert (bits is not None), f&#34;Missing num_bits logic for {self.panda.arch_name}&#34;
         assert (endianness is not None), f&#34;Missing endianness logic for {self.panda.arch_name}&#34;
@@ -1869,6 +1872,9 @@ Otherwise, it will be set to 1</p></div>
             bits = 32
             endianness = &#34;little&#34;
         elif self.panda.arch_name == &#34;mips64&#34;:
+            bits = 64
+            endianness = &#34;big&#34;
+        elif self.panda.arch_name == &#34;mips64el&#34;:
             bits = 64
             endianness = &#34;big&#34;
 

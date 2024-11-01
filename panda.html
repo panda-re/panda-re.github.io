@@ -299,7 +299,7 @@ class Panda():
             self.arch = Aarch64Arch(self)
         elif self.arch_name in [&#34;mips&#34;, &#34;mipsel&#34;]:
             self.arch = MipsArch(self)
-        elif self.arch_name in [&#34;mips64&#34;]:
+        elif self.arch_name in [&#34;mips64&#34;, &#34;mips64el&#34;]:
             self.arch = Mips64Arch(self)
         else:
             raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
@@ -338,7 +338,7 @@ class Panda():
         self.panda_args.append(biospath)
 
         if self.qcow:
-            if self.arch_name == &#39;mips64&#39;:
+            if self.arch_name in [&#39;mips64&#39;, &#39;mips64el&#39;]:
                 # XXX: mips64 needs virtio interface for the qcow
                 self.panda_args.extend([&#34;-drive&#34;, f&#34;file={self.qcow},if=virtio&#34;])
             else:
@@ -3866,7 +3866,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.arch = Aarch64Arch(self)
         elif self.arch_name in [&#34;mips&#34;, &#34;mipsel&#34;]:
             self.arch = MipsArch(self)
-        elif self.arch_name in [&#34;mips64&#34;]:
+        elif self.arch_name in [&#34;mips64&#34;, &#34;mips64el&#34;]:
             self.arch = Mips64Arch(self)
         else:
             raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
@@ -3905,7 +3905,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         self.panda_args.append(biospath)
 
         if self.qcow:
-            if self.arch_name == &#39;mips64&#39;:
+            if self.arch_name in [&#39;mips64&#39;, &#39;mips64el&#39;]:
                 # XXX: mips64 needs virtio interface for the qcow
                 self.panda_args.extend([&#34;-drive&#34;, f&#34;file={self.qcow},if=virtio&#34;])
             else:
