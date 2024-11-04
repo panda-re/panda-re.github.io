@@ -2239,6 +2239,8 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
             self.arch = MipsArch(self)
         elif self.arch_name in [&#34;mips64&#34;, &#34;mips64el&#34;]:
             self.arch = Mips64Arch(self)
+        elif self.arch_name in [&#34;ppc&#34;]: 
+            self.arch = PowerPCArch(self)
         else:
             raise ValueError(f&#34;Unsupported architecture {self.arch_name}&#34;)
         self.bits, self.endianness, self.register_size = self.arch._determine_bits()

@@ -523,7 +523,7 @@ class Aarch64Arch(PandaArch):
         regnames = [&#34;X0&#34;,  &#34;X1&#34;,  &#34;X2&#34;,  &#34;X3&#34;,  &#34;X4&#34;,  &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;,
                     &#34;XR&#34;,  &#34;X9&#34;,  &#34;X10&#34;, &#34;X11&#34;, &#34;X12&#34;, &#34;X13&#34;, &#34;X14&#34;,
                     &#34;X15&#34;, &#34;IP0&#34;, &#34;IP1&#34;, &#34;PR&#34;, &#34;X19&#34;, &#34;X20&#34;, &#34;X21&#34;,
-                    &#34;X22&#34;, &#34;X23&#34;, &#34;X24&#34;, &#34;X25&#34;, &#34;X26&#34;, &#34;X27&#34;, &#34;X27&#34;,
+                    &#34;X22&#34;, &#34;X23&#34;, &#34;X24&#34;, &#34;X25&#34;, &#34;X26&#34;, &#34;X27&#34;,
                     &#34;X28&#34;, &#34;FP&#34;, &#34;LR&#34;, &#34;SP&#34;]
 
         self.reg_sp = regnames.index(&#34;SP&#34;)
@@ -755,6 +755,7 @@ class MipsArch(PandaArch):
 
         return super().set_retval(cpu, val, convention)
 
+
 class Mips64Arch(MipsArch):
     &#39;&#39;&#39;
     Register names and accessors for MIPS64. Inherits from MipsArch for everything
@@ -783,67 +784,71 @@ class Mips64Arch(MipsArch):
         # note names must be stored uppercase for get/set reg to work case-insensitively
         self.registers = {regnames[idx].upper(): idx for idx in range(len(regnames)) }
 
-class X86Arch(PandaArch):
+class PowerPCArch(PandaArch): 
     &#39;&#39;&#39;
-    Register names and accessors for x86
+    Register names and accessors for ppc
     &#39;&#39;&#39;
-
-    def __init__(self, panda):
+    def __init__(self, panda): 
         super().__init__(panda)
-        regnames = [&#39;EAX&#39;, &#39;ECX&#39;, &#39;EDX&#39;, &#39;EBX&#39;, &#39;ESP&#39;, &#39;EBP&#39;, &#39;ESI&#39;, &#39;EDI&#39;]
-        # XXX Note order is A C D B, because that&#39;s how qemu does it . See target/i386/cpu.h
-
-        # Note we don&#39;t set self.call_conventions because stack-based arg get/set is
-        # not yet supported
-        self.reg_retval = {&#34;default&#34;:    &#34;EAX&#34;,
-                           &#34;syscall&#34;:    &#34;EAX&#34;,
-                           &#34;linux_kernel&#34;:    &#34;EAX&#34;}
-
-        self.call_conventions = {&#34;cdecl&#34;: [f&#34;stack_{x}&#34; for x in range(20)], # 20: arbitrary but big
-                                 &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;],
-                                 &#34;linux_kernel&#34;: [&#34;EAX&#34;, &#34;EDX&#34;, &#34;ECX&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]}
-        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;cdecl&#39;]
-
-        self.reg_sp = regnames.index(&#39;ESP&#39;)
-        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
-
+        regnames = [&#34;r0&#34;, &#34;sp&#34;, &#34;r2&#34;, &#34;r3&#34;, &#34;r4&#34;, &#34;r5&#34;, &#34;r6&#34;, &#34;r7&#34;, &#34;r8&#34;, &#34;r9&#34;, &#34;r10&#34;, &#34;r11&#34;, 
+                    &#34;r12&#34;, &#34;r13&#34;, &#34;r14&#34;, &#34;r15&#34;, &#34;r16&#34;, &#34;r17&#34;, &#34;r18&#34;, &#34;r19&#34;, &#34;r20&#34;, &#34;r21&#34;, &#34;r22&#34;, 
+                    &#34;r23&#34;, &#34;r24&#34;, &#34;r25&#34;, &#34;r26&#34;, &#34;r27&#34;, &#34;r28&#34;, &#34;r29&#34;, &#34;r30&#34;, &#34;r31&#34;]
+        self.reg_sp = regnames.index(&#39;sp&#39;)
+        self.registers = {regnames[idx].upper(): idx for idx in range(len(regnames)) }
+        self.registers_crf = [&#34;CR0&#34;, &#34;CR1&#34;, &#34;CR2&#34;, &#34;CR3&#34;, &#34;CR4&#34;, &#34;CR5&#34;, &#34;CR6&#34;, &#34;CR7&#34;]
 
     def get_pc(self, cpu):
         &#39;&#39;&#39;
-        Overloaded function to return the x86 current program counter
+        Overloaded function to return the ppc current program counter
         &#39;&#39;&#39;
-        return cpu.env_ptr.eip
+        return cpu.env_ptr.nip
 
     def set_pc(self, cpu, val):
         &#39;&#39;&#39;
-        Overloaded function to set the x86 program counter
+        Overloaded function to set the ppc program counter
         &#39;&#39;&#39;
-        cpu.env_ptr.eip = val
+        cpu.env_ptr.nip = val
 
     def _get_reg_val(self, cpu, reg):
         &#39;&#39;&#39;
-        Return an x86 register
+        Return a ppc register
         &#39;&#39;&#39;
-        return cpu.env_ptr.regs[reg]
+        return cpu.env_ptr.gpr[reg]
 
     def _set_reg_val(self, cpu, reg, val):
         &#39;&#39;&#39;
-        Set an x86 register
+        Set an x86_64 register
         &#39;&#39;&#39;
-        cpu.env_ptr.regs[reg] = val
+        cpu.env_ptr.gpr[reg] = val
 
-    def get_return_value(self, cpu):
-        &#39;&#39;&#39;
-        .. Deprecated:: use get_retval
-        &#39;&#39;&#39;
-        return self.get_retval(cpu)
+    def get_reg(self, cpu, reg):
 
-    def get_return_address(self,cpu):
-        &#39;&#39;&#39;
-        looks up where ret will go
-        &#39;&#39;&#39;
-        esp = self.get_reg(cpu,&#34;ESP&#34;)
-        return self.panda.virtual_memory_read(cpu,esp,4,fmt=&#39;int&#39;)
+        reg = reg.upper()
+        env = cpu.env_ptr
+        if reg == &#34;LR&#34;:
+            return env.lr
+        elif reg == &#34;CTR&#34;: 
+            return env.ctr
+        elif reg in self.registers_crf: 
+            return env.crf[self.registers_crf.index(reg)]
+        else:
+            return super().get_reg(cpu, reg)
+
+
+    def set_reg(self, cpu, reg, val):
+        reg = reg.upper()
+        env = cpu.env_ptr
+
+        if reg == &#34;LR&#34;: 
+            env.lr = val
+        elif reg == &#34;CTR&#34;:
+            env.ctr = val
+        elif reg in self.registers_crf: 
+            env.crf[self.registers_crf.index(reg)] = val
+        else:
+            super().set_reg(cpu, reg, val)
+
+
 
 class X86_64Arch(PandaArch):
     &#39;&#39;&#39;
@@ -876,6 +881,7 @@ class X86_64Arch(PandaArch):
         self.reg_names_short = [&#39;AX&#39;, &#39;CX&#39;, &#39;DX&#39;, &#39;BX&#39;, &#39;SP&#39;, &#39;BP&#39;, &#39;SI&#39;, &#39;DI&#39;]
         self.reg_names_byte = [&#39;AL&#39;, &#39;CL&#39;, &#39;DL&#39;, &#39;BL&#39;, &#39;AH&#39;, &#39;CH&#39;, &#39;DH&#39;, &#39;BH&#39;]
         self.seg_names = [&#39;ES&#39;, &#39;CS&#39;, &#39;SS&#39;, &#39;DS&#39;, &#39;FS&#39;, &#39;GS&#39;]
+        self.reg_names_mmr = [&#39;LDT&#39;, &#39;TR&#39;, &#39;GDT&#39;, &#39;IDT&#39;]
 
     def _get_segment_register(self, env, seg_name):
         seg_idx = self.seg_names.index(seg_name)
@@ -919,6 +925,20 @@ class X86_64Arch(PandaArch):
         &#39;&#39;&#39;
         cpu.env_ptr.eip = val
 
+    def _get_mmr_val(self, cpu, reg): 
+        reg = reg.lower()
+        sc = getattr(cpu.env_ptr, reg) 
+        return (sc.selector, sc.base, sc.limit, sc.flags)
+
+    def _set_mmr_val(self, cpu, reg, val): 
+        reg = reg.lower()
+        selector, base, limit, flags = val 
+        sc = getattr(cpu.env_ptr, reg)
+        sc.selector = selector
+        sc.base = base
+        sc.limit = limit
+        sc.flags = flags
+
     def _get_reg_val(self, cpu, reg):
         &#39;&#39;&#39;
         Return an x86_64 register
@@ -956,8 +976,12 @@ class X86_64Arch(PandaArch):
 
         reg = reg.upper()
         env = cpu.env_ptr
+        if reg in self.reg_names_mmr: 
+            return self._get_mmr_val(cpu, reg)
         if reg in self.seg_names:
             return self._get_segment_register(env, reg)
+        elif reg in [&#39;EFLAGS&#39;, &#39;RFLAGS&#39;]: 
+            return env.eflags
         elif reg in [&#39;RIP&#39;, &#39;PC&#39;, &#39;EIP&#39;]:
             pc = self.get_pc(cpu) # changes reg to &#39;IP&#39; and re-calls this
             if reg == &#39;EIP&#39;:
@@ -1010,13 +1034,17 @@ class X86_64Arch(PandaArch):
         reg = reg.upper()
         env = cpu.env_ptr
 
-        if reg in [&#39;ES&#39;, &#39;CS&#39;, &#39;SS&#39;, &#39;DS&#39;, &#39;FS&#39;, &#39;GS&#39;]:
+        if reg in self.reg_names_mmr: 
+            return self._set_mmr_val(cpu, reg, val)
+        elif reg in self.seg_names:
             self._set_segment_register(env, reg, val)
+        elif reg in [&#39;EFLAGS&#39;, &#39;RFLAGS&#39;]: 
+            env.eflags = val
         elif reg in [&#39;RIP&#39;, &#39;PC&#39;]:
             return self.set_pc(cpu, val) # changes reg to &#39;IP&#39; and re-calls this
         elif reg.startswith(&#39;XMM&#39;):
-            #env.xmm_regs[int(reg[3:])] = val
-            raise NotImplementedError(&#34;XMM registers unsupported&#34;)
+            env.xmm_regs[int(reg[3:])] = val
+            #raise NotImplementedError(&#34;XMM registers unsupported&#34;)
         elif reg.startswith(&#39;MM&#39;):
             raise NotImplementedError(&#34;MM registers unsupported&#34;)
         elif reg.startswith(&#39;YMM&#39;):
@@ -1043,7 +1071,32 @@ class X86_64Arch(PandaArch):
             reg_idx %= 4
             self._set_general_purpose_register(env, reg, val, mask)
         else:
-            super().set_reg(cpu, reg, val)</code></pre>
+            super().set_reg(cpu, reg, val)
+
+
+class X86Arch(X86_64Arch):
+    &#39;&#39;&#39;
+    Register names and accessors for x86
+    &#39;&#39;&#39;
+
+    def __init__(self, panda):
+        super().__init__(panda)
+        regnames = [&#39;EAX&#39;, &#39;ECX&#39;, &#39;EDX&#39;, &#39;EBX&#39;, &#39;ESP&#39;, &#39;EBP&#39;, &#39;ESI&#39;, &#39;EDI&#39;]
+        # XXX Note order is A C D B, because that&#39;s how qemu does it . See target/i386/cpu.h
+
+        # Note we don&#39;t set self.call_conventions because stack-based arg get/set is
+        # not yet supported
+        self.reg_retval = {&#34;default&#34;:    &#34;EAX&#34;,
+                           &#34;syscall&#34;:    &#34;EAX&#34;,
+                           &#34;linux_kernel&#34;:    &#34;EAX&#34;}
+
+        self.call_conventions = {&#34;cdecl&#34;: [f&#34;stack_{x}&#34; for x in range(20)], # 20: arbitrary but big
+                                 &#34;syscall&#34;: [&#34;EAX&#34;, &#34;EBX&#34;, &#34;ECX&#34;, &#34;EDX&#34;, &#34;ESI&#34;, &#34;EDI&#34;, &#34;EBP&#34;],
+                                 &#34;linux_kernel&#34;: [&#34;EAX&#34;, &#34;EDX&#34;, &#34;ECX&#34;, &#34;stack_3&#34;, &#34;stack_4&#34;, &#34;stack_5&#34;, &#34;stack_6&#34;]}
+        self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;cdecl&#39;]
+
+        self.reg_sp = regnames.index(&#39;ESP&#39;)
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }</code></pre>
 </details>
 </section>
 <section>
@@ -1076,7 +1129,7 @@ class X86_64Arch(PandaArch):
         regnames = [&#34;X0&#34;,  &#34;X1&#34;,  &#34;X2&#34;,  &#34;X3&#34;,  &#34;X4&#34;,  &#34;X5&#34;, &#34;X6&#34;, &#34;X7&#34;,
                     &#34;XR&#34;,  &#34;X9&#34;,  &#34;X10&#34;, &#34;X11&#34;, &#34;X12&#34;, &#34;X13&#34;, &#34;X14&#34;,
                     &#34;X15&#34;, &#34;IP0&#34;, &#34;IP1&#34;, &#34;PR&#34;, &#34;X19&#34;, &#34;X20&#34;, &#34;X21&#34;,
-                    &#34;X22&#34;, &#34;X23&#34;, &#34;X24&#34;, &#34;X25&#34;, &#34;X26&#34;, &#34;X27&#34;, &#34;X27&#34;,
+                    &#34;X22&#34;, &#34;X23&#34;, &#34;X24&#34;, &#34;X25&#34;, &#34;X26&#34;, &#34;X27&#34;,
                     &#34;X28&#34;, &#34;FP&#34;, &#34;LR&#34;, &#34;SP&#34;]
 
         self.reg_sp = regnames.index(&#34;SP&#34;)
@@ -2126,7 +2179,7 @@ Otherwise, it will be set to 1</p></div>
 <li><a title="pandare.arch.Aarch64Arch" href="#pandare.arch.Aarch64Arch">Aarch64Arch</a></li>
 <li><a title="pandare.arch.ArmArch" href="#pandare.arch.ArmArch">ArmArch</a></li>
 <li><a title="pandare.arch.MipsArch" href="#pandare.arch.MipsArch">MipsArch</a></li>
-<li><a title="pandare.arch.X86Arch" href="#pandare.arch.X86Arch">X86Arch</a></li>
+<li><a title="pandare.arch.PowerPCArch" href="#pandare.arch.PowerPCArch">PowerPCArch</a></li>
 <li><a title="pandare.arch.X86_64Arch" href="#pandare.arch.X86_64Arch">X86_64Arch</a></li>
 </ul>
 <h3>Instance variables</h3>
@@ -2434,6 +2487,138 @@ in the signature here so it can be set by a caller without regard for the guest 
 </dd>
 </dl>
 </dd>
+<dt id="pandare.arch.PowerPCArch"><code class="flex name class">
+<span>class <span class="ident">PowerPCArch</span></span>
+<span>(</span><span>panda)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register names and accessors for ppc</p>
+<p>Initialize a PANDA-supported architecture and hold a handle on the PANDA object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PowerPCArch(PandaArch): 
+    &#39;&#39;&#39;
+    Register names and accessors for ppc
+    &#39;&#39;&#39;
+    def __init__(self, panda): 
+        super().__init__(panda)
+        regnames = [&#34;r0&#34;, &#34;sp&#34;, &#34;r2&#34;, &#34;r3&#34;, &#34;r4&#34;, &#34;r5&#34;, &#34;r6&#34;, &#34;r7&#34;, &#34;r8&#34;, &#34;r9&#34;, &#34;r10&#34;, &#34;r11&#34;, 
+                    &#34;r12&#34;, &#34;r13&#34;, &#34;r14&#34;, &#34;r15&#34;, &#34;r16&#34;, &#34;r17&#34;, &#34;r18&#34;, &#34;r19&#34;, &#34;r20&#34;, &#34;r21&#34;, &#34;r22&#34;, 
+                    &#34;r23&#34;, &#34;r24&#34;, &#34;r25&#34;, &#34;r26&#34;, &#34;r27&#34;, &#34;r28&#34;, &#34;r29&#34;, &#34;r30&#34;, &#34;r31&#34;]
+        self.reg_sp = regnames.index(&#39;sp&#39;)
+        self.registers = {regnames[idx].upper(): idx for idx in range(len(regnames)) }
+        self.registers_crf = [&#34;CR0&#34;, &#34;CR1&#34;, &#34;CR2&#34;, &#34;CR3&#34;, &#34;CR4&#34;, &#34;CR5&#34;, &#34;CR6&#34;, &#34;CR7&#34;]
+
+    def get_pc(self, cpu):
+        &#39;&#39;&#39;
+        Overloaded function to return the ppc current program counter
+        &#39;&#39;&#39;
+        return cpu.env_ptr.nip
+
+    def set_pc(self, cpu, val):
+        &#39;&#39;&#39;
+        Overloaded function to set the ppc program counter
+        &#39;&#39;&#39;
+        cpu.env_ptr.nip = val
+
+    def _get_reg_val(self, cpu, reg):
+        &#39;&#39;&#39;
+        Return a ppc register
+        &#39;&#39;&#39;
+        return cpu.env_ptr.gpr[reg]
+
+    def _set_reg_val(self, cpu, reg, val):
+        &#39;&#39;&#39;
+        Set an x86_64 register
+        &#39;&#39;&#39;
+        cpu.env_ptr.gpr[reg] = val
+
+    def get_reg(self, cpu, reg):
+
+        reg = reg.upper()
+        env = cpu.env_ptr
+        if reg == &#34;LR&#34;:
+            return env.lr
+        elif reg == &#34;CTR&#34;: 
+            return env.ctr
+        elif reg in self.registers_crf: 
+            return env.crf[self.registers_crf.index(reg)]
+        else:
+            return super().get_reg(cpu, reg)
+
+
+    def set_reg(self, cpu, reg, val):
+        reg = reg.upper()
+        env = cpu.env_ptr
+
+        if reg == &#34;LR&#34;: 
+            env.lr = val
+        elif reg == &#34;CTR&#34;:
+            env.ctr = val
+        elif reg in self.registers_crf: 
+            env.crf[self.registers_crf.index(reg)] = val
+        else:
+            super().set_reg(cpu, reg, val)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="pandare.arch.PowerPCArch.get_pc"><code class="name flex">
+<span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function to return the ppc current program counter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_pc(self, cpu):
+    &#39;&#39;&#39;
+    Overloaded function to return the ppc current program counter
+    &#39;&#39;&#39;
+    return cpu.env_ptr.nip</code></pre>
+</details>
+</dd>
+<dt id="pandare.arch.PowerPCArch.set_pc"><code class="name flex">
+<span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Overloaded function to set the ppc program counter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_pc(self, cpu, val):
+    &#39;&#39;&#39;
+    Overloaded function to set the ppc program counter
+    &#39;&#39;&#39;
+    cpu.env_ptr.nip = val</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></b></code>:
+<ul class="hlist">
+<li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.get_retval" href="#pandare.arch.PandaArch.get_retval">get_retval</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.PandaArch.set_retval" href="#pandare.arch.PandaArch.set_retval">set_retval</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
 <dt id="pandare.arch.X86Arch"><code class="flex name class">
 <span>class <span class="ident">X86Arch</span></span>
 <span>(</span><span>panda)</span>
@@ -2445,7 +2630,7 @@ in the signature here so it can be set by a caller without regard for the guest 
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class X86Arch(PandaArch):
+<pre><code class="python">class X86Arch(X86_64Arch):
     &#39;&#39;&#39;
     Register names and accessors for x86
     &#39;&#39;&#39;
@@ -2467,134 +2652,31 @@ in the signature here so it can be set by a caller without regard for the guest 
         self.call_conventions[&#39;default&#39;] = self.call_conventions[&#39;cdecl&#39;]
 
         self.reg_sp = regnames.index(&#39;ESP&#39;)
-        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }
-
-
-    def get_pc(self, cpu):
-        &#39;&#39;&#39;
-        Overloaded function to return the x86 current program counter
-        &#39;&#39;&#39;
-        return cpu.env_ptr.eip
-
-    def set_pc(self, cpu, val):
-        &#39;&#39;&#39;
-        Overloaded function to set the x86 program counter
-        &#39;&#39;&#39;
-        cpu.env_ptr.eip = val
-
-    def _get_reg_val(self, cpu, reg):
-        &#39;&#39;&#39;
-        Return an x86 register
-        &#39;&#39;&#39;
-        return cpu.env_ptr.regs[reg]
-
-    def _set_reg_val(self, cpu, reg, val):
-        &#39;&#39;&#39;
-        Set an x86 register
-        &#39;&#39;&#39;
-        cpu.env_ptr.regs[reg] = val
-
-    def get_return_value(self, cpu):
-        &#39;&#39;&#39;
-        .. Deprecated:: use get_retval
-        &#39;&#39;&#39;
-        return self.get_retval(cpu)
-
-    def get_return_address(self,cpu):
-        &#39;&#39;&#39;
-        looks up where ret will go
-        &#39;&#39;&#39;
-        esp = self.get_reg(cpu,&#34;ESP&#34;)
-        return self.panda.virtual_memory_read(cpu,esp,4,fmt=&#39;int&#39;)</code></pre>
+        self.registers = {regnames[idx]: idx for idx in range(len(regnames)) }</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="pandare.arch.X86_64Arch" href="#pandare.arch.X86_64Arch">X86_64Arch</a></li>
 <li><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></li>
 </ul>
-<h3>Methods</h3>
-<dl>
-<dt id="pandare.arch.X86Arch.get_pc"><code class="name flex">
-<span>def <span class="ident">get_pc</span></span>(<span>self, cpu)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Overloaded function to return the x86 current program counter</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_pc(self, cpu):
-    &#39;&#39;&#39;
-    Overloaded function to return the x86 current program counter
-    &#39;&#39;&#39;
-    return cpu.env_ptr.eip</code></pre>
-</details>
-</dd>
-<dt id="pandare.arch.X86Arch.get_return_address"><code class="name flex">
-<span>def <span class="ident">get_return_address</span></span>(<span>self, cpu)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>looks up where ret will go</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_return_address(self,cpu):
-    &#39;&#39;&#39;
-    looks up where ret will go
-    &#39;&#39;&#39;
-    esp = self.get_reg(cpu,&#34;ESP&#34;)
-    return self.panda.virtual_memory_read(cpu,esp,4,fmt=&#39;int&#39;)</code></pre>
-</details>
-</dd>
-<dt id="pandare.arch.X86Arch.get_return_value"><code class="name flex">
-<span>def <span class="ident">get_return_value</span></span>(<span>self, cpu)</span>
-</code></dt>
-<dd>
-<div class="desc"><div class="admonition deprecated">
-<p class="admonition-title">Deprecated:&ensp;use get_retval</p>
-</div></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_return_value(self, cpu):
-    &#39;&#39;&#39;
-    .. Deprecated:: use get_retval
-    &#39;&#39;&#39;
-    return self.get_retval(cpu)</code></pre>
-</details>
-</dd>
-<dt id="pandare.arch.X86Arch.set_pc"><code class="name flex">
-<span>def <span class="ident">set_pc</span></span>(<span>self, cpu, val)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Overloaded function to set the x86 program counter</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_pc(self, cpu, val):
-    &#39;&#39;&#39;
-    Overloaded function to set the x86 program counter
-    &#39;&#39;&#39;
-    cpu.env_ptr.eip = val</code></pre>
-</details>
-</dd>
-</dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></b></code>:
+<li><code><b><a title="pandare.arch.X86_64Arch" href="#pandare.arch.X86_64Arch">X86_64Arch</a></b></code>:
 <ul class="hlist">
-<li><code><a title="pandare.arch.PandaArch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.get_reg" href="#pandare.arch.PandaArch.get_reg">get_reg</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.get_retval" href="#pandare.arch.PandaArch.get_retval">get_retval</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
-<li><code><a title="pandare.arch.PandaArch.set_retval" href="#pandare.arch.PandaArch.set_retval">set_retval</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.dump_regs" href="#pandare.arch.PandaArch.dump_regs">dump_regs</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.dump_stack" href="#pandare.arch.PandaArch.dump_stack">dump_stack</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.dump_state" href="#pandare.arch.PandaArch.dump_state">dump_state</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.get_arg" href="#pandare.arch.PandaArch.get_arg">get_arg</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.get_pc" href="#pandare.arch.X86_64Arch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.get_reg" href="#pandare.arch.X86_64Arch.get_reg">get_reg</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.get_return_address" href="#pandare.arch.X86_64Arch.get_return_address">get_return_address</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.get_return_value" href="#pandare.arch.X86_64Arch.get_return_value">get_return_value</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.get_retval" href="#pandare.arch.X86_64Arch.get_retval">get_retval</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.registers" href="#pandare.arch.PandaArch.registers">registers</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.set_arg" href="#pandare.arch.PandaArch.set_arg">set_arg</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.set_pc" href="#pandare.arch.X86_64Arch.set_pc">set_pc</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.set_reg" href="#pandare.arch.PandaArch.set_reg">set_reg</a></code></li>
+<li><code><a title="pandare.arch.X86_64Arch.set_retval" href="#pandare.arch.PandaArch.set_retval">set_retval</a></code></li>
 </ul>
 </li>
 </ul>
@@ -2641,6 +2723,7 @@ in the signature here so it can be set by a caller without regard for the guest 
         self.reg_names_short = [&#39;AX&#39;, &#39;CX&#39;, &#39;DX&#39;, &#39;BX&#39;, &#39;SP&#39;, &#39;BP&#39;, &#39;SI&#39;, &#39;DI&#39;]
         self.reg_names_byte = [&#39;AL&#39;, &#39;CL&#39;, &#39;DL&#39;, &#39;BL&#39;, &#39;AH&#39;, &#39;CH&#39;, &#39;DH&#39;, &#39;BH&#39;]
         self.seg_names = [&#39;ES&#39;, &#39;CS&#39;, &#39;SS&#39;, &#39;DS&#39;, &#39;FS&#39;, &#39;GS&#39;]
+        self.reg_names_mmr = [&#39;LDT&#39;, &#39;TR&#39;, &#39;GDT&#39;, &#39;IDT&#39;]
 
     def _get_segment_register(self, env, seg_name):
         seg_idx = self.seg_names.index(seg_name)
@@ -2684,6 +2767,20 @@ in the signature here so it can be set by a caller without regard for the guest 
         &#39;&#39;&#39;
         cpu.env_ptr.eip = val
 
+    def _get_mmr_val(self, cpu, reg): 
+        reg = reg.lower()
+        sc = getattr(cpu.env_ptr, reg) 
+        return (sc.selector, sc.base, sc.limit, sc.flags)
+
+    def _set_mmr_val(self, cpu, reg, val): 
+        reg = reg.lower()
+        selector, base, limit, flags = val 
+        sc = getattr(cpu.env_ptr, reg)
+        sc.selector = selector
+        sc.base = base
+        sc.limit = limit
+        sc.flags = flags
+
     def _get_reg_val(self, cpu, reg):
         &#39;&#39;&#39;
         Return an x86_64 register
@@ -2721,8 +2818,12 @@ in the signature here so it can be set by a caller without regard for the guest 
 
         reg = reg.upper()
         env = cpu.env_ptr
+        if reg in self.reg_names_mmr: 
+            return self._get_mmr_val(cpu, reg)
         if reg in self.seg_names:
             return self._get_segment_register(env, reg)
+        elif reg in [&#39;EFLAGS&#39;, &#39;RFLAGS&#39;]: 
+            return env.eflags
         elif reg in [&#39;RIP&#39;, &#39;PC&#39;, &#39;EIP&#39;]:
             pc = self.get_pc(cpu) # changes reg to &#39;IP&#39; and re-calls this
             if reg == &#39;EIP&#39;:
@@ -2775,13 +2876,17 @@ in the signature here so it can be set by a caller without regard for the guest 
         reg = reg.upper()
         env = cpu.env_ptr
 
-        if reg in [&#39;ES&#39;, &#39;CS&#39;, &#39;SS&#39;, &#39;DS&#39;, &#39;FS&#39;, &#39;GS&#39;]:
+        if reg in self.reg_names_mmr: 
+            return self._set_mmr_val(cpu, reg, val)
+        elif reg in self.seg_names:
             self._set_segment_register(env, reg, val)
+        elif reg in [&#39;EFLAGS&#39;, &#39;RFLAGS&#39;]: 
+            env.eflags = val
         elif reg in [&#39;RIP&#39;, &#39;PC&#39;]:
             return self.set_pc(cpu, val) # changes reg to &#39;IP&#39; and re-calls this
         elif reg.startswith(&#39;XMM&#39;):
-            #env.xmm_regs[int(reg[3:])] = val
-            raise NotImplementedError(&#34;XMM registers unsupported&#34;)
+            env.xmm_regs[int(reg[3:])] = val
+            #raise NotImplementedError(&#34;XMM registers unsupported&#34;)
         elif reg.startswith(&#39;MM&#39;):
             raise NotImplementedError(&#34;MM registers unsupported&#34;)
         elif reg.startswith(&#39;YMM&#39;):
@@ -2813,6 +2918,10 @@ in the signature here so it can be set by a caller without regard for the guest 
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="pandare.arch.PandaArch" href="#pandare.arch.PandaArch">PandaArch</a></li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="pandare.arch.X86Arch" href="#pandare.arch.X86Arch">X86Arch</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -2855,8 +2964,12 @@ segment registers, and D/W/B style accesses to R8-R15</p></div>
 
     reg = reg.upper()
     env = cpu.env_ptr
+    if reg in self.reg_names_mmr: 
+        return self._get_mmr_val(cpu, reg)
     if reg in self.seg_names:
         return self._get_segment_register(env, reg)
+    elif reg in [&#39;EFLAGS&#39;, &#39;RFLAGS&#39;]: 
+        return env.eflags
     elif reg in [&#39;RIP&#39;, &#39;PC&#39;, &#39;EIP&#39;]:
         pc = self.get_pc(cpu) # changes reg to &#39;IP&#39; and re-calls this
         if reg == &#39;EIP&#39;:
@@ -3120,13 +3233,14 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li>
-<h4><code><a title="pandare.arch.X86Arch" href="#pandare.arch.X86Arch">X86Arch</a></code></h4>
+<h4><code><a title="pandare.arch.PowerPCArch" href="#pandare.arch.PowerPCArch">PowerPCArch</a></code></h4>
 <ul class="">
-<li><code><a title="pandare.arch.X86Arch.get_pc" href="#pandare.arch.X86Arch.get_pc">get_pc</a></code></li>
-<li><code><a title="pandare.arch.X86Arch.get_return_address" href="#pandare.arch.X86Arch.get_return_address">get_return_address</a></code></li>
-<li><code><a title="pandare.arch.X86Arch.get_return_value" href="#pandare.arch.X86Arch.get_return_value">get_return_value</a></code></li>
-<li><code><a title="pandare.arch.X86Arch.set_pc" href="#pandare.arch.X86Arch.set_pc">set_pc</a></code></li>
+<li><code><a title="pandare.arch.PowerPCArch.get_pc" href="#pandare.arch.PowerPCArch.get_pc">get_pc</a></code></li>
+<li><code><a title="pandare.arch.PowerPCArch.set_pc" href="#pandare.arch.PowerPCArch.set_pc">set_pc</a></code></li>
 </ul>
+</li>
+<li>
+<h4><code><a title="pandare.arch.X86Arch" href="#pandare.arch.X86Arch">X86Arch</a></code></h4>
 </li>
 <li>
 <h4><code><a title="pandare.arch.X86_64Arch" href="#pandare.arch.X86_64Arch">X86_64Arch</a></code></h4>

@@ -2815,90 +2815,78 @@ INDEX=[
 "doc":"Mapping of register names to indices into the appropriate CPUState array"
 },
 {
-"ref":"pandare.arch.X86Arch",
+"ref":"pandare.arch.PowerPCArch",
 "url":14,
-"doc":"Register names and accessors for x86 Initialize a PANDA-supported architecture and hold a handle on the PANDA object"
+"doc":"Register names and accessors for ppc Initialize a PANDA-supported architecture and hold a handle on the PANDA object"
 },
 {
-"ref":"pandare.arch.X86Arch.get_pc",
+"ref":"pandare.arch.PowerPCArch.get_pc",
 "url":14,
-"doc":"Overloaded function to return the x86 current program counter",
+"doc":"Overloaded function to return the ppc current program counter",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.set_pc",
+"ref":"pandare.arch.PowerPCArch.set_pc",
 "url":14,
-"doc":"Overloaded function to set the x86 program counter",
+"doc":"Overloaded function to set the ppc program counter",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.get_return_value",
-"url":14,
-"doc":" Deprecated use get_retval",
-"func":1
-},
-{
-"ref":"pandare.arch.X86Arch.get_return_address",
-"url":14,
-"doc":"looks up where ret will go",
-"func":1
-},
-{
-"ref":"pandare.arch.X86Arch.get_reg",
+"ref":"pandare.arch.PowerPCArch.get_reg",
 "url":14,
 "doc":"Return value in a  reg which is either a register name or index (e.g., \"R0\" or 0)",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.set_reg",
+"ref":"pandare.arch.PowerPCArch.set_reg",
 "url":14,
 "doc":"Set register  reg to a value where  reg is either a register name or index (e.g., \"R0\" or 0)",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.set_arg",
+"ref":"pandare.arch.PowerPCArch.set_arg",
 "url":14,
 "doc":"Set arg [idx] to [val] for given calling convention. Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.get_arg",
+"ref":"pandare.arch.PowerPCArch.get_arg",
 "url":14,
 "doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. If arg[idx] should be stack-based, name it stack_0, stack_1 . this allows mixed conventions where some args are in registers and others are on the stack (i.e., mips32 syscalls). When doing a stack-based read, this function may raise a ValueError if the memory read fails (i.e., paged out, invalid address). Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.set_retval",
+"ref":"pandare.arch.PowerPCArch.set_retval",
 "url":14,
 "doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. If the given architecture returns failure/success in a second register (i.e., the A3 register for mips), set that according to the failure flag. Note the failure argument only used by subclasses that overload this function. It's provided in the signature here so it can be set by a caller without regard for the guest architecture.",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.get_retval",
+"ref":"pandare.arch.PowerPCArch.get_retval",
 "url":14,
 "doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. Return value from syscalls is signed",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.dump_regs",
+"ref":"pandare.arch.PowerPCArch.dump_regs",
 "url":14,
 "doc":"Print (telescoping) each register and its values",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.dump_stack",
+"ref":"pandare.arch.PowerPCArch.dump_stack",
 "url":14,
 "doc":"Print (telescoping) most recent  words words on the stack (from stack pointer to stack pointer +  words word_size)",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.dump_state",
+"ref":"pandare.arch.PowerPCArch.dump_state",
 "url":14,
 "doc":"Print registers and stack",
 "func":1
 },
 {
-"ref":"pandare.arch.X86Arch.registers",
+"ref":"pandare.arch.PowerPCArch.registers",
 "url":14,
 "doc":"Mapping of register names to indices into the appropriate CPUState array"
 },
@@ -2987,6 +2975,94 @@ INDEX=[
 },
 {
 "ref":"pandare.arch.X86_64Arch.registers",
+"url":14,
+"doc":"Mapping of register names to indices into the appropriate CPUState array"
+},
+{
+"ref":"pandare.arch.X86Arch",
+"url":14,
+"doc":"Register names and accessors for x86 Initialize a PANDA-supported architecture and hold a handle on the PANDA object"
+},
+{
+"ref":"pandare.arch.X86Arch.get_pc",
+"url":14,
+"doc":"Overloaded function to return the x86_64 current program counter",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.get_retval",
+"url":14,
+"doc":"Overloaded to support FreeBSD syscall ABI In that ABI, if eflags carry bit is set, an error has occured. To standardize pandare.arch returns across architectures/ABIs, we indicate a failure by returnning -ERRNO.",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.set_pc",
+"url":14,
+"doc":"Overloaded function to set the x86_64 program counter",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.get_return_value",
+"url":14,
+"doc":" Deprecated use get_retval",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.get_return_address",
+"url":14,
+"doc":"looks up where ret will go",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.get_reg",
+"url":14,
+"doc":"X86_64 has a bunch of different ways to access registers. We support the regular names, the 32 and 16 bit varations (e.g., EAX, AX, AL), segment registers, and D/W/B style accesses to R8-R15",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.set_reg",
+"url":14,
+"doc":"Set register  reg to a value where  reg is either a register name or index (e.g., \"R0\" or 0)",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.set_arg",
+"url":14,
+"doc":"Set arg [idx] to [val] for given calling convention. Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.get_arg",
+"url":14,
+"doc":"Return arg [idx] for given calling convention. This only works right as the guest is calling or has called a function before register values are clobbered. If arg[idx] should be stack-based, name it stack_0, stack_1 . this allows mixed conventions where some args are in registers and others are on the stack (i.e., mips32 syscalls). When doing a stack-based read, this function may raise a ValueError if the memory read fails (i.e., paged out, invalid address). Note for syscalls we define arg[0] as syscall number and then 1-index the actual args",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.set_retval",
+"url":14,
+"doc":"Set return val to [val] for given calling convention. This only works right after a function call has returned, otherwise the register will contain a different value. If the given architecture returns failure/success in a second register (i.e., the A3 register for mips), set that according to the failure flag. Note the failure argument only used by subclasses that overload this function. It's provided in the signature here so it can be set by a caller without regard for the guest architecture.",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.dump_regs",
+"url":14,
+"doc":"Print (telescoping) each register and its values",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.dump_stack",
+"url":14,
+"doc":"Print (telescoping) most recent  words words on the stack (from stack pointer to stack pointer +  words word_size)",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.dump_state",
+"url":14,
+"doc":"Print registers and stack",
+"func":1
+},
+{
+"ref":"pandare.arch.X86Arch.registers",
 "url":14,
 "doc":"Mapping of register names to indices into the appropriate CPUState array"
 },
