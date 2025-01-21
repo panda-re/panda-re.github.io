@@ -404,7 +404,11 @@ class PandaArch():
         rv = self.get_reg(cpu, reg)
 
         if convention == &#39;syscall&#39;:
-            rv = self.panda.from_unsigned_guest(rv)
+            bits = None
+            if self.panda.arch_name == &#34;aarch64&#34;:
+                if cpu.env_ptr.aarch64 == 0:
+                    bits = 32
+            rv = self.panda.from_unsigned_guest(rv, bits=bits)
         return rv
 
 
@@ -2117,7 +2121,11 @@ Otherwise, it will be set to 1</p></div>
         rv = self.get_reg(cpu, reg)
 
         if convention == &#39;syscall&#39;:
-            rv = self.panda.from_unsigned_guest(rv)
+            bits = None
+            if self.panda.arch_name == &#34;aarch64&#34;:
+                if cpu.env_ptr.aarch64 == 0:
+                    bits = 32
+            rv = self.panda.from_unsigned_guest(rv, bits=bits)
         return rv
 
 
@@ -2382,7 +2390,11 @@ a different value.</p>
     rv = self.get_reg(cpu, reg)
 
     if convention == &#39;syscall&#39;:
-        rv = self.panda.from_unsigned_guest(rv)
+        bits = None
+        if self.panda.arch_name == &#34;aarch64&#34;:
+            if cpu.env_ptr.aarch64 == 0:
+                bits = 32
+        rv = self.panda.from_unsigned_guest(rv, bits=bits)
     return rv</code></pre>
 </details>
 </dd>

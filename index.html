@@ -3146,7 +3146,7 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         else:
             raise ValueError(&#34;Unsupported number of bits&#34;)
 
-    def from_unsigned_guest(self, x):
+    def from_unsigned_guest(self, x, bits=None):
         &#39;&#39;&#39;
         Convert an unsigned int32/unsigned int64 from the guest
         (depending on guest bit-size) to a (signed) python int
@@ -3157,8 +3157,10 @@ array. (e.g. "-nographic" or ["-nographic", "-net", "none"])</dd>
         Returns:
             int: Python integer representing x as a signed value
         &#39;&#39;&#39;
-        if x &gt;= 2**(self.bits-1): # If highest bit is set, it&#39;s negative
-            return (x - 2**self.bits)
+        if bits is None:
+            bits = self.bits
+        if x &gt;= 2**(bits-1): # If highest bit is set, it&#39;s negative
+            return (x - 2**bits)
         else: # Else it&#39;s positive
             return x
 
@@ -6899,7 +6901,7 @@ Flushing the translation block cache is additionally necessary if the plugin mak
 </details>
 </dd>
 <dt id="pandare.Panda.from_unsigned_guest"><code class="name flex">
-<span>def <span class="ident">from_unsigned_guest</span></span>(<span>self, x)</span>
+<span>def <span class="ident">from_unsigned_guest</span></span>(<span>self, x, bits=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Convert an unsigned int32/unsigned int64 from the guest
@@ -6918,7 +6920,7 @@ Flushing the translation block cache is additionally necessary if the plugin mak
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def from_unsigned_guest(self, x):
+<pre><code class="python">def from_unsigned_guest(self, x, bits=None):
     &#39;&#39;&#39;
     Convert an unsigned int32/unsigned int64 from the guest
     (depending on guest bit-size) to a (signed) python int
@@ -6929,8 +6931,10 @@ Flushing the translation block cache is additionally necessary if the plugin mak
     Returns:
         int: Python integer representing x as a signed value
     &#39;&#39;&#39;
-    if x &gt;= 2**(self.bits-1): # If highest bit is set, it&#39;s negative
-        return (x - 2**self.bits)
+    if bits is None:
+        bits = self.bits
+    if x &gt;= 2**(bits-1): # If highest bit is set, it&#39;s negative
+        return (x - 2**bits)
     else: # Else it&#39;s positive
         return x</code></pre>
 </details>
